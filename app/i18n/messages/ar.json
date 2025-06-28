@@ -1,0 +1,57 @@
+{
+  "hello": "مرحبا",
+  "welcome": "مرحبا بكم في تطبيقنا",
+  "header": {
+    "changeLanguage": "تغيير اللغة",
+    "lightMode": "الوضع النهاري",
+    "darkMode": "الوضع الليلي",
+    "toggleTheme": "تبديل السمة"
+  },
+  "login": {
+    "title": "مرحباً بك في مراسيل",
+    "subtitle": "سجل دخولك للوصول إلى لوحة التحكم",
+    "email": "البريد الإلكتروني",
+    "emailPlaceholder": "أدخل بريدك الإلكتروني",
+    "password": "كلمة المرور",
+    "passwordPlaceholder": "أدخل كلمة المرور",
+    "rememberMe": "تذكرني",
+    "forgotPassword": "نسيت كلمة المرور؟",
+    "signIn": "تسجيل الدخول",
+    "signingIn": "جاري تسجيل الدخول...",
+    "or": "أو",
+    "noAccount": "ليس لديك حساب؟",
+    "createAccount": "إنشاء حساب جديد",
+    "termsAgreement": "بتسجيل الدخول، فإنك توافق على",
+    "termsOfService": "شروط الاستخدام",
+    "and": "و",
+    "privacyPolicy": "سياسة الخصوصية",
+    "loginSuccess": "تم تسجيل الدخول بنجاح!",
+    "loginFailed": "فشل في تسجيل الدخول"
+  },
+  "parcels": {
+    "title": "اختر حجم الطرد",
+    "customizeSize": "تخصيص حجم الطرد",
+    "info": {
+      "title": "معلومات عن أحجام الطرود",
+      "description": "اختر حجم الطرد المناسب لشحنتك. يرجى ملاحظة أن حجم الطرد لا يؤثر على سعر الشحن المحلي، ولكنه مهم في الشحن الدولي حيث يتم تحديد السعر بناءً على حجم ووزن الطرد.",
+      "maxWeight": "الوزن الأقصى المسموح به: {weight} كجم",
+      "maxDimensions": "الأبعاد القصوى: {dimensions}"
+    },
+    "customDialog": {
+      "title": "تخصيص حجم الطرد",
+      "description": "أدخل أبعاد ووزن الطرد المخصص الخاص بك",
+      "length": "الطول (سم)",
+      "width": "العرض (سم)",
+      "height": "الارتفاع (سم)",
+      "weight": "الوزن (كجم)",
+      "description": "وصف المحتويات",
+      "cancel": "إلغاء",
+      "confirm": "تأكيد"
+    },
+    "parcelCard": {
+      "examples": "أمثلة",
+      "dimensions": "الأبعاد",
+      "weight": "حتى {weight}"
+    }
+  }
+} 
