@@ -206,8 +206,8 @@ export function MarasilAtomLogo({
             }}
           >
             <ellipse
-              cx={viewBoxSize / 1.2}
-              cy={viewBoxSize / 1.8}
+              cx={viewBoxSize / 2}
+              cy={viewBoxSize / 2}
               rx={viewBoxSize * 0.38}
               ry={viewBoxSize * 0.17}
               stroke="url(#ring-gradient)"
@@ -221,8 +221,8 @@ export function MarasilAtomLogo({
             {isClient &&
               (() => {
                 const { x, y } = getEllipsePoint(
-                  viewBoxSize / 1.2,
-                  viewBoxSize / 1.8,
+                  viewBoxSize / 2,
+                  viewBoxSize / 2,
                   viewBoxSize * 0.38,
                   viewBoxSize * 0.17,
                   angles[2]
