@@ -1,0 +1,21 @@
+.ring1,
+.ring2,
+.ring3 {
+  height: 24em;
+  width: 30em;
+  animation: glow 3s linear infinite;
+  border-radius: 50%;
+  border: 0.6em solid rgba(255, 255, 255, 0.8);
+  border-top: 1.5em solid rgba(255, 255, 255, 0.8);
+  border-bottom: 1.5em solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3),
+    inset 0 0 20px rgba(255, 255, 255, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transition: 1s transform ease-in-out;
+  transform: translate(-50%, -50%);
+}
