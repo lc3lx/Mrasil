@@ -206,7 +206,7 @@ export function MarasilAtomLogo({
             }}
           >
             <ellipse
-              cx={viewBoxSize / 2}
+              cx={viewBoxSize / 1.9}
               cy={viewBoxSize / 2}
               rx={viewBoxSize * 0.38}
               ry={viewBoxSize * 0.17}
