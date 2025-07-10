@@ -122,7 +122,7 @@ export function Hero() {
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0F2F55] to-[#3B82F6]">
               The world's first
             </span>{" "}
-            AI-powered platform to help you manage your shipments
+            أول منصة في العالم مدعومة بالذكاء الاصطناعي لمساعدتك في إدارة شحناتك
           </motion.h1>
 
           {/* Rotating AI capabilities */}
