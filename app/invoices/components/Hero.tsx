@@ -120,9 +120,9 @@ export function Hero() {
             transition={{ duration: 0.7, delay: 0.3 }}
           >
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0F2F55] to-[#3B82F6]">
-              The world's first
+              أول منصة
             </span>{" "}
-            أول منصة في العالم مدعومة بالذكاء الاصطناعي لمساعدتك في إدارة شحناتك
+              في العالم مدعومة بالذكاء الاصطناعي لمساعدتك في إدارة شحناتك
           </motion.h1>
 
           {/* Rotating AI capabilities */}
