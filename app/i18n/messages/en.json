@@ -1,0 +1,57 @@
+{
+  "hello": "Hello",
+  "welcome": "Welcome to our app",
+  "header": {
+    "changeLanguage": "Change Language",
+    "lightMode": "Light Mode",
+    "darkMode": "Dark Mode",
+    "toggleTheme": "Toggle Theme"
+  },
+  "login": {
+    "title": "Welcome to Marasil",
+    "subtitle": "Sign in to access your dashboard",
+    "email": "Email Address",
+    "emailPlaceholder": "Enter your email address",
+    "password": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot your password?",
+    "signIn": "Sign In",
+    "signingIn": "Signing in...",
+    "or": "or",
+    "noAccount": "Don't have an account?",
+    "createAccount": "Create new account",
+    "termsAgreement": "By signing in, you agree to our",
+    "termsOfService": "Terms of Service",
+    "and": "and",
+    "privacyPolicy": "Privacy Policy",
+    "loginSuccess": "Login successful!",
+    "loginFailed": "Failed to login"
+  },
+  "parcels": {
+    "title": "Choose Package Size",
+    "customizeSize": "Customize Package Size",
+    "info": {
+      "title": "Package Size Information",
+      "description": "Choose the appropriate package size for your shipment. Please note that package size does not affect local shipping prices, but it is important for international shipping where pricing is based on size and weight.",
+      "maxWeight": "Maximum allowed weight: {weight} kg",
+      "maxDimensions": "Maximum dimensions: {dimensions}"
+    },
+    "customDialog": {
+      "title": "Customize Package Size",
+      "description": "Enter your custom package dimensions and weight",
+      "length": "Length (cm)",
+      "width": "Width (cm)",
+      "height": "Height (cm)",
+      "weight": "Weight (kg)",
+      "description": "Contents Description",
+      "cancel": "Cancel",
+      "confirm": "Confirm"
+    },
+    "parcelCard": {
+      "examples": "Examples",
+      "dimensions": "Dimensions",
+      "weight": "Up to {weight}"
+    }
+  }
+} 
