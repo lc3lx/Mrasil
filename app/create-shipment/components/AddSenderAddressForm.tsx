@@ -23,6 +23,7 @@ import { cn } from "@/lib/utils";
 import { Phone, MapPin, User, Building, Search } from "lucide-react";
 import ResponseModal from "../../components/ResponseModal";
 import { useGetCustomerMeQuery } from "../../api/customerApi";
+import CityAutocompleteDropdown from "./CityAutocompleteDropdown";
 
 const citys = [
   "الرياض",
@@ -266,52 +267,20 @@ export function AddSenderAddressForm({
             <div className="space-y-2 ">
               <Label
                 htmlFor="country"
-                className="text-lg font-medium flex items-center gap-2 text-[#1A5889]"
+                className="text-lg font-medium  flex items-center gap-2 text-[#1A5889]"
               >
-                <MapPin className="h-4 w-4 text-[#1A5889] " />
+                <MapPin className="h-4 w-4 text-[#1A5889]" />
                 الدولة
                 <span className=" text-red-500">*</span>
               </Label>
-              <Select
-                onValueChange={handleCityChange}
-                value={form.city}
-                required
-              >
-                <SelectTrigger
-                  id="city"
-                  className={cn(
-                    " v7-neu-input text-[#1A5889] bg-transparent border-none shadow-none outline-none text-base w-full"
-                  )}
-                >
-                  <SelectValue placeholder="اختر الدولة" className="  " />
-                </SelectTrigger>
-                <SelectContent className=" bg-white max-h-48 overflow-y-auto border border-gray-200 shadow-lg rounded-lg custom-scrollbar ">
-                  <div className=" mt-2 relative flex-1">
-                    <Search className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gry" />
-                    <input
-                      dir="rtl"
-                      type="search"
-                      className="v7-neu-input w-full  py-2 text-sm"
-                      autoFocus
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                      aria-label=" "
-                    />
-                  </div>
-                  {countrys
-                    .filter((country) => country.includes(search))
-                    .map((country) => (
-                      <SelectItem
-                        dir="rtl"
-                        key={country}
-                        value={country}
-                        className="py-2 px-3 hover:bg-blue-50 focus:bg-blue-100 cursor-pointer  "
-                      >
-                        {country}
-                      </SelectItem>
-                    ))}
-                </SelectContent>
-              </Select>
+              <input
+                name="country"
+                value="السعودية"
+                readOnly
+                className={cn(
+                  "v7-neu-input bg-transparent border-none shadow-none outline-none text-base w-full text-[#1A5889]"
+                )}
+              />
             </div>
             <div className="space-y-2 ">
               <Label
@@ -322,45 +291,40 @@ export function AddSenderAddressForm({
                 المدينة
                 <span className=" text-red-500">*</span>
               </Label>
-              <Select onValueChange={handleCityChange} value={form.city}>
-                <SelectTrigger
-                  id="city"
+              <div className="relative">
+                <input
+                  name="city"
+                  autoComplete="off"
+                  value={search || form.city}
+                  onChange={e => {
+                    setSearch(e.target.value);
+                    setForm({ ...form, city: "" }); // امسح قيمة المدينة والمنطقة حتى يختار المستخدم من القائمة
+                  }}
+                  required
+                  placeholder="المدينة"
                   className={cn(
-                    " v7-neu-input text-[#1A5889] bg-transparent border-none shadow-none outline-none text-base w-full"
+                    "v7-neu-input bg-transparent border-none shadow-none outline-none text-base w-full"
                   )}
-                >
-                  <SelectValue
-                    placeholder="اختر المدينة"
-                    className=" text-[#1A5889] "
+                  onFocus={() => setWeightFocusedA(true)}
+                  onBlur={() => setTimeout(() => setWeightFocusedA(false), 200)}
+                  style={
+                    weightFocusedA
+                      ? { boxShadow: "0 2px 0 0 #3498db", fontFamily: "inherit" }
+                      : {}
+                  }
+                />
+                {/* Dropdown results */}
+                {weightFocusedA && search && (
+                  <CityAutocompleteDropdown
+                    search={search}
+                    onSelect={cityObj => {
+                      setForm({ ...form, city: cityObj.name_ar });
+                      setSearch("");
+                      setWeightFocusedA(false);
+                    }}
                   />
-                </SelectTrigger>
-                <SelectContent className="bg-white max-h-48 overflow-y-auto border border-gray-200 shadow-lg rounded-lg custom-scrollbar ">
-                  <div className=" mt-2 relative flex-1">
-                    <Search className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gry" />
-                    <input
-                      dir="rtl"
-                      type="search"
-                      className="v7-neu-input w-full  py-2 text-sm"
-                      autoFocus
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                      aria-label=" "
-                    />
-                  </div>
-                  {citys
-                    ?.filter((city) => city.includes(search))
-                    ?.map((city) => (
-                      <SelectItem
-                        dir="rtl"
-                        key={city}
-                        value={city}
-                        className="py-2 px-3 hover:bg-blue-50 focus:bg-blue-100 cursor-pointer  "
-                      >
-                        {city}
-                      </SelectItem>
-                    ))}
-                </SelectContent>
-              </Select>
+                )}
+              </div>
             </div>
             <div className="flex-1 space-y-2">
               <Label

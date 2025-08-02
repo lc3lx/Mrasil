@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSearchCitiesQuery } from "../../api/cityApi";
 import {
   Dialog,
   DialogContent,
@@ -9,53 +10,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import { cn } from "@/lib/utils";
 import { Mail, Phone, MapPin, User, Search } from "lucide-react";
 
-const citys = [
-  "الرياض",
-  "جدة",
-  "مكة",
-  "المدينة",
-  "الدمام",
-  "الخبر",
-  "الطائف",
-  "تبوك",
-  "بريدة",
-  "خميس مشيط",
-  "الهفوف",
-  "المبرز",
-  "حفر الباطن",
-  "حائل",
-  "نجران",
-  "الجبيل",
-  "أبها",
-  "ينبع",
-  "عرعر",
-  "عنيزة",
-  "سكاكا",
-  "جازان",
-  "القطيف",
-  "الباحة",
-  "بيشة",
-  "الرس",
-];
-const countrys = [
-  "السعودية",
-  "الأمارات",
-  "الكويت",
-  "البحرين",
-  "قطر",
-  "عمان",
-  "مصر",
-];
+
 interface AddRecipientFormProps {
   isOpen: boolean;
   onClose: () => void;
@@ -87,19 +46,25 @@ export function AddRecipientForm({
     clientAddress: initialValues?.clientAddress || "",
     district: initialValues?.district || "",
     city: initialValues?.city || "",
-    country: initialValues?.country || "",
+    country: "السعودية", // الدولة ثابتة
     clientEmail: initialValues?.clientEmail || "",
     clientPhone: initialValues?.clientPhone || "",
     customer: initialValues?.customer || "",
   });
   const [submitting, setSubmitting] = useState(false);
   const [search, setSearch] = useState("");
+
+  const { data: cityResults, isLoading: isCityLoading } = useSearchCitiesQuery(
+    search,
+    { skip: !search }
+  );
+
+  // cityResults?.results || []
+  // إذا لم توجد خاصية results استخدم data
+  const citySuggestions = cityResults?.result || cityResults?.data || [];
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleCityChange = (value: string) => {
-    setForm({ ...form, city: value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -121,19 +86,14 @@ export function AddRecipientForm({
       clientAddress: "",
       district: "",
       city: "",
-      country: "",
+      country: "السعودية",
       clientEmail: "",
       clientPhone: "",
       customer: "",
     });
     onClose();
   };
-  const filteredOrders = citys.filter((city) => {
-    if (!search) return true;
-    const filter = city || "";
-    const searchValue = search;
-    return filter;
-  });
+
   const [weightFocused, setWeightFocused] = useState(false);
   const [weightFocusedA, setWeightFocusedA] = useState(false);
   const [weightFocusedAA, setWeightFocusedAA] = useState(false);
@@ -141,6 +101,7 @@ export function AddRecipientForm({
   const [weightFocusedM, setWeightFocusedM] = useState(false);
   const [weightFocusedAM, setWeightFocusedAM] = useState(false);
   const [weightFocusedMA, setWeightFocusedMA] = useState(false);
+
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className=" ">
@@ -235,51 +196,21 @@ export function AddRecipientForm({
             />
           </div>
 
-          <div className="space-y-2 ">
+          <div className="flex-1 space-y-2">
             <Label
               htmlFor="country"
               className="text-lg font-medium flex items-center gap-2 text-[#1A5889]"
             >
-              <MapPin className="h-4 w-4 text-[#1A5889] " />
+              <MapPin className="h-4 w-4 text-[#1A5889]" />
               الدولة
               <span className=" text-red-500">*</span>
             </Label>
-            <Select onValueChange={handleCityChange} value={form.city}>
-              <SelectTrigger
-                id="city"
-                className={cn(
-                  " v7-neu-input text-[#1A5889] bg-transparent border-none shadow-none outline-none text-base w-full"
-                )}
-              >
-                <SelectValue placeholder="اختر الدولة" className="  " />
-              </SelectTrigger>
-              <SelectContent className=" bg-white max-h-48 overflow-y-auto border border-gray-200 shadow-lg rounded-lg custom-scrollbar ">
-                <div className=" mt-2 relative flex-1">
-                  <Search className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gry" />
-                  <input
-                    dir="rtl"
-                    type="search"
-                    className="v7-neu-input w-full  py-2 text-sm"
-                    autoFocus
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    aria-label=" "
-                  />
-                </div>
-                {countrys
-                  .filter((country) => country.includes(search))
-                  .map((country) => (
-                    <SelectItem
-                      dir="rtl"
-                      key={country}
-                      value={country}
-                      className="py-2 px-3 hover:bg-blue-50 focus:bg-blue-100 cursor-pointer  "
-                    >
-                      {country}
-                    </SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>
+            <input
+              name="country"
+              value="السعودية"
+              readOnly
+              className="fixed-country-input"
+            />
           </div>
           <div className="space-y-2 ">
             <Label
@@ -290,45 +221,55 @@ export function AddRecipientForm({
               المدينة
               <span className=" text-red-500">*</span>
             </Label>
-            <Select onValueChange={handleCityChange} value={form.city}>
-              <SelectTrigger
-                id="city"
+
+            <div className="relative">
+              <input
+                name="city"
+                autoComplete="off"
+                value={search || form.city}
+                onChange={e => {
+                  setSearch(e.target.value);
+                  setForm({ ...form, city: "" }); // امسح قيمة المدينة والمنطقة حتى يختار المستخدم من القائمة
+                }}
+                required
+                placeholder="المدينة"
                 className={cn(
-                  " v7-neu-input text-[#1A5889] bg-transparent border-none shadow-none outline-none text-base w-full"
+                  "v7-neu-input bg-transparent border-none shadow-none outline-none text-base w-full"
                 )}
-              >
-                <SelectValue
-                  placeholder="اختر المدينة"
-                  className=" text-[#1A5889] "
-                />
-              </SelectTrigger>
-              <SelectContent className="bg-white max-h-48 overflow-y-auto border border-gray-200 shadow-lg rounded-lg custom-scrollbar ">
-                <div className=" mt-2 relative flex-1">
-                  <Search className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gry" />
-                  <input
-                    dir="rtl"
-                    type="search"
-                    className="v7-neu-input w-full  py-2 text-sm"
-                    autoFocus
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    aria-label=" "
-                  />
+                onFocus={() => setWeightFocusedAAA(true)}
+                onBlur={() => setTimeout(() => setWeightFocusedAAA(false), 200)}
+                style={
+                  weightFocusedAAA
+                    ? { boxShadow: "0 2px 0 0 #3498db", fontFamily: "inherit" }
+                    : {}
+                }
+              />
+              {/* Dropdown results */}
+              {weightFocusedAAA && search && (
+                <div className="absolute z-50 w-full bg-white max-h-48 overflow-y-auto border border-gray-200 shadow-lg rounded-lg custom-scrollbar mt-1">
+                  {isCityLoading ? (
+                    <div className="py-2 px-3 text-gray-500">جاري البحث...</div>
+                  ) : citySuggestions.length > 0 ? (
+                    citySuggestions.map((city: any) => (
+                      <div
+                        key={city.city_id}
+                        className="py-2 px-3 hover:bg-blue-50 cursor-pointer text-right"
+                        onMouseDown={() => {
+                          setForm({ ...form, city: city.name_ar });
+                          setSearch("");
+                          setWeightFocusedAAA(false);
+                        }}
+                      >
+                        <div className="font-bold text-base">{city.name_ar}</div>
+                        <div className="text-xs text-gray-500">{city.region_name}</div>
+                      </div>
+                    ))
+                  ) : search.length > 1 ? (
+                    <div className="py-2 px-3 text-gray-400">لا توجد نتائج</div>
+                  ) : null}
                 </div>
-                {citys
-                  ?.filter((city) => city.includes(search))
-                  ?.map((city) => (
-                    <SelectItem
-                      dir="rtl"
-                      key={city}
-                      value={city}
-                      className="py-2 px-3 hover:bg-blue-50 focus:bg-blue-100 cursor-pointer  "
-                    >
-                      {city}
-                    </SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>
+              )}
+            </div>
           </div>
           <div className="flex-1 space-y-2">
             <Label
@@ -340,9 +281,8 @@ export function AddRecipientForm({
             </Label>
 
             <input
-              name="address"
+              name="clientAddress"
               value={form.clientAddress}
-              type="text"
               onChange={handleChange}
               placeholder="الحي, الشارع, رقم المبنى"
               className={cn(
@@ -367,18 +307,18 @@ export function AddRecipientForm({
             </Label>
 
             <input
-              name=""
+              name="district"
               value={form.district}
               type="text"
               onChange={handleChange}
-              placeholder="الرمز البريدي"
+              placeholder="الحي، الشارع، رقم المبنى"
               className={cn(
-                "v7-neu-input bg-transparent border-none shadow-none outline-none text-base w-full"
+                "v7-neu-input bg-transparent border-none shadow-none outline-none text-base w-full "
               )}
-              onFocus={() => setWeightFocusedMA(true)}
-              onBlur={() => setWeightFocusedMA(false)}
+              onFocus={() => setWeightFocusedAM(true)}
+              onBlur={() => setWeightFocusedAM(false)}
               style={
-                weightFocusedMA
+                weightFocusedAM
                   ? { boxShadow: "0 2px 0 0 #3498db", fontFamily: "inherit" }
                   : {}
               }
