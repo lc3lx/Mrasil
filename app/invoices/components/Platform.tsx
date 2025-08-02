@@ -15,8 +15,8 @@ const companies = [
     img: "/companies/Aramex.jpg",
   },
   {
-    name: "اومني لاما",
-    img: "/companies/omniclama.png",
+    name: "  لاما بوكس",
+    img: "/companies/omniclama.jpg",
   },
   {
     name: "سبل",

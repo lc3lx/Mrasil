@@ -998,10 +998,10 @@ function Step3Content({
                   companyName: string
                 ): string {
                   const map: Record<string, string> = {
-                    redbox: "/companies/RedBox.jpg",
+                    redbox: `/companies/redBox.png`,
                     smsa: "/companies/smsa.jpg",
-                    omniclama: "/companies/omniclama.png",
-                    aramex: "/companies/Aramex.jpg",
+                    omniclama: "/companies/lamaBox.png",
+                    aramex: `/companies/araMex.png`,
                   };
                   return (
                     map[companyName.toLowerCase()] ||
