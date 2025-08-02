@@ -171,7 +171,7 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
           <DialogHeader>
             <DialogTitle className=" text-black/90 w-full mt-6 text-right text-2xl flex items-center gap-4  ">
               <User className="h-[1.5rem] w-[1.5rem] text-[#1A5889] bg-[#3498db]/20  rounded-full  " />
-              إضافة عميل جديد
+              إضافة مرسل
             </DialogTitle>
           </DialogHeader>
           <form
