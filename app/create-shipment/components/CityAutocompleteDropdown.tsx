@@ -14,7 +14,7 @@ export const CityAutocompleteDropdown: React.FC<CityAutocompleteDropdownProps> =
   if (!search) return null;
 
   return (
-    <div className="absolute z-50 w-full bg-white max-h-48 overflow-y-auto border border-gray-200 shadow-lg rounded-lg custom-scrollbar mt-1">
+    <div className="absolute z-50 w-full bg-[#f3f6fa] max-h-48 overflow-y-auto border border-gray-200 shadow-lg rounded-lg custom-scrollbar mt-1">
       {isLoading ? (
         <div className="py-2 px-3 text-gray-500">جاري البحث...</div>
       ) : citySuggestions.length > 0 ? (

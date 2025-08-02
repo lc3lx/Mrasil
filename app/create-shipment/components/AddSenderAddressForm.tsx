@@ -24,6 +24,7 @@ import { Phone, MapPin, User, Building, Search } from "lucide-react";
 import ResponseModal from "../../components/ResponseModal";
 import { useGetCustomerMeQuery } from "../../api/customerApi";
 import CityAutocompleteDropdown from "./CityAutocompleteDropdown";
+import CountryAutocompleteDropdown from "./CountryAutocompleteDropdownProps ";
 
 const citys = [
   "الرياض",
@@ -104,6 +105,8 @@ export function AddSenderAddressForm({
   const [alertMessage, setAlertMessage] = useState("");
   const [search, setSearch] = useState("");
   const { data: customerMeData } = useGetCustomerMeQuery();
+const [countrySearch, setCountrySearch] = useState("");
+const [focused, setFocused] = useState<"" | "country" | "city">("");
 
   const methods = useForm({
     defaultValues: {
@@ -112,6 +115,7 @@ export function AddSenderAddressForm({
       country: "السعودية",
       city: "",
       clientEmail: "",
+      district: ""
     },
   });
 
@@ -151,25 +155,22 @@ export function AddSenderAddressForm({
   const handleCityChange = (value: string) => {
     setForm({ ...form, city: value });
   };
-  const filteredOrders = citys.filter((city) => {
-    if (!search) return true;
-    const filter = city || "";
-    const searchValue = search;
-    return filter;
-  });
+
   const [weightFocused, setWeightFocused] = useState(false);
   const [descFocused, setDescFocused] = useState(false);
   const [weightFocusedA, setWeightFocusedA] = useState(false);
   const [descFocusedA, setDescFocusedA] = useState(false);
   const [weightFocusedAA, setWeightFocusedAA] = useState(false);
   const [descFocusedAA, setDescFocusedAA] = useState(false);
+  const [descFocusedMA, setDescFocusedMA] = useState(false);
+  
   return (
     <>
       <Dialog open={isOpen} onOpenChange={handleClose}>
         <DialogContent className=" border-none ">
           <DialogHeader>
             <DialogTitle className=" text-black/90 w-full mt-6 text-right text-2xl flex items-center gap-4  ">
-              <User className="h-[1.5rem] w-[1.5rem] text-[#1A5889] bg-[#3498db]/20  rounded-full " />
+              <User className="h-[1.5rem] w-[1.5rem] text-[#1A5889] bg-[#3498db]/20  rounded-full  " />
               إضافة عميل جديد
             </DialogTitle>
           </DialogHeader>
@@ -195,11 +196,11 @@ export function AddSenderAddressForm({
                 onChange={handleChange}
                 required
                 className={cn(
-                  "v7-neu-input bg-transparent border-none shadow-none outline-none text-base w-full"
+                  "v7-neu-input bg-transparent border-none shadow-none outline-none text-base w-full "
                 )}
                 onFocus={() => setWeightFocused(true)}
                 onBlur={() => setWeightFocused(false)}
-                style={weightFocused ? { boxShadow: "0 2px 0 0 #3498db" } : {}}
+
               />
             </div>
             {/* رقم الجوال */}
@@ -225,14 +226,6 @@ export function AddSenderAddressForm({
                   )}
                   onFocus={() => setWeightFocusedA(true)}
                   onBlur={() => setWeightFocusedA(false)}
-                  style={
-                    weightFocusedA
-                      ? {
-                          boxShadow: "0 2px 0 0 #3498db",
-                          fontFamily: "inherit",
-                        }
-                      : {}
-                  }
                 />
               </div>
             </div>
@@ -256,11 +249,6 @@ export function AddSenderAddressForm({
                 )}
                 onFocus={() => setWeightFocusedAA(true)}
                 onBlur={() => setWeightFocusedAA(false)}
-                style={
-                  weightFocusedAA
-                    ? { boxShadow: "0 2px 0 0 #3498db", fontFamily: "inherit" }
-                    : {}
-                }
               />
             </div>
 
@@ -273,14 +261,41 @@ export function AddSenderAddressForm({
                 الدولة
                 <span className=" text-red-500">*</span>
               </Label>
-              <input
+              {/* <input
                 name="country"
                 value="السعودية"
                 readOnly
                 className={cn(
                   "v7-neu-input bg-transparent border-none shadow-none outline-none text-base w-full text-[#1A5889]"
                 )}
-              />
+              /> */}
+                            <div className="relative">
+<input
+  name="country"
+  value={countrySearch || form.country}
+  onChange={(e) => {
+    setCountrySearch(e.target.value);
+    setForm({ ...form, country: "" });
+  }}
+  placeholder="السعودية"
+  readOnly
+  className={cn("v7-neu-input bg-transparent border-none shadow-none outline-none text-base w-full")}
+  onFocus={() => setFocused("country")}
+  onBlur={() => setTimeout(() => setFocused(""), 200)}
+/>
+{focused === "country" && countrySearch && (
+  <CountryAutocompleteDropdown
+  
+    search={countrySearch}
+    onSelect={(obj) => {
+      setForm({ ...form, country: obj.name_ar });
+      setCountrySearch("");
+      setFocused("");
+    }}
+  />
+)}
+
+              </div>
             </div>
             <div className="space-y-2 ">
               <Label
@@ -305,22 +320,17 @@ export function AddSenderAddressForm({
                   className={cn(
                     "v7-neu-input bg-transparent border-none shadow-none outline-none text-base w-full"
                   )}
-                  onFocus={() => setWeightFocusedA(true)}
-                  onBlur={() => setTimeout(() => setWeightFocusedA(false), 200)}
-                  style={
-                    weightFocusedA
-                      ? { boxShadow: "0 2px 0 0 #3498db", fontFamily: "inherit" }
-                      : {}
-                  }
+                  onFocus={() => setDescFocused(true)}
+                  onBlur={() => setTimeout(() => setDescFocused(false), 200)}
                 />
                 {/* Dropdown results */}
-                {weightFocusedA && search && (
+                {descFocused && search && (
                   <CityAutocompleteDropdown
                     search={search}
                     onSelect={cityObj => {
                       setForm({ ...form, city: cityObj.name_ar });
                       setSearch("");
-                      setWeightFocusedA(false);
+                      setDescFocused(false);
                     }}
                   />
                 )}
@@ -336,7 +346,7 @@ export function AddSenderAddressForm({
               </Label>
 
               <input
-                name="address"
+                name="clientAddress"
                 value={form.clientAddress}
                 type="text"
                 onChange={handleChange}
@@ -346,11 +356,6 @@ export function AddSenderAddressForm({
                 )}
                 onFocus={() => setDescFocusedAA(true)}
                 onBlur={() => setDescFocusedAA(false)}
-                style={
-                  descFocusedAA
-                    ? { boxShadow: "0 2px 0 0 #3498db", fontFamily: "inherit" }
-                    : {}
-                }
               />
             </div>
             <div className="flex-1 space-y-2">
@@ -363,7 +368,7 @@ export function AddSenderAddressForm({
               </Label>
 
               <input
-                name=""
+                name="district"
                 value={form.district}
                 type="text"
                 onChange={handleChange}
@@ -373,11 +378,6 @@ export function AddSenderAddressForm({
                 )}
                 onFocus={() => setDescFocusedA(true)}
                 onBlur={() => setDescFocusedA(false)}
-                style={
-                  descFocusedA
-                    ? { boxShadow: "0 2px 0 0 #3498db", fontFamily: "inherit" }
-                    : {}
-                }
               />
             </div>
 

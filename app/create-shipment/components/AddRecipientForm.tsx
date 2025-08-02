@@ -1,5 +1,7 @@
+"use client";
+
 import { useState } from "react";
-import { useSearchCitiesQuery } from "../../api/cityApi";
+import { useForm } from "react-hook-form";
 import {
   Dialog,
   DialogContent,
@@ -10,12 +12,59 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { Mail, Phone, MapPin, User, Search } from "lucide-react";
+import { Phone, MapPin, User, Building, Search } from "lucide-react";
+import ResponseModal from "../../components/ResponseModal";
+import { useGetCustomerMeQuery } from "../../api/customerApi";
+import CityAutocompleteDropdown from "./CityAutocompleteDropdown";
+import CountryAutocompleteDropdown from "./CountryAutocompleteDropdownProps ";
 
+const citys = [
+  "الرياض",
+  "جدة",
+  "مكة",
+  "المدينة",
+  "الدمام",
+  "الخبر",
+  "الطائف",
+  "تبوك",
+  "بريدة",
+  "خميس مشيط",
+  "الهفوف",
+  "المبرز",
+  "حفر الباطن",
+  "حائل",
+  "نجران",
+  "الجبيل",
+  "أبها",
+  "ينبع",
+  "عرعر",
+  "عنيزة",
+  "سكاكا",
+  "جازان",
+  "القطيف",
+  "الباحة",
+  "بيشة",
+  "الرس",
+];
+const countrys = [
+  "السعودية",
+  "الأمارات",
+  "الكويت",
+  "البحرين",
+  "قطر",
+  "عمان",
+  "مصر",
+];
 
-interface AddRecipientFormProps {
+interface AddSenderAddressFormProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: any) => Promise<void>;
@@ -38,312 +87,328 @@ export function AddRecipientForm({
   onClose,
   onSubmit,
   isLoading = false,
-  error,
   initialValues,
-}: AddRecipientFormProps) {
+}: AddSenderAddressFormProps) {
   const [form, setForm] = useState({
     clientName: initialValues?.clientName || "",
     clientAddress: initialValues?.clientAddress || "",
     district: initialValues?.district || "",
     city: initialValues?.city || "",
-    country: "السعودية", // الدولة ثابتة
+    country: initialValues?.country || "",
     clientEmail: initialValues?.clientEmail || "",
     clientPhone: initialValues?.clientPhone || "",
     customer: initialValues?.customer || "",
   });
-  const [submitting, setSubmitting] = useState(false);
+
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertStatus, setAlertStatus] = useState<"success" | "fail">("success");
+  const [alertMessage, setAlertMessage] = useState("");
   const [search, setSearch] = useState("");
+  const { data: customerMeData } = useGetCustomerMeQuery();
+const [countrySearch, setCountrySearch] = useState("");
+const [focused, setFocused] = useState<"" | "country" | "city">("");
 
-  const { data: cityResults, isLoading: isCityLoading } = useSearchCitiesQuery(
-    search,
-    { skip: !search }
-  );
+  const methods = useForm({
+    defaultValues: {
+      clientName: "",
+      clientPhone: "",
+      country: "السعودية",
+      city: "",
+      clientEmail: "",
+      district: ""
+    },
+  });
 
-  // cityResults?.results || []
-  // إذا لم توجد خاصية results استخدم data
-  const citySuggestions = cityResults?.result || cityResults?.data || [];
+  const { register, handleSubmit, reset, watch } = methods;
 
+  const handleFormSubmit = async (data: any) => {
+    try {
+      const clientAddress = `${data.country}, ${data.city}`;
+      const clientEmail = customerMeData?.data?.email || "";
+      await onSubmit({
+        ...data,
+        clientAddress,
+        clientEmail,
+      });
+      setAlertStatus("success");
+      setAlertMessage("تمت إضافة العنوان بنجاح");
+      setAlertOpen(true);
+      reset();
+      setTimeout(() => {
+        onClose();
+      }, 1500);
+    } catch (error: any) {
+      setAlertStatus("fail");
+      setAlertMessage(error?.data?.message || "حدث خطأ أثناء إضافة العنوان");
+      setAlertOpen(true);
+    }
+  };
+
+  const handleClose = () => {
+    reset();
+    onClose();
+  };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitting(true);
-    // Combine country and city for clientAddress, and set district to '----'
-    const payload = {
-      ...form,
-      clientAddress: `${form.country}, ${form.city}`,
-      district: "----",
-    };
-    await onSubmit(payload);
-    setSubmitting(false);
-  };
-
-  const handleClose = () => {
-    setForm({
-      clientName: "",
-      clientAddress: "",
-      district: "",
-      city: "",
-      country: "السعودية",
-      clientEmail: "",
-      clientPhone: "",
-      customer: "",
-    });
-    onClose();
+  const handleCityChange = (value: string) => {
+    setForm({ ...form, city: value });
   };
 
   const [weightFocused, setWeightFocused] = useState(false);
+  const [descFocused, setDescFocused] = useState(false);
   const [weightFocusedA, setWeightFocusedA] = useState(false);
+  const [descFocusedA, setDescFocusedA] = useState(false);
   const [weightFocusedAA, setWeightFocusedAA] = useState(false);
-  const [weightFocusedAAA, setWeightFocusedAAA] = useState(false);
-  const [weightFocusedM, setWeightFocusedM] = useState(false);
-  const [weightFocusedAM, setWeightFocusedAM] = useState(false);
-  const [weightFocusedMA, setWeightFocusedMA] = useState(false);
-
+  const [descFocusedAA, setDescFocusedAA] = useState(false);
+  const [descFocusedMA, setDescFocusedMA] = useState(false);
+  
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className=" ">
-        <DialogHeader>
-          <DialogTitle className=" text-black/90 w-full mt-6 text-right text-2xl flex items-center gap-4  ">
-            <User className="h-[1.5rem] w-[1.5rem] text-[#1A5889] bg-[#3498db]/20  rounded-full " />
-            إضافة عميل جديد
-          </DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-2 flex flex-col gap-4">
-          {/* <Input name="clientName" placeholder="الاسم" value={form.clientName} onChange={handleChange} required /> */}
-          <div className="space-y-2">
-            <Label
-              htmlFor="clientName"
-              className="text-lg font-medium flex items-center gap-2 text-[#1A5889]"
-            >
-              <User className="h-4 w-4 text-[#1A5889] " />
-              اسم العميل
-              <span className=" text-red-500">*</span>
-            </Label>
-
-            <input
-              name="clientName"
-              placeholder="الاسم"
-              value={form.clientName}
-              onChange={handleChange}
-              required
-              className={cn(
-                "v7-neu-input bg-transparent border-none shadow-none outline-none text-base w-full"
-              )}
-              onFocus={() => setWeightFocused(true)}
-              onBlur={() => setWeightFocused(false)}
-              style={weightFocused ? { boxShadow: "0 2px 0 0 #3498db" } : {}}
-            />
-          </div>
-          {/* رقم الجوال */}
-          <div className="flex gap-2">
-            <div className="  flex-1 space-y-2">
+    <>
+      <Dialog open={isOpen} onOpenChange={handleClose}>
+        <DialogContent className=" border-none ">
+          <DialogHeader>
+            <DialogTitle className=" text-black/90 w-full mt-6 text-right text-2xl flex items-center gap-4  ">
+              <User className="h-[1.5rem] w-[1.5rem] text-[#1A5889] bg-[#3498db]/20  rounded-full  " />
+              إضافة عميل جديد
+            </DialogTitle>
+          </DialogHeader>
+          <form
+            onSubmit={handleFormSubmit}
+            className="space-y-2  flex flex-col gap-2"
+          >
+            {/* <Input name="clientName" placeholder="الاسم" value={form.clientName} onChange={handleChange} required /> */}
+            <div className="space-y-2">
               <Label
-                htmlFor="clientPhone"
+                htmlFor="clientName"
                 className="text-lg font-medium flex items-center gap-2 text-[#1A5889]"
               >
-                <Phone className="h-4 w-4 text-[#1A5889]" />
-                رقم الجوال
+                <User className="h-4 w-4 text-[#1A5889] " />
+                اسم العميل
                 <span className=" text-red-500">*</span>
               </Label>
 
               <input
-                name="clientPhone"
-                value={form.clientPhone}
+                name="clientName"
+                placeholder="الاسم"
+                value={form.clientName}
                 onChange={handleChange}
                 required
-                placeholder="05xxxxxxxx"
                 className={cn(
-                  "v7-neu-input bg-transparent border-none shadow-none outline-none text-base w-full"
+                  "v7-neu-input bg-transparent border-none shadow-none outline-none text-base w-full "
                 )}
-                onFocus={() => setWeightFocusedA(true)}
-                onBlur={() => setWeightFocusedA(false)}
-                style={
-                  weightFocusedA
-                    ? { boxShadow: "0 2px 0 0 #3498db", fontFamily: "inherit" }
-                    : {}
-                }
+                onFocus={() => setWeightFocused(true)}
+                onBlur={() => setWeightFocused(false)}
+
               />
             </div>
-          </div>
-          <div className="flex-1 space-y-2">
-            <Label
-              htmlFor="country"
-              className="text-lg font-medium flex items-center gap-2 text-[#1A5889]"
-            >
-              <MapPin className="h-4 w-4 text-[#1A5889]" />
-              البريد الإلكتروني
-            </Label>
+            {/* رقم الجوال */}
+            <div className="flex gap-2">
+              <div className="  flex-1 space-y-2">
+                <Label
+                  htmlFor="clientPhone"
+                  className="text-lg font-medium flex items-center gap-2 text-[#1A5889]"
+                >
+                  <Phone className="h-4 w-4 text-[#1A5889]" />
+                  رقم الجوال
+                  <span className=" text-red-500">*</span>
+                </Label>
 
-            <input
-              name="clientEmail"
-              value={form.clientEmail}
-              onChange={handleChange}
-              required
-              placeholder="example@gmail.com"
-              className={cn(
-                "v7-neu-input bg-transparent border-none shadow-none outline-none text-base w-full"
-              )}
-              onFocus={() => setWeightFocusedM(true)}
-              onBlur={() => setWeightFocusedM(false)}
-              style={
-                weightFocusedM
-                  ? { boxShadow: "0 2px 0 0 #3498db", fontFamily: "inherit" }
-                  : {}
-              }
-            />
-          </div>
+                <input
+                  name="clientPhone"
+                  value={form.clientPhone}
+                  onChange={handleChange}
+                  required
+                  placeholder="05xxxxxxxx"
+                  className={cn(
+                    "v7-neu-input bg-transparent border-none shadow-none outline-none text-base w-full"
+                  )}
+                  onFocus={() => setWeightFocusedA(true)}
+                  onBlur={() => setWeightFocusedA(false)}
+                />
+              </div>
+            </div>
+            <div className="flex-1 space-y-2">
+              <Label
+                htmlFor="country"
+                className="text-lg font-medium  flex items-center gap-2 text-[#1A5889]"
+              >
+                <MapPin className="h-4 w-4 text-[#1A5889]" />
+                البريد الإلكتروني
+              </Label>
 
-          <div className="flex-1 space-y-2">
-            <Label
-              htmlFor="country"
-              className="text-lg font-medium flex items-center gap-2 text-[#1A5889]"
-            >
-              <MapPin className="h-4 w-4 text-[#1A5889]" />
-              الدولة
-              <span className=" text-red-500">*</span>
-            </Label>
-            <input
-              name="country"
-              value="السعودية"
-              readOnly
-              className="fixed-country-input"
-            />
-          </div>
-          <div className="space-y-2 ">
-            <Label
-              htmlFor="city"
-              className="text-lg font-medium flex items-center gap-2 text-[#1A5889]"
-            >
-              <MapPin className="h-4 w-4 text-[#1A5889] " />
-              المدينة
-              <span className=" text-red-500">*</span>
-            </Label>
-
-            <div className="relative">
               <input
-                name="city"
-                autoComplete="off"
-                value={search || form.city}
-                onChange={e => {
-                  setSearch(e.target.value);
-                  setForm({ ...form, city: "" }); // امسح قيمة المدينة والمنطقة حتى يختار المستخدم من القائمة
-                }}
+                name="clientEmail"
+                value={form.clientEmail}
+                onChange={handleChange}
                 required
-                placeholder="المدينة"
+                placeholder="example@gmail.com"
                 className={cn(
                   "v7-neu-input bg-transparent border-none shadow-none outline-none text-base w-full"
                 )}
-                onFocus={() => setWeightFocusedAAA(true)}
-                onBlur={() => setTimeout(() => setWeightFocusedAAA(false), 200)}
-                style={
-                  weightFocusedAAA
-                    ? { boxShadow: "0 2px 0 0 #3498db", fontFamily: "inherit" }
-                    : {}
-                }
+                onFocus={() => setWeightFocusedAA(true)}
+                onBlur={() => setWeightFocusedAA(false)}
               />
-              {/* Dropdown results */}
-              {weightFocusedAAA && search && (
-                <div className="absolute z-50 w-full bg-white max-h-48 overflow-y-auto border border-gray-200 shadow-lg rounded-lg custom-scrollbar mt-1">
-                  {isCityLoading ? (
-                    <div className="py-2 px-3 text-gray-500">جاري البحث...</div>
-                  ) : citySuggestions.length > 0 ? (
-                    citySuggestions.map((city: any) => (
-                      <div
-                        key={city.city_id}
-                        className="py-2 px-3 hover:bg-blue-50 cursor-pointer text-right"
-                        onMouseDown={() => {
-                          setForm({ ...form, city: city.name_ar });
-                          setSearch("");
-                          setWeightFocusedAAA(false);
-                        }}
-                      >
-                        <div className="font-bold text-base">{city.name_ar}</div>
-                        <div className="text-xs text-gray-500">{city.region_name}</div>
-                      </div>
-                    ))
-                  ) : search.length > 1 ? (
-                    <div className="py-2 px-3 text-gray-400">لا توجد نتائج</div>
-                  ) : null}
-                </div>
-              )}
             </div>
-          </div>
-          <div className="flex-1 space-y-2">
-            <Label
-              htmlFor="country"
-              className="text-lg font-medium flex items-center gap-2  text-[#1A5889]"
-            >
-              <MapPin className="h-4 w-4 text-[#1A5889]" />
-              معلومات العنوان
-            </Label>
 
-            <input
-              name="clientAddress"
-              value={form.clientAddress}
-              onChange={handleChange}
-              placeholder="الحي, الشارع, رقم المبنى"
-              className={cn(
-                "v7-neu-input bg-transparent border-none shadow-none outline-none text-base w-full "
-              )}
-              onFocus={() => setWeightFocusedAM(true)}
-              onBlur={() => setWeightFocusedAM(false)}
-              style={
-                weightFocusedAM
-                  ? { boxShadow: "0 2px 0 0 #3498db", fontFamily: "inherit" }
-                  : {}
-              }
-            />
-          </div>
-          <div className="flex-1 space-y-2">
-            <Label
-              htmlFor="country"
-              className="text-lg font-medium flex items-center gap-2  text-[#1A5889]"
-            >
-              <MapPin className="h-4 w-4 text-[#1A5889]" />
-              الرمز البريدي
-            </Label>
+            <div className="space-y-2 ">
+              <Label
+                htmlFor="country"
+                className="text-lg font-medium  flex items-center gap-2 text-[#1A5889]"
+              >
+                <MapPin className="h-4 w-4 text-[#1A5889]" />
+                الدولة
+                <span className=" text-red-500">*</span>
+              </Label>
+              {/* <input
+                name="country"
+                value="السعودية"
+                readOnly
+                className={cn(
+                  "v7-neu-input bg-transparent border-none shadow-none outline-none text-base w-full text-[#1A5889]"
+                )}
+              /> */}
+                            <div className="relative">
+<input
+  name="country"
+  value={countrySearch || form.country}
+  onChange={(e) => {
+    setCountrySearch(e.target.value);
+    setForm({ ...form, country: "" });
+  }}
+  placeholder="السعودية"
+  readOnly
+  className={cn("v7-neu-input bg-transparent border-none shadow-none outline-none text-base w-full")}
+  onFocus={() => setFocused("country")}
+  onBlur={() => setTimeout(() => setFocused(""), 200)}
+/>
+{focused === "country" && countrySearch && (
+  <CountryAutocompleteDropdown
+  
+    search={countrySearch}
+    onSelect={(obj) => {
+      setForm({ ...form, country: obj.name_ar });
+      setCountrySearch("");
+      setFocused("");
+    }}
+  />
+)}
 
-            <input
-              name="district"
-              value={form.district}
-              type="text"
-              onChange={handleChange}
-              placeholder="الحي، الشارع، رقم المبنى"
-              className={cn(
-                "v7-neu-input bg-transparent border-none shadow-none outline-none text-base w-full "
-              )}
-              onFocus={() => setWeightFocusedAM(true)}
-              onBlur={() => setWeightFocusedAM(false)}
-              style={
-                weightFocusedAM
-                  ? { boxShadow: "0 2px 0 0 #3498db", fontFamily: "inherit" }
-                  : {}
-              }
-            />
-          </div>
-
-          {/* <Input name="country" placeholder="الدولة" value={form.country} onChange={handleChange} required /> */}
-          {/* <Input name="clientEmail" placeholder="البريد الإلكتروني" value={form.clientEmail} onChange={handleChange} required />
-          <Input name="clientPhone" placeholder="رقم الجوال" value={form.clientPhone} onChange={handleChange} required /> */}
-          {error && (
-            <div className="text-red-500 text-sm">
-              {typeof error === "string" ? error : "حدث خطأ أثناء إضافة العميل"}
+              </div>
             </div>
-          )}
-          <DialogFooter>
-            <Button
-              type="submit"
-              className="bg-blue-500 text-white"
-              disabled={isLoading || submitting}
-            >
-              {isLoading || submitting ? "جاري الإضافة..." : "إضافة"}
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+            <div className="space-y-2 ">
+              <Label
+                htmlFor="city"
+                className="text-lg font-medium flex items-center gap-2 text-[#1A5889]"
+              >
+                <MapPin className="h-4 w-4 text-[#1A5889] " />
+                المدينة
+                <span className=" text-red-500">*</span>
+              </Label>
+              <div className="relative">
+                <input
+                  name="city"
+                  autoComplete="off"
+                  value={search || form.city}
+                  onChange={e => {
+                    setSearch(e.target.value);
+                    setForm({ ...form, city: "" }); // امسح قيمة المدينة والمنطقة حتى يختار المستخدم من القائمة
+                  }}
+                  required
+                  placeholder="المدينة"
+                  className={cn(
+                    "v7-neu-input bg-transparent border-none shadow-none outline-none text-base w-full"
+                  )}
+                  onFocus={() => setDescFocused(true)}
+                  onBlur={() => setTimeout(() => setDescFocused(false), 200)}
+                />
+                {/* Dropdown results */}
+                {descFocused && search && (
+                  <CityAutocompleteDropdown
+                    search={search}
+                    onSelect={cityObj => {
+                      setForm({ ...form, city: cityObj.name_ar });
+                      setSearch("");
+                      setDescFocused(false);
+                    }}
+                  />
+                )}
+              </div>
+            </div>
+            <div className="flex-1 space-y-2">
+              <Label
+                htmlFor="country"
+                className="text-lg font-medium flex items-center gap-2  text-[#1A5889]"
+              >
+                <MapPin className="h-4 w-4 text-[#1A5889]" />
+                معلومات العنوان
+              </Label>
+
+              <input
+                name="clientAddress"
+                value={form.clientAddress}
+                type="text"
+                onChange={handleChange}
+                placeholder="الحي, الشارع, رقم المبنى"
+                className={cn(
+                  "v7-neu-input bg-transparent border-none shadow-none outline-none text-base w-full "
+                )}
+                onFocus={() => setDescFocusedAA(true)}
+                onBlur={() => setDescFocusedAA(false)}
+              />
+            </div>
+            <div className="flex-1 space-y-2">
+              <Label
+                htmlFor="country"
+                className="text-lg font-medium flex items-center gap-2  text-[#1A5889]"
+              >
+                <MapPin className="h-4 w-4 text-[#1A5889]" />
+                الرمز البريدي
+              </Label>
+
+              <input
+                name="district"
+                value={form.district}
+                type="text"
+                onChange={handleChange}
+                placeholder="الرمز البريدي"
+                className={cn(
+                  "v7-neu-input bg-transparent border-none shadow-none outline-none text-base w-full"
+                )}
+                onFocus={() => setDescFocusedA(true)}
+                onBlur={() => setDescFocusedA(false)}
+              />
+            </div>
+
+            {/* removed district and customer inputs */}
+            <DialogFooter className="gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleClose}
+                className="border-2"
+              >
+                إلغاء
+              </Button>
+              <Button
+                type="submit"
+                className="bg-gradient-to-r from-[#3498db] to-[#2980b9] text-white hover:from-[#2980b9] hover:to-[#3498db]"
+                disabled={isLoading}
+              >
+                {isLoading ? "جاري الإضافة..." : "إضافة العنوان"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      <ResponseModal
+        isOpen={alertOpen}
+        onClose={() => setAlertOpen(false)}
+        status={alertStatus}
+        message={alertMessage}
+      />
+    </>
   );
 }
