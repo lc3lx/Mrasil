@@ -30,11 +30,23 @@ import {
   Code,
   RefreshCw,
   Receipt,
+  Sun,
+  Moon,
+  Globe,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { routes, isActiveRoute } from "@/lib/routes";
 import { useAuth } from "@/app/providers/AuthProvider";
 import { V7FloatingAssistant } from "./v7-floating-assistant";
 import { V7MobileNav } from "./v7-mobile-nav";
+import { useTheme } from "next-themes";
 
 type Language = "ar" | "en";
 
@@ -157,9 +169,13 @@ interface SidebarProps {
   open: boolean;
   onClose: () => void;
   theme: "light" | "dark";
+    onMenuClick: () => void;
+  onThemeToggle?: () => void;
+  them?: "light" | "dark";
 }
 
-export function V7Sidebar({ open, onClose, theme }: SidebarProps) {
+
+export function V7Sidebar({ open, onClose, them,onThemeToggle, onMenuClick  }: SidebarProps) {
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const pathname = usePathname();
   const router = useRouter();
@@ -372,6 +388,8 @@ export function V7Sidebar({ open, onClose, theme }: SidebarProps) {
       onClose();
     }
   };
+  const [mounted, setMounted] = useState(false);
+  const { theme, setTheme, resolvedTheme } = useTheme();
 
   // Apply dark mode styling
   const sidebarClass =
@@ -400,6 +418,38 @@ export function V7Sidebar({ open, onClose, theme }: SidebarProps) {
     logout(); // This will clear auth state and redirect to login page
     onClose(); // Close the sidebar if it's open
   };
+    const currentTheme = resolvedTheme || theme || "light";
+
+    useEffect(() => {
+      if (mounted) {
+        // تطبيق السمة على مستوى المستند
+        document.documentElement.classList.toggle(
+          "dark",
+          currentTheme === "dark"
+        );
+  
+        // تحديث سمة رمز الموضوع في العنوان (إن وجد)
+        const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+        if (themeColorMeta) {
+          themeColorMeta.setAttribute(
+            "content",
+            currentTheme === "dark" ? "#151929" : "#f0f4f8"
+          );
+        }
+  
+        // حفظ السمة في التخزين المحلي لاستمرارية التجربة
+        localStorage.setItem("v7-theme", currentTheme);
+  
+        // إرسال حدث لكل المكونات للاستجابة للتغيير في السمة
+        window.dispatchEvent(
+          new CustomEvent("v7-theme-change", { detail: { theme: currentTheme } })
+        );
+  
+        // Set document direction based on language
+        document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
+        localStorage.setItem("v7-lang", language);
+      }
+    }, [currentTheme, mounted, language]);
   return (
     <>
       <aside
@@ -633,7 +683,7 @@ export function V7Sidebar({ open, onClose, theme }: SidebarProps) {
             </div>
           </div>
         </ScrollArea>
-
+                     
         <div className="mt-6 border-t border-gray-200 dark:border-[#2a3349] pt-4">
           <button
             onClick={handleSignOut}
@@ -910,7 +960,145 @@ export function V7Sidebar({ open, onClose, theme }: SidebarProps) {
                 ))}
               </div>
             </div>
+            <div className=" flex items-center   justify-center gap-8">
 
+ <DropdownMenu>
+                        <DropdownMenuTrigger asChild className="  ">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className={`relative ${
+                              currentTheme === "dark"
+                                ? "bg-[#1e263a] border border-[#2a3349] text-[#8b5cf6] hover:bg-[#252e45] hover:text-[#a78bfa]"
+                                : "v7-neu-button-sm text-gry hover:text-[#3498db]"
+                            }`}
+                            title="تغيير اللغة"
+                            aria-label="تغيير اللغة"
+                          >
+                            <Globe className="h-4 sm:h-5 w-4 sm:w-5" />
+                            <span className="sr-only">تغيير اللغة</span>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                          align="end"
+                          className="w-32 rounded-xl v7-neu-dropdown"
+                        >
+                          <DropdownMenuItem
+                            className={`cursor-pointer rounded-lg ${
+                              language === "ar"
+                                ? "bg-[#294D8B]/10 text-[#294D8B] font-medium"
+                                : ""
+                            }`}
+                            onClick={() => {
+                              setLanguage("ar");
+                              localStorage.setItem("v7-lang", "ar");
+                              document.documentElement.dir = "rtl";
+                              window.dispatchEvent(
+                                new CustomEvent("v7-language-change", {
+                                  detail: { language: "ar" },
+                                })
+                              );
+                            }}
+                          >
+                            العربية
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className={`cursor-pointer rounded-lg ${
+                              language === "en"
+                                ? "bg-[#294D8B]/10 text-[#294D8B] font-medium"
+                                : ""
+                            }`}
+                            onClick={() => {
+                              setLanguage("en");
+                              localStorage.setItem("v7-lang", "en");
+                              document.documentElement.dir = "ltr";
+                              window.dispatchEvent(
+                                new CustomEvent("v7-language-change", {
+                                  detail: { language: "en" },
+                                })
+                              );
+                            }}
+                          >
+                            English
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+              
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild className=" ">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className={`relative ${
+                              currentTheme === "dark"
+                                ? "bg-[#1e263a] border border-[#2a3349] text-[#8b5cf6] hover:bg-[#252e45] hover:text-[#a78bfa]"
+                                : "v7-neu-button-sm text-gry hover:text-[#3498db]"
+                            }`}
+                            title={
+                              currentTheme === "light"
+                                ? "تفعيل الوضع الليلي"
+                                : "تفعيل الوضع النهاري"
+                            }
+                            aria-label="تبديل السمة"
+                            data-theme-toggle="true"
+                          >
+                            {currentTheme === "dark" ? (
+                              <Sun className="h-4 sm:h-5 w-4 sm:w-5 text-[#8b5cf6]" />
+                            ) : (
+                              <Moon className="h-4 sm:h-5 w-4 sm:w-5" />
+                            )}
+                            <span className="sr-only">تغيير المظهر</span>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                          align="end"
+                          className="w-40 rounded-xl v7-neu-dropdown"
+                        >
+                          <DropdownMenuItem
+                            className={`cursor-pointer rounded-lg ${
+                              currentTheme === "light"
+                                ? "bg-[#294D8B]/10 text-[#294D8B] font-medium"
+                                : ""
+                              }`}
+                              onClick={() => {
+                              setTheme("light");
+                              document.documentElement.classList.remove("dark");
+                              localStorage.setItem("v7-theme", "light");
+                              window.dispatchEvent(
+                                new CustomEvent("v7-theme-change", {
+                                  detail: { theme: "light" },
+                                })
+                              );
+                              if (onThemeToggle) onThemeToggle();
+                            }}
+                          >
+                            <Sun className="h-4 w-4 mr-2" />
+                            الوضع النهاري
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className={`cursor-pointer rounded-lg ${
+                              currentTheme === "dark"
+                                ? "bg-[#294D8B]/10 text-[#294D8B] font-medium"
+                                : ""
+                            }`}
+                            onClick={() => {
+                              setTheme("dark");
+                              document.documentElement.classList.add("dark");
+                              localStorage.setItem("v7-theme", "dark");
+                              window.dispatchEvent(
+                                new CustomEvent("v7-theme-change", {
+                                  detail: { theme: "dark" },
+                                })
+                              );
+                              if (onThemeToggle) onThemeToggle();
+                            }}
+                          >
+                            <Moon className="h-4 w-4 mr-2" />
+                            الوضع الليلي
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                                </div>
             <V7FloatingAssistant />
             <div className="mt-6 border-t border-gray-200 dark:border-[#2a3349] pt-4 px-3">
               <button

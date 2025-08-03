@@ -168,7 +168,7 @@ export function V7Header({
   }
 
   return (
-    <header className="  sticky top-0 z-30 flex h-14 sm:h-16 items-center justify-between v7-neu-header px-3 sm:px-4 md:px-6 mt-2 mb-2 sm:mt-4 sm:mb-4">
+    <header className="  fixed  -top-2 sm:-top-4 w-full z-30 flex  h-16 items-center justify-between v7-neu-header px-3 sm:px-4 md:px-6 mt-2 mb-2 sm:mt-4 sm:mb-4">
       <div className="flex items-center gap-2 sm:gap-4">
         <Button
           variant="ghost"
@@ -180,15 +180,10 @@ export function V7Header({
           <Menu className="h-5 w-5 text-[#294D8B]" />
           <span className="sr-only">فتح القائمة</span>
         </Button>
-        <Link href="/" className="flex items-center gap-2 sm:gap-3">
-          <div>
+        <Link href="/" className="">
+
             <img src="/logo.png" alt="شعار الشركة" className="h-12 w-auto" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-base sm:text-xl font-bold text-[#294D8B]">
-              خدمات الشحن المتطورة
-            </span>
-          </div>
+ 
         </Link>
       </div>
 
@@ -226,7 +221,7 @@ export function V7Header({
 
       <div className="flex items-center gap-1 sm:gap-3 md:gap-4">
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+          <DropdownMenuTrigger asChild className=" hidden sm:block">
             <Button
               variant="ghost"
               size="icon"
@@ -288,7 +283,7 @@ export function V7Header({
         </DropdownMenu>
 
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+          <DropdownMenuTrigger asChild className="  hidden sm:block ">
             <Button
               variant="ghost"
               size="icon"

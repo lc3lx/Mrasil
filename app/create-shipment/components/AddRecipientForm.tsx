@@ -64,7 +64,7 @@ const countrys = [
   "مصر",
 ];
 
-interface AddSenderAddressFormProps {
+interface AddRecipientFormProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: any) => Promise<void>;
@@ -88,7 +88,7 @@ export function AddRecipientForm({
   onSubmit,
   isLoading = false,
   initialValues,
-}: AddSenderAddressFormProps) {
+}: AddRecipientFormProps) {
   const [form, setForm] = useState({
     clientName: initialValues?.clientName || "",
     clientAddress: initialValues?.clientAddress || "",
@@ -125,11 +125,18 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
     try {
       const clientAddress = `${data.country}, ${data.city}`;
       const clientEmail = customerMeData?.data?.email || "";
-      await onSubmit({
-        ...data,
-        clientAddress,
-        clientEmail,
-      });
+await onSubmit({
+  clientName: form.clientName,
+  clientPhone: form.clientPhone,
+  city: form.city,
+  // country: form.country || countrySearch,
+  country:"السعودية",
+  clientEmail,
+  clientAddress,
+  district: form.district,
+});
+
+
       setAlertStatus("success");
       setAlertMessage("تمت إضافة العنوان بنجاح");
       setAlertOpen(true);
@@ -169,20 +176,20 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
       <Dialog open={isOpen} onOpenChange={handleClose}>
         <DialogContent className=" border-none ">
           <DialogHeader>
-            <DialogTitle className=" text-black/90 w-full mt-6 text-right text-2xl flex items-center gap-4  ">
+            <DialogTitle className=" text-black/90 w-full sm:mt-6 mt-0 text-right sm:text-2xl text-lg flex items-center gap-4  ">
               <User className="h-[1.5rem] w-[1.5rem] text-[#1A5889] bg-[#3498db]/20  rounded-full  " />
               إضافة مستلم
             </DialogTitle>
           </DialogHeader>
           <form
-            onSubmit={handleFormSubmit}
+            onSubmit={handleSubmit(handleFormSubmit)}
             className="space-y-2  flex flex-col gap-2"
           >
             {/* <Input name="clientName" placeholder="الاسم" value={form.clientName} onChange={handleChange} required /> */}
             <div className="space-y-2">
               <Label
                 htmlFor="clientName"
-                className="text-lg font-medium flex items-center gap-2 text-[#1A5889]"
+                className="sm:text-lg text-base font-medium flex items-center gap-2 text-[#1A5889]"
               >
                 <User className="h-4 w-4 text-[#1A5889] " />
                 اسم العميل
@@ -208,7 +215,7 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
               <div className="  flex-1 space-y-2">
                 <Label
                   htmlFor="clientPhone"
-                  className="text-lg font-medium flex items-center gap-2 text-[#1A5889]"
+                  className="sm:text-lg text-basefont-medium flex items-center gap-2 text-[#1A5889]"
                 >
                   <Phone className="h-4 w-4 text-[#1A5889]" />
                   رقم الجوال
@@ -232,7 +239,7 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
             <div className="flex-1 space-y-2">
               <Label
                 htmlFor="country"
-                className="text-lg font-medium  flex items-center gap-2 text-[#1A5889]"
+                className="sm:text-lg text-base font-medium  flex items-center gap-2 text-[#1A5889]"
               >
                 <MapPin className="h-4 w-4 text-[#1A5889]" />
                 البريد الإلكتروني
@@ -255,24 +262,25 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
             <div className="space-y-2 ">
               <Label
                 htmlFor="country"
-                className="text-lg font-medium  flex items-center gap-2 text-[#1A5889]"
+                className="sm:text-lg text-base font-medium  flex items-center gap-2 text-[#1A5889]"
               >
                 <MapPin className="h-4 w-4 text-[#1A5889]" />
                 الدولة
                 <span className=" text-red-500">*</span>
               </Label>
-              {/* <input
+              <input
                 name="country"
                 value="السعودية"
                 readOnly
                 className={cn(
                   "v7-neu-input bg-transparent border-none shadow-none outline-none text-base w-full text-[#1A5889]"
                 )}
-              /> */}
-                            <div className="relative">
+              />
+                            {/* <div className="relative">
 <input
   name="country"
-  value={countrySearch || form.country}
+  // value={countrySearch || form.country}
+  value={"السعودية"}
   onChange={(e) => {
     setCountrySearch(e.target.value);
     setForm({ ...form, country: "" });
@@ -293,14 +301,14 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
       setFocused("");
     }}
   />
-)}
+)} */}
 
-              </div>
+              {/* </div> */}
             </div>
             <div className="space-y-2 ">
               <Label
                 htmlFor="city"
-                className="text-lg font-medium flex items-center gap-2 text-[#1A5889]"
+                className="sm:text-lg text-basefont-medium flex items-center gap-2 text-[#1A5889]"
               >
                 <MapPin className="h-4 w-4 text-[#1A5889] " />
                 المدينة
@@ -339,7 +347,7 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
             <div className="flex-1 space-y-2">
               <Label
                 htmlFor="country"
-                className="text-lg font-medium flex items-center gap-2  text-[#1A5889]"
+                className="sm:text-lg text-base font-medium flex items-center gap-2  text-[#1A5889]"
               >
                 <MapPin className="h-4 w-4 text-[#1A5889]" />
                 معلومات العنوان
@@ -361,7 +369,7 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
             <div className="flex-1 space-y-2">
               <Label
                 htmlFor="country"
-                className="text-lg font-medium flex items-center gap-2  text-[#1A5889]"
+                className="sm:text-lg text-base font-medium flex items-center gap-2  text-[#1A5889]"
               >
                 <MapPin className="h-4 w-4 text-[#1A5889]" />
                 الرمز البريدي
@@ -383,21 +391,24 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
 
             {/* removed district and customer inputs */}
             <DialogFooter className="gap-2">
+              <div className=" flex items-center gap-4">
+
               <Button
                 type="button"
                 variant="outline"
                 onClick={handleClose}
-                className="border-2"
+                className="border-2 text-sm sm:text-base"
               >
                 إلغاء
               </Button>
               <Button
                 type="submit"
-                className="bg-gradient-to-r from-[#3498db] to-[#2980b9] text-white hover:from-[#2980b9] hover:to-[#3498db]"
+                className="bg-gradient-to-r from-[#3498db] to-[#2980b9] text-white hover:from-[#2980b9] hover:to-[#3498db] sm:text-base text-sm"
                 disabled={isLoading}
               >
                 {isLoading ? "جاري الإضافة..." : "إضافة العنوان"}
               </Button>
+                </div>
             </DialogFooter>
           </form>
         </DialogContent>

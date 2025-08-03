@@ -10,7 +10,11 @@ import {
   Trash2,
   Edit,
   Check,
+  User,
+  Building,
 } from "lucide-react";
+import { Label } from "@/components/ui/label";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AddRecipientForm } from "../components/AddRecipientForm";
@@ -415,57 +419,143 @@ export function RecipientAddressSection({
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>تعديل بيانات العميل</DialogTitle>
+            <DialogTitle className="m:text-2xl text-lg font-bold text-[#1a365d] flex items-center gap-4 mt-0 sm:mt-4">
+              تعديل بيانات العميل
+            </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleEditRecipientSubmit} className="space-y-2">
-            <Input
-              name="clientName"
-              placeholder="الاسم"
-              value={editRecipient.clientName}
-              onChange={handleEditRecipientChange}
-              required
-            />
-            <Input
-              name="clientAddress"
-              placeholder="العنوان"
-              value={editRecipient.clientAddress}
-              onChange={handleEditRecipientChange}
-              required
-            />
-            <Input
-              name="district"
-              placeholder="الحي/المنطقة (district)"
-              value={editRecipient.district}
-              onChange={handleEditRecipientChange}
-            />
-            <Input
-              name="city"
-              placeholder="المدينة"
-              value={editRecipient.city}
-              onChange={handleEditRecipientChange}
-              required
-            />
-            <Input
-              name="country"
-              placeholder="الدولة"
-              value={editRecipient.country}
-              onChange={handleEditRecipientChange}
-              required
-            />
-            <Input
-              name="clientEmail"
-              placeholder="البريد الإلكتروني"
-              value={editRecipient.clientEmail}
-              onChange={handleEditRecipientChange}
-              required
-            />
-            <Input
-              name="clientPhone"
-              placeholder="رقم الجوال"
-              value={editRecipient.clientPhone}
-              onChange={handleEditRecipientChange}
-              required
-            />
+            {/* اسم العنوان */}
+            <div className="space-y-2">
+              <Label
+                htmlFor="alias"
+                className="sm:text-lg text-base font-medium flex items-center gap-2 text-[#1A5889]"
+              >
+                <User className="h-4 w-4 text-[#1A5889]" />
+                اسم العميل
+              </Label>
+              <Input
+                id="alias"
+                value={editRecipient.clientName}
+                onChange={handleEditRecipientChange}
+                placeholder="اسم العميل"
+                className={"v7-neu-input"}
+                style={{ direction: "rtl", fontFamily: "inherit" }}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label
+                htmlFor="alias"
+                className="sm:text-lg text-base font-medium flex items-center gap-2 text-[#1A5889]"
+              >
+                <Phone className="h-4 w-4 text-[#1A5889]" />
+                رقم الجوال
+              </Label>
+              <Input
+                name="clientPhone"
+                placeholder="رقم الجوال"
+                value={editRecipient.clientPhone}
+                onChange={handleEditRecipientChange}
+                required
+                className={"v7-neu-input"}
+                style={{ direction: "rtl", fontFamily: "inherit" }}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label
+                htmlFor="alias"
+                className="sm:text-lg text-base font-medium flex items-center gap-2 text-[#1A5889]"
+              >
+                <Mail className="h-4 w-4 text-[#1A5889]" />
+                البريد الإلكتروني
+              </Label>
+              <Input
+                name="clientEmail"
+                placeholder="البريد الإلكتروني"
+                value={editRecipient.clientEmail}
+                onChange={handleEditRecipientChange}
+                required
+                className={"v7-neu-input"}
+                style={{ direction: "rtl", fontFamily: "inherit" }}
+              />
+            </div>
+            {/* الدولة*/}
+            <div className="space-y-2">
+              <Label
+                htmlFor="alias"
+                className="sm:text-lg text-base font-medium flex items-center gap-2 text-[#1A5889]"
+              >
+                <User className="h-4 w-4 text-[#1A5889]" />
+                الدولة
+              </Label>
+              <Input
+                name="country"
+                placeholder="الدولة"
+                value={editRecipient.country}
+                onChange={handleEditRecipientChange}
+                required
+                className={"v7-neu-input"}
+                style={{ direction: "rtl", fontFamily: "inherit" }}
+              />
+            </div>
+            {/* المدينة*/}
+            <div className="space-y-2">
+              <Label
+                htmlFor="alias"
+                className="sm:text-lg text-base font-medium flex items-center gap-2 text-[#1A5889]"
+              >
+                <User className="h-4 w-4 text-[#1A5889]" />
+                المدينة
+              </Label>
+              <Input
+                name="city"
+                placeholder="المدينة"
+                value={editRecipient.city}
+                onChange={handleEditRecipientChange}
+                className={"v7-neu-input"}
+                style={{ direction: "rtl", fontFamily: "inherit" }}
+              />
+            </div>
+
+            {/* العنوان*/}
+            <div className="space-y-2">
+              <Label
+                htmlFor="alias"
+                className="sm:text-lg text-base font-medium flex items-center gap-2 text-[#1A5889]"
+              >
+                <User className="h-4 w-4 text-[#1A5889]" />
+                العنوان التفصيلي
+              </Label>
+              <Input
+                name="district"
+                placeholder="الحي/المنطقة (district)"
+                value={editRecipient.district}
+                onChange={handleEditRecipientChange}
+                required
+                className={"v7-neu-input"}
+                style={{ direction: "rtl", fontFamily: "inherit" }}
+              />
+            </div>
+            {/* العنوان*/}
+            <div className="space-y-2">
+              <Label
+                htmlFor="alias"
+                className="sm:text-lg text-base font-medium flex items-center gap-2 text-[#1A5889]"
+              >
+                <User className="h-4 w-4 text-[#1A5889]" />
+                الرمز البريدي
+              </Label>
+              <Input
+                id="alias"
+                name="clientAddress"
+                placeholder="البريدي الرمز"
+                value={editRecipient.customer}
+                onChange={handleEditRecipientChange}
+                required
+                className={"v7-neu-input"}
+                style={{ direction: "rtl", fontFamily: "inherit" }}
+              />
+            </div>
+
             {updateError && (
               <div className="text-red-500 text-sm">
                 {typeof updateError === "string"
@@ -476,7 +566,7 @@ export function RecipientAddressSection({
             <DialogFooter>
               <Button
                 type="submit"
-                className="bg-blue-500 text-white"
+                className="bg-gradient-to-r from-[#3498db] to-[#2980b9] text-white hover:from-[#2980b9] hover:to-[#3498db] sm:text-base text-sm mt-2"
                 disabled={isUpdating}
               >
                 {isUpdating ? "جاري التعديل..." : "حفظ التعديلات"}

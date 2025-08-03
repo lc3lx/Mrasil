@@ -123,7 +123,7 @@ function CarrierCard({ carrier, logo }: { carrier: ShipmentCompany; logo: string
               Tracking Link
             </a>
           </div>
-          <div className="flex items-start gap-3">
+          {/* <div className="flex items-start gap-3">
             <Box className="h-7 w-7 text-green-500 mt-1" />
             <div>
               <span className="text-lg text-gray-700 font-semibold">أحجام الصناديق المسموحة:</span>
@@ -135,7 +135,7 @@ function CarrierCard({ carrier, logo }: { carrier: ShipmentCompany; logo: string
                 ))}
               </ul>
             </div>
-          </div>
+          </div> */}
         </div>
         {/* Status Switch at the bottom */}
         <div className="mt-8 flex justify-center w-full items-center gap-3">

@@ -14,11 +14,11 @@ export default function CarrierCard({ company, selectedCompany, handleCompanySel
       onClick={() => handleCompanySelect(company.company)}
       style={{ cursor: 'pointer' }}
     >
-      <div className="flex items-center gap-6 min-w-[180px] justify-end">
-        <div className="w-16 h-16  rounded-lg flex items-center justify-center overflow-hidden">
-          <img src={logoSrc} alt={company.company} className="object-contain w-14 h-14" onError={e => { e.currentTarget.src = '/carriers/carrier-placeholder.png'; }} />
+      <div className="flex items-center gap-6  justify-end">
+        <div className="w-20 h-20  rounded-lg flex items-center justify-center overflow-hidden">
+          <img src={logoSrc} alt={company.company} className="object-contain w-full h-full" onError={e => { e.currentTarget.src = '/carriers/carrier-placeholder.png'; }} />
         </div>
-        <span className="text-[#3498db] font-bold text-base whitespace-nowrap">{company.company}</span>
+        <span className="text-[#3498db] font-bold text-xl whitespace-nowrap">{company.company}</span>
       </div>
       <div className="flex flex-col items-end min-w-[120px] gap-2">
         <input

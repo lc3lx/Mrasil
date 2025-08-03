@@ -425,7 +425,7 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
                     // Map company name to logo file
                     const name = company.name?.toLowerCase() || "";
                     let imgSrc = "/placeholder-logo.png";
-                    if (name.includes("aramex")) imgSrc = "/Aramex.jpg";
+                    if (name.includes("aramex")) imgSrc = "/araMex.jpg";
                     else if (name.includes("smsa")) imgSrc = "/smsa_b2c.jpg";
                     else if (name.includes("imile"))
                       imgSrc = "/carriers/imile-logo.png";
@@ -435,7 +435,7 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
                       imgSrc = "/carriers/dhl-logo.png";
                     else if (name.includes("ups"))
                       imgSrc = "/carriers/ups-logo.png";
-                    else if (name.includes("redbox")) imgSrc = "/RedBox.jpg";
+                    else if (name.includes("redbox")) imgSrc = "/redBox.jpg";
                     else if (name.includes("omniclama"))
                       imgSrc = "/omniclama.png";
                     // Add more mappings as needed
