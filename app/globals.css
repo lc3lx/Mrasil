@@ -345,7 +345,7 @@
     -3px -3px 6px rgba(255, 255, 255, 0.8);
   border-radius: 10px;
   border: none;
-  padding: 8px;
+  padding: 4px;
   transition: all 0.2s ease;
   color: #294d8b;
 }
@@ -407,7 +407,16 @@
   outline: none;
   padding-right: 40px;
 }
+.select {
+  button:focus,
+button:focus-visible,
+button[data-state="open"] {
+  outline: none !important;
+  box-shadow: none !important;
+  ring: 0 !important;
+}
 
+}
 .v7-neu-input:focus {
   box-shadow: inset 4px 4px 8px rgba(197, 204, 211, 0.5),
     inset -4px -4px 8px rgba(255, 255, 255, 0.8);
@@ -422,8 +431,7 @@
 
 .v7-neu-dropdown {
   background-color: #f0f4f8;
-  box-shadow: 8px 8px 16px rgba(197, 204, 211, 0.5),
-    -8px -8px 16px rgba(255, 255, 255, 0.8);
+
   border: none;
 }
 

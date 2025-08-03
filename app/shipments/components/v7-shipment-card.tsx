@@ -197,7 +197,7 @@ export function V7ShipmentCard({
       dir="rtl"
     >
       {/* Main Card Content - Always visible */}
-      <div className="p-6 flex justify-between w-full">
+      <div className="p-6 flex justify-between w-full gap-8">
         <div className="flex flex-col md:flex-row items-start gap-6 sm:max-w-[20%]">
           {/* Left: Main Info */}
           <div className="flex flex-col justify-between flex-1  ">
@@ -220,7 +220,7 @@ export function V7ShipmentCard({
                       className="object-contain"
                     />
                   </div>
-                  <span className="ml-6">{carrierInfo.name}</span>
+                  <span className="ml-6 ">{carrierInfo.name}</span>
 
                   {/* زر تحميل الليبل إذا كانت الشركة smsa والليبل base64 */}
                   {carrierInfo.name.toLowerCase() === "smsa" &&
@@ -246,7 +246,7 @@ export function V7ShipmentCard({
               {/* <RadioGroup> */}
 
               <div className="flex items-center gap-3">
-                <span className="font-bold text-lg sm:text-2xl text-[#294D8B] whitespace-nowrap">
+                <span className="font-bold text-base sm:text-2xl text-[#294D8B] whitespace-nowrap">
                   رقم الشحنة #{shipment?._id || "غير متوفر"}
                 </span>
               </div>
@@ -290,11 +290,11 @@ export function V7ShipmentCard({
             </div>
           </div>
         </div>
-        <div className=" flex flex-col-reverse sm:flex-row justify-between w-full">
+        <div className=" flex flex-col-reverse sm:flex-row justify-between w-full  ">
           <Button
             variant="ghost"
             size="sm"
-            className="text-xs text-gry hover:text-[#3498db]  bottom-0     mt-auto mx-auto"
+            className="text-xs text-gry hover:text-[#3498db]  bottom-0     mt-auto  mx-auto"
             onClick={() => setIsExpanded(!isExpanded)}
           >
             {isExpanded ? "عرض أقل" : "عرض المزيد"}
@@ -310,7 +310,7 @@ export function V7ShipmentCard({
               <Button
                 variant="outline"
                 size="sm"
-                className="w-full v7-neu-button-sm group h-8 text-xs flex items-center justify-center gap-x-2"
+                className="sm:w-full v7-neu-button-sm group sm:h-8 size-4 flex items-center justify-center gap-x-2"
               >
                 <Eye className="h-4 w-4 group-hover:text-[#3498db] transition-colors" />
                 <span className="sr-only sm:not-sr-only">تتبع</span>
@@ -322,7 +322,7 @@ export function V7ShipmentCard({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="w-full v7-neu-button-sm group h-8 text-xs flex items-center justify-center gap-x-2"
+                  className="sm:w-full v7-neu-button-sm group sm:h-8 size-4   text-xs flex items-center justify-center gap-x-2"
                   onClick={() =>
                     downloadBase64File(
                       labelUrl,
@@ -345,7 +345,7 @@ export function V7ShipmentCard({
                   <Button
                     variant="outline"
                     size="sm"
-                    className="w-full v7-neu-button-sm group h-8 text-xs flex items-center justify-center gap-x-2"
+                    className="sm:w-full v7-neu-button-sm group sm:h-8 size-4 text-xs flex items-center justify-center gap-x-2"
                   >
                     <Printer className="h-4 w-4 group-hover:text-[#3498db] transition-colors" />
                     <span className="sr-only sm:not-sr-only">
@@ -358,7 +358,7 @@ export function V7ShipmentCard({
               <Button
                 variant="outline"
                 size="sm"
-                className="w-full  v7-neu-button-sm group h-8 text-xs flex items-center justify-center gap-x-2 opacity-50 cursor-not-allowed"
+                className="sm:w-full v7-neu-button-sm group sm:h-8 size-4 flex items-center justify-center gap-x-2 opacity-50 cursor-not-allowed"
                 disabled
               >
                 <Printer className="h-4 w-4" />

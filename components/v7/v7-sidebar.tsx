@@ -450,6 +450,9 @@ export function V7Sidebar({ open, onClose, them,onThemeToggle, onMenuClick  }: S
         localStorage.setItem("v7-lang", language);
       }
     }, [currentTheme, mounted, language]);
+    const [openLang, setOpenLang] = useState(false);
+const [openTheme, setOpenTheme] = useState(false);
+
   return (
     <>
       <aside
@@ -962,12 +965,12 @@ export function V7Sidebar({ open, onClose, them,onThemeToggle, onMenuClick  }: S
             </div>
             <div className=" flex items-center   justify-center gap-8">
 
- <DropdownMenu>
-                        <DropdownMenuTrigger asChild className="  ">
+ <DropdownMenu  open={openLang} onOpenChange={(isOpen) => {setOpenLang(isOpen); if(isOpen) setOpenTheme(false) }}>
+                        <DropdownMenuTrigger asChild className=" outline-none shadow-none focus:outline-none focus:shadow-none  ">
                           <Button
                             variant="ghost"
                             size="icon"
-                            className={`relative ${
+                            className={`relative  outline-none shadow-none focus:outline-none focus:shadow-none ${
                               currentTheme === "dark"
                                 ? "bg-[#1e263a] border border-[#2a3349] text-[#8b5cf6] hover:bg-[#252e45] hover:text-[#a78bfa]"
                                 : "v7-neu-button-sm text-gry hover:text-[#3498db]"
@@ -981,7 +984,7 @@ export function V7Sidebar({ open, onClose, them,onThemeToggle, onMenuClick  }: S
                         </DropdownMenuTrigger>
                         <DropdownMenuContent
                           align="end"
-                          className="w-32 rounded-xl v7-neu-dropdown"
+                          className="w-32  rounded-xl v7-neu-dropdown "
                         >
                           <DropdownMenuItem
                             className={`cursor-pointer rounded-lg ${
@@ -1024,12 +1027,15 @@ export function V7Sidebar({ open, onClose, them,onThemeToggle, onMenuClick  }: S
                         </DropdownMenuContent>
                       </DropdownMenu>
               
-                      <DropdownMenu>
+           <DropdownMenu open={openTheme} onOpenChange={(isOpen) => {
+  setOpenTheme(isOpen);
+  if (isOpen) setOpenLang(false);
+}}>
                         <DropdownMenuTrigger asChild className=" ">
                           <Button
                             variant="ghost"
                             size="icon"
-                            className={`relative ${
+                            className={`relative outline-none shadow-none focus:outline-none focus:shadow-none ${
                               currentTheme === "dark"
                                 ? "bg-[#1e263a] border border-[#2a3349] text-[#8b5cf6] hover:bg-[#252e45] hover:text-[#a78bfa]"
                                 : "v7-neu-button-sm text-gry hover:text-[#3498db]"

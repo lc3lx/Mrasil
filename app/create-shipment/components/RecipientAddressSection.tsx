@@ -196,7 +196,7 @@ export function RecipientAddressSection({
           بيانات المستلم
         </h2>
       </div>
-      <div className="flex flex-row items-center gap-3 mb-4">
+      <div className="flex flex-col sm:flex-row items-center gap-3 mb-4">
         <div className="relative flex-1">
           <span className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
             <Search className="h-5 w-5 text-[#3498db]" />
@@ -213,7 +213,7 @@ export function RecipientAddressSection({
         <button
           type="button"
           onClick={() => setOpenRecipientModal(true)}
-          className="v7-neu-button-accent bg-gradient-to-r from-[#3498db] to-[#2980b9] hover:from-[#2980b9] hover:to-[#3498db] transition-all duration-300 px-8 py-2 rounded-lg text-white font-bold flex items-center gap-2"
+          className="v7-neu-button-accent w-full sm:w-fit  bg-gradient-to-r from-[#3498db] to-[#2980b9] hover:from-[#2980b9] hover:to-[#3498db] transition-all duration-300 px-8 py-2 rounded-lg text-white font-bold flex items-center  text-center justify-center gap-2"
         >
           + مستلم جديد
         </button>

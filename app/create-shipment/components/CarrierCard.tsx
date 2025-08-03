@@ -14,7 +14,7 @@ export default function CarrierCard({ company, selectedCompany, handleCompanySel
       onClick={() => handleCompanySelect(company.company)}
       style={{ cursor: 'pointer' }}
     >
-      <div className="flex items-center gap-6  justify-end">
+      <div className="flex flex-col sm:flex-row items-center gap-6  justify-end">
         <div className="w-20 h-20  rounded-lg flex items-center justify-center overflow-hidden">
           <img src={logoSrc} alt={company.company} className="object-contain w-full h-full" onError={e => { e.currentTarget.src = '/carriers/carrier-placeholder.png'; }} />
         </div>

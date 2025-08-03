@@ -139,7 +139,7 @@ export function SenderAddressSection({
         </div>
         <h3 className="text-3xl font-bold text-gray-800"> بيانات المرسل</h3>
       </div>
-      <div className="flex   gap-3 mb-4">
+      <div className="flex  flex-col sm:flex-row  gap-3 mb-4">
         <div className="relative flex-1">
           <span className="absolute inset-y-0 right-0 flex items-center pr-5 pointer-events-none">
             <Search className="h-5 w-5 text-[#3498db]" />
@@ -156,7 +156,7 @@ export function SenderAddressSection({
         <button
           type="button"
           onClick={() => setOpenAddSenderModal(true)}
-          className="v7-neu-button-accent bg-gradient-to-r  from-[#3498db] to-[#2980b9] hover:from-[#2980b9] hover:to-[#3498db] transition-all duration-300 px-8 py-2 rounded-lg text-white font-bold flex items-center gap-2"
+          className="v7-neu-button-accent w-full sm:w-fit  bg-gradient-to-r from-[#3498db] to-[#2980b9] hover:from-[#2980b9] hover:to-[#3498db] transition-all duration-300 px-8 py-2 rounded-lg text-white font-bold flex items-center  text-center justify-center gap-2"
         >
           + مرسل جديد
         </button>
