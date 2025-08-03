@@ -40,13 +40,13 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 const companyLogoMap: Record<string, string> = {
   smsa: "/smsa_b2c.jpg",
   jandt: "/jandt.jpg",
-  aramex: "/Aramex.jpg",
+  aramex: "/araMex.jpg",
   aymakan: "/AyMakan.jpg",
   imile: "/iMile.jpg",
   thabit: "/Thabit.jpg",
   redbox: "/RedBox.jpg",
   dal: "/Dal.jpg",
-  omniclama: "/omniclama.png",
+  omniclama: "/lamaBox.png",
   // Add more mappings as needed
 }
 

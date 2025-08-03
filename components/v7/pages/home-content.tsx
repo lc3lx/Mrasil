@@ -425,7 +425,7 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
                     // Map company name to logo file
                     const name = company.name?.toLowerCase() || "";
                     let imgSrc = "/placeholder-logo.png";
-                    if (name.includes("aramex")) imgSrc = "/araMex.jpg";
+                    if (name.includes("aramex")) imgSrc = "/araMex.png";
                     else if (name.includes("smsa")) imgSrc = "/smsa_b2c.jpg";
                     else if (name.includes("imile"))
                       imgSrc = "/carriers/imile-logo.png";
@@ -437,7 +437,7 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
                       imgSrc = "/carriers/ups-logo.png";
                     else if (name.includes("redbox")) imgSrc = "/redBox.jpg";
                     else if (name.includes("omniclama"))
-                      imgSrc = "/omniclama.png";
+                      imgSrc = "/lamaBox.png";
                     // Add more mappings as needed
                     return (
                       <div
@@ -447,7 +447,7 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
                         <img
                           src={imgSrc}
                           alt={company.name}
-                          className="h-12 mb-2 object-contain"
+                          className=" max-h-20 max-w-20 mb-2 object-cover"
                         />
                         <div className="font-bold text-[#294D8B] text-xl">
                           {company.name}

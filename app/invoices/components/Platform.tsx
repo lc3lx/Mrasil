@@ -12,11 +12,11 @@ const companies = [
   },
   {
     name: "اراميكس",
-    img: "/companies/Aramex.jpg",
+    img: "/companies/araMex.jpg",
   },
   {
     name: "  لاما بوكس",
-    img: "/companies/omniclama.jpg",
+    img: "/companies/lamaBox.jpg",
   },
   {
     name: "سبل",
