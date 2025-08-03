@@ -1,10 +1,15 @@
+import { Check, Plus, X } from "lucide-react";
+import Image from "next/image";
 import React from "react";
 
 export default function CarrierCard({ company, selectedCompany, handleCompanySelect, logoSrc, firstType }: any) {
   const isSelected = selectedCompany === company.company;
+
+  console.log(company.company);
+  
   return (
     <div
-      className={`flex items-center justify-between v7-neu-card-inner px-6 py-6 transition-all duration-300 relative overflow-hidden w-full
+      className={`flex items-center justify-between v7-neu-card-inner px-6   py-4 transition-all duration-300 relative overflow-hidden w-full
                       ${
                         isSelected
                           ? " bg-gradient-to-br from-[#3498db]/5 to-[#3498db]/10"
@@ -14,13 +19,13 @@ export default function CarrierCard({ company, selectedCompany, handleCompanySel
       onClick={() => handleCompanySelect(company.company)}
       style={{ cursor: 'pointer' }}
     >
-      <div className="flex flex-col sm:flex-row items-center gap-6  justify-end">
-        <div className="w-20 h-20  rounded-lg flex items-center justify-center overflow-hidden">
-          <img src={logoSrc} alt={company.company} className="object-contain w-full h-full" onError={e => { e.currentTarget.src = '/carriers/carrier-placeholder.png'; }} />
+      <div className="flex flex-col sm:flex-row items-center justify-center sm:gap-6  gap-0  ">
+        <div className=" w-20 min-h-12 max-h-12 sm:h-20  rounded-lg   overflow-hidden">
+          <Image sizes="20" width={20} height={20} src={logoSrc} alt={company.company} className="object-contain w-full h-full" onError={e => { e.currentTarget.src = '/carriers/carrier-placeholder.png'; }} />
         </div>
         <span className="text-[#3498db] font-bold text-xl whitespace-nowrap">{company.company}</span>
       </div>
-      <div className="flex flex-col items-end min-w-[120px] gap-2">
+      <div className="flex flex-col items-end min-w-[120px]  gap-4">
         <input
           type="radio"
           name="company"
@@ -32,8 +37,27 @@ export default function CarrierCard({ company, selectedCompany, handleCompanySel
           onClick={e => e.stopPropagation()}
         />
         <span className="text-[#3498db] font-bold text-lg">{firstType?.basePrice ? `${firstType.basePrice} ريال` : '-'}</span>
-        <span className="text-sm text-gray-500">{company.deliveryTime ? `توصيل خلال ${company.deliveryTime}` : '-'}</span>
-      </div>
+        {["smsa", "aramex"].includes(company.company) && (
+  <span className=" text-sm sm:text-lg font-medium flex items-center gap-1">
+    توصيل من الباب للباب 
+    <span className=" text-green-900  flex items-center">
+    ( 
+      متوفر 
+    <Check  className=" w-4 h-4"/> )
+    </span>
+  </span>
+)}      
+        {["redbox", "omniclama"].includes(company.company) && (
+  <span className=" text-sm sm:text-lg font-medium flex items-center gap-1">
+    توصيل من الباب للباب 
+    <span className=" text-red-900 flex items-center">
+     ( غير متوفر 
+     <X className=" w-4 h-4"/>
+     )
+    </span>
+  </span>
+)}      
+</div>
     </div>
   );
 } 

@@ -17,6 +17,8 @@ import {
   ArrowLeft,
   Store,
   ShoppingCart,
+  Trash,
+  Redo,
 } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import moment from "moment";
@@ -108,11 +110,11 @@ export function V7ShipmentCard({
 }) {
   const [isHovered, setIsHovered] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-
+  
   if (!shipment || !shipment._id) {
     return null;
   }
-
+  
   // Helper functions for status, etc.
   const getStatusIcon = () => <Package className="h-5 w-5 text-violet-500" />;
   const getStatusText = () => "جاهز للشحن";
@@ -129,7 +131,8 @@ export function V7ShipmentCard({
     logo: carrierLogo,
     color: "text-gray-600", // Default color
   };
-
+  console.log(shipment);
+  
   // Helper: Get label URL for printing
   const getLabelUrl = () => {
     const company = (shipment?.shapmentCompany || "").toLowerCase();
@@ -147,7 +150,8 @@ export function V7ShipmentCard({
     }
     return null;
   };
-
+  console.log(shipment);
+  
   // Helper: Download base64 label as file
   function downloadBase64File(base64: string, fileName: string) {
     const arr = base64.split(",");
@@ -197,8 +201,8 @@ export function V7ShipmentCard({
       dir="rtl"
     >
       {/* Main Card Content - Always visible */}
-      <div className="p-6 flex justify-between w-full gap-8">
-        <div className="flex flex-col md:flex-row items-start gap-6 sm:max-w-[20%]">
+      <div className="p-6 flex  w-full  gap-4">
+        <div className="flex flex-col md:flex-row items-start gap-6 sm:max-w-[50%] ">
           {/* Left: Main Info */}
           <div className="flex flex-col justify-between flex-1  ">
             <div className="flex flex-col  gap-4 w-fit">
@@ -246,13 +250,13 @@ export function V7ShipmentCard({
               {/* <RadioGroup> */}
 
               <div className="flex items-center gap-3">
-                <span className="font-bold text-base sm:text-2xl text-[#294D8B] whitespace-nowrap">
+                <span className="font-bold text-sm sm:text-2xl text-[#294D8B] whitespace-nowrap">
                   رقم الشحنة #{shipment?._id || "غير متوفر"}
                 </span>
               </div>
               {/* Order ID */}
               <div className="flex items-center gap-1 text-gry">
-                <span className="text-base ">رقم الطلب: </span>
+                <span className="text-sm sm:text-base ">رقم الطلب: </span>
                 <span className="font-medium ml-2">
                   {shipment?.orderId?._id || "غير متوفر"}
                 </span>
@@ -260,8 +264,8 @@ export function V7ShipmentCard({
               {/* </RadioGroup> */}
               {/* Source */}
               <div className="flex items-center gap-3">
-                <span className="text-base text-gry">المصدر:</span>
-                <span className="font-semibold ml-2 text-[#444]">
+                <span className="text-sm text-gry">المصدر:</span>
+                <span className="font-semibold ml-2 text-[#444] text-sm sm:text-base">
                   {shipment?.orderId.platform === "manual"
                     ? "Marasil"
                     : shipment?.orderId.platform || "غير متوفر"}
@@ -269,32 +273,32 @@ export function V7ShipmentCard({
               </div>
               {/* City/Address */}
               <div className="flex items-center gap-3">
-                <MapPin className="h- w-5 text-[#294D8B]" />
-                <span className="text-lg text-[#294D8B] font-medium">
+                <MapPin className="sm:h-5 sm:w-5 h-4 w-4 text-[#294D8B]" />
+                <span className="text-base sm:text-lg  text-[#294D8B] font-medium">
                   {shipment?.senderAddress?.city || "غير محدد"}
                 </span>
-                <MapPin className="h-5 w-5 text-emerald-500" />
-                <span className="text-lg   text-emerald-700 font-medium">
+                <MapPin className="sm:h-5 sm:w-5 h-4 w-4 text-emerald-500" />
+                <span className="text-base sm:text-lg   text-emerald-700 font-medium">
                   {shipment?.senderAddress?.address || "غير محدد"}
                 </span>
               </div>
               {/* Status */}
-              <div className="flex items-center gap-3   max-w-44 ">
+              <div className="flex items-center gap-3    w-fit ">
                 <div
-                  className={`w-full flex items-center  gap-x-2 px-4 py-2 rounded-full border ${getStatusColor()} justify-center`}
+                  className={`w-full flex items-center  gap-x-2 px-4 sm:px-6 py-2 rounded-full border ${getStatusColor()} justify-center`}
                 >
-                  <span className="ml-2">{getStatusIcon()}</span>
-                  <span className="text-[#294D8B]  ">{getStatusText()}</span>
+                  <span className="ml-2 w-4 h-4 sm:w-5 sm:h-5">{getStatusIcon()}</span>
+                  <span className="text-[#294D8B]  text-sm sm:text-base ">{getStatusText()}</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div className=" flex flex-col-reverse sm:flex-row justify-between w-full  ">
+        <div className=" flex flex-col-reverse sm:flex-row sm:justify-center justify-end items-center  max-sm:max-w-8  w-full pe-4   ">
           <Button
             variant="ghost"
             size="sm"
-            className="text-xs text-gry hover:text-[#3498db]  bottom-0     mt-auto  mx-auto"
+            className="text-xs text-gry hover:text-[#3498db]  bottom-0   flex justify-center items-center text-center   mt-auto  mx-auto   sm:ms-0 -ms-6 "
             onClick={() => setIsExpanded(!isExpanded)}
           >
             {isExpanded ? "عرض أقل" : "عرض المزيد"}
@@ -310,7 +314,7 @@ export function V7ShipmentCard({
               <Button
                 variant="outline"
                 size="sm"
-                className="sm:w-full v7-neu-button-sm group sm:h-8 size-4 flex items-center justify-center gap-x-2"
+                className="sm:w-full v7-neu-button-sm group sm:h-8 size-3 flex items-center justify-center gap-x-2 mx-auto"
               >
                 <Eye className="h-4 w-4 group-hover:text-[#3498db] transition-colors" />
                 <span className="sr-only sm:not-sr-only">تتبع</span>
@@ -322,7 +326,7 @@ export function V7ShipmentCard({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="sm:w-full v7-neu-button-sm group sm:h-8 size-4   text-xs flex items-center justify-center gap-x-2"
+                  className="sm:w-full v7-neu-button-sm group sm:h-8 size-3   text-xs flex items-center justify-center gap-x-2"
                   onClick={() =>
                     downloadBase64File(
                       labelUrl,
@@ -345,7 +349,7 @@ export function V7ShipmentCard({
                   <Button
                     variant="outline"
                     size="sm"
-                    className="sm:w-full v7-neu-button-sm group sm:h-8 size-4 text-xs flex items-center justify-center gap-x-2"
+                    className="sm:w-full v7-neu-button-sm group sm:h-8 size-3 text-xs flex items-center justify-center gap-x-2"
                   >
                     <Printer className="h-4 w-4 group-hover:text-[#3498db] transition-colors" />
                     <span className="sr-only sm:not-sr-only">
@@ -358,14 +362,34 @@ export function V7ShipmentCard({
               <Button
                 variant="outline"
                 size="sm"
-                className="sm:w-full v7-neu-button-sm group sm:h-8 size-4 flex items-center justify-center gap-x-2 opacity-50 cursor-not-allowed"
+                className="sm:w-full v7-neu-button-sm group sm:h-8 size-3 flex items-center justify-center gap-x-2 opacity-50 cursor-not-allowed"
                 disabled
               >
                 <Printer className="h-4 w-4" />
                 <span className="sr-only sm:not-sr-only">تحميل البوليصة</span>
               </Button>
             )}
-            <span className=" text-gry">
+            {shipment.shipmentstates === "Delivered" ? (
+                      <Button
+                    variant="outline"
+                    size="sm"
+                    className="sm:w-full v7-neu-button-sm group sm:h-8 size-3 text-xs flex items-center justify-center gap-x-2"                                  >
+                           <Redo className="h-4 w-4"/>
+                              <span className="sr-only sm:not-sr-only">
+                            طلب شحنة عكسية
+                              </span>
+                            </Button>
+                          ) :                 <Button
+                           variant="outline"
+                    size="sm"
+                    className="sm:w-full v7-neu-button-sm group sm:h-8 size-3 text-xs flex items-center justify-center gap-x-2"
+                                  >
+                        
+                        <Trash className="h-4 w-4 text-red-900" />
+                           <span className="sr-only sm:not-sr-only text-red-900">حذف</span>
+                            </Button>}
+
+            <span className=" text-gry sm:text-base text-sm">
               {moment(shipment?.createdAt).locale("en-sa").format("DD/MM/YYYY")}
             </span>
           </div>

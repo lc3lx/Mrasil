@@ -74,7 +74,23 @@ export function SenderAddressSection({
       email: customerMeData?.data.email || "-",
     })
   );
-
+const normalize = (str: string) =>
+  str
+    .toLowerCase()
+    .trim()
+    .replace(/[\u0621-\u064A]/g, (char) => {
+      // تحويل الحروف العربية لمكافئات قريبة لتسهيل البحث
+      const map: Record<string, string> = {
+        أ: "ا",
+        إ: "ا",
+        آ: "ا",
+        ه: "ه",
+        ة: "ه",
+        ي: "ي",
+        ى: "ي",
+      };
+      return map[char] || char;
+    });
   const handleSelectSender = (card: any) => {
     if (selectedSender === card.id) {
       setSelectedSender(null);
@@ -90,15 +106,16 @@ export function SenderAddressSection({
       setValue("shipper_address", card.address);
     }
   };
-
-  const filteredSenderCards = senderCards.filter(
-    (card) =>
-      card.name.toLowerCase().includes(searchSender.toLowerCase()) ||
-      card.mobile.toLowerCase().includes(searchSender.toLowerCase()) ||
-      card.city.toLowerCase().includes(searchSender.toLowerCase()) ||
-      card.address.toLowerCase().includes(searchSender.toLowerCase()) ||
-      card.email.toLowerCase().includes(searchSender.toLowerCase())
+const search = searchSender.trim().toLowerCase();
+  const filteredSenderCards = senderCards.filter((card) => {
+  return (
+    card.name.toLowerCase().includes(search) ||
+    card.mobile.toLowerCase().includes(search) ||
+    card.city.toLowerCase().includes(search) ||
+    card.address.toLowerCase().includes(search) ||
+    card.email.toLowerCase().includes(search)
   );
+});
   const displayedSenderCards = showAllSenders
     ? filteredSenderCards
     : filteredSenderCards.slice(0, 6);
@@ -119,7 +136,7 @@ export function SenderAddressSection({
 
   return (
     <motion.div variants={staggerChildren}>
-      <div className="flex items-center gap-3  pb-4">
+      <div className="flex items-center gap-3  pb-4 " >
         <div className="v7-neu-icon-sm">
           <svg
             xmlns="http://www.w3.org/2000/svg"

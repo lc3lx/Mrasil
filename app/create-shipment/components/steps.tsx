@@ -308,7 +308,7 @@ export function CreateShipmentSteps() {
 
   return (
     <FormProvider {...methods}>
-      <div className="space-y-8  my-16 sm:my-0 ">
+      <div className="space-y-8  my-16 ">
         <div className="space-y-8 pb-20 max-w-6xl mx-auto">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -580,6 +580,8 @@ function Step2Content({
     )
       nextStep();
   };
+  
+  
   return (
     <>
       <form onSubmit={handleSubmit} className="space-y-8">

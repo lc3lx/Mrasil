@@ -17,7 +17,7 @@ export function ModernWelcomeBanner() {
 
   return (
     <div
-      className={`relative overflow-hidden rounded-3xl morphing-shape p-6 text-white shadow-lg md:p-8 transition-all duration-1000 ${isAnimated ? "opacity-100" : "opacity-0 translate-y-10"}`}
+      className={` relative overflow-hidden rounded-3xl morphing-shape p-6 text-white shadow-lg md:p-8 transition-all duration-1000 ${isAnimated ? "opacity-100" : "opacity-0 translate-y-10"}`}
     >
       <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white/10 blur-3xl"></div>
       <div className="absolute -bottom-24 -left-16 h-64 w-64 rounded-full bg-white/10 blur-3xl"></div>

@@ -26,7 +26,7 @@ export function V7WelcomeBanner({ theme }: V7WelcomeBannerProps) {
 
   return (
     <div
-      className={` mt-16 sm:mt-0 relative v7-neu-card-welcome p-6 rounded-xl md:p-8 transition-all duration-1000 ${isAnimated ? "opacity-100" : "opacity-0 translate-y-10"}`}
+      className={` mt-16 relative v7-neu-card-welcome p-6 rounded-xl md:p-8 transition-all duration-1000 ${isAnimated ? "opacity-100" : "opacity-0 translate-y-10"}`}
     >
       <div className="relative z-10 flex flex-col justify-between gap-4 md:flex-row md:items-center">
         <div>
