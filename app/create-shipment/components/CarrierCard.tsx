@@ -38,23 +38,25 @@ export default function CarrierCard({ company, selectedCompany, handleCompanySel
         />
         <span className="text-[#3498db] font-bold text-lg">{firstType?.basePrice ? `${firstType.basePrice} ريال` : '-'}</span>
         {["smsa", "aramex"].includes(company.company) && (
-  <span className=" text-sm sm:text-lg font-medium flex items-center gap-1">
+  <span className="text-[#3498db] text-sm sm:text-lg font-medium flex items-center gap-1">
     توصيل من الباب للباب 
-    <span className=" text-green-900  flex items-center">
     ( 
+    <span className=" text-[#27ae60] flex items-center gap-1">
+    <Check  className=" w-4 h-4"/> 
       متوفر 
-    <Check  className=" w-4 h-4"/> )
     </span>
+    )
   </span>
 )}      
         {["redbox", "omniclama"].includes(company.company) && (
-  <span className=" text-sm sm:text-lg font-medium flex items-center gap-1">
+  <span className="text-[#3498db] text-sm sm:text-lg font-medium flex items-center gap-1">
     توصيل من الباب للباب 
-    <span className=" text-red-900 flex items-center">
-     ( غير متوفر 
+     (
+    <span className=" text-[#e74c3c] flex items-center gap-1">
      <X className=" w-4 h-4"/>
-     )
+       غير متوفر 
     </span>
+     )
   </span>
 )}      
 </div>

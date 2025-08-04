@@ -396,7 +396,7 @@ export default function ShipmentsPage() {
             </div>
             <div className="flex gap-2 ">
               <Link href="/create-shipment">
-                <Button className="v7-neu-button">
+                <Button className="v7-neu-button text-base">
                   <Plus className="ml-2 h-4 w-4" />
                   إنشاء شحنة جديدة
                 </Button>

@@ -201,7 +201,7 @@ export function V7ShipmentCard({
       dir="rtl"
     >
       {/* Main Card Content - Always visible */}
-      <div className="p-6 flex  w-full  gap-4">
+      <div className="p-6 flex    w-full  gap-4">
         <div className="flex flex-col md:flex-row items-start gap-6 sm:max-w-[50%] ">
           {/* Left: Main Info */}
           <div className="flex flex-col justify-between flex-1  ">
@@ -230,7 +230,8 @@ export function V7ShipmentCard({
                   {carrierInfo.name.toLowerCase() === "smsa" &&
                     shipment?.smsaResponse?.label && (
                       <Button
-                        className="mt-2"
+                      
+                        className="mt-2 text-xs sm:text-base "
                         variant="outline"
                         size="sm"
                         onClick={() =>
@@ -294,17 +295,11 @@ export function V7ShipmentCard({
             </div>
           </div>
         </div>
-        <div className=" flex flex-col-reverse sm:flex-row sm:justify-center justify-end items-center  max-sm:max-w-8  w-full pe-4   ">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-xs text-gry hover:text-[#3498db]  bottom-0   flex justify-center items-center text-center   mt-auto  mx-auto   sm:ms-0 -ms-6 "
-            onClick={() => setIsExpanded(!isExpanded)}
-          >
-            {isExpanded ? "عرض أقل" : "عرض المزيد"}
-          </Button>
+        <div className="   flex flex-col items-center justify-end   ms-auto  w-full  ">
+          
+        
           {/* Right: Actions and More/Less */}
-          <div className="flex flex-col  items-center    gap-4">
+          <div className="flex flex-col max-sm:max-w-10 items-center  ms-auto    gap-4 ">
             <Link
               href={`/tracking?id=${trackingNumber}`}
               className="w-full"
@@ -386,14 +381,22 @@ export function V7ShipmentCard({
                     className="sm:w-full v7-neu-button-sm group sm:h-8 size-3 text-xs flex items-center justify-center gap-x-2"
                                   >
                         
-                        <Trash className="h-4 w-4 text-red-900" />
-                           <span className="sr-only sm:not-sr-only text-red-900">حذف</span>
+                        <Trash className="h-4 w-4 text-[#e74c3c]" />
+                           <span className="sr-only sm:not-sr-only text-[#e74c3c]">حذف</span>
                             </Button>}
 
             <span className=" text-gry sm:text-base text-sm">
               {moment(shipment?.createdAt).locale("en-sa").format("DD/MM/YYYY")}
             </span>
           </div>
+            <Button
+            variant="ghost"
+            size="sm"
+            className="text-xs text-gry hover:text-[#3498db]  bottom-0   flex justify-center items-center text-center   mt-auto  mx-auto   sm:ms-0 -ms-6 "
+            onClick={() => setIsExpanded(!isExpanded)}
+          >
+            {isExpanded ? "عرض أقل" : "عرض المزيد"}
+          </Button>
         </div>
       </div>
 

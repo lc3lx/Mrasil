@@ -77,7 +77,7 @@ export function WebhooksContent() {
   const webhook = { active: webhookStatus?.isEnabled ?? false }
 
   return (
-    <div className="space-y-6 rtl ">     
+    <div className="space-y-6 rtl my-16 ">     
         <h1 className="text-3xl font-bold tracking-tight">توصيل المتاجر</h1>
         <p className="text-muted-foreground text-lg">
           قم بتوصيل متجرك الإلكتروني بمنصة الشحن لإدارة الطلبات والشحنات بشكل تلقائي

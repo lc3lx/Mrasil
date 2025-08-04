@@ -249,7 +249,6 @@ await onSubmit({
                 name="clientEmail"
                 value={form.clientEmail}
                 onChange={handleChange}
-                required
                 placeholder="example@gmail.com"
                 className={cn(
                   "v7-neu-input bg-transparent border-none shadow-none outline-none text-base w-full"

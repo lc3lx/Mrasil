@@ -190,7 +190,7 @@ export default function OrdersContent() {
   return (
     <V7Layout>
       <V7Content title="الطلبات" description="إدارة ومتابعة جميع طلباتك">
-        <div className="w-full px-4">
+        <div className="w-full px-4 mt-16">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 v7-fade-in">
             <div className="v7-neu-card p-2 flex flex-col justify-center min-h-[60px] transition-all duration-300 hover:shadow-lg">
               <div className="flex items-center justify-between gap-2">
@@ -482,7 +482,8 @@ export default function OrdersContent() {
                                     JSON.stringify(order)
                                   );
                                 }
-                                router.push("/create-shipment");
+                                    router.push("/create-shipment?step=3");
+                                // router.push("/create-shipment");
                               }}
                             >
                               <Send className="h-3 w-3 ml-1" />
@@ -508,7 +509,7 @@ export default function OrdersContent() {
                   </tbody>
                 </table>
               </div>
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 ">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 mb-16 ">
                 <div className="text-sm text-gry">
                   عرض <span className="font-medium">1</span> إلى{" "}
                   <span className="font-medium">10</span> من أصل{" "}

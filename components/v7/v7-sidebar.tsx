@@ -456,7 +456,7 @@ const [openTheme, setOpenTheme] = useState(false);
   return (
     <>
       <aside
-        className={`hidden md:block w-64 lg:w-72 flex-shrink-0 v7-neu-sidebar    ${sidebarClass}`}
+        className={`hidden md:block w-64 lg:w-72 flex-shrink-0 v7-neu-sidebar  mt-16   ${sidebarClass}`}
       >
         <ScrollArea className="h-[calc(100vh-4rem)] ">
           <div className="flex h-full flex-col gap-2 p-4 sm:p-5">

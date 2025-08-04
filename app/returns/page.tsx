@@ -1650,7 +1650,7 @@ export default function Returns() {
   return (
     <V7Layout>
       <V7Content title="إدارة الاسترجاع" description="إدارة طلبات الاسترجاع وتتبع حالتها">
-        <div className="container mx-auto p-4 md:p-6">
+        <div className="container mx-auto p-4 md:p-6 my-16">
           {/* Header with title and action button */}
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
              <div>

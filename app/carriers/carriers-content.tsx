@@ -190,7 +190,7 @@ export function CarriersContent() {
   const internationalCarriers = carriersList?.filter((carrier) => !carrier.shippingTypes.some((st) => st.type === 'Dry')).length ?? 0
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6 my-16">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold text-[#294D8B]">شركات الشحن</h1>

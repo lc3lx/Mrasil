@@ -7,7 +7,6 @@ import {
   Controller,
   useFormContext,
 } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import {
   Package,
@@ -25,6 +24,8 @@ import {
   CreditCard,
 } from "lucide-react";
 import ResponseModal from "../../components/ResponseModal";
+import { yupResolver } from '@hookform/resolvers/yup';
+
 import {
   useCreateShipmentMutation,
   useGetMyShipmentsQuery,
@@ -72,7 +73,7 @@ import { RecipientAddressSection } from "./RecipientAddressSection";
 import { ParcelSizeSection } from "./ParcelSizeSection";
 import CarrierCard from "./CarrierCard";
 import { OrderSummaryAndFragileTips } from "./OrderSummaryAndFragileTips";
-
+import { useSearchParams } from 'next/navigation';
 const cities = [
   "الرياض",
   "جدة",
@@ -155,13 +156,16 @@ const fadeIn = {
 };
 
 export function CreateShipmentSteps() {
-  const [step, setStep] = useState(1);
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [modalOpen, setModalOpen] = useState(false);
   const [modalStatus, setModalStatus] = useState<"success" | "fail">("success");
   const [modalMessage, setModalMessage] = useState("");
   const [selectedProvider, setSelectedProvider] = useState(providerOptions[0]);
   const [shipmentType, setShipmentType] = useState("الدفع المسبق");
-  const router = useRouter();
+  const initialStepParam = searchParams.get('step');
+  const initialStep = initialStepParam ? parseInt(initialStepParam) : 1;
+  const [step, setStep] = useState(initialStep);
 
   const methods = useForm({
     resolver: yupResolver(schema),
@@ -414,8 +418,7 @@ export function CreateShipmentSteps() {
 
             {/* Step Content */}
             {step === 1 && <Step1Content nextStep={nextStep} />}
-            {step === 2 && (
-              <Step2Content nextStep={nextStep} prevStep={prevStep} />
+            {step === 2 && (<Step2Content nextStep={nextStep} prevStep={prevStep} />
             )}
             {step === 3 && (
               <Step3Content
