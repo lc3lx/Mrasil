@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 export function OrderSummaryAndFragileTips({ values }: { values: any }) {
+  console.log(values);
+  
   return (
     <>
       {/* نصائح للشحنات القابلة للكسر */}
@@ -223,48 +225,45 @@ export function OrderSummaryAndFragileTips({ values }: { values: any }) {
               </svg>
               ملخص الطلب
             </h3>
-            <div className="text-sm bg-[#3498db]/10 text-[#3498db] py-2 px-4 rounded-full font-medium">
-              رقم الطلب: <span className="font-bold">ORD-9939</span>
-            </div>
           </div>
 
           <div className="space-y-4">
-            <div className="flex justify-between py-3 border-b border-[#3498db]/10">
+            <div className="flex justify-between items-center py-3 border-b border-[#3498db]/10">
               <span className="text-[#6d6a67] font-medium">من</span>
               <span className="font-medium text-[#1a365d]">
-                الرياض السعودية
+                {values.shipper_city}
               </span>
             </div>
-            <div className="flex justify-between py-3 border-b border-[#3498db]/10">
+            <div className="flex justify-between items-center  py-3 border-b border-[#3498db]/10">
               <span className="text-[#6d6a67] font-medium">إلى</span>
-              <span className="font-medium text-[#1a365d]">أم الساهك</span>
+              <span className="font-medium text-[#1a365d]">{values.recipient_city}</span>
             </div>
-            <div className="flex justify-between py-3 border-b border-[#3498db]/10">
+            <div className="flex justify-between items-center  py-3 border-b border-[#3498db]/10">
               <span className="text-[#6d6a67] font-medium">نوع الشحنة</span>
-              <span className="font-medium text-[#1a365d]">طرد</span>
+              <span className="font-medium text-[#1a365d]">{values.shipmentType || "غير محدد"}</span>
             </div>
-            <div className="flex justify-between py-3 border-b border-[#3498db]/10">
+            <div className="flex justify-between items-center  py-3 border-b border-[#3498db]/10">
               <span className="text-[#6d6a67] font-medium">حجم الطرد</span>
               <span className="font-medium text-[#1a365d]">غير محدد</span>
             </div>
-            <div className="flex justify-between py-3 border-b border-[#3498db]/10">
+            <div className="flex justify-between items-center  py-3 border-b border-[#3498db]/10">
               <span className="text-[#6d6a67] font-medium">الوزن</span>
-              <span className="font-medium text-[#1a365d]">غير محدد</span>
+              <span className="font-medium text-[#1a365d]">{values.weight || "غير محدد"}</span>
             </div>
-            <div className="flex justify-between py-3 border-b border-[#3498db]/10">
+            <div className="flex justify-between items-center  py-3 border-b border-[#3498db]/10">
               <span className="text-[#6d6a67] font-medium">عدد الصناديق</span>
-              <span className="font-medium text-[#1a365d]">1</span>
+              <span className="font-medium text-[#1a365d]">{values.Parcels || "غير محدد"}</span>
             </div>
-            <div className="flex justify-between py-3 border-b border-[#3498db]/10">
+            <div className="flex justify-between items-center  py-3 border-b border-[#3498db]/10">
               <span className="text-[#6d6a67] font-medium">خدمة التوصيل</span>
               <span className="font-medium text-[#1a365d]">
-                أرامكس - توصيل عادي
+                {values.company}
               </span>
             </div>
-            <div className="flex justify-between py-4 text-xl font-bold">
+            <div className="flex justify-between items-center  py-4 text-xl font-bold">
               <span className="text-[#1a365d]">الإجمالي</span>
               <span className="text-[#3498db] px-3 py-1.5 rounded-lg inline-flex items-center">
-                25.00 ريال
+              {values.total} ريال
               </span>
             </div>
           </div>

@@ -56,6 +56,7 @@ export function ParcelSizeSection({ parcelsData, setValue, errors }: ParcelSizeS
   const [customModalOpen, setCustomModalOpen] = useState(false);
   const [customParcel, setCustomParcel] = useState({ title: '', length: '', width: '', height: '', maxWeight: '', price: '', description: '' });
   const [createParcel, { isLoading: isCreatingParcel }] = useCreateParcelMutation();
+  const [visibleCount, setVisibleCount] = useState(6);
 
   const handleCustomParcelFormSubmit = async (e: any) => {
     e.preventDefault();
@@ -79,6 +80,11 @@ export function ParcelSizeSection({ parcelsData, setValue, errors }: ParcelSizeS
     }
   };
 
+
+  const handleShowMore = () => {
+    setVisibleCount(sizeCards.length); // أو زد العدد تدريجيًا إذا بدك
+  };
+
   return (
     <>
       <div className="flex items-center gap-2 mb-4">
@@ -86,8 +92,9 @@ export function ParcelSizeSection({ parcelsData, setValue, errors }: ParcelSizeS
         <h2 className="text-xl font-bold text-[#3498db] m-0">حجم الطرد</h2>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
-        {sizeCards.map((card: SizeCard) => {
-          const selected = selectedSize === card.key;
+        {sizeCards.slice(0, visibleCount).map((card: SizeCard) => {
+        const selected = selectedSize === card.key;
+
           return (
             <motion.div
               key={card.key}
@@ -129,7 +136,7 @@ export function ParcelSizeSection({ parcelsData, setValue, errors }: ParcelSizeS
             </motion.div>
           );
         })}
-     
+
         <Button type="button" className={` v7-neu-card-inner  p-4 cursor-pointer  hover:bg-[#f0f4f8] h-[10rem] w-[18rem]  flex flex-col  gap-2`}    onClick={() => setCustomModalOpen(true)}>
     <span className={` p-4 rounded-full flex items-center justify-center
                     ${customModalOpen
@@ -142,6 +149,16 @@ export function ParcelSizeSection({ parcelsData, setValue, errors }: ParcelSizeS
          
         </Button>
                   </div>
+                   {visibleCount < sizeCards.length && (
+        <div className="flex justify-center mt-4">
+          <button
+            onClick={handleShowMore}
+            className="px-4 py-2 rounded bg-[#3498db] text-white hover:bg-[#2980b9] transition-all"
+          >
+            عرض المزيد
+          </button>
+        </div>
+      )}
       {/* Selected parcel summary (centered, full width) */}
       {selectedSize && (() => {
         const selectedCard = sizeCards.find((c: SizeCard) => c.key === selectedSize);
@@ -272,4 +289,4 @@ export function ParcelSizeSection({ parcelsData, setValue, errors }: ParcelSizeS
 
     </>
   );
-} 
+  }

@@ -96,7 +96,7 @@ export default function ShipmentsPage() {
   const [filterSource, setFilterSource] = useState("all") // إضافة حالة لفلترة المصدر
   const [filterCarrier, setFilterCarrier] = useState("all") // إضافة حالة لفلترة شركة الشحن
   // Replace selectedShipments state with selectedShipmentId
-  const [selectedShipmentId, setSelectedShipmentId] = useState<string | null>(null)
+  const [selectedShipmentId, setSelectedShipmentId] = useState<string[]>([])
   const [activeFilters, setActiveFilters] = useState<string[]>([]) // لتتبع الفلاتر النشطة
   const [currentPage, setCurrentPage] = useState(1)
 

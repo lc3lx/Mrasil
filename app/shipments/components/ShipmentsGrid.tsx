@@ -4,6 +4,7 @@ import { V7ShipmentCard } from "./v7-shipment-card";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { ChevronDown, Truck, Printer, Download, XCircle } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 // Use the full Shipment interface from page.tsx
 export interface Shipment {
@@ -64,16 +65,25 @@ export const ShipmentsGrid: React.FC<ShipmentsGridProps> = ({
   setCurrentPage,
 }) => {
   // Determine if all are selected
-  const allSelected = selectedShipmentId === "all";
+  // const allSelected = selectedShipmentId === "all";
 
   // Handler for select all button
-  const handleSelectAll = () => {
-    if (allSelected) {
-      setSelectedShipmentId(null);
-    } else {
-      setSelectedShipmentId("all");
-    }
-  };
+  // const handleSelectAll = () => {
+  //   if (allSelected) {
+  //     setSelectedShipmentId(null);
+  //   } else {
+  //     setSelectedShipmentId("all");
+  //   }
+  // };
+const allSelected = selectedShipmentId?.length === sortedShipments.length;
+const handleSelectAll = () => {
+  if (allSelected) {
+    setSelectedShipmentId([]);
+  } else {
+    setSelectedShipmentId(sortedShipments.map((s) => s._id));
+  }
+};
+
 
   return (
     <>
@@ -93,19 +103,13 @@ export const ShipmentsGrid: React.FC<ShipmentsGridProps> = ({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56 bg-[#EFF2F7] border-[#E4E9F2] shadow-sm">
-              <DropdownMenuItem
-                onClick={() => handleBulkAction("ship")}
-                className="text-[#294D8B] hover:bg-[#e4e9f2] cursor-pointer"
-              >
-                <Truck className="h-4 w-4 ml-2 text-blue-600" />
-                <span>شحن المحدد</span>
-              </DropdownMenuItem>
+
               <DropdownMenuItem
                 onClick={() => handleBulkAction("print")}
                 className="text-[#294D8B] hover:bg-[#e4e9f2] cursor-pointer"
               >
                 <Printer className="h-4 w-4 ml-2 text-purple-600" />
-                <span>طباعة بوالص الشحن</span>
+                <span>طباعة المحدد</span>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => handleBulkAction("export")}
@@ -129,13 +133,13 @@ export const ShipmentsGrid: React.FC<ShipmentsGridProps> = ({
       {/* Select All Button */}
       {/* Shipments Grid */}
       {/* Place the Select All button above the grid */}
-      <RadioGroup
+      {/* <RadioGroup
         value={selectedShipmentId === 'all' ? 'all' : selectedShipmentId || ''}
         onValueChange={val => setSelectedShipmentId(val === 'all' ? 'all' : val)}
         className="flex flex-wrap -mx-2 justify-center "
       >
         {/* Select All option as a radio button inside RadioGroup */}
-        <div className="flex items-center justify-end w-full mb-4 px-2 ">
+        {/* <div className="flex items-center justify-end w-full mb-4 px-2 ">
           <RadioGroupItem
             value="all"
             id="shipment-all"
@@ -170,7 +174,59 @@ export const ShipmentsGrid: React.FC<ShipmentsGridProps> = ({
             </div>
           </div>
         ))}
-      </RadioGroup>
+      </RadioGroup> */} 
+      <div className="flex flex-wrap -mx-2 justify-center">
+  {/* زر تحديد الكل */}
+  <div className="flex items-center justify-end w-full mb-4 px-2">
+    <Checkbox
+      checked={allSelected}
+      onCheckedChange={handleSelectAll}
+      className="mr-2 "
+      aria-label="تحديد كل الشحنات"
+    />
+    <Button
+      type="button"
+      variant={allSelected ? "default" : "outline"}
+      className={`flex items-center gap-2 ${allSelected ? "bg-blue-500 text-white" : ""}`}
+      onClick={handleSelectAll}
+    >
+      تحديد الكل
+    </Button>
+  </div>
+
+  {/* البطاقات */}
+  {sortedShipments.map((shipment) => {
+    const isSelected = selectedShipmentId?.includes(shipment._id);
+
+    return (
+      <div key={shipment._id} className="w-full flex items-start justify-center mb-6">
+        <div className="flex-grow w-full relative">
+          <V7ShipmentCard
+            shipment={shipment}
+            selectedShipmentId={null}
+            allSelected={false}
+          />
+          <Checkbox
+            checked={isSelected}
+            onCheckedChange={(checked) => {
+              if (checked) {
+                setSelectedShipmentId([...selectedShipmentId, shipment._id]);
+              } else {
+                setSelectedShipmentId(selectedShipmentId?.filter((id) => id !== shipment._id));
+              }
+            }}
+            className={`absolute top-12 right-2 ${isSelected ? 'ring-2 ring-blue-500' : ''}`}
+            aria-label={`تحديد الشحنة ${shipment._id}`}
+          />
+        </div>
+      </div>
+    );
+  })}
+</div>
+
+
+
+
       {/* Pagination UI */}
       {totalPages > 1 && (
         <div className="flex flex-wrap justify-center mt-8 gap-2">

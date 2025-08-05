@@ -702,9 +702,9 @@ const [openTheme, setOpenTheme] = useState(false);
             <span className="text-base">{currentTranslations.signOut}</span>
           </button>
         </div>
-        <div className=" flex justify-center items-center   ">
+        {/* <div className=" flex justify-center items-center   ">
           <V7FloatingAssistant />
-        </div>
+        </div> */}
         {/* <div className="mt-auto">
           <div className="mt-6 rounded-xl v7-neu-card-support p-5 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-[#3498db]/10 to-transparent rounded-full transform translate-x-1/3 -translate-y-1/3"></div>

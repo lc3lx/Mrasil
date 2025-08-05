@@ -135,7 +135,7 @@ const schema = yup
     recipient_address: yup.string(),
     recipient_email: yup.string(),
     recipient_district: yup.string(),
-    weight: yup.number(),
+    weight: yup.number().required("الوزن مطلوب"),
     Parcels: yup.number(),
     dimension_high: yup.number(),
     dimension_width: yup.number(),
@@ -167,43 +167,42 @@ export function CreateShipmentSteps() {
   const initialStep = initialStepParam ? parseInt(initialStepParam) : 1;
   const [step, setStep] = useState(initialStep);
 
-  const methods = useForm({
-    resolver: yupResolver(schema),
-    defaultValues: {
-      // Step 1
-      shipper_full_name: "",
-      shipper_mobile: "",
-      shipper_city: "",
-      shipper_address: "",
-      recipient_full_name: "",
-      recipient_mobile: "",
-      recipient_city: "",
-      recipient_address: "",
-      recipient_email: "",
-      recipient_district: "",
-      // Step 2
-      weight: 0,
-      Parcels: 1,
-      dimension_high: 0,
-      dimension_width: 0,
-      dimension_length: 0,
-      // Step 3
-      paymentMethod: "",
-      // Provider
-      company: providerOptions[0].label,
-      shipmentType: shipmentType,
-      orderDescription: providerOptions[0].notes,
-      total: 0,
-      description: "",
-      customerAddress: "",
-    },
-  });
-  const {
-    handleSubmit,
-    setValue,
-    getValues,
-    formState: { errors },
-  } = methods;
+const methods = useForm({
+  resolver: yupResolver(schema),
+  defaultValues: {
+    shipper_full_name: "",
+    shipper_mobile: "",
+    shipper_city: "",
+    shipper_address: "",
+    recipient_full_name: "",
+    recipient_mobile: "",
+    recipient_city: "",
+    recipient_address: "",
+    recipient_email: "",
+    recipient_district: "",
+    weight: 0,
+    Parcels: 1,
+    dimension_high: 0,
+    dimension_width: 0,
+    dimension_length: 0,
+    paymentMethod: "",
+    company: providerOptions[0].label,
+    shipmentType: shipmentType,
+    orderDescription: providerOptions[0].notes,
+    total: 0,
+    description: "",
+    customerAddress: "",
+  },
+});
+
+const {
+  handleSubmit,
+  register,
+  setValue,
+  getValues,
+  formState: { errors },
+} = methods;
+
   const [createShipment] = useCreateShipmentMutation();
   const { refetch: refetchShipments } = useGetMyShipmentsQuery({});
 
@@ -452,14 +451,6 @@ function Step1Content({ nextStep }: { nextStep: () => void }) {
     formState: { errors },
     watch,
   } = useFormContext();
-  // Fetch client addresses from API
-  // const { data: clientAddressesData, isLoading, error } = useGetAllClientAddressesQuery()
-  // Mutation for creating a new client address
-  // const [createClientAddress, { isLoading: isCreating, error: createError }] = useCreateClientAddressMutation()
-  // const [deleteClientAddress, { isLoading: isDeleting }] = useDeleteClientAddressMutation()
-  // const [updateClientAddress, { isLoading: isUpdating, error: updateError }] = useUpdateClientAddressMutation()
-
-  // Sender address state moved to SenderAddressSection
   const [selectedSender, setSelectedSender] = useState<string | number | null>(
     null
   );
@@ -568,22 +559,21 @@ function Step2Content({
   }, [customerMeData, setValue]);
 
   // On submit, validate as before
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
-    if (
-      await trigger([
-        "weight",
-        "Parcels",
-        "dimension_high",
-        "dimension_width",
-        "dimension_length",
-        "orderDescription",
-        "paymentMethod",
-      ])
-    )
-      nextStep();
-  };
-  
+const handleSubmit = async (e: any) => {
+  e.preventDefault();
+  const valid = await trigger([
+    "weight",
+    "Parcels",
+    "dimension_high",
+    "dimension_width",
+    "dimension_length",
+    "orderDescription",
+    "paymentMethod",
+  ]);
+  console.log("Form valid?", valid);
+  if (valid == true) { nextStep();}
+};
+
   
   return (
     <>
@@ -696,7 +686,8 @@ function Step2Content({
             <div className="v7-neu-card-inner px-6 py-6 w-full min-w-[180px] flex items-center">
               <input
                 type="number"
-                {...register("weight")}
+                {...register("weight", { required: "الوزن مطلوب" })}
+                
                 placeholder="أدخل وزن الشحنة"
                 onFocus={() => setWeightFocused(true)}
                 onBlur={() => setWeightFocused(false)}
@@ -726,6 +717,8 @@ function Step2Content({
                   type="button"
                   variant="outline"
                   size="icon"
+                  {...register("Parcels", { required: "عدد الصناديق مطلوب" })}
+
                   className="h-8 w-8 rounded-full"
                   onClick={() =>
                     setValue(
@@ -767,6 +760,8 @@ function Step2Content({
               <textarea
                 placeholder="أدخل وصفاً لمحتويات الشحنة"
                 rows={4}
+                  {...register("orderDescription", { required: "الوصف مطلوب" })}
+
                 onFocus={() => setDescFocused(true)}
                 onBlur={() => setDescFocused(false)}
                 className="v7-neu-input text-base min-h-[120px] "
@@ -793,7 +788,7 @@ function Step2Content({
             <div className="v7-neu-input-container relative overflow-hidden group">
               <input
                 type="number"
-                {...register("total")}
+                {...register("total", {required:"الحقل مطلوب"})}
                 placeholder="أدخل الإجمالى"
                 className="v7-neu-input text-base"
               />
@@ -811,7 +806,7 @@ function Step2Content({
         </Label>
         <input
           type="text"
-          {...register("customerAddress")}
+          {...register("customerAddress", {required:"عنوان العميل مطلوب"})}
           className="hidden"
         />
 

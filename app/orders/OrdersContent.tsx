@@ -288,7 +288,7 @@ export default function OrdersContent() {
                 </TabsTrigger>
               </TabsList>
               <div className="flex gap-2 dirc" dir="rtl">
-                <div className="relative v7-neu-input-container flex-1 min-w-[240px]">
+                <div className="relative v7-neu-input-container flex-1 sm:min-w-[240px] w-full">
                   <Search className="absolute right-4 top-1/2 h-8 w-4 -translate-y-1/2 text-gry" />
                   <Input
                     dir="rtl"
@@ -419,7 +419,7 @@ export default function OrdersContent() {
                             checked={selectedOrder === order._id}
                             onChange={() => handleSelectOrder(order._id)}
                             aria-label={`تحديد الطلب ${order._id}`}
-                            className="accent-[#294D8B] w-4 h-4 rounded-full border-2 border-[#294D8B] focus:ring-2 focus:ring-[#294D8B]"
+                            className="accent-[#294D8B] w-4 h-4 rounded-full border border-[#294D8B] focus:ring-2 focus:ring-[#294D8B]"
                           />
                         </td>
                         <td className="p-2 px-4 whitespace-nowrap border-none">
