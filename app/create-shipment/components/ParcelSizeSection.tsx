@@ -186,8 +186,12 @@ export function ParcelSizeSection({ parcelsData, setValue, errors }: ParcelSizeS
               </span>
             </div>
           </div>
+          
         );
-      })()}
+          {errors.Parcels && (
+    <p className="text-red-500 text-sm">{errors.Parcels.message}</p>
+  )}
+      })}
       {/* Custom Parcel Modal */}
       <Dialog open={customModalOpen} onOpenChange={setCustomModalOpen}>
   <DialogContent className="flex flex-col gap-8 p-10  bg-[#f3f6fa] border-none">

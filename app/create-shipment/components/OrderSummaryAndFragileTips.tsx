@@ -2,10 +2,16 @@ import React from "react";
 import { FileText, Package, Shield } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useFormContext } from "react-hook-form";
 
 export function OrderSummaryAndFragileTips({ values }: { values: any }) {
   console.log(values);
-  
+
+  const { watch } = useFormContext();
+  const length = watch("dimension_length") || 0;
+  const width = watch("dimension_width") || 0;
+  const height = watch("dimension_high") || 0;
+ const volume = length * width * height;
   return (
     <>
       {/* نصائح للشحنات القابلة للكسر */}
@@ -231,20 +237,20 @@ export function OrderSummaryAndFragileTips({ values }: { values: any }) {
             <div className="flex justify-between items-center py-3 border-b border-[#3498db]/10">
               <span className="text-[#6d6a67] font-medium">من</span>
               <span className="font-medium text-[#1a365d]">
-                {values.shipper_city}
+                {values.shipper_city  || "غير محدد"}
               </span>
             </div>
             <div className="flex justify-between items-center  py-3 border-b border-[#3498db]/10">
               <span className="text-[#6d6a67] font-medium">إلى</span>
-              <span className="font-medium text-[#1a365d]">{values.recipient_city}</span>
+              <span className="font-medium text-[#1a365d]">{values.recipient_city  || "غير محدد"}</span>
             </div>
             <div className="flex justify-between items-center  py-3 border-b border-[#3498db]/10">
               <span className="text-[#6d6a67] font-medium">نوع الشحنة</span>
-              <span className="font-medium text-[#1a365d]">{values.shipmentType || "غير محدد"}</span>
+              <span className="font-medium text-[#1a365d]">{values.paymentMethod == "Prepaid" ? "الدفع المسبق" :"الدفع عند الأستلام" }</span>
             </div>
             <div className="flex justify-between items-center  py-3 border-b border-[#3498db]/10">
               <span className="text-[#6d6a67] font-medium">حجم الطرد</span>
-              <span className="font-medium text-[#1a365d]">غير محدد</span>
+              <span className="font-medium text-[#1a365d]">{volume  || "غير محدد"} </span>
             </div>
             <div className="flex justify-between items-center  py-3 border-b border-[#3498db]/10">
               <span className="text-[#6d6a67] font-medium">الوزن</span>
@@ -257,13 +263,13 @@ export function OrderSummaryAndFragileTips({ values }: { values: any }) {
             <div className="flex justify-between items-center  py-3 border-b border-[#3498db]/10">
               <span className="text-[#6d6a67] font-medium">خدمة التوصيل</span>
               <span className="font-medium text-[#1a365d]">
-                {values.company}
+                {values.company  || "غير محدد"}
               </span>
             </div>
             <div className="flex justify-between items-center  py-4 text-xl font-bold">
               <span className="text-[#1a365d]">الإجمالي</span>
               <span className="text-[#3498db] px-3 py-1.5 rounded-lg inline-flex items-center">
-              {values.total} ريال
+              {values.total  || "غير محدد"} ريال
               </span>
             </div>
           </div>

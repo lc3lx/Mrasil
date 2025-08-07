@@ -289,19 +289,42 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
           stats={[
             {
               label: "طلبات اليوم",
-              value: ordersLoading ? "..." : todayOrders.length.toString(),
+
+              value: ordersLoading ? "..." : (
+              <span className=" flex items-center gap-1">
+                <span>
+
+              {todayOrders.length.toString() }
+                </span>
+              طلب
+              </span>),
               type: "طلب",
             },
             {
               label: "جميع الطلبات",
               value: ordersLoading
                 ? "..."
-                : ordersData?.data.length?.toString() ?? "-",
+                : (
+                   <span className=" flex items-center gap-1">
+                      <span>
+                  {ordersData?.data.length?.toString() ?? "-"}  
+                      </span>
+                      طلب
+                   </span>),
               type: "طلب",
             },
             {
               label: "الطلبات المعلقة",
-              value: ordersLoading ? "..." : pendingOrdersCount.toString(),
+              value: ordersLoading ? "..." :(
+                <span className=" flex items-center gap-1">
+                  <span>
+
+                {pendingOrdersCount.toString()}
+                  </span>
+                  طلب
+                  </span>
+              ),
+            
               type: "طلب",
               // progress: 85,
             },

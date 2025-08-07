@@ -135,18 +135,18 @@ const schema = yup
     recipient_address: yup.string(),
     recipient_email: yup.string(),
     recipient_district: yup.string(),
-    weight: yup.number().required("الوزن مطلوب"),
+    weight: yup.number().required("الوزن مطلوب").typeError("الوزن يجب أن يكون رقماً"),
     Parcels: yup.number(),
-    dimension_high: yup.number(),
-    dimension_width: yup.number(),
-    dimension_length: yup.number(),
-    paymentMethod: yup.string(),
+    dimension_high: yup.number().required("الارتفاع مطلوب"),
+    dimension_width: yup.number().required("العرض مطلوب"),
+    dimension_length: yup.number().required("الطول مطلوب"),
     company: yup.string(),
     shipmentType: yup.string(),
-    orderDescription: yup.string(),
-    total: yup.number().optional(),
+    orderDescription: yup.string().required("الوصف مطلوب"),
+    total: yup.number().required("الاجمالي مطلوب").typeError("الأجمالي مطلوب"),
     description: yup.string().optional(),
     customerAddress: yup.string().optional(),
+    paymentMethod: yup.string().required("طريقة الدفع مطلوبة")
   })
   .required();
 
@@ -180,18 +180,19 @@ const methods = useForm({
     recipient_address: "",
     recipient_email: "",
     recipient_district: "",
-    weight: 0,
-    Parcels: 1,
-    dimension_high: 0,
-    dimension_width: 0,
-    dimension_length: 0,
+    weight: undefined,
+    Parcels: 0,
+    dimension_high: undefined,
+    dimension_width: undefined,
+    dimension_length: undefined,
     paymentMethod: "",
     company: providerOptions[0].label,
-    shipmentType: shipmentType,
-    orderDescription: providerOptions[0].notes,
-    total: 0,
+    shipmentType: "",
+    orderDescription: "",
+    total: undefined,
     description: "",
     customerAddress: "",
+
   },
 });
 
@@ -526,6 +527,7 @@ function Step1Content({ nextStep }: { nextStep: () => void }) {
 function Step2Content({
   nextStep,
   prevStep,
+  
 }: {
   nextStep: () => void;
   prevStep: () => void;
@@ -537,7 +539,7 @@ function Step2Content({
     trigger,
     watch,
   } = useFormContext();
-  const { data: parcelsData, isLoading: isLoadingParcels } =
+  const {data : parcelsData, isLoading: isLoadingParcels } =
     useGetAllParcelsQuery();
   const paymentMethod = watch("paymentMethod");
   const { data: customerMeData } = useGetCustomerMeQuery();
@@ -569,6 +571,8 @@ const handleSubmit = async (e: any) => {
     "dimension_length",
     "orderDescription",
     "paymentMethod",
+    "total"
+
   ]);
   console.log("Form valid?", valid);
   if (valid == true) { nextStep();}
@@ -596,6 +600,7 @@ const handleSubmit = async (e: any) => {
               setValue={setValue}
               errors={errors}
             />
+
           </div>
           {/* Shipment type (right, 1/3) */}
           <div className="w-full md:w-1/3 flex flex-col gap-2">
@@ -613,7 +618,7 @@ const handleSubmit = async (e: any) => {
                   desc: "مناسب للدفع قبل الشحن",
                   sendValue: "Prepaid",
                 },
-                {
+                { 
                   value: "الدفع عند الاستلام",
                   label: "الدفع عند الاستلام",
                   desc: "مناسب للدفع عند استلام الشحنة",
@@ -670,6 +675,9 @@ const handleSubmit = async (e: any) => {
                 );
               })}
             </div>
+            {errors.paymentMethod && (
+  <p className="text-red-500 text-sm mt-2">{errors.paymentMethod.message}</p>
+)}
           </div>
         </div>
         {/* Inputs row: weight, parcels, description */}
@@ -695,11 +703,11 @@ const handleSubmit = async (e: any) => {
                 style={weightFocused ? { boxShadow: "0 2px 0 0 #3498db" } : {}}
               />
             </div>
-            {errors.weight && typeof errors.weight.message === "string" && (
-              <div className="text-red-500 text-sm mt-1">
-                {errors.weight.message}
-              </div>
-            )}
+{errors.weight && typeof errors.weight.message === "string" && (
+  <div className="text-red-500 text-sm mt-1">
+    {errors.weight.message}
+  </div>
+)}
           </motion.div>
 
           {/* عدد الصناديق */}
@@ -717,8 +725,7 @@ const handleSubmit = async (e: any) => {
                   type="button"
                   variant="outline"
                   size="icon"
-                  {...register("Parcels", { required: "عدد الصناديق مطلوب" })}
-
+                  {...register("Parcels")}
                   className="h-8 w-8 rounded-full"
                   onClick={() =>
                     setValue(
@@ -729,6 +736,7 @@ const handleSubmit = async (e: any) => {
                 >
                   <span className="text-lg font-bold">-</span>
                 </Button>
+
                 <div className="text-2xl font-bold text-[#3498db]">
                   {watch("Parcels") || 1}
                 </div>
@@ -767,12 +775,12 @@ const handleSubmit = async (e: any) => {
                 className="v7-neu-input text-base min-h-[120px] "
               />
             </div>
-            {errors.orderDescription &&
-              typeof errors.orderDescription.message === "string" && (
-                <div className="text-red-500 text-sm mt-1">
-                  {errors.orderDescription.message}
-                </div>
-              )}
+
+              {errors.orderDescription && typeof errors.orderDescription.message === "string" && (
+  <div className="text-red-500 text-sm mt-1">
+    {errors.orderDescription.message}
+  </div>
+)}
           </motion.div>
         </div>
         {/* الإجمالى والوصف في نفس الصف */}
