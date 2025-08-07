@@ -38,6 +38,7 @@ declare global {
     Moyasar?: any;
   }
 }
+
 interface V7StatsCardProps {
   title: string;
   icon: LucideIcon;
@@ -187,8 +188,6 @@ export function V7StatsCard({
   const labelTextColor = isDark ? "text-gray-300" : "text-gray-600";
   const progressBgColor = isDark ? "bg-gray-700" : "bg-gray-100";
 
-
-
   // Bank transfer form fields
   const [paymentMethod, setPaymentMethod] = useState(null); // "card" أو "bank"
   const [amount, setAmount] = useState(null);
@@ -197,8 +196,9 @@ export function V7StatsCard({
   const [transferImage, setTransferImage] = useState(null);
   const [transferImagePreview, setTransferImagePreview] = useState(null);
   const [isMoyasarLoaded, setIsMoyasarLoaded] = useState(false);
-
-  const handleClose = () => {
+ const [openAddSenderModal, setOpenAddSenderModal] = useState(false);
+   const iconColor = isDark ? "text-white" : colorMap[color].iconColor;
+   const handleClose = () => {
     setOpenAddSenderModal(false);
   };
 
@@ -209,61 +209,51 @@ export function V7StatsCard({
   const [cardMonth, setCardMonth] = useState("");
   const [cardYear, setCardYear] = useState("");
 
-  // تحميل سكربت Moyasar فقط إذا تم فتح المودال والدفع بطاقة ائتمان
-useEffect(() => {
-  if (openAddSenderModal && paymentMethod === "card") {
-    if (!document.getElementById("moyasar-script")) {
-      const script = document.createElement("script");
-      script.id = "moyasar-script";
-      script.src = "https://api.moyasar.com/v1/tokens";
-      script.async = true;
-      script.onload = () => {
-        setIsMoyasarLoaded(true);
-      };
-      document.body.appendChild(script);
-    } else {
-      setIsMoyasarLoaded(true);
-    }
-  }
-}, [paymentMethod]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  // NEW
 
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  setIsSubmitting(true);
+  setError("");
 
-const handleContinue = () => {
-  const finalAmount = amount || Number(customAmount);
-  if (!finalAmount || finalAmount <= 0) {
-    alert("الرجاء إدخال مبلغ صحيح");
-    return;
-  }
+  try {
+    const token = "pk_live_3p2q5Kj7WiDPJZ2kYRSNc16SFQ47C6hfAvkKLkCc"; 
+const userToken = localStorage.getItem("token");
 
-  setIsLoading(true);
+    const res = await fetch("https://backend-marasil.onrender.com/api/wallet/rechargeWallet", {
+      method: "POST",
+  headers: { 
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${userToken}`,
+  },
+    body: JSON.stringify({ token, amount: 10000 }),
 
-  if (paymentMethod === "card") {
-    // ✅ تحقق من تحميل السكربت قبل المتابعة
-    if (!isMoyasarLoaded || typeof window.Moyasar === "undefined") {
-      alert("مكتبة الدفع لم تُحمّل بعد، حاول مرة أخرى.");
-      setIsLoading(false);
-      return;
-    }
-
-    // ✅ استدعاء الدفع
-    window.Moyasar.init({
-      element: '#moyasar-container',
-      amount: finalAmount * 100,
-      currency: 'SAR',
-      description: 'شحن المحفظة',
-      publishable_api_key: 'pk_live_3p2q5Kj7WiDPJZ2kYRSNc16SFQ47C6hfAvkKLkCc',
-      callback_url: `${window.location.origin}/payment-success`,
-      methods: ['creditcard'],
     });
 
-    setIsLoading(false);
-  } else if (paymentMethod === "bank") {
-    alert("سيتم تحويلك لتعليمات التحويل البنكي.");
-    setIsLoading(false);
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message || "فشل في الدفع");
+    }
+
+    if (!data.transaction_url) {
+      throw new Error("الرابط غير موجود");
+    }
+
+    window.location.href = data.transaction_url;
+
+  } catch (err: any) {
+    setError(err.message || "خطأ غير معروف");
+  } finally {
+    setIsSubmitting(false);
   }
 };
 
 
+
+  // القديم
   // عند اختيار مبلغ
   const handleAmountSelect = (val) => {
     setAmount(Number(val));
@@ -289,9 +279,6 @@ const handleContinue = () => {
   };
 
 
-  // القديم
-  const iconColor = isDark ? "text-white" : colorMap[color].iconColor;
-  const [openAddSenderModal, setOpenAddSenderModal] = useState(false);
   const handleCardNumberPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     e.preventDefault();
     const pastedText = e.clipboardData.getData("text");
@@ -305,10 +292,7 @@ const handleContinue = () => {
   const isDarkMode = theme === "dark";
   return (
     <>
-
-      <Card
-        className={`${cardClass} v7-neu-card border-none overflow-hidden h-full`}
-      >
+      <Card className={`${cardClass} v7-neu-card border-none overflow-hidden h-full`}>
         <CardContent className="py-1 h-full flex flex-col">
           <div className="flex items-center justify-between mb-3">
             <h3 className={`font-bold text-2xl ${textColor}`}>{title}</h3>
@@ -398,265 +382,254 @@ const handleContinue = () => {
       </Card>
 
       <Dialog open={openAddSenderModal} onOpenChange={handleClose}>
-        
         <DialogContent className=" border-none w-full   ">
           <DialogHeader>
             <DialogTitle className="text-[#4A7ED0] w-full sm:mt-2 mt-0 text-right sm:text-2xl text-sm  border-b border-[#8888] pb-4  ">
-              
               إختر طريقة الدفع
             </DialogTitle>
           </DialogHeader>
-            <div>
-          <div
-            className={`bg-blue-50 p-4 rounded-lg text-xs sm:text-sm text-right ${
-              isDarkMode ? "bg-blue-900/20 text-blue-200" : ""
-            }`}
-          >
-            <p>
-              باستخدام بطاقة الائتمان ، سيتم إضافة القيمة تلقائياً ؛ قد تستغرق
-              معالجة التحويل المصرفي 24 ساعة
-            </p>
-          </div>
-          <div className=" flex flex-col gap-2">
-            <div className="  grid grid-cols-5 gap-2 ">
-              {["100", "500", "1000", "2000", "5000"].map((val) => (
-                <button
-                  key={val}
-                  onClick={() => handleAmountSelect(val)}
-                  className={`v7-neu-card  max-h-6  text-xs  sm:text-sm  flex items-center justify-center transition-all   bg-blue-600 v7-neu-button-flat
+          <form id="moyasar-token-form" onSubmit={handleSubmit}>
+            <input
+              type="hidden"
+              name="publishable_api_key"
+              value="pk_live_3p2q5Kj7WiDPJZ2kYRSNc16SFQ47C6hfAvkKLkCc"
+            />
+            <input type="hidden" name="save_only" value="true" />
+            <div
+              className={`bg-blue-50 p-4 rounded-lg text-xs sm:text-sm text-right ${
+                isDarkMode ? "bg-blue-900/20 text-blue-200" : ""
+              }`}
+            >
+              <p>
+                باستخدام بطاقة الائتمان ، سيتم إضافة القيمة تلقائياً ؛ قد تستغرق
+                معالجة التحويل المصرفي 24 ساعة
+              </p>
+            </div>
+            <div className=" flex flex-col gap-2">
+              <div className="  grid grid-cols-5 gap-2 ">
+                {["100", "500", "1000", "2000", "5000"].map((val) => (
+                  <button
+                    key={val}
+                    onClick={() => handleAmountSelect(val)}
+                    className={`v7-neu-card  max-h-6  text-xs  sm:text-sm  flex items-center justify-center transition-all   bg-blue-600 v7-neu-button-flat
                                       
                                       
                                       `}
-                >
-                  <span className="ml-1">﷼</span> {val}
-                </button>
-              ))}
-            </div>
-
-            <div className="flex items-center gap-4">
-              <p className="text-right text-xs sm:text-sm">
-                يجب أن يكون الرقم من مضاعفات الرقم SAR 100
-              </p>
-              <div className="flex-1">
-                <Input
-                  value={customAmount}
-                  onChange={handleCustomAmountChange}
-                  placeholder="مبلغ آخر"
-                  className={`text-right "v7-neu-input  text-gry focus:ring-0 focus:border-none hover:border-none hover:ring-0`}
-                />
+                  >
+                    <span className="ml-1">﷼</span> {val}
+                  </button>
+                ))}
               </div>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div
-              onClick={() => setPaymentMethod("bank")}
-              className={`border rounded-lg p-6 cursor-pointer flex flex-col items-center justify-center transition-all ${
-                paymentMethod === "bank"
-                  ? isDarkMode
-                    ? "border-blue-500 bg-blue-900/20"
-                    : "border-blue-600 bg-blue-50"
-                  : isDarkMode
-                  ? "border-dark-border bg-dark-card hover:bg-dark-hover"
-                  : "v7-neu-card hover:shadow-md"
-              }`}
-            >
-              <div className="flex items-center justify-center mb-2">
-                <div
-                  className={`w-6 h-6 rounded-full border flex items-center justify-center ${
-                    isDarkMode ? "border-gray-500" : "border-gray-400"
-                  }`}
-                >
-                  {paymentMethod === "bank" && (
-                    <div className="w-4 h-4 rounded-full bg-blue-600"></div>
-                  )}
+
+              <div className="flex items-center gap-4">
+                <p className="text-right text-xs sm:text-sm">
+                  يجب أن يكون الرقم من مضاعفات الرقم SAR 100
+                </p>
+                <div className="flex-1">
+                  <Input
+                    value={customAmount}
+                    onChange={handleCustomAmountChange}
+                    placeholder="مبلغ آخر"
+                    className={`text-right "v7-neu-input  text-gry focus:ring-0 focus:border-none hover:border-none hover:ring-0`}
+                  />
                 </div>
               </div>
-              <div className="text-center">
-                <p className="font-medium mb-2 text-sm sm:text-base">
-                  التحويل البنكي
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div
+                onClick={() => setPaymentMethod("bank")}
+                className={`border rounded-lg p-6 cursor-pointer flex flex-col items-center justify-center transition-all ${
+                  paymentMethod === "bank"
+                    ? isDarkMode
+                      ? "border-blue-500 bg-blue-900/20"
+                      : "border-blue-600 bg-blue-50"
+                    : isDarkMode
+                    ? "border-dark-border bg-dark-card hover:bg-dark-hover"
+                    : "v7-neu-card hover:shadow-md"
+                }`}
+              >
+                <div className="flex items-center justify-center mb-2">
+                  <div
+                    className={`w-6 h-6 rounded-full border flex items-center justify-center ${
+                      isDarkMode ? "border-gray-500" : "border-gray-400"
+                    }`}
+                  >
+                    {paymentMethod === "bank" && (
+                      <div className="w-4 h-4 rounded-full bg-blue-600"></div>
+                    )}
+                  </div>
+                </div>
+                <div className="text-center">
+                  <p className="font-medium mb-2 text-sm sm:text-base">
+                    التحويل البنكي
+                  </p>
+                  <div className="flex justify-center">
+                    <Image
+                      alt="..."
+                      src={bankTransfer}
+                      width={50}
+                      height={50}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div
+                onClick={() => setPaymentMethod("card")}
+                className={`border rounded-lg p-6 cursor-pointer flex flex-col items-center justify-center transition-all ${
+                  paymentMethod === "card"
+                    ? isDarkMode
+                      ? "border-blue-500 bg-blue-900/20"
+                      : "border-blue-600 bg-blue-50"
+                    : isDarkMode
+                    ? "border-dark-border bg-dark-card hover:bg-dark-hover"
+                    : "v7-neu-card hover:shadow-md"
+                }`}
+              >
+                <div className="flex items-center justify-center mb-2">
+                  <div
+                    className={`w-6 h-6 rounded-full border flex items-center justify-center ${
+                      isDarkMode ? "border-gray-500" : "border-gray-400"
+                    }`}
+                  >
+                    {paymentMethod === "card" && (
+                      <div className="w-4 h-4 rounded-full bg-blue-600"></div>
+                    )}
+                  </div>
+                </div>
+                <div className="text-center">
+                  <p className="font-medium mb-2 text-sm sm:text-base">
+                    بطاقة الائتمان
+                  </p>
+                  <div className="flex justify-center gap-2">
+                    <Image
+                      alt="creditCard"
+                      src={creditCard1}
+                      className=" w-[1.5rem]"
+                      width={20}
+                      height={20}
+                    />
+                    <Image
+                      alt="creditCard"
+                      src={creditCard2}
+                      className=" w-[1.5rem]"
+                      width={20}
+                      height={20}
+                    />
+                    <Image
+                      alt="creditCard"
+                      src={creditCard3}
+                      className=" w-[1.5rem]"
+                      width={20}
+                      height={20}
+                    />
+                    <Image
+                      alt="creditCard"
+                      src={creditCard4}
+                      className=" w-[1.5rem]"
+                      width={20}
+                      height={20}
+                    />
+                    <Image
+                      alt="creditCard"
+                      src={creditCard5}
+                      className=" w-[1.5rem]"
+                      width={20}
+                      height={20}
+                    />
+                    <Image
+                      alt="creditCard"
+                      src={creditCard6}
+                      className=" w-[1.5rem]"
+                      width={20}
+                      height={20}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            {/* Bank Transfer Form */}
+            {paymentMethod === "bank" && (
+              <div className="space-y-4">
+                <h2 className="sm:text-lg text-base font-bold text-right">
+                  إيصال التحويل البنكي
+                </h2>
+                <p className="text-right text-xs sm:text-sm text-gray-600">
+                  قم برفع صورة إيصال التحويل البنكي
                 </p>
+
                 <div className="flex justify-center">
-                  <Image alt="..." src={bankTransfer} width={50} height={50} />
+                  <label
+                    className={`cursor-pointer border-2 border-dashed rounded-lg sm:p-8 p-2 text-center transition-all hover:border-blue-500 ${
+                      isDarkMode
+                        ? "border-gray-600 bg-dark-card"
+                        : "border-gray-300 bg-gray-50"
+                    }`}
+                  >
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                    />
+                    {transferImagePreview ? (
+                      <div className="space-y-2">
+                        <img
+                          src={transferImagePreview}
+                          alt="Transfer receipt"
+                          className="sm:w-22 sm:h-22 w-16 h-16 object-cover rounded-lg mx-auto"
+                        />
+                        <p className="text-sm text-green-600">
+                          تم رفع الصورة بنجاح
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <Upload className="w-12 h-12 mx-auto text-gray-400" />
+                        <p className="text-sm">اضغط لرفع صورة الإيصال</p>
+                        <p className="text-xs text-gray-500">
+                          JPG, PNG, GIF حتى 5MB
+                        </p>
+                      </div>
+                    )}
+                  </label>
                 </div>
               </div>
-            </div>
-
-            <div
-              onClick={() => setPaymentMethod("card")}
-              className={`border rounded-lg p-6 cursor-pointer flex flex-col items-center justify-center transition-all ${
-                paymentMethod === "card"
-                  ? isDarkMode
-                    ? "border-blue-500 bg-blue-900/20"
-                    : "border-blue-600 bg-blue-50"
-                  : isDarkMode
-                  ? "border-dark-border bg-dark-card hover:bg-dark-hover"
-                  : "v7-neu-card hover:shadow-md"
-              }`}
-            >
-              <div className="flex items-center justify-center mb-2">
-                <div
-                  className={`w-6 h-6 rounded-full border flex items-center justify-center ${
-                    isDarkMode ? "border-gray-500" : "border-gray-400"
-                  }`}
-                >
-                  {paymentMethod === "card" && (
-                    <div className="w-4 h-4 rounded-full bg-blue-600"></div>
-                  )}
-                </div>
-              </div>
-              <div className="text-center">
-                <p className="font-medium mb-2 text-sm sm:text-base">
-                  بطاقة الائتمان
-                </p>
-                <div className="flex justify-center gap-2">
-                  <Image
-                    alt="creditCard"
-                    src={creditCard1}
-                    className=" w-[1.5rem]"
-                    width={20}
-                    height={20}
-                  />
-                  <Image
-                    alt="creditCard"
-                    src={creditCard2}
-                    className=" w-[1.5rem]"
-                    width={20}
-                    height={20}
-                  />
-                  <Image
-                    alt="creditCard"
-                    src={creditCard3}
-                    className=" w-[1.5rem]"
-                    width={20}
-                    height={20}
-                  />
-                  <Image
-                    alt="creditCard"
-                    src={creditCard4}
-                    className=" w-[1.5rem]"
-                    width={20}
-                    height={20}
-                  />
-                  <Image
-                    alt="creditCard"
-                    src={creditCard5}
-                    className=" w-[1.5rem]"
-                    width={20}
-                    height={20}
-                  />
-                  <Image
-                    alt="creditCard"
-                    src={creditCard6}
-                    className=" w-[1.5rem]"
-                    width={20}
-                    height={20}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-          {/* Bank Transfer Form */}
-          {paymentMethod === "bank" && (
-            <div className="space-y-4">
-              <h2 className="sm:text-lg text-base font-bold text-right">
-                إيصال التحويل البنكي
-              </h2>
-              <p className="text-right text-xs sm:text-sm text-gray-600">
-                قم برفع صورة إيصال التحويل البنكي
-              </p>
-
-              <div className="flex justify-center">
-                <label
-                  className={`cursor-pointer border-2 border-dashed rounded-lg sm:p-8 p-2 text-center transition-all hover:border-blue-500 ${
-                    isDarkMode
-                      ? "border-gray-600 bg-dark-card"
-                      : "border-gray-300 bg-gray-50"
-                  }`}
-                >
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                  />
-                  {transferImagePreview ? (
-                    <div className="space-y-2">
-                      <img
-                        src={transferImagePreview}
-                        alt="Transfer receipt"
-                        className="sm:w-22 sm:h-22 w-16 h-16 object-cover rounded-lg mx-auto"
-                      />
-                      <p className="text-sm text-green-600">
-                        تم رفع الصورة بنجاح
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      <Upload className="w-12 h-12 mx-auto text-gray-400" />
-                      <p className="text-sm">اضغط لرفع صورة الإيصال</p>
-                      <p className="text-xs text-gray-500">
-                        JPG, PNG, GIF حتى 5MB
-                      </p>
-                    </div>
-                  )}
-                </label>
-              </div>
-            </div>
-          )}
-          {/* Credit Card Form */}
-          {paymentMethod === "card" && (
-            <div className="space-y-1">
-              <h2 className="text-sm sm:text-xl font-bold text-right">
-                معلومات البطاقة
-              </h2>
-
+            )}
+            {/* Credit Card Form */}
+            {paymentMethod === "card" && (
               <div className="space-y-1">
-                <div>
-                  <label className="block text-right text-xs sm:text-sm font-medium mb-2">
-                    اسم حامل البطاقة
-                  </label>
-                  <Input
-                    value={cardName}
-                    onChange={(e) => setCardName(e.target.value)}
-                    placeholder="اسم حامل البطاقة"
-                    className={`text-right sm:text-base text-xs  ${
-                      isDarkMode
-                        ? "bg-dark-elevated border-dark-border"
-                        : "v7-neu-input"
-                    }`}
-                  />
-                </div>
+                <h2 className="text-sm sm:text-xl font-bold text-right">
+                  معلومات البطاقة
+                </h2>
 
-                <div>
-                  <label className="block text-right text-xs sm:text-sm font-medium mb-2">
-                    رقم البطاقة
-                  </label>
-                  <Input
-                    value={cardNumber}
-                    onChange={(e) => setCardNumber(e.target.value)}
-                    onPaste={handleCardNumberPaste}
-                    placeholder="0000 0000 0000 0000"
-                    maxLength={19}
-                    dir="ltr"
-                    inputMode="numeric"
-                    className={`text-right sm:text-base text-xs  ${
-                      isDarkMode
-                        ? "bg-dark-elevated border-dark-border"
-                        : "v7-neu-input"
-                    }`}
-                  />
-                </div>
-
-                <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-1">
                   <div>
                     <label className="block text-right text-xs sm:text-sm font-medium mb-2">
-                      CVC
+                      اسم حامل البطاقة
                     </label>
                     <Input
-                      value={cardCvc}
-                      onChange={(e) => setCardCvc(e.target.value)}
-                      placeholder="123"
-                      maxLength={3}
+                      value={cardName}
+                      onChange={(e) => setCardName(e.target.value)}
+                      placeholder="اسم حامل البطاقة"
+                      className={`text-right sm:text-base text-xs  ${
+                        isDarkMode
+                          ? "bg-dark-elevated border-dark-border"
+                          : "v7-neu-input"
+                      }`}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-right text-xs sm:text-sm font-medium mb-2">
+                      رقم البطاقة
+                    </label>
+                    <Input
+                      value={cardNumber}
+                      onChange={(e) => setCardNumber(e.target.value)}
+                      onPaste={handleCardNumberPaste}
+                      placeholder="0000 0000 0000 0000"
+                      maxLength={19}
                       dir="ltr"
                       inputMode="numeric"
                       className={`text-right sm:text-base text-xs  ${
@@ -666,77 +639,81 @@ const handleContinue = () => {
                       }`}
                     />
                   </div>
-                  <div>
-                    <label className="block text-right text-xs sm:text-sm font-medium mb-2">
-                      الشهر
-                    </label>
-                    <Input
-                      value={cardMonth}
-                      onChange={(e) => setCardMonth(e.target.value)}
-                      placeholder="12"
-                      maxLength={2}
-                      dir="ltr"
-                      inputMode="numeric"
-                      className={`text-right sm:text-base text-xs  ${
-                        isDarkMode
-                          ? "bg-dark-elevated border-dark-border"
-                          : "v7-neu-input"
-                      }`}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-right  text-xs sm:text-sm font-medium mb-2">
-                      السنة
-                    </label>
-                    <Input
-                      value={cardYear}
-                      onChange={(e) => setCardYear(e.target.value)}
-                      placeholder="25"
-                      maxLength={2}
-                      dir="ltr"
-                      inputMode="numeric"
-                      className={`text-right sm:text-base text-xs ${
-                        isDarkMode
-                          ? "bg-dark-elevated border-dark-border"
-                          : "v7-neu-input"
-                      }`}
-                    />
+
+                  <div className="grid grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-right text-xs sm:text-sm font-medium mb-2">
+                        CVC
+                      </label>
+                      <Input value={cardCvc} onChange={(e) => setCardCvc(e.target.value)} placeholder="123" maxLength={3}
+dir="ltr"
+                        inputMode="numeric"
+                        className={`text-right sm:text-base text-xs  ${
+                          isDarkMode
+                            ? "bg-dark-elevated border-dark-border"
+                            : "v7-neu-input"
+                        }`}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-right text-xs sm:text-sm font-medium mb-2">
+                        الشهر
+                      </label>
+                      <Input
+                        value={cardMonth}
+                        onChange={(e) => setCardMonth(e.target.value)}
+                        placeholder="12"
+                        maxLength={2}
+                        dir="ltr"
+                        inputMode="numeric"
+                        className={`text-right sm:text-base text-xs  ${
+                          isDarkMode
+                            ? "bg-dark-elevated border-dark-border"
+                            : "v7-neu-input"
+                        }`}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-right  text-xs sm:text-sm font-medium mb-2">
+                        السنة
+                      </label>
+                      <Input
+                        value={cardYear}
+                        onChange={(e) => setCardYear(e.target.value)}
+                        placeholder="25"
+                        maxLength={2}
+                        dir="ltr"
+                        inputMode="numeric"
+                        className={`text-right sm:text-base text-xs ${
+                          isDarkMode
+                            ? "bg-dark-elevated border-dark-border"
+                            : "v7-neu-input"
+                        }`}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
+            )}
+            {/* <PaymentForm amount={2500} description="طلب رقم #302" /> */}
+            <h2 className=" text-sm sm:text-lg">الدفع الإلكتروني</h2>
+            {/* // <MoyasarLoader /> */}
+            <div className="flex justify-center ">
+              {error && <p className="text-red-600">{error}</p>}
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className={`px-16 py-6 text-lg ${
+                  isDarkMode
+                    ? "bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700"
+                    : "v7-neu-button disabled:opacity-50"
+                }`}
+              >
+                {isLoading ? "جاري المعالجة..." : "استمرار"}
+              </Button>
             </div>
-          )}
-          {/* <PaymentForm amount={2500} description="طلب رقم #302" /> */}
-          <h2 className=" text-sm sm:text-lg">الدفع الإلكتروني</h2>
-          {/* // <MoyasarLoader /> */}
-          <div className="flex justify-center ">
-            <Button
-              onClick={handleContinue}
-              disabled={
-                !paymentMethod ||
-                (!amount && !customAmount) ||
-                (paymentMethod === "bank" && !transferImage) ||
-                (paymentMethod === "card" &&
-                  (!cardName ||
-                    !cardNumber ||
-                    !cardCvc ||
-                    !cardMonth ||
-                    !cardYear)) ||
-                isLoading
-              }
-              className={`px-16 py-6 text-lg ${
-                isDarkMode
-                  ? "bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700"
-                  : "v7-neu-button disabled:opacity-50"
-              }`}
-            >
-              {isLoading ? "جاري المعالجة..." : "استمرار"}
-            </Button>
-          </div>
-            </div>
-
+          </form>
         </DialogContent>
       </Dialog>
     </>
-  );
-}
+  )};
