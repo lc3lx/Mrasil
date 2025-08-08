@@ -218,7 +218,7 @@ export function V7Header({
           />
         </div>
       </div>
-
+              <V7FloatingAssistant/>
       <div className="flex items-center gap-1 sm:gap-3 md:gap-4">
         <DropdownMenu>
           <DropdownMenuTrigger asChild className=" hidden sm:block">

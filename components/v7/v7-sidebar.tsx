@@ -702,24 +702,6 @@ const [openTheme, setOpenTheme] = useState(false);
             <span className="text-base">{currentTranslations.signOut}</span>
           </button>
         </div>
-        {/* <div className=" flex justify-center items-center   ">
-          <V7FloatingAssistant />
-        </div> */}
-        {/* <div className="mt-auto">
-          <div className="mt-6 rounded-xl v7-neu-card-support p-5 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-[#3498db]/10 to-transparent rounded-full transform translate-x-1/3 -translate-y-1/3"></div>
-
-            <div className="mb-2 flex items-center gap-2">
-              <Shield className="h-6 w-6 text-[#3498db]" />
-              <span className="text-base font-medium">{currentTranslations.needHelp}</span>
-            </div>
-            <p className="mb-3 text-sm text-gry">{currentTranslations.supportTeam}</p>
-            <Button size="sm" className="w-full v7-neu-button-support" onClick={() => handleNavigation("/support")}>
-              <Headphones className="mr-2 h-5 w-5" />
-              {currentTranslations.contactUs}
-            </Button>
-          </div>
-        </div> */}
       </aside>
       <Sheet open={open} onOpenChange={onClose}>
         <SheetContent

@@ -6,6 +6,8 @@ import { V7AIChat } from "./v7-ai-chat"
 import { Sparkles, Lightbulb, Move, RotateCcw, Cpu, Zap } from "lucide-react"
 import Image from "next/image"
 import Ai from "../../public/Ai.png"
+import { motion, AnimatePresence } from "framer-motion";
+import { MarasilAtomLogo } from "@/app/invoices/components/MarasilAtomLogo"
 export function V7FloatingAssistant() {
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
@@ -474,9 +476,9 @@ export function V7FloatingAssistant() {
           onClick={showPositionControls ? undefined : () => setIsChatOpen(true)}
           onMouseEnter={() => !isDragging && setIsHovered(true)}
           onMouseLeave={() => !isDragging && setIsHovered(false)}
-          className={`relative ${isHovered && !showPositionControls ? "scale-110" : "scale-100"} ${
-            isAnimating ? "animate-float" : ""
-          }`}
+          // className={`relative ${isHovered && !showPositionControls ? "scale-110" : "scale-100"} ${
+          //   isAnimating ? "animate-float" : ""
+          // }`}
           style={{
             width: "90px",
             height: "100px",
@@ -488,25 +490,53 @@ export function V7FloatingAssistant() {
           <div
             className="absolute"
             style={{
-              width: "90px",
-              height: "90px",
+              width: "100px",
+              height: "100px",
               backgroundColor: "transparent",
-              borderRadius: "16px",
               overflow: "hidden",
               zIndex: 99,
               top: "0",
-
               left: "0",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              position: "relative",
-              transition: "all 0.3s ease",
-              transform: isAnimating ? "translateY(-3px)" : isHovered ? "translateY(-2px)" : "translateY(0)",
+
+              // position: "relative",
+              // transition: "all 0.3s ease",
+              // transform: isAnimating ? "translateY(-3px)" : isHovered ? "translateY(-2px)" : "translateY(0)",
             }}
           >
             {/* Robot head */}
-              <Image alt="ai" src={Ai} className=" bg-none" />
+             {/* 3D Atom Logo container with improved dimensions */}
+        <motion.div
+          className="relative mb-16 w-full max-w-[min(100%,320px)] mx-auto me-40"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.7, delay: 0.2 }}
+        >
+          {/* Updated 3D Rotating Atom Logo with individually rotating rings */}
+          <div className="flex justify-center ">
+            <MarasilAtomLogo
+              size={100}
+              animated={true}
+              className=" w-full h-auto"
+            />
+          </div>
+
+          {/* Enhanced glow effect around the 3D atom */}
+          <div className="absolute inset-0 -m-6 rounded-full pointer-events-none">
+            <motion.div
+              className="absolute inset-0 rounded-full border border-[#3B82F6]/20"
+              // animate={{
+              //   scale: [1, 1.05, 1],
+              //   opacity: [0.3, 0.5, 0.3],
+              // }}
+              // transition={{
+              //   duration: 4,
+              //   repeat: Infinity,
+              //   repeatType: "reverse",
+              // }}
+            />
+          </div>
+        </motion.div>
+              {/* <Image alt="ai" src={Ai} className=" bg-none" /> */}
           </div>
 
           {/* Canvas for animation effects */}
@@ -565,7 +595,7 @@ export function V7FloatingAssistant() {
       {/* نص توضيحي */}
       {isHovered && !showPositionControls && !isDragging && (
         <div
-          className="fixed bg-white dark:bg-gray-800 px-4 py-2 rounded-lg shadow-md text-sm font-medium whitespace-nowrap transition-all duration-300 z-40"
+          className="fixe  me-6 mt-8 bg-white dark:bg-gray-800 px-4 py-2 rounded-lg shadow-md text-sm font-medium whitespace-nowrap transition-all duration-300 z-40"
           style={{
             ...getPositionStyle(),
             transform: "translate(85px, 20px)",
