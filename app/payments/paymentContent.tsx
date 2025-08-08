@@ -15,6 +15,7 @@ import { useGetMyWalletQuery, useGetPaymentStatusQuery } from "@/app/api/walletA
 import { useGetMyTransactionsQuery } from "@/app/api/transicationApi"
 import RechargeWalletDialog from "./RechargeWalletDialog"
 import PaymentForm from "../parcels/components/PaymentForm"
+import V7Wallet from "@/components/v7/pages/v7-wallet"
 
 // تحديث ألوان الحالات في payments-content
 const getStatusBadgeClass = (status: string) => {
@@ -105,6 +106,7 @@ export function PaymentsContent() {
   const [searchId, setSearchId] = useState("");
   const [submittedId, setSubmittedId] = useState("");
   const { data: paymentStatusData, isLoading: isPaymentStatusLoading, isError: isPaymentStatusError, error: paymentStatusError } = useGetPaymentStatusQuery(submittedId, { skip: !submittedId });
+ const [openAddSenderModal, setOpenAddSenderModal] = useState(false);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -125,7 +127,9 @@ export function PaymentsContent() {
             <p className="text-muted-foreground dark:text-gray-400">إدارة المحفظة والمعاملات المالية</p>
           </div>
           <div className="flex flex-row w-full md:w-auto gap-2 justify-end">
-            <Button variant="outline" size="sm" className="v7-neu-button-sm gap-1 dark:bg-gray-800 dark:text-gray-200" onClick={handleWalletRecharge}>
+            <Button
+                      onClick={() => setOpenAddSenderModal(true)}
+            variant="outline" size="sm" className="v7-neu-button-sm gap-1 dark:bg-gray-800 dark:text-gray-200">
               <Plus className="h-4 w-4" />
               <span>شحن المحفظة</span>
             </Button>
@@ -244,6 +248,11 @@ export function PaymentsContent() {
               <TransactionsTable />
             </TabsContent>
           </Tabs>
+
+                    <V7Wallet theme="light"   isOpen={openAddSenderModal}
+        onClose={() => setOpenAddSenderModal(false)}
+
+        />
         </div>
       </div>
     </div>

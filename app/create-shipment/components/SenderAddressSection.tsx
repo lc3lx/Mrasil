@@ -50,8 +50,7 @@ export function SenderAddressSection({
     refetch,
   } = useGetCustomerMeQuery();
   // Mutation for creating a new sender address
-  const [createAddress, { isLoading: isCreatingAddress }] =
-    useCreateAddressMutation();
+  const [createAddress, { isLoading: isCreatingAddress }] =useCreateAddressMutation();
   const [deleteAddress, { isLoading: isDeleting }] = useDeleteAddressMutation();
   const [updateAddress, { isLoading: isUpdating }] = useUpdateAddressMutation();
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);

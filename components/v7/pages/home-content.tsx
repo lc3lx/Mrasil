@@ -236,7 +236,7 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
       <V7WelcomeBanner theme={theme} />
 
       <div
-        className="  grid gap-6 md:grid-cols-2 lg:grid-cols-3 v7-fade-in"
+        className="  grid grid-cols-1 sm:grid-cols-2  lg:grid-cols-3 items-center gap-6   v7-fade-in"
         style={{ transitionDelay: "0.1s" }}
       >
         <V7StatsCard
