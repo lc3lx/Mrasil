@@ -105,7 +105,13 @@
   background-color: #f0f4f8;
   box-shadow: 8px 8px 16px rgba(197, 204, 211, 0.5),
     -8px -8px 16px rgba(255, 255, 255, 0.8);
-  border-radius: 16px;
+    border-radius: 16px;
+  }
+  .v7-neu-card-wallet{
+    background-color: #f0f4f8;
+    box-shadow: 8px 8px 16px rgba(197, 204, 211, 0.5),
+      -8px -8px 16px rgba(255, 255, 255, 0.8);
+    
 }
 
 .v7-neu-card-premium {
@@ -1117,7 +1123,9 @@ button[data-state="open"] {
   opacity: 0.7;
   filter: blur(10px);
 }
-
+.scroll::-webkit-scrollbar {
+   scrollbar-width: 1px;
+}
 /* تحسين التمرير في الوضع الداكن */
 .dark ::-webkit-scrollbar {
   width: 8px;
