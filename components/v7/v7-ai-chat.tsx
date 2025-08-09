@@ -665,7 +665,7 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
   if (isMinimized) {
     return (
       <div
-        className="fixed bottom-4  left-0 right-0  sm:bottom-6 sm:left-6 z-50 flex items-center rounded-full shadow-lg cursor-pointer transition-all duration-300 hover:scale-105"
+        className="fixed bottom-4  left-0 right-0  sm:bottom-6 sm:left-6 z-[99]  flex items-center rounded-full shadow-lg cursor-pointer transition-all duration-300 hover:scale-105"
         style={{
           backgroundColor: isDark ? "#1e293b" : "#e6f7ff",
           boxShadow: isDark
@@ -698,13 +698,13 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
   // عرض النافذة الكاملة
   return (
     <div
-      className="fixed bottom-8 -left-40  sm:bottom-6 sm:left-6 z-50 flex flex-col rounded-2xl shadow-lg overflow-hidden"
+      className="fixed bottom-8 -left-40  sm:bottom-6 sm:left-6 z-[99] flex flex-col rounded-2xl shadow-lg overflow-hidden "
       style={{
         width: "400px", // زيادة العرض
         maxWidth: "calc(100vw - 32px)",
         height: "550px", // زيادة الارتفاع
         maxHeight: "calc(100vh - 100px)",
-        backgroundColor: isDark ? "#1e293b" : "#f0f4f8",
+        backgroundColor: isDark ? "#1e293b" : "white",
         boxShadow: isDark
           ? "0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 15px rgba(59, 130, 246, 0.3)"
           : "8px 8px 16px rgba(197, 204, 211, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.8), 0 0 15px rgba(52, 152, 219, 0.3)",
@@ -713,7 +713,7 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
     >
       {/* رأس المحادثة */}
       <div
-        className="flex items-center justify-between p-4 border-b v7-neu-header"
+        className="flex items-center justify-between  p-4 border-b v7-neu-header"
         style={{
           borderColor: isDark ? "rgba(59, 130, 246, 0.2)" : "rgba(52, 152, 219, 0.2)",
           backgroundColor: isDark ? "#0f172a" : "#f0f4f8",
@@ -724,15 +724,6 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
         }}
       >
         <div className="flex items-center gap-3   ">
-          {/* <div
-            className={`flex items-center justify-center w-10 h-10 rounded-full ${
-              isDark
-                ? "bg-gradient-to-br from-[#3b82f6] to-[#1e40af] shadow-inner shadow-[#1e3a8a]"
-                : "bg-gradient-to-br from-[#3498db] to-[#2980b9] v7-neu-button"
-            }`}
-          >
-            <MessageSquare className="w-5 h-5 text-white" />
-          </div> */}
               <motion.div
           className="relative   mx-auto  bg-transparent "
           initial={{ opacity: 0, scale: 0.9 }}

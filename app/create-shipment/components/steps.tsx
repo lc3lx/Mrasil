@@ -349,7 +349,7 @@ const {
 
                 {/* Step 1 */}
                 <div
-                  className={`flex flex-col items-center   relative z-10 ${
+                  className={`flex flex-col items-center   relative z-0 ${
                     step >= 1 ? "text-[#3498db]" : "text-gry"
                   }`}
                 >
@@ -373,7 +373,7 @@ const {
 
                 {/* Step 2 */}
                 <div
-                  className={`flex flex-col items-center relative z-10 ${
+                  className={`flex flex-col items-center relative z-0 ${
                     step >= 2 ? "text-[#3498db]" : "text-gry"
                   }`}
                 >
@@ -399,7 +399,7 @@ const {
 
                 {/* Step 3 */}
                 <div
-                  className={`flex flex-col items-center relative z-10 ${
+                  className={`flex flex-col items-center relative z-0 ${
                     step >= 3 ? "text-[#3498db]" : "text-gry"
                   }`}
                 >

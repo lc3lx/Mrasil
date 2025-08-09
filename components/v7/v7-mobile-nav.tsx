@@ -62,7 +62,7 @@ export function V7MobileNav({ theme }: V7MobileNavProps) {
 
   return (
     <>
-    <div className="fixed bottom-0 left-0 right-0  flex h-16 items-center justify-around border-t border-[#3498db]/10 bg-gradient-to-b from-[#f0f4f8] to-[#e6eef5] dark:from-[#1a365d] dark:to-[#0f2948] dark:border-[#3b82f6]/10 md:hidden shadow-lg shadow-[0_-4px_14px_0_rgba(0,0,0,0.08)]">
+    <div className="fixed bottom-0 left-0 right-0   flex h-16 items-center justify-around border-t border-[#3498db]/10 bg-gradient-to-b from-[#f0f4f8] to-[#e6eef5] dark:from-[#1a365d] dark:to-[#0f2948] dark:border-[#3b82f6]/10 md:hidden shadow-lg shadow-[0_-4px_14px_0_rgba(0,0,0,0.08)]">
       
   {navItems.map((item, index) => {
     if (index === 2) {
@@ -72,10 +72,10 @@ export function V7MobileNav({ theme }: V7MobileNavProps) {
               className="  py-1 cursor-pointer rounded-full      "
                               style={{ 
                   // boxShadow: "0 4px 10px rgba(52, 152, 219, 0.3)",
-                  transform: "translateY(-14px)",
+                  transform: "translateY(-8px)",
                 }}
             >
-                <V7FloatingAssistant   style="h-[50px] w-[50px]" styleBoot=" w-[50px] h-[50px]" size={50}/>
+                <V7FloatingAssistant   style="h-[50px] w-[50px] " styleBoot=" w-[50px] h-[50px] " size={50}/>
                 <span className=" text-sm">Marasil Ai</span>
               </div>
       )
@@ -85,7 +85,7 @@ export function V7MobileNav({ theme }: V7MobileNavProps) {
         <button
           key={item.href}
           onClick={() => handleNavigation(item.href)}
-          className={`flex flex-1 flex-col items-center justify-center gap-0.5 py-1 ${item.active ? "" : "opacity-80"}`}
+          className={`  flex flex-1 flex-col items-center justify-center gap-0.5 py-1 ${item.active ? " -z-10" : "opacity-80 -z-10"}`}
           aria-label={item.title}
         >
           <div
@@ -102,10 +102,10 @@ export function V7MobileNav({ theme }: V7MobileNavProps) {
             }}
           >
             <item.icon
-              className={`${
+              className={` ${
                   item.active
-                    ? "h-4 sm:h-5 w-4 sm:w-5 text-[#5791F4]"
-                    : "h-4 sm:h-5 w-4 sm:w-5 text-gray-600 dark:text-gray-300"
+                    ? "h-4 sm:h-5 w-4 sm:w-5 text-[#5791F4] "
+                    : "h-4 sm:h-5 w-4 sm:w-5 text-gray-600 dark:text-gray-300  "
               }`}
             />
           </div>
