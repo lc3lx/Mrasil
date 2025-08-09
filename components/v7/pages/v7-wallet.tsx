@@ -118,7 +118,7 @@ export default function V7Wallet({
   // عند اختيار مبلغ
   const handleAmountSelect = (val) => {
     setAmount(Number(val));
-    setCustomAmount("");
+    setCustomAmount("")
     setSelect(true);
   };
   // مبلغ مخصص
@@ -190,6 +190,7 @@ export default function V7Wallet({
                   const isSelected = selectedAmount === val;
                   return (
                     <button
+                    type="button"
                       key={val}
                       onClick={() => (
                         handleAmountSelect(val), setSelectedAmount(val)

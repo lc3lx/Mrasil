@@ -8,7 +8,7 @@ import Image from "next/image"
 import Ai from "../../public/Ai.png"
 import { motion, AnimatePresence } from "framer-motion";
 import { MarasilAtomLogo } from "@/app/invoices/components/MarasilAtomLogo"
-export function V7FloatingAssistant() {
+export function V7FloatingAssistant({style, styleBoot, size}:{style?:string, styleBoot:string, size:number}) {
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)
@@ -449,27 +449,25 @@ export function V7FloatingAssistant() {
     <div className=" ">
       <div
         ref={buttonRef}
-          className={`relative w-[40px] mx-auto    h-[40px] v7-neu-button-sm-boot  text-gry hover:text-[#3498db] ${showPositionControls ? "cursor-move" : "cursor-pointer"} `}
+          className={`relative  mx-auto      overflow-hidden bg-transparent text-gry hover:text-[#3498db] ${showPositionControls ? "cursor-move" : "cursor-pointer"} ${style} `}
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}>
         <div
           onClick={showPositionControls ? undefined : () => setIsChatOpen(true)}
           onMouseEnter={() => !isDragging && setIsHovered(true)}
           onMouseLeave={() => !isDragging && setIsHovered(false)}
-          className="  "
+          className={`${styleBoot}`}
           style={{
-            width: "60px",
-            height: "60px",
+
             transition: isDragging ? "none" : "all 0.3s ease",
           }}
           aria-label="فتح مساعد الذكاء الاصطناعي"
         >
           {/* The robot icon container */}
           <div
-            className="absolute "
+            className={`absolute  bg-none`}
             style={{
-              width: "40px",
-              height: "40px",
+ 
               backgroundColor: "none",
               overflow: "hidden",
               zIndex: 0,
@@ -482,24 +480,25 @@ export function V7FloatingAssistant() {
             {/* Robot head */}
              {/* 3D Atom Logo container with improved dimensions */}
         <motion.div
-          className="relative  w-full  mx-auto  bg-transparent  "
+          className="relative  w-full  mx-auto   bg-none"
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.7, delay: 0.2 }}
         >
           {/* Updated 3D Rotating Atom Logo with individually rotating rings */}
-          <div className="flex justify-center ">
+          <div className="flex justify-center  ">
             <MarasilAtomLogo
-              size={40}
+
+              size={size}
               animated={true}
-              className=" w-full h-auto"
+              className=" w-full h-auto bg-none"
             />
           </div>
 
           {/* Enhanced glow effect around the 3D atom */}
-          <div className="absolute inset-0 -m-6 rounded-full pointer-events-none">
+          <div className="absolute inset-0 -m-6 rounded-full pointer-events-none ">
             <motion.div
-              className="absolute inset-0 rounded-full border border-[#3B82F6]/20"
+              className=" "
             />
           </div>
         </motion.div>

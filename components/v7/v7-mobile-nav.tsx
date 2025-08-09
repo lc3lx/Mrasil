@@ -48,7 +48,7 @@ export function V7MobileNav({ theme }: V7MobileNavProps) {
       active: isActiveRoute(currentPath, routes.parcels),
     },
     {
-      title: "555شحناتي",
+      title: "شحناتي",
       href: routes.shipments,
       icon: Package,
       active: isActiveRoute(currentPath, routes.shipments),
@@ -71,11 +71,12 @@ export function V7MobileNav({ theme }: V7MobileNavProps) {
               key={item.href}
               className="  py-1 cursor-pointer rounded-full      "
                               style={{ 
-                  boxShadow: "0 4px 10px rgba(52, 152, 219, 0.3)",
-                  transform: "translateY(-12px)",
+                  // boxShadow: "0 4px 10px rgba(52, 152, 219, 0.3)",
+                  transform: "translateY(-14px)",
                 }}
             >
-                <V7FloatingAssistant />
+                <V7FloatingAssistant   style="h-[50px] w-[50px]" styleBoot=" w-[50px] h-[50px]" size={50}/>
+                <span className=" text-sm">Marasil Ai</span>
               </div>
       )
     }

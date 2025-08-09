@@ -698,7 +698,7 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
   // عرض النافذة الكاملة
   return (
     <div
-      className="fixed bottom-8 -left-44  sm:bottom-6 sm:left-6 z-50 flex flex-col rounded-2xl shadow-lg overflow-hidden"
+      className="fixed bottom-8 -left-40  sm:bottom-6 sm:left-6 z-50 flex flex-col rounded-2xl shadow-lg overflow-hidden"
       style={{
         width: "400px", // زيادة العرض
         maxWidth: "calc(100vw - 32px)",

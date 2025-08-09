@@ -221,7 +221,7 @@ export function V7Header({
       <div className="   flex  items-center gap-1 sm:gap-3 md:gap-4">
       <div className="   sr-only sm:not-sr-only  ">
 
-              <V7FloatingAssistant/>
+              <V7FloatingAssistant style="v7-neu-button-sm-boot h-[40px] w-[40px]" styleBoot="w-[40px] h-[40px]" size={40}/>
       </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild className=" hidden sm:block  ">
