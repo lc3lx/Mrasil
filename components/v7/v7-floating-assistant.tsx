@@ -161,18 +161,6 @@ export function V7FloatingAssistant() {
       const canvasWidth = canvas.width
       const canvasHeight = canvas.height
 
-      // إنشاء جسيمات جديدة
-      for (let i = 0; i < 5; i++) {
-        particles.push({
-          x: Math.random() * canvasWidth,
-          y: Math.random() * canvasHeight,
-          size: Math.random() * 3 + 1,
-          speedX: Math.random() * 2 - 1,
-          speedY: Math.random() * 2 - 1,
-          color: robotColors.main,
-          alpha: Math.random() * 0.5 + 0.5,
-        })
-      }
 
       const animate = () => {
         ctx.clearRect(0, 0, canvasWidth, canvasHeight)
@@ -450,9 +438,10 @@ export function V7FloatingAssistant() {
     return {
       position: "fixed",
       right: "auto",
-      bottom: "70px",
-      left: "30px",
-      top: "auto",
+      top: "0",
+      left:"0",
+      zIndex:"0",
+      bottom:"0"
     }
   }
 
@@ -461,13 +450,9 @@ export function V7FloatingAssistant() {
       <div
       
         ref={buttonRef}
-        style={{
-          ...getPositionStyle(),
-          zIndex: 40,
-          cursor: showPositionControls ? "move" : "pointer",
-          transition: isDragging ? "none" : "all 0.3s ease",
-        }}
-        className={`${isDragging ? "" : "transition-all duration-500"}`}
+          className={`relative w-[40px] mx-auto    h-[40px] v7-neu-button-sm-boot  text-gry hover:text-[#3498db] ${showPositionControls ? "cursor-move" : "cursor-pointer"} `}
+
+        // className={`${isDragging ? "" : "transition-all duration-500"}`}
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
         
@@ -479,34 +464,33 @@ export function V7FloatingAssistant() {
           // className={`relative ${isHovered && !showPositionControls ? "scale-110" : "scale-100"} ${
           //   isAnimating ? "animate-float" : ""
           // }`}
+          className="  "
           style={{
-            width: "90px",
-            height: "100px",
+            width: "60px",
+            height: "60px",
             transition: isDragging ? "none" : "all 0.3s ease",
           }}
           aria-label="فتح مساعد الذكاء الاصطناعي"
         >
           {/* The robot icon container */}
           <div
-            className="absolute"
+            className="absolute "
             style={{
-              width: "100px",
-              height: "100px",
-              backgroundColor: "transparent",
+              width: "40px",
+              height: "40px",
+              backgroundColor: "none",
               overflow: "hidden",
-              zIndex: 99,
+              zIndex: 0,
               top: "0",
               left: "0",
+              position: "relative",
 
-              // position: "relative",
-              // transition: "all 0.3s ease",
-              // transform: isAnimating ? "translateY(-3px)" : isHovered ? "translateY(-2px)" : "translateY(0)",
             }}
           >
             {/* Robot head */}
              {/* 3D Atom Logo container with improved dimensions */}
         <motion.div
-          className="relative mb-16 w-full max-w-[min(100%,320px)] mx-auto me-40"
+          className="relative  w-full  mx-auto  bg-transparent "
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.7, delay: 0.2 }}
@@ -514,7 +498,7 @@ export function V7FloatingAssistant() {
           {/* Updated 3D Rotating Atom Logo with individually rotating rings */}
           <div className="flex justify-center ">
             <MarasilAtomLogo
-              size={100}
+              size={40}
               animated={true}
               className=" w-full h-auto"
             />
@@ -524,15 +508,6 @@ export function V7FloatingAssistant() {
           <div className="absolute inset-0 -m-6 rounded-full pointer-events-none">
             <motion.div
               className="absolute inset-0 rounded-full border border-[#3B82F6]/20"
-              // animate={{
-              //   scale: [1, 1.05, 1],
-              //   opacity: [0.3, 0.5, 0.3],
-              // }}
-              // transition={{
-              //   duration: 4,
-              //   repeat: Infinity,
-              //   repeatType: "reverse",
-              // }}
             />
           </div>
         </motion.div>
@@ -554,48 +529,12 @@ export function V7FloatingAssistant() {
             }}
           />
         </div>
-
-        {/* أزرار التحكم في الموضع */}
-        {!isDragging && (
-          <button
-            onClick={handlePositionButtonClick}
-            className="absolute -top-2 -right-2 bg-white dark:bg-gray-800 rounded-full p-1.5 shadow-lg border border-blue-300 dark:border-blue-700 transition-all duration-300 hover:scale-105 z-50"
-            style={{
-              color: showPositionControls ? "#1C2C4E" : "#64748b",
-              transform: showPositionControls ? "scale(1.1)" : "scale(1)",
-              boxShadow: showPositionControls
-                ? "0 0 8px rgba(59, 130, 246, 0.5), 0 0 0 1px rgba(59, 130, 246, 0.3)"
-                : "0 1px 3px rgba(0, 0, 0, 0.2)",
-            }}
-            aria-label={showPositionControls ? "إنهاء تغيير الموضع" : "تغيير موضع المساعد"}
-          >
-            <Move className={`w-4 h-4 ${showPositionControls ? "text-blue-600" : ""}`} />
-          </button>
-        )}
-
-        {/* زر إعادة تعيين الموضع */}
-        {showPositionControls && !isDragging && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              resetPosition()
-            }}
-            className="absolute -top-2 -left-2 bg-white dark:bg-gray-800 rounded-full p-1.5 shadow-lg border border-blue-300 dark:border-blue-700 transition-all duration-300 hover:scale-105 z-50"
-            style={{
-              color: "#1C2C4E",
-              boxShadow: "0 0 8px rgba(59, 130, 246, 0.5), 0 0 0 1px rgba(59, 130, 246, 0.3)",
-            }}
-            aria-label="إعادة تعيين موضع المساعد"
-          >
-            <RotateCcw className="w-4 h-4 text-blue-600" />
-          </button>
-        )}
       </div>
 
       {/* نص توضيحي */}
       {isHovered && !showPositionControls && !isDragging && (
         <div
-          className="fixe  me-6 mt-8 bg-white dark:bg-gray-800 px-4 py-2 rounded-lg shadow-md text-sm font-medium whitespace-nowrap transition-all duration-300 z-40"
+          className="fixe  -me-10 bg-white dark:bg-gray-800 px-4 py-2 rounded-lg shadow-md text-sm font-medium whitespace-nowrap transition-all duration-300 z-40"
           style={{
             ...getPositionStyle(),
             transform: "translate(85px, 20px)",
@@ -611,155 +550,12 @@ export function V7FloatingAssistant() {
       )}
 
       {/* تعليمات تغيير الموضع */}
-      {showPositionControls && !isDragging && (
-        <div
-          className="fixed bg-white dark:bg-gray-800 px-4 py-2 rounded-lg shadow-md text-sm font-medium whitespace-nowrap transition-all duration-300 z-40"
-          style={{
-            ...getPositionStyle(),
-            transform: "translate(85px, 20px)",
-            color: robotColors.main,
-            pointerEvents: "none",
-            maxWidth: "200px",
-            border: `1px solid rgba(75, 174, 209, 0.3)`,
-          }}
-        >
-          <div className="font-bold mb-1">وضع تغيير الموضع</div>
-          <div className="text-xs opacity-80">اسحب الأيقونة لتغيير موضعها</div>
-        </div>
-      )}
+     
 
       <V7AIChat isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
 
       {/* إضافة تعريف للرسوم المتحركة */}
-      <style jsx global>{`
-        @keyframes blink {
-          0% { opacity: 0.8; }
-          50% { opacity: 0.2; }
-          100% { opacity: 0.8; }
-        }
-        .animate-blink {
-          animation: blink 1.5s infinite;
-        }
-        
-        @keyframes pulse {
-          0% { transform: scale(1); opacity: 1; }
-          50% { transform: scale(1.1); opacity: 0.8; }
-          100% { transform: scale(1); opacity: 1; }
-        }
-        .animate-pulse {
-          animation: pulse 2s infinite ease-in-out;
-        }
-
-        @keyframes float {
-          0% { transform: translateY(0px); }
-          50% { transform: translateY(-5px); }
-          100% { transform: translateY(0px); }
-        }
-        .animate-float {
-          animation: float 3s infinite ease-in-out;
-        }
-
-        @keyframes glow {
-          0% { box-shadow: 0 0 5px rgba(75, 174, 209, 0.6); }
-          50% { box-shadow: 0 0 15px rgba(75, 174, 209, 0.8); }
-          100% { box-shadow: 0 0 5px rgba(75, 174, 209, 0.6); }
-        }
-        .animate-glow {
-          animation: glow 2s infinite ease-in-out;
-        }
-
-        @keyframes wave {
-          0% { opacity: 0.5; transform: scale(1) rotate(0deg); }
-          50% { opacity: 0.7; transform: scale(1.05) rotate(5deg); }
-          100% { opacity: 0.5; transform: scale(1) rotate(0deg); }
-        }
-        .animate-wave {
-          animation: wave 5s infinite ease-in-out;
-        }
-
-        @keyframes circuit {
-          0% { background-position: 0% 0%; }
-          50% { background-position: 100% 100%; }
-          100% { background-position: 0% 0%; }
-        }
-        .animate-circuit {
-          animation: circuit 10s infinite linear;
-          background-size: 200% 200%;
-        }
-
-        @keyframes float {
-          0% { transform: translateY(0px); }
-          50% { transform: translateY(-5px); }
-          100% { transform: translateY(0px); }
-        }
-        .animate-float {
-          animation: float 3s infinite ease-in-out;
-        }
-
-        @keyframes glow {
-          0% { box-shadow: 0 0 5px rgba(79, 195, 247, 0.6), 0 0 5px #FFFFFF inset; }
-          50% { box-shadow: 0 0 20px rgba(79, 195, 247, 0.9), 0 0 8px #FFFFFF inset; }
-          100% { box-shadow: 0 0 5px rgba(79, 195, 247, 0.6), 0 0 5px #FFFFFF inset; }
-        }
-        .animate-glow {
-          animation: glow 2s infinite ease-in-out;
-        }
-
-        @keyframes wave-bg {
-          0% { 
-            background-position: 0% 0%;
-            opacity: 0.6;
-          }
-          50% { 
-            background-position: 100% 100%;
-            opacity: 0.8;
-          }
-          100% { 
-            background-position: 0% 0%;
-            opacity: 0.6;
-          }
-        }
-        .animate-wave-bg {
-          animation: wave-bg 8s infinite ease-in-out;
-          background-size: 200% 200%;
-        }
-
-        @keyframes glow-subtle {
-          0% { filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.6)); }
-          50% { filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.9)); }
-          100% { filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.6)); }
-        }
-        .animate-glow-subtle {
-          animation: glow-subtle 2s infinite ease-in-out;
-        }
-
-        @keyframes blink {
-          0%, 90%, 100% { opacity: 1; transform: scaleY(1); }
-          95% { opacity: 0.8; transform: scaleY(0.1); }
-        }
-        .animate-blink {
-          animation: blink 4s infinite;
-          transform-origin: center;
-        }
-
-        @keyframes shake {
-          0%, 100% { transform: translateX(0); }
-          25% { transform: translateX(-5px); }
-          50% { transform: translateX(5px); }
-          75% { transform: translateX(-5px); }
-        }
-        .shake-animation {
-          animation: shake 0.5s ease-in-out;
-        }
-
-        @keyframes pulse-border {
-          0%, 100% { border-color: rgba(59, 130, 246, 0.5); }
-          50% { border-color: rgba(59, 130, 246, 1); }
-        }
-        .pulse-border {
-          animation: pulse-border 2s infinite;
-        }
-      `}</style>
+     
     </div>
   )
 }

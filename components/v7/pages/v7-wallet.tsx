@@ -157,9 +157,9 @@ const userToken = localStorage.getItem("token");
   return (
     <div>
       <Dialog open={isOpen} onOpenChange={handleClose} >
-        <DialogContent className=" border-none max-w-3xl overflow-y-auto  max-h-screen  scroll  "   >
+        <DialogContent className=" border-none max-w-3xl overflow-y-auto  max-h-screen  scroll  "  style={{border:"none"}}  >
           <DialogHeader>
-            <DialogTitle className="text-[#4A7ED0] w-full sm:mt-4 mt-0 text-right sm:text-2xl text-sm  border-b border-[#8888] pb-4  ">
+            <DialogTitle className="text-[#4A7ED0] w-full mt-4  text-right sm:text-2xl text-sm  border-b border-[#8888] pb-4  ">
               إختر طريقة الدفع
             </DialogTitle>
           </DialogHeader>

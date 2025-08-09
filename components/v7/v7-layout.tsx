@@ -320,7 +320,7 @@ export const V7Layout = ({ children, theme = "light" }: V7LayoutProps) => {
         </main>
       </div>
       <V7MobileNav theme={currentTheme} />
-      <V7FloatingAssistant />
+      {/* <V7FloatingAssistant /> */}
     </div>
   )
 }

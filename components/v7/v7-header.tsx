@@ -168,7 +168,7 @@ export function V7Header({
   }
 
   return (
-    <header className="  fixed  -top-2 sm:-top-4 w-full z-30 flex  h-16 items-center justify-between v7-neu-header px-3 sm:px-4 md:px-6 mt-2 mb-2 sm:mt-4 sm:mb-4">
+    <header className="  fixed  -top-2 sm:-top-4 w-full z-30 flex  h-16  items-center justify-between v7-neu-header px-3 sm:px-4 md:px-6 mt-2 mb-2 sm:mt-4 sm:mb-4">
       <div className="flex items-center gap-2 sm:gap-4">
         <Button
           variant="ghost"
@@ -218,22 +218,25 @@ export function V7Header({
           />
         </div>
       </div>
+      <div className="   flex  items-center gap-1 sm:gap-3 md:gap-4">
+      <div className=" flex items-center justify-center ">
+
               <V7FloatingAssistant/>
-      <div className="flex items-center gap-1 sm:gap-3 md:gap-4">
+      </div>
         <DropdownMenu>
-          <DropdownMenuTrigger asChild className=" hidden sm:block">
+          <DropdownMenuTrigger asChild className=" hidden sm:block  ">
             <Button
               variant="ghost"
               size="icon"
-              className={`relative ${
+              className={`relative    ${
                 currentTheme === "dark"
-                  ? "bg-[#1e263a] border border-[#2a3349] text-[#8b5cf6] hover:bg-[#252e45] hover:text-[#a78bfa]"
-                  : "v7-neu-button-sm text-gry hover:text-[#3498db]"
+                  ? "bg-[#1e263a] border  border-[#2a3349] text-[#8b5cf6] hover:bg-[#252e45] hover:text-[#a78bfa]"
+                  : "v7-neu-button-sm text-gry  hover:text-[#3498db]"
               }`}
               title="تغيير اللغة"
               aria-label="تغيير اللغة"
             >
-              <Globe className="h-4 sm:h-5 w-4 sm:w-5" />
+              <Globe className="h-4 sm:h-8 w-4 sm:w-8 mx-auto" />
               <span className="sr-only">تغيير اللغة</span>
             </Button>
           </DropdownMenuTrigger>
@@ -301,9 +304,9 @@ export function V7Header({
               data-theme-toggle="true"
             >
               {currentTheme === "dark" ? (
-                <Sun className="h-4 sm:h-5 w-4 sm:w-5 text-[#8b5cf6]" />
+                <Sun className="h-4 sm:h-5 w-4 sm:w-5 text-[#8b5cf6] " />
               ) : (
-                <Moon className="h-4 sm:h-5 w-4 sm:w-5" />
+                <Moon className="h-4 sm:h-5 w-4 sm:w-5 " />
               )}
               <span className="sr-only">تغيير المظهر</span>
             </Button>
@@ -330,7 +333,7 @@ export function V7Header({
                 if (onThemeToggle) onThemeToggle();
               }}
             >
-              <Sun className="h-4 w-4 mr-2" />
+              <Sun className="h-4 sm:h-8 w-4 sm:w-8" />
               الوضع النهاري
             </DropdownMenuItem>
             <DropdownMenuItem
@@ -365,7 +368,7 @@ export function V7Header({
           onClick={() => setMobileSearchOpen(true)}
           aria-label="البحث"
         >
-          <Search className="h-4 sm:h-5 w-4 sm:w-5 text-[#294D8B]" />
+          <Search className="h-4 sm:h-8 w-4 sm:w-8 text-[#294D8B] mx-auto" />
           <span className="sr-only">البحث</span>
         </Button>
 
@@ -376,7 +379,7 @@ export function V7Header({
               size="icon"
               className="v7-neu-button-sm relative hover:text-[#3498db] transition-colors"
             >
-              <Bell className="h-4 sm:h-5 w-4 sm:w-5 text-[#294D8B]" />
+              <Bell className="h-4 sm:h-8 w-4 sm:w-8 text-[#294D8B] mx-auto" />
               <span className="absolute -right-1 -top-1 flex h-3 sm:h-4 w-3 sm:w-4 items-center justify-center rounded-full bg-red-600 text-[8px] sm:text-[10px] font-medium text-white animate-pulse">
                 {unreadCountLoading ? "..." : unreadCountData?.unreadCount || 0}
               </span>
