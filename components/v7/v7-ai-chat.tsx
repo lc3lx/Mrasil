@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input"
 import { X, Send, Loader2, Minimize2, Maximize2, MessageSquare } from "lucide-react"
 import { useTheme } from "next-themes"
 import { TutorialImage } from "./v7-tutorial-image"
+import { MarasilAtomLogo } from "@/app/invoices/components/MarasilAtomLogo"
+import { motion } from "framer-motion"
 
 interface Message {
   id: string
@@ -721,8 +723,8 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
             : "inset 0 1px 0 0 rgba(255, 255, 255, 0.8), 0 2px 4px rgba(0, 0, 0, 0.05)",
         }}
       >
-        <div className="flex items-center gap-3">
-          <div
+        <div className="flex items-center gap-3   ">
+          {/* <div
             className={`flex items-center justify-center w-10 h-10 rounded-full ${
               isDark
                 ? "bg-gradient-to-br from-[#3b82f6] to-[#1e40af] shadow-inner shadow-[#1e3a8a]"
@@ -730,11 +732,33 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
             }`}
           >
             <MessageSquare className="w-5 h-5 text-white" />
+          </div> */}
+              <motion.div
+          className="relative   mx-auto  bg-transparent "
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.7, delay: 0.2 }}
+        >
+          {/* Updated 3D Rotating Atom Logo with individually rotating rings */}
+          <div className="flex justify-center ">
+            <MarasilAtomLogo
+              size={40}
+              animated={true}
+              className=" w-full h-auto"
+            />
           </div>
+
+          {/* Enhanced glow effect around the 3D atom */}
+          <div className="absolute inset-0 -m-6 rounded-full pointer-events-none">
+            <motion.div
+              className=" absolute inset-0"
+            />
+          </div>
+        </motion.div>
           <div>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center ">
               <h3 className={`font-bold text-base ${isDark ? "text-white" : "text-[#294D8B]"}`}>مراسيل بوت</h3>
-              <span className={`text-sm font-bold ${isDark ? "text-[#3b82f6]" : "text-[#3498db]"}`}>مراسيل</span>
+              {/* <span className={`text-sm font-bold ${isDark ? "text-[#3b82f6]" : "text-[#3498db]"}`}>مراسيل</span> */}
             </div>
             <p className={`text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}>متصل الآن</p>
           </div>
@@ -792,14 +816,14 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
                     : "none",
               }}
             >
-              {message.role === "assistant" && (
+              {/* {message.role === "assistant" && (
                 <div className="flex items-center gap-2 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700">
                   <div className="w-6 h-6 rounded-full bg-[#3498db] flex items-center justify-center">
                     <MessageSquare className="w-3 h-3 text-white" />
                   </div>
                   <span className="text-sm font-bold">مراسيل بوت</span>
                 </div>
-              )}
+              )} */}
               <p className="text-base leading-relaxed whitespace-pre-line">{message.content}</p>
 
               {/* عرض الصورة إذا كانت متاحة */}

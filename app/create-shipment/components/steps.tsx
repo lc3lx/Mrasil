@@ -22,6 +22,7 @@ import {
   Box,
   Scale,
   CreditCard,
+  Car,
 } from "lucide-react";
 import ResponseModal from "../../components/ResponseModal";
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -312,8 +313,8 @@ const {
 
   return (
     <FormProvider {...methods}>
-      <div className="space-y-8  my-16 ">
-        <div className="space-y-8 pb-20 max-w-6xl mx-auto">
+      <div className="space-y-8  my-16  ">
+        <div className="space-y-8 pb-20 ms-8 mx-auto">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="v7-neu-icon bg-gradient-to-br from-[#3498db]/80 to-[#3498db]">
@@ -337,7 +338,7 @@ const {
                 <div
                   className="absolute top-7 rtl:right-1 ltr:left-0 "
                   style={{
-                    width: `${(step - 1) * 50}%  `,
+                    width: `${(step - 1) * 49}%  `,
                     height: "4px",
                     background: "linear-gradient(to left, #3498db, #2980b9) ",
                     borderRadius: "2px",
@@ -411,6 +412,7 @@ const {
                   >
                     <Package className="h-7 w-7" />
                   </div>
+                 
                   <span className="mt-3 text-sm font-medium">اختر الناقل</span>
                 </div>
               </div>
@@ -959,7 +961,7 @@ function Step3Content({
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
       {/* Shipping Type Tabs First */}
-      <div className="space-y-4">
+      {/* <div className="space-y-4">
         <h2 className="text-2xl font-semibold text-[#1a365d] flex items-center gap-2">
           <Package className="w-5 h-5 text-[#3498db]" />
           نوع الشحن
@@ -981,22 +983,41 @@ function Step3Content({
             </button>
           ))}
         </div>
-      </div>
+      </div> */}
       {/* Carrier Cards Second */}
       <div className="space-y-4">
-        <h2 className="text-2xl font-semibold text-[#1a365d]">اختيار الناقل</h2>
+        <div className=" flex items-center gap-2">
+          <div className=" bg-[#1a365d] p-1 rounded-md">
+            <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="30"
+      height="30"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="lucide lucide-truck h-5 w-5 text-white"
+    >
+      <path d="M5 18H3c-.6 0-1-.4-1-1V7c0-.6.4-1 1-1h10c.6 0 1 .4 1 1v11" />
+      <path d="M14 9h4l4 4v4c0 .6-.4 1-1 1h-2" />
+      <circle cx="7" cy="18" r="2" />
+      <path d="M15 18H9" />
+      <circle cx="17" cy="18" r="2" />
+    </svg>
+
+            {/* <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-truck h-5 w-5 text-white">…</svg> */}
+      {/* <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-truck h-5 w-5 text-white">…</svg> */}
+         {/* <Car className=" text-white   w-8 h-8   " /> */}
+          </div>
+        <h2 className="text-2xl font-semibold text-[#1a365d]"> أختر الناقل</h2>
+        </div>
         <div className="flex flex-col gap-4">
           {isLoadingCompanies ? (
             <div>جاري التحميل...</div>
           ) : (
             uniqueCompanies
-              .filter(
-                (company) =>
-                  company.shippingTypes &&
-                  company.shippingTypes.some(
-                    (type) => type.type === selectedShipmentType
-                  )
-              )
               .map((company) => {
                 const firstType =
                   company.shippingTypes.find(

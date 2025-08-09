@@ -27,6 +27,8 @@ import creditCard5 from "../../../public/creditCard5.png";
 import creditCard6 from "../../../public/creditCard6.png";
 import Head from "next/head";
 import Script from "next/script";
+import realBlue from "../../../public/real-blue.png";
+import realWhite from "../../../public/real-white.png";
 interface StatItem {
   label: string;
   value: React.ReactNode;
@@ -39,19 +41,16 @@ declare global {
   }
 }
 interface V7StatsWalletProps {
-  isOpen,
-  onClose,
+  isOpen;
+  onClose;
   theme?: "light" | "dark";
 }
 export default function V7Wallet({
-      theme = "light",
-        isOpen,
-        onClose,
-
-       
+  theme = "light",
+  isOpen,
+  onClose,
 }: V7StatsWalletProps) {
-
-       const handleClose = () => {
+  const handleClose = () => {
     onClose(false);
   };
 
@@ -61,11 +60,11 @@ export default function V7Wallet({
   const [cardCvc, setCardCvc] = useState("");
   const [cardMonth, setCardMonth] = useState("");
   const [cardYear, setCardYear] = useState("");
-const [select , setSelect] = useState(false)
+  const [select, setSelect] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
-const [selectedAmount, setSelectedAmount] = useState<string | null>(null);
-// Bank transfer form fields
+  const [selectedAmount, setSelectedAmount] = useState<string | null>(null);
+  // Bank transfer form fields
   const [paymentMethod, setPaymentMethod] = useState(null); // "card" أو "bank"
   const [amount, setAmount] = useState(null);
   const [customAmount, setCustomAmount] = useState("");
@@ -76,45 +75,44 @@ const [selectedAmount, setSelectedAmount] = useState<string | null>(null);
 
   // NEW
 
-const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
-  setIsSubmitting(true);
-  setError("");
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setError("");
 
-  try {
-    const token = "pk_live_3p2q5Kj7WiDPJZ2kYRSNc16SFQ47C6hfAvkKLkCc"; 
-const userToken = localStorage.getItem("token");
+    try {
+      const token = "pk_live_3p2q5Kj7WiDPJZ2kYRSNc16SFQ47C6hfAvkKLkCc";
+      const userToken = localStorage.getItem("token");
 
-    const res = await fetch("https://backend-marasil.onrender.com/api/wallet/rechargeWallet", {
-      method: "POST",
-  headers: { 
-    "Content-Type": "application/json",
-    "Authorization": `Bearer ${userToken}`,
-  },
-    body: JSON.stringify({ token, amount: 10000 }),
+      const res = await fetch(
+        "https://backend-marasil.onrender.com/api/wallet/rechargeWallet",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${userToken}`,
+          },
+          body: JSON.stringify({ token, amount: 10000 }),
+        }
+      );
 
-    });
+      const data = await res.json();
 
-    const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || "فشل في الدفع");
+      }
 
-    if (!res.ok) {
-      throw new Error(data.message || "فشل في الدفع");
+      if (!data.transaction_url) {
+        throw new Error("الرابط غير موجود");
+      }
+
+      window.location.href = data.transaction_url;
+    } catch (err: any) {
+      setError(err.message || "خطأ غير معروف");
+    } finally {
+      setIsSubmitting(false);
     }
-
-    if (!data.transaction_url) {
-      throw new Error("الرابط غير موجود");
-    }
-
-    window.location.href = data.transaction_url;
-
-  } catch (err: any) {
-    setError(err.message || "خطأ غير معروف");
-  } finally {
-    setIsSubmitting(false);
-  }
-};
-
-
+  };
 
   // القديم
   // عند اختيار مبلغ
@@ -142,7 +140,6 @@ const userToken = localStorage.getItem("token");
     }
   };
 
- 
   const handleCardNumberPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     e.preventDefault();
     const pastedText = e.clipboardData.getData("text");
@@ -156,14 +153,21 @@ const userToken = localStorage.getItem("token");
   const isDarkMode = theme === "dark";
   return (
     <div>
-      <Dialog open={isOpen} onOpenChange={handleClose} >
-        <DialogContent className=" border-none max-w-3xl overflow-y-auto  max-h-screen  scroll  "  style={{border:"none"}}  >
+      <Dialog open={isOpen} onOpenChange={handleClose}>
+        <DialogContent
+          className=" border-none max-w-3xl overflow-y-auto  max-h-screen  scroll  "
+          style={{ border: "none" }}
+        >
           <DialogHeader>
             <DialogTitle className="text-[#4A7ED0] w-full mt-4  text-right sm:text-2xl text-sm  border-b border-[#8888] pb-4  ">
               إختر طريقة الدفع
             </DialogTitle>
           </DialogHeader>
-          <form id="moyasar-token-form" onSubmit={handleSubmit} className="  space-y-6 ">
+          <form
+            id="moyasar-token-form"
+            onSubmit={handleSubmit}
+            className="  space-y-6 "
+          >
             <input
               type="hidden"
               name="publishable_api_key"
@@ -183,20 +187,39 @@ const userToken = localStorage.getItem("token");
             <div className=" flex flex-col gap-6">
               <div className="  grid grid-cols-5 gap-2 ">
                 {["100", "500", "1000", "2000", "5000"].map((val) => {
-const isSelected = selectedAmount === val;
-                    return(
-                  <button
-                    key={val}
-                    onClick={() => (handleAmountSelect(val), setSelectedAmount(val))}
-                    className={`v7-neu-card  max-h-6  text-xs  sm:text-sm  flex items-center justify-center transition-all   bg-blue-600 v7-neu-button-flat
-                                  ${isSelected && "!bg-[#294D8B] !text-white" }
+                  const isSelected = selectedAmount === val;
+                  return (
+                    <button
+                      key={val}
+                      onClick={() => (
+                        handleAmountSelect(val), setSelectedAmount(val)
+                      )}
+                      className={`v7-neu-card  max-h-6  text-xs  sm:text-sm  flex items-center justify-center transition-all   bg-blue-600 v7-neu-button-flat
+                                  ${isSelected && "!bg-[#294D8B] !text-white"}
                                       
                                       `}
-                  >
-                    <span className="ml-1">﷼</span> {val}
-                  </button>
-                    )
-})}
+                    >
+                      {val}
+                      {isSelected ? (
+                        <Image
+                          alt="real"
+                          src={realWhite}
+                          width={10}
+                          height={10}
+                          className=" w-[1.5rem]"
+                        />
+                      ) : (
+                        <Image
+                          alt="real"
+                          src={realBlue}
+                          width={10}
+                          height={10}
+                          className="w-[1.5rem]"
+                        />
+                      )}
+                    </button>
+                  );
+                })}
               </div>
 
               <div className="flex items-center gap-4">
@@ -214,121 +237,134 @@ const isSelected = selectedAmount === val;
               </div>
             </div>
             <div className=" flex items-center gap-4  ">
-                                <div onClick={() => setPaymentMethod("bank")}
-                        className=" w-full " >
-              <div className={`v7-neu-card h-[10rem] px-5 cursor-pointer flex flex-col items-center justify-center transition-all duration-300 v7-neu-card-accent ${
-                paymentMethod === "bank"
-                    ? isDarkMode
-                      ?  "border border-blue-500 bg-blue-900/20"
-                      : "border border-blue-600 bg-blue-50"
-                    : isDarkMode
-                    ? "border-dark-border bg-dark-card hover:bg-dark-hover"
-                    : "v7-neu-card hover:shadow-md"
-                }`}>
-                    <div className="flex items-center justify-center mb-3">
-                  <div className="w-6 h-6 rounded-full v7-neu-inset flex items-center justify-center">
-                  {paymentMethod === "bank" && (
-                    <div className="w-3 h-3 rounded-full bg-primary"></div>
-                  )}
+              <div
+                onClick={() => setPaymentMethod("bank")}
+                className=" w-full "
+              >
+                <div
+                  className={`v7-neu-card h-[10rem] px-5 cursor-pointer flex flex-col items-center justify-center transition-all duration-300 v7-neu-card-accent ${
+                    paymentMethod === "bank"
+                      ? isDarkMode
+                        ? "border border-blue-500 bg-blue-900/20"
+                        : "border border-blue-600 bg-blue-50"
+                      : isDarkMode
+                      ? "border-dark-border bg-dark-card hover:bg-dark-hover"
+                      : "v7-neu-card hover:shadow-md"
+                  }`}
+                >
+                  <div className="flex items-center justify-center mb-3">
+                    <div className="w-6 h-6 rounded-full v7-neu-inset flex items-center justify-center">
+                      {paymentMethod === "bank" && (
+                        <div className="w-3 h-3 rounded-full bg-primary"></div>
+                      )}
+                    </div>
                   </div>
-                </div>
-                <div className="text-center">
-                  <p className="font-medium mb-2 text-base sm:text-xl">التحويل البنكي</p>
-                  <div className="flex justify-center">
-                        <Image alt="bank" src={bankTransfer} width={50} height={50}/>
-                  </div>
-                </div>
-              </div>
-              </div>
-                                <div onClick={() => setPaymentMethod("card")}
-                        
-                  className=" w-full   ">
-              <div className={`v7-neu-card h-[10rem] p-5 cursor-pointer flex flex-col items-center justify-center transition-all duration-300 v7-neu-card-accent ${
-                paymentMethod === "card"
-                    ? isDarkMode
-                      ?  "border border-blue-500 bg-blue-900/20"
-                      : "border border-blue-600 bg-blue-50"
-                    : isDarkMode
-                    ? "border-dark-border bg-dark-card hover:bg-dark-hover"
-                    : "v7-neu-card hover:shadow-md"
-                }`}>
-                    <div className="flex items-center justify-center mb-3">
-                  <div className="w-6 h-6 rounded-full v7-neu-inset flex items-center justify-center">
-                  {paymentMethod === "card" && (
-                    <div className="w-3 h-3 rounded-full bg-primary"></div>
-                  )}
-                  </div>
-                </div>
-                <div className="text-center">
-                  <p className="font-medium mb-4 text-base sm:text-xl "> بطاقة الائتمان</p>
-                                   <div className=" grid grid-cols-3 gap-4 items-center ">
-                    <Image
-                      alt="creditCard"
-                      src={creditCard1}
-                      className=" w-[1.7rem]"
-                      width={20}
-                      height={20}
-                    />
-                    <Image
-                      alt="creditCard"
-                      src={creditCard2}
-                      className=" w-[1.7rem]"
-                      width={20}
-                      height={20}
-                    />
-                    <Image
-                      alt="creditCard"
-                      src={creditCard3}
-                      className=" w-[1.7rem]"
-                      width={20}
-                      height={20}
-                    />
-                    <Image
-                      alt="creditCard"
-                      src={creditCard4}
-                      className=" w-[1.7rem]"
-                      width={20}
-                      height={20}
-                    />
-                    <Image
-                      alt="creditCard"
-                      src={creditCard5}
-                      className=" w-[1.7rem]"
-                      width={20}
-                      height={20}
-                    />
-                    <Image
-                      alt="creditCard"
-                      src={creditCard6}
-                      className=" w-[1.7rem]"
-                      width={20}
-                      height={20}
-                    />
+                  <div className="text-center">
+                    <p className="font-medium mb-2 text-base sm:text-xl">
+                      التحويل البنكي
+                    </p>
+                    <div className="flex justify-center">
+                      <Image
+                        alt="bank"
+                        src={bankTransfer}
+                        width={50}
+                        height={50}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
+              <div
+                onClick={() => setPaymentMethod("card")}
+                className=" w-full   "
+              >
+                <div
+                  className={`v7-neu-card h-[10rem] p-5 cursor-pointer flex flex-col items-center justify-center transition-all duration-300 v7-neu-card-accent ${
+                    paymentMethod === "card"
+                      ? isDarkMode
+                        ? "border border-blue-500 bg-blue-900/20"
+                        : "border border-blue-600 bg-blue-50"
+                      : isDarkMode
+                      ? "border-dark-border bg-dark-card hover:bg-dark-hover"
+                      : "v7-neu-card hover:shadow-md"
+                  }`}
+                >
+                  <div className="flex items-center justify-center mb-3">
+                    <div className="w-6 h-6 rounded-full v7-neu-inset flex items-center justify-center">
+                      {paymentMethod === "card" && (
+                        <div className="w-3 h-3 rounded-full bg-primary"></div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <p className="font-medium mb-4 text-base sm:text-xl ">
+                      {" "}
+                      بطاقة الائتمان
+                    </p>
+                    <div className=" grid grid-cols-3 gap-4 items-center ">
+                      <Image
+                        alt="creditCard"
+                        src={creditCard1}
+                        className=" min-w-[1.7rem]"
+                        width={20}
+                        height={20}
+                      />
+                      <Image
+                        alt="creditCard"
+                        src={creditCard2}
+                        className=" min-w-[1.7rem]"
+                        width={20}
+                        height={20}
+                      />
+                      <Image
+                        alt="creditCard"
+                        src={creditCard3}
+                        className=" min-w-[1.7rem]"
+                        width={20}
+                        height={20}
+                      />
+                      <Image
+                        alt="creditCard"
+                        src={creditCard4}
+                        className=" min-w-[1.7rem]"
+                        width={20}
+                        height={20}
+                      />
+                      <Image
+                        alt="creditCard"
+                        src={creditCard5}
+                        className=" min-w-[1.7rem]"
+                        width={20}
+                        height={20}
+                      />
+                      <Image
+                        alt="creditCard"
+                        src={creditCard6}
+                        className=" min-w-[2rem]"
+                        width={20}
+                        height={20}
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
-
             </div>
-
-
-
-
             {/* Bank Transfer Form */}
             {paymentMethod === "bank" && (
-              <div className="space-y-4" >
+              <div className="space-y-4">
                 <h2 className="sm:text-lg text-base font-bold text-right">
                   إيصال التحويل البنكي
                 </h2>
                 <div className="  flex flex-col gap-1 v7-neu-card">
-                <span>اسم البنك : مصرف الراجحي </span>
-                <span>المستفيد : شركة مراسيل لخدمات الأعمال</span>
-                <span>رقم الحساب : 177608016234509</span>
-                <span>الايبان : SA8180000177608016234509</span>
-                <span className=" py-4  text-red-500">إذا كنت تستخدم بنك خارج المملكة العربية السعودية الرجاء شحن المحفظة عن طريق البطاقة</span>
+                  <span>اسم البنك : مصرف الراجحي </span>
+                  <span>المستفيد : شركة مراسيل لخدمات الأعمال</span>
+                  <span>رقم الحساب : 177608016234509</span>
+                  <span>الايبان : SA8180000177608016234509</span>
+                  <span className=" py-4  text-red-500">
+                    إذا كنت تستخدم بنك خارج المملكة العربية السعودية الرجاء شحن
+                    المحفظة عن طريق البطاقة
+                  </span>
                 </div>
-
-
 
                 <p className="text-right sm:text-lg text-base font-bold pt-8 text-gray-600">
                   قم برفع صورة إيصال التحويل البنكي
@@ -372,7 +408,7 @@ const isSelected = selectedAmount === val;
                 </div>
               </div>
             )}
-          
+
             {/* <PaymentForm amount={2500} description="طلب رقم #302" /> */}
             {/* // <MoyasarLoader /> */}
             <div className="flex justify-center flex-col  items-center text-center  gap-4 mt-16  ">
@@ -382,18 +418,16 @@ const isSelected = selectedAmount === val;
                 disabled={isSubmitting}
                 className={`px-16 py-6 text-lg mt-8 ${
                   isDarkMode
-                  ? "bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700"
-                  : "v7-neu-button disabled:opacity-50"
+                    ? "bg-blue-600 hover:bg-blue-700  disabled:bg-gray-700"
+                    : "v7-neu-button disabled:opacity-50 hover:text-white"
                 }`}
-                >
+              >
                 {isLoading ? "جاري المعالجة..." : "استمرار"}
               </Button>
             </div>
           </form>
         </DialogContent>
       </Dialog>
-
-
     </div>
-  )
+  );
 }

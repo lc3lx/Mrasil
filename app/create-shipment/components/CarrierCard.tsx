@@ -1,7 +1,7 @@
 import { Check, Plus, X } from "lucide-react";
 import Image from "next/image";
 import React from "react";
-
+import realBlue from "../../../public/real-blue.png"
 export default function CarrierCard({ company, selectedCompany, handleCompanySelect, logoSrc, firstType }: any) {
   const isSelected = selectedCompany === company.company;
 
@@ -23,7 +23,7 @@ export default function CarrierCard({ company, selectedCompany, handleCompanySel
         <div className=" w-20 min-h-12 max-h-12 sm:h-20  rounded-lg   overflow-hidden">
           <Image sizes="20" width={20} height={20} src={logoSrc} alt={company.company} className="object-contain w-full h-full" onError={e => { e.currentTarget.src = '/carriers/carrier-placeholder.png'; }} />
         </div>
-        <span className="text-[#3498db] font-bold text-xl whitespace-nowrap">{company.company}</span>
+        <span className="text-[#3498db] font-bold text-xl whitespace-nowrap">{company.company == "omniclama" ? "lamabox" : company.company }</span>
       </div>
       <div className="flex flex-col items-end min-w-[120px]  gap-4">
         <input
@@ -36,7 +36,18 @@ export default function CarrierCard({ company, selectedCompany, handleCompanySel
           style={{ width: 20, height: 20 }}
           onClick={e => e.stopPropagation()}
         />
-        <span className="text-[#3498db] font-bold text-lg">{firstType?.basePrice ? `${firstType.basePrice} ريال` : '-'}</span>
+        <div className=" flex items-center gap-4">
+
+         {["smsa", "aramex"].includes(company.company) ? (
+           <span className="text-[9px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full border bg-green-50 text-green-700 border-green-200">
+    الشحن العادي
+  </span>
+  ):<span className="text-[9px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full border bg-[#3498db]/10 text-[#3498db] border-[#3498db]/20">شحن الخزائن</span>
+}
+        <span className="text-[#3498db] font-bold  flex text-lg">{firstType?.basePrice ? `${firstType.basePrice}` : '-'}
+          <Image alt="real" src={realBlue} width={20} height={20}/>
+        </span>
+    </div>
         {["smsa", "aramex"].includes(company.company) && (
   <span className="text-[#3498db] text-sm sm:text-lg font-medium flex items-center gap-1">
     توصيل من الباب للباب 

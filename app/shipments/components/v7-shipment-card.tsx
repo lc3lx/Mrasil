@@ -19,6 +19,7 @@ import {
   ShoppingCart,
   Trash,
   Redo,
+  X,
 } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import moment from "moment";
@@ -224,26 +225,9 @@ export function V7ShipmentCard({
                       className="object-contain"
                     />
                   </div>
-                  <span className="ml-6 ">{carrierInfo.name}</span>
+                  <span className="ml-6 ">{carrierInfo.name == "omniclama" ? "lamabox" : carrierInfo.name}</span>
 
-                  {/* زر تحميل الليبل إذا كانت الشركة smsa والليبل base64 */}
-                  {carrierInfo.name.toLowerCase() === "smsa" &&
-                    shipment?.smsaResponse?.label && (
-                      <Button
-                      
-                        className="mt-2 text-xs sm:text-base "
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          downloadBase64File(
-                            shipment.smsaResponse.label,
-                            `smsa-label-${shipment._id || "label"}.pdf`
-                          )
-                        }
-                      >
-                        تحميل الليبل (SMSA)
-                      </Button>
-                    )}
+                 
                 </span>
               </div>
 
@@ -315,7 +299,26 @@ export function V7ShipmentCard({
                 <span className="sr-only sm:not-sr-only">تتبع</span>
               </Button>
             </Link>
-            {labelUrl ? (
+             {/* زر تحميل الليبل إذا كانت الشركة smsa والليبل base64 */}
+                  {carrierInfo.name.toLowerCase() === "smsa" &&
+                    shipment?.smsaResponse?.label && (
+                      <Button
+                      
+                        className="sm:w-full v7-neu-button-sm group sm:h-8 size-3 flex items-center justify-center gap-x-2 mx-auto"
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          downloadBase64File(
+                            shipment.smsaResponse.label,
+                            `smsa-label-${shipment._id || "label"}.pdf`
+                          )
+                        }
+                      >
+                                          <Printer className="h-4 w-4 group-hover:text-[#3498db] transition-colors" />
+                                    <span className="sr-only sm:not-sr-only">تحميل البوليصة</span>
+                      </Button>
+                    )}
+            {/* {labelUrl ? (
               labelUrl.includes("base64") ? (
                 // إذا كانت base64 (سمسا)
                 <Button
@@ -363,7 +366,7 @@ export function V7ShipmentCard({
                 <Printer className="h-4 w-4" />
                 <span className="sr-only sm:not-sr-only">تحميل البوليصة</span>
               </Button>
-            )}
+            )} */}
             {shipment.shipmentstates === "Delivered" ? (
                       <Button
                     variant="outline"
@@ -381,8 +384,8 @@ export function V7ShipmentCard({
                     className="sm:w-full v7-neu-button-sm group sm:h-8 size-3 text-xs flex items-center justify-center gap-x-2"
                                   >
                         
-                        <Trash className="h-4 w-4 text-[#e74c3c]" />
-                           <span className="sr-only sm:not-sr-only text-[#e74c3c]">حذف</span>
+                        <X className="h-4 w-4 text-[#e74c3c]" />
+                           <span className="sr-only sm:not-sr-only text-[#e74c3c]">إلغاء البوليصة</span>
                             </Button>}
 
             <span className=" text-gry sm:text-base text-sm">

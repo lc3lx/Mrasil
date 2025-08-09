@@ -448,22 +448,14 @@ export function V7FloatingAssistant() {
   return (
     <div className=" ">
       <div
-      
         ref={buttonRef}
           className={`relative w-[40px] mx-auto    h-[40px] v7-neu-button-sm-boot  text-gry hover:text-[#3498db] ${showPositionControls ? "cursor-move" : "cursor-pointer"} `}
-
-        // className={`${isDragging ? "" : "transition-all duration-500"}`}
         onMouseDown={handleMouseDown}
-        onTouchStart={handleTouchStart}
-        
-      >
+        onTouchStart={handleTouchStart}>
         <div
           onClick={showPositionControls ? undefined : () => setIsChatOpen(true)}
           onMouseEnter={() => !isDragging && setIsHovered(true)}
           onMouseLeave={() => !isDragging && setIsHovered(false)}
-          // className={`relative ${isHovered && !showPositionControls ? "scale-110" : "scale-100"} ${
-          //   isAnimating ? "animate-float" : ""
-          // }`}
           className="  "
           style={{
             width: "60px",
@@ -547,15 +539,8 @@ export function V7FloatingAssistant() {
           <div className="font-bold mb-1">مساعد الذكاء الاصطناعي</div>
           <div className="text-xs opacity-80">اضغط للحصول على مساعدة ذكية</div>
         </div>
-      )}
-
-      {/* تعليمات تغيير الموضع */}
-     
-
+      )}    
       <V7AIChat isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
-
-      {/* إضافة تعريف للرسوم المتحركة */}
-     
     </div>
   )
 }
