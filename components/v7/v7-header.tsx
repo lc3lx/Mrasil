@@ -219,7 +219,7 @@ export function V7Header({
         </div>
       </div>
       <div className="   flex  items-center gap-1 sm:gap-3 md:gap-4">
-      <div className=" flex items-center justify-center ">
+      <div className="   sr-only sm:not-sr-only  ">
 
               <V7FloatingAssistant/>
       </div>

@@ -482,7 +482,7 @@ export function V7FloatingAssistant() {
             {/* Robot head */}
              {/* 3D Atom Logo container with improved dimensions */}
         <motion.div
-          className="relative  w-full  mx-auto  bg-transparent "
+          className="relative  w-full  mx-auto  bg-transparent  "
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.7, delay: 0.2 }}
@@ -526,7 +526,7 @@ export function V7FloatingAssistant() {
       {/* نص توضيحي */}
       {isHovered && !showPositionControls && !isDragging && (
         <div
-          className="fixe  -me-10 bg-white dark:bg-gray-800 px-4 py-2 rounded-lg shadow-md text-sm font-medium whitespace-nowrap transition-all duration-300 z-40"
+          className="fixe  h-fit  me-[35rem] mt-[2rem] hidden sm:block  bg-white dark:bg-gray-800 px-4 py-2 rounded-lg shadow-md text-sm font-medium whitespace-nowrap transition-all duration-300 z-40"
           style={{
             ...getPositionStyle(),
             transform: "translate(85px, 20px)",
@@ -539,8 +539,15 @@ export function V7FloatingAssistant() {
           <div className="font-bold mb-1">مساعد الذكاء الاصطناعي</div>
           <div className="text-xs opacity-80">اضغط للحصول على مساعدة ذكية</div>
         </div>
-      )}    
+      )}
+
+      {/* تعليمات تغيير الموضع */}
+
+
       <V7AIChat isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
+
+
+     
     </div>
   )
 }

@@ -20,8 +20,8 @@ export default function CarrierCard({ company, selectedCompany, handleCompanySel
       style={{ cursor: 'pointer' }}
     >
       <div className="flex flex-col sm:flex-row items-center justify-center sm:gap-6  gap-0  ">
-        <div className=" w-20 min-h-12 max-h-12 sm:h-20  rounded-lg   overflow-hidden">
-          <Image sizes="20" width={20} height={20} src={logoSrc} alt={company.company} className="object-contain w-full h-full" onError={e => { e.currentTarget.src = '/carriers/carrier-placeholder.png'; }} />
+        <div className="  rounded-lg   overflow-hidden">
+          <Image sizes="20" width={20} height={20} src={logoSrc} alt={company.company} className="object-contain w-[5rem] sm:min-w-[7rem]  sm:min-h-[10rem]" onError={e => { e.currentTarget.src = '/carriers/carrier-placeholder.png'; }} />
         </div>
         <span className="text-[#3498db] font-bold text-xl whitespace-nowrap">{company.company == "omniclama" ? "lamabox" : company.company }</span>
       </div>
