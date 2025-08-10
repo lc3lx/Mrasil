@@ -136,11 +136,11 @@ const schema = yup
     recipient_address: yup.string(),
     recipient_email: yup.string(),
     recipient_district: yup.string(),
-    weight: yup.number().required("الوزن مطلوب").typeError("الوزن يجب أن يكون رقماً"),
-    Parcels: yup.number(),
-    dimension_high: yup.number().required("الارتفاع مطلوب"),
-    dimension_width: yup.number().required("العرض مطلوب"),
-    dimension_length: yup.number().required("الطول مطلوب"),
+    weight: yup.number().required("الوزن مطلوب").typeError("الوزن مطلوب"),
+    Parcels: yup.number().required("عدد الصناديق مطلوب").typeError("عدد الصناديق مطلوب"),
+    dimension_high: yup.number(),
+    dimension_width: yup.number(),
+    dimension_length: yup.number(),
     company: yup.string(),
     shipmentType: yup.string(),
     orderDescription: yup.string().required("الوصف مطلوب"),
@@ -182,7 +182,7 @@ const methods = useForm({
     recipient_email: "",
     recipient_district: "",
     weight: undefined,
-    Parcels: 0,
+    Parcels:  undefined,
     dimension_high: undefined,
     dimension_width: undefined,
     dimension_length: undefined,
@@ -743,6 +743,7 @@ const handleSubmit = async (e: any) => {
                   {watch("Parcels") || 1}
                 </div>
                 <Button
+                aria-required="true"
                   type="button"
                   variant="outline"
                   size="icon"
@@ -755,6 +756,11 @@ const handleSubmit = async (e: any) => {
                 </Button>
               </div>
             </div>
+            {errors.Parcels && typeof errors.Parcels.message === "string" && (
+  <div className="text-red-500 text-sm mt-1">
+    {errors.Parcels.message}
+  </div>
+)}
           </motion.div>
 
           {/* وصف محتويات الشحنة */}
@@ -793,7 +799,7 @@ const handleSubmit = async (e: any) => {
               className="text-base font-medium flex items-center gap-2 mb-2"
             >
               <CreditCard className="text-xl font-bold text-[#3498db] m-0" />
-              الإجمالى
+              إجمالي قيمة الطلب
             </Label>
             <div className="v7-neu-input-container relative overflow-hidden group">
               <input

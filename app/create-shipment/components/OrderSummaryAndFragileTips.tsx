@@ -267,7 +267,7 @@ export function OrderSummaryAndFragileTips({ values }: { values: any }) {
               </span>
             </div>
             <div className="flex justify-between items-center  py-4 text-xl font-bold">
-              <span className="text-[#1a365d]">الإجمالي</span>
+              <span className="text-[#1a365d]">سعر البوليصة</span>
               <span className="text-[#3498db] px-3 py-1.5 rounded-lg inline-flex items-center">
               {values.total  || "غير محدد"} ريال
               </span>

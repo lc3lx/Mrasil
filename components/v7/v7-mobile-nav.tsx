@@ -42,10 +42,10 @@ export function V7MobileNav({ theme }: V7MobileNavProps) {
       active: isActiveRoute(currentPath, routes.returns),
     },
     {
-      title: "الطرود",
-      href: routes.parcels,
+      title: "الطلبات",
+      href: routes.orders,
       icon: Box,
-      active: isActiveRoute(currentPath, routes.parcels),
+      active: isActiveRoute(currentPath, routes.orders),
     },
     {
       title: "شحناتي",
