@@ -197,16 +197,16 @@ export function RecipientAddressSection({
         </h2>
       </div>
       <div className="flex flex-col sm:flex-row items-center gap-3 mb-4">
-        <div className="relative flex-1">
-          <span className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-            <Search className="h-5 w-5 text-[#3498db]" />
-          </span>
+        <div className="relative v7-neu-input-container flex-1 min-w-[240px]">
+            <Search className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6d6a67]" />
+       
           <Input
+          
             type="text"
             placeholder="ابحث ضمن عناوين العملاء"
             value={searchRecipient}
             onChange={(e) => setSearchRecipient(e.target.value)}
-            className="pr-16    m-v7-neu-input"
+            className="v7-neu-input w-full pr-12 pe-4 text-gry  text-base"
             style={{ direction: "rtl", fontFamily: "inherit" }}
           />
         </div>
@@ -304,7 +304,7 @@ export function RecipientAddressSection({
       )}
       {/* Recipient Modal */}
       <Dialog open={openRecipientModal} onOpenChange={setOpenRecipientModal}>
-        <DialogContent className="bg-transparent shadow-none p-0 max-w-lg w-full flex items-center justify-center">
+        <DialogContent className="bg-transparent shadow-none p-0 max-w-lg w-full flex items-center justify-center ">
           <div
             className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-2xl max-w-md w-full relative overflow-hidden"
             style={{ opacity: 1, transform: "none" }}
@@ -417,13 +417,13 @@ export function RecipientAddressSection({
         open={editRecipientModalOpen}
         onOpenChange={setEditRecipientModalOpen}
       >
-        <DialogContent>
+        <DialogContent className=" border-none overflow-y-auto  max-h-screen  scroll" dir="ltr">
           <DialogHeader>
-            <DialogTitle className="m:text-2xl text-lg font-bold text-[#1a365d] flex items-center gap-4 mt-0 sm:mt-4">
+            <DialogTitle className="sm:text-2xl text-lg font-bold text-[#1a365d] flex items-center gap-4 mt-0 sm:mt-4" dir="rtl">
               تعديل بيانات العميل
             </DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleEditRecipientSubmit} className="space-y-2">
+          <form onSubmit={handleEditRecipientSubmit} className="sm:space-y-4 space-y-2" dir="rtl">
             {/* اسم العنوان */}
             <div className="space-y-2">
               <Label
@@ -473,7 +473,7 @@ export function RecipientAddressSection({
                 placeholder="البريد الإلكتروني"
                 value={editRecipient.clientEmail}
                 onChange={handleEditRecipientChange}
-                required
+                
                 className={"v7-neu-input"}
                 style={{ direction: "rtl", fontFamily: "inherit" }}
               />
@@ -527,10 +527,10 @@ export function RecipientAddressSection({
               </Label>
               <Input
                 name="district"
-                placeholder="الحي/المنطقة (district)"
+                placeholder="الحي/المنطقة"
                 value={editRecipient.district}
                 onChange={handleEditRecipientChange}
-                required
+                
                 className={"v7-neu-input"}
                 style={{ direction: "rtl", fontFamily: "inherit" }}
               />
@@ -550,7 +550,7 @@ export function RecipientAddressSection({
                 placeholder="البريدي الرمز"
                 value={editRecipient.customer}
                 onChange={handleEditRecipientChange}
-                required
+                
                 className={"v7-neu-input"}
                 style={{ direction: "rtl", fontFamily: "inherit" }}
               />

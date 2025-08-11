@@ -132,13 +132,14 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
   // country: form.country || countrySearch,
   country:"السعودية",
   clientEmail,
-  clientAddress,
+  clientAddress:form.clientAddress,
   district: form.district,
       });
       setAlertStatus("success");
       setAlertMessage("تمت إضافة العنوان بنجاح");
       setAlertOpen(true);
       reset();
+      
       setTimeout(() => {
         onClose();
       }, 1500);
@@ -172,9 +173,9 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
   return (
     <>
       <Dialog open={isOpen} onOpenChange={handleClose}>
-        <DialogContent className=" border-none  ">
+        <DialogContent className=" border-none   overflow-y-auto  max-h-screen  scroll" dir="ltr">
           <DialogHeader>
-            <DialogTitle className=" text-black/90 w-full sm:mt-6 mt-0 text-right sm:text-2xl text-lg flex items-center gap-4  ">
+            <DialogTitle className=" text-black/90 w-full sm:mt-6 mt-0 text-right sm:text-2xl text-lg flex items-center gap-4  " dir="rtl">
               <User className="h-[1.5rem] w-[1.5rem] text-[#1A5889] bg-[#3498db]/20  rounded-full  " />
               إضافة مرسل
             </DialogTitle>
@@ -182,6 +183,7 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
           <form
             onSubmit={handleFormSubmit}
             className="space-y-2  flex flex-col sm:gap-2 gap-1"
+            dir="rtl"
           >
             {/* <Input name="clientName" placeholder="الاسم" value={form.clientName} onChange={handleChange} required /> */}
             <div className="space-y-2">
@@ -231,6 +233,7 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
                   )}
                   onFocus={() => setWeightFocusedA(true)}
                   onBlur={() => setWeightFocusedA(false)}
+                  maxLength={10}
                 />
               </div>
             </div>
@@ -342,7 +345,7 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
             </div>
             <div className="flex-1 space-y-2">
               <Label
-                htmlFor="country"
+                htmlFor="clientAddress"
                 className="sm:text-lg text-base font-medium flex items-center gap-2  text-[#1A5889]"
               >
                 <MapPin className="h-4 w-4 text-[#1A5889]" />

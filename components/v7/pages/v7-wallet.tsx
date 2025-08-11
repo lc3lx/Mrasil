@@ -155,8 +155,8 @@ export default function V7Wallet({
     <div>
       <Dialog open={isOpen} onOpenChange={handleClose}>
         <DialogContent
-          className=" border-none max-w-3xl overflow-y-auto  max-h-screen  scroll  "
-          style={{ border: "none" }}
+          className=" border-none max-w-3xl overflow-y-auto  max-h-screen  scroll"
+          style={{ border: "none" , direction:"ltr"}}
         >
           <DialogHeader>
             <DialogTitle className="text-[#4A7ED0] w-full mt-4  text-right sm:text-2xl text-sm  border-b border-[#8888] pb-4  ">
@@ -167,6 +167,7 @@ export default function V7Wallet({
             id="moyasar-token-form"
             onSubmit={handleSubmit}
             className="  space-y-6 "
+            dir="rtl"
           >
             <input
               type="hidden"

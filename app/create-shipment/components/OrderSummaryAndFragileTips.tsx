@@ -1,5 +1,5 @@
 import React from "react";
-import { FileText, Package, Shield } from "lucide-react";
+import { FileText, Package, Shield, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useFormContext } from "react-hook-form";
@@ -12,6 +12,7 @@ export function OrderSummaryAndFragileTips({ values }: { values: any }) {
   const width = watch("dimension_width") || 0;
   const height = watch("dimension_high") || 0;
  const volume = length * width * height;
+
   return (
     <>
       {/* نصائح للشحنات القابلة للكسر */}
@@ -27,7 +28,7 @@ export function OrderSummaryAndFragileTips({ values }: { values: any }) {
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="lucide lucide-circle-alert h-5 w-5 text-amber-500"
+            className="lucide lucide-circle-alert h-5 w-5 text-[#3498db]"
           >
             <circle cx="12" cy="12" r="10"></circle>
             <line x1="12" x2="12" y1="8" y2="12"></line>
@@ -40,7 +41,7 @@ export function OrderSummaryAndFragileTips({ values }: { values: any }) {
       </div>
       <div className="v7-neu-card-inner p-6 bg-gradient-to-br from-amber-50 to-white border border-amber-100">
         <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+          <div className="w-12 h-12 rounded-full bg-[#3498db]/20 flex items-center justify-center flex-shrink-0">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -51,7 +52,7 @@ export function OrderSummaryAndFragileTips({ values }: { values: any }) {
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="lucide lucide-package h-6 w-6 text-amber-500"
+              className="lucide lucide-package h-6 w-6 text-[#3498db]"
             >
               <path d="m7.5 4.27 9 5.15"></path>
               <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path>
@@ -67,8 +68,8 @@ export function OrderSummaryAndFragileTips({ values }: { values: any }) {
 
             <ul className="space-y-3">
               <li className="flex items-start gap-2">
-                <div className="w-5 h-5 rounded-full bg-amber-100 flex items-center justify-center mt-0.5 flex-shrink-0">
-                  <span className="text-amber-600 text-xs font-bold">١</span>
+                <div className="w-5 h-5 rounded-full bg-[#3498db]/20 flex items-center justify-center mt-0.5 flex-shrink-0">
+                  <span className="text-[#3498db] text-xs font-bold">١</span>
                 </div>
                 <p className="text-gray-700">
                   استخدم تغليف مناسب مثل الفقاعات الهوائية أو الفلين لحماية
@@ -77,8 +78,8 @@ export function OrderSummaryAndFragileTips({ values }: { values: any }) {
               </li>
 
               <li className="flex items-start gap-2">
-                <div className="w-5 h-5 rounded-full bg-amber-100 flex items-center justify-center mt-0.5 flex-shrink-0">
-                  <span className="text-amber-600 text-xs font-bold">٢</span>
+                <div className="w-5 h-5 rounded-full bg-[#3498db]/20 flex items-center justify-center mt-0.5 flex-shrink-0">
+                  <span className="text-[#3498db] text-xs font-bold">٢</span>
                 </div>
                 <p className="text-gray-700">
                   ضع علامة "قابل للكسر" بشكل واضح على جميع جوانب الطرد
@@ -86,8 +87,8 @@ export function OrderSummaryAndFragileTips({ values }: { values: any }) {
               </li>
 
               <li className="flex items-start gap-2">
-                <div className="w-5 h-5 rounded-full bg-amber-100 flex items-center justify-center mt-0.5 flex-shrink-0">
-                  <span className="text-amber-600 text-xs font-bold">٣</span>
+                <div className="w-5 h-5 rounded-full bg-[#3498db]/20 flex items-center justify-center mt-0.5 flex-shrink-0">
+                  <span className="text-[#3498db] text-xs font-bold">٣</span>
                 </div>
                 <p className="text-gray-700">
                   اختر خدمة الشحن المميزة للتعامل مع الشحنات الحساسة بعناية
@@ -96,8 +97,8 @@ export function OrderSummaryAndFragileTips({ values }: { values: any }) {
               </li>
 
               <li className="flex items-start gap-2">
-                <div className="w-5 h-5 rounded-full bg-amber-100 flex items-center justify-center mt-0.5 flex-shrink-0">
-                  <span className="text-amber-600 text-xs font-bold">٤</span>
+                <div className="w-5 h-5 rounded-full bg-[#3498db]/20 flex items-center justify-center mt-0.5 flex-shrink-0">
+                  <span className="text-[#3498db] text-xs font-bold">٤</span>
                 </div>
                 <p className="text-gray-700">
                   نوصي بشدة بإضافة تأمين الشحنة لتغطية أي أضرار محتملة أثناء
@@ -106,7 +107,7 @@ export function OrderSummaryAndFragileTips({ values }: { values: any }) {
               </li>
             </ul>
 
-            <div className="flex items-center gap-2 mt-2 bg-amber-100 p-3 rounded-lg">
+            <div className="flex items-center gap-2 mt-2 bg-[#3498db]/20 p-3 rounded-lg">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -117,7 +118,7 @@ export function OrderSummaryAndFragileTips({ values }: { values: any }) {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="lucide lucide-shield h-5 w-5 text-amber-500"
+                className="lucide lucide-shield h-5 w-5 text-[#3498db]"
               >
                 <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path>
               </svg>
@@ -131,7 +132,7 @@ export function OrderSummaryAndFragileTips({ values }: { values: any }) {
       </div>
       {/* كوبون الخصم */}
       <div className="flex items-center gap-3 mb-4">
-        <div className="v7-neu-icon-sm bg-gradient-to-br from-amber-100 to-amber-200">
+        <div className="v7-neu-icon-sm ">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -142,7 +143,7 @@ export function OrderSummaryAndFragileTips({ values }: { values: any }) {
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="lucide lucide-ticket h-5 w-5 text-amber-500"
+            className="lucide lucide-ticket h-5 w-5 text-[#3498db]"
           >
             <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
             <path d="M13 5v2" />
@@ -246,11 +247,13 @@ export function OrderSummaryAndFragileTips({ values }: { values: any }) {
             </div>
             <div className="flex justify-between items-center  py-3 border-b border-[#3498db]/10">
               <span className="text-[#6d6a67] font-medium">نوع الشحنة</span>
-              <span className="font-medium text-[#1a365d]">{values.paymentMethod == "Prepaid" ? "الدفع المسبق" :"الدفع عند الأستلام" }</span>
+              <span className="font-medium text-[#1a365d]">{values.paymentMethod == "Prepaid" ? "الدفع مسبق" :"الدفع عند الأستلام" }</span>
             </div>
             <div className="flex justify-between items-center  py-3 border-b border-[#3498db]/10">
               <span className="text-[#6d6a67] font-medium">حجم الطرد</span>
-              <span className="font-medium text-[#1a365d]">{volume  || "غير محدد"} </span>
+              {values.dimension_width ?
+              <span className="font-medium text-[#1a365d] ">{values.dimension_high} * {values.dimension_length} * {values.dimension_width} </span>
+             :<span className="font-medium text-[#1a365d] ">غير محدد</span> }
             </div>
             <div className="flex justify-between items-center  py-3 border-b border-[#3498db]/10">
               <span className="text-[#6d6a67] font-medium">الوزن</span>
@@ -263,7 +266,7 @@ export function OrderSummaryAndFragileTips({ values }: { values: any }) {
             <div className="flex justify-between items-center  py-3 border-b border-[#3498db]/10">
               <span className="text-[#6d6a67] font-medium">خدمة التوصيل</span>
               <span className="font-medium text-[#1a365d]">
-                {values.company  || "غير محدد"}
+                {values.company == "omniclama" ? "lamabox" : values.company  || "غير محدد"}
               </span>
             </div>
             <div className="flex justify-between items-center  py-4 text-xl font-bold">

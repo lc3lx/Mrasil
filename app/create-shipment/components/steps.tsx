@@ -75,6 +75,7 @@ import { ParcelSizeSection } from "./ParcelSizeSection";
 import CarrierCard from "./CarrierCard";
 import { OrderSummaryAndFragileTips } from "./OrderSummaryAndFragileTips";
 import { useSearchParams } from 'next/navigation';
+import Privace from "./Privace";
 const cities = [
   "الرياض",
   "جدة",
@@ -137,7 +138,7 @@ const schema = yup
     recipient_email: yup.string(),
     recipient_district: yup.string(),
     weight: yup.number().required("الوزن مطلوب").typeError("الوزن مطلوب"),
-    Parcels: yup.number().required("عدد الصناديق مطلوب").typeError("عدد الصناديق مطلوب"),
+    Parcels: yup.number(),
     dimension_high: yup.number(),
     dimension_width: yup.number(),
     dimension_length: yup.number(),
@@ -182,7 +183,7 @@ const methods = useForm({
     recipient_email: "",
     recipient_district: "",
     weight: undefined,
-    Parcels:  undefined,
+    Parcels:  1,
     dimension_high: undefined,
     dimension_width: undefined,
     dimension_length: undefined,
@@ -580,7 +581,7 @@ const handleSubmit = async (e: any) => {
   if (valid == true) { nextStep();}
 };
 
-  
+    const [openPrivacyModal, setOpenPrivacyModal] = useState(false)
   return (
     <>
       <form onSubmit={handleSubmit} className="space-y-8">
@@ -682,7 +683,6 @@ const handleSubmit = async (e: any) => {
 )}
           </div>
         </div>
-        {/* Inputs row: weight, parcels, description */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8 ">
           {/* الوزن (كجم) */}
           <motion.div variants={fadeIn}>
@@ -696,6 +696,7 @@ const handleSubmit = async (e: any) => {
             <div className="v7-neu-card-inner px-6 py-6 w-full min-w-[180px] flex items-center">
               <input
                 type="number"
+                min="0"
                 {...register("weight", { required: "الوزن مطلوب" })}
                 
                 placeholder="أدخل وزن الشحنة"
@@ -743,7 +744,7 @@ const handleSubmit = async (e: any) => {
                   {watch("Parcels") || 1}
                 </div>
                 <Button
-                aria-required="true"
+               
                   type="button"
                   variant="outline"
                   size="icon"
@@ -804,6 +805,7 @@ const handleSubmit = async (e: any) => {
             <div className="v7-neu-input-container relative overflow-hidden group">
               <input
                 type="number"
+                min="0"
                 {...register("total", {required:"الحقل مطلوب"})}
                 placeholder="أدخل الإجمالى"
                 className="v7-neu-input text-base"
@@ -844,12 +846,13 @@ const handleSubmit = async (e: any) => {
             </div>
             <div className="bg-white/60 rounded-xl px-4 py-3 text-sm text-[#6b7a90] border border-[#e3eaf3] text-right">
               بالمتابعة، أنت توافق على{" "}
-              <a
-                href="#"
+              <button
+                       type="button"
+                      onClick={() => setOpenPrivacyModal(true)}
                 className="text-[#3498db] font-bold underline hover:text-blue-700"
               >
                 شروط الخدمة وسياسة الخصوصية
-              </a>{" "}
+              </button>{" "}
               الخاصة بنا
             </div>
           </div>
@@ -902,6 +905,10 @@ const handleSubmit = async (e: any) => {
           </button>
         </div>
       </form>
+      <Privace 
+              isOpen={openPrivacyModal}
+        onClose={() => setOpenPrivacyModal(false)}
+      />
     </>
   );
 }
@@ -966,34 +973,11 @@ function Step3Content({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
-      {/* Shipping Type Tabs First */}
-      {/* <div className="space-y-4">
-        <h2 className="text-2xl font-semibold text-[#1a365d] flex items-center gap-2">
-          <Package className="w-5 h-5 text-[#3498db]" />
-          نوع الشحن
-        </h2>
-        <div className="flex w-full rounded-full border border-[#b6d6f6] bg-[#f7fafd] overflow-hidden">
-          {shipmentTypes.map((tab) => (
-            <button
-              key={tab.value}
-              type="button"
-              className={`flex-1 py-2 text-center font-bold transition-all text-base ${
-                selectedShipmentType === tab.value
-                  ? "bg-[#eaf4fb] text-[#3498db]"
-                  : "bg-transparent text-[#1a365d] hover:bg-[#f0f6fa]"
-              }`}
-              style={{ borderRadius: 20 }}
-              onClick={() => handleShipmentTypeTab(tab.value)}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-      </div> */}
+
       {/* Carrier Cards Second */}
       <div className="space-y-4">
         <div className=" flex items-center gap-2">
-          <div className=" bg-[#1a365d] p-1 rounded-md">
+          <div className=" v7-neu-icon-sm bg-gradient-to-br from-[#3498db]/80 to-[#3498db]">
             <svg
       xmlns="http://www.w3.org/2000/svg"
       width="30"
@@ -1012,10 +996,6 @@ function Step3Content({
       <path d="M15 18H9" />
       <circle cx="17" cy="18" r="2" />
     </svg>
-
-            {/* <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-truck h-5 w-5 text-white">…</svg> */}
-      {/* <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-truck h-5 w-5 text-white">…</svg> */}
-         {/* <Car className=" text-white   w-8 h-8   " /> */}
           </div>
         <h2 className="text-2xl font-semibold text-[#1a365d]"> أختر الناقل</h2>
         </div>

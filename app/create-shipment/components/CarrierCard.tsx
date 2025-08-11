@@ -39,10 +39,10 @@ export default function CarrierCard({ company, selectedCompany, handleCompanySel
         <div className=" flex items-center gap-4">
 
          {["smsa", "aramex"].includes(company.company) ? (
-           <span className="text-[9px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full border bg-green-50 text-green-700 border-green-200">
+           <span className="text-[9px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full border bg-green-50 text-[#27ae60] border-green-200 font-semibold">
     الشحن العادي
   </span>
-  ):<span className="text-[9px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full border bg-[#3498db]/10 text-[#3498db] border-[#3498db]/20">شحن الخزائن</span>
+  ):<span className="text-[9px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full border bg-sky-50 text-sky-500  border-sky-200 font-semibold">شحن الخزائن</span>
 }
         <span className="text-[#3498db] font-bold  flex text-lg">{firstType?.basePrice ? `${firstType.basePrice}` : '-'}
           <Image alt="real" src={realBlue} width={20} height={20}/>

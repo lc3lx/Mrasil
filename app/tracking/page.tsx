@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Search, Package, MapPin, Calendar, Clock, Truck, CheckCircle, AlertCircle } from "lucide-react"
 import V7Layout from "@/components/v7/v7-layout"
+import axios from "axios";
 
 interface TimelineStep {
   status: string
@@ -11,14 +12,36 @@ interface TimelineStep {
   time: string
   completed: boolean
 }
+interface Tracking{
+  trackingNumber:number
+}
 
-export default function TrackingPage() {
+export default function () {
   const [trackingNumber, setTrackingNumber] = useState("")
   const [isTracking, setIsTracking] = useState(false)
   const [trackingResult, setTrackingResult] = useState<any>(null)
   const [error, setError] = useState("")
+// API
 
-  const handleTracking = () => {
+ const [number, setNumber] = useState("");
+  const [data, setData] = useState(null);
+
+  const handleTrack = async () => {
+    try {
+      const res = await axios.post("https://backend-marasil.onrender.com/api/shipment/traking", {
+        trackingNumber: number
+      });
+      setData(res.data); 
+      console.log("DATA",data);
+      
+    } catch (err) {
+      console.error("Error", err);
+      setData(null);
+    }
+  }
+
+// API
+const handleTracking = () => {
     if (!trackingNumber.trim()) {
       setError("الرجاء إدخال رقم الشحنة")
       return
@@ -124,16 +147,16 @@ export default function TrackingPage() {
 
   return (
     <V7Layout>
-      <div className="space-y-8 pb-20">
+      <div className="space-y-8 pb-20 my-16">
         <div>
-          <h1 className="text-2xl font-bold text-[#3498db]">تتبع الشحنات</h1>
-          <p className="text-sm text-gry">تتبع شحناتك ومعرفة حالتها الحالية</p>
+          <h1 className="text-2xl font-bold text-[#294D8B]">تتبع الشحنات</h1>
+          <p className="text-sm text-[#6d6a67]">تتبع شحناتك ومعرفة حالتها الحالية</p>
         </div>
 
         <div className="v7-neu-card p-6 rounded-xl">
           <div className="mb-6">
             <h2 className="text-xl font-bold text-[#3498db]">أدخل رقم الشحنة</h2>
-            <p className="text-sm text-gry">أدخل رقم الشحنة المكون من 12 رقم للتتبع</p>
+            <p className="text-sm text-[#6d6a67]">أدخل رقم الشحنة المكون من 12 رقم للتتبع</p>
           </div>
 
           <div className="flex flex-col md:flex-row gap-4">
@@ -143,15 +166,17 @@ export default function TrackingPage() {
                 type="text"
                 placeholder="مثال: SE1002202504"
                 className="v7-neu-input w-full pl-12 text-right"
-                value={trackingNumber}
-                onChange={(e) => setTrackingNumber(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleTracking()}
+                // value={trackingNumber}
+                // onChange={(e) => setTrackingNumber(e.target.value)}
+                // onKeyDown={(e) => e.key === "Enter" && handleTracking()}
+                value={number}
+                onChange={(e) => setNumber(e.target.value)}
               />
             </div>
             <Button 
-              className="v7-neu-button w-full md:w-auto px-6 py-3 bg-[#3498db] hover:bg-[#2980b9] text-white transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 rounded-lg shadow-lg hover:shadow-xl dark:bg-[#2c3e50] dark:hover:bg-[#34495e] dark:text-white"
-              onClick={handleTracking} 
-              disabled={isTracking}
+              className="inline-flex items-center justify-center hover:text-white gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 v7-neu-button"
+             onClick={handleTrack} 
+              // disabled={isTracking}
             >
               {isTracking ? (
                 <div className="flex items-center gap-2">
@@ -180,13 +205,13 @@ export default function TrackingPage() {
                 <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
                   <div className="v7-neu-icon">{getStatusIcon(trackingResult.status)}</div>
                   <div>
-                    <div className="text-sm text-gry">رقم الشحنة</div>
+                    <div className="text-sm text-[#6d6a67]">رقم الشحنة</div>
                     <div className="text-lg font-bold">{trackingResult.trackingNumber}</div>
                   </div>
                 </div>
                 <div className="flex flex-col items-start">
-                  <div className="text-sm text-gry">حالة الشحنة</div>
-                  <div className={`text-lg font-bold ${getStatusColor(trackingResult.status)}`}>
+                  <div className="text-sm text-[#6d6a67]">حالة الشحنة</div>
+                  <div className={`text-lg font-bold text-amber-500 ${getStatusColor(trackingResult.status)}`}>
                     {getStatusText(trackingResult.status)}
                   </div>
                 </div>
@@ -276,7 +301,153 @@ export default function TrackingPage() {
               </div>
             </div>
           )}
+          <div>
+          </div>
+        <div className=" grid md:grid-cols-2 gap-6 mt-6">
+
+        <div className=" p-6 rounded-xl v7-neu-card-inner">
+
+            <h1 className="text-lg font-bold text-[#3498db] mb-4 ">معلومات المرسل</h1>
+            <div className=" space-y-3 text-sm">
+
+            <div className="flex justify-between">
+              <span className=" text-[#6d6a67]">الاسم:</span>
+              <span className=" text-[#1A5889] font-medium">شركة التجارة الإلكترونية</span>
+            </div>
+            <div className="flex justify-between">
+              <span className=" text-[#6d6a67]">الهاتف:</span>
+              <span className=" text-[#1A5889] font-medium">+966 13 123 4567</span>
+            </div>
+            <div className="flex justify-between">
+              <span className=" text-[#6d6a67]">العنوان:</span>
+              <span className=" text-[#1A5889] font-medium">المنطقة الصناعية، الدمام</span>
+            </div>
+            </div>
+              </div>
+            <div className=" p-6 rounded-xl v7-neu-card-inner">
+              
+              <h1 className="text-lg font-bold text-[#3498db] mb-4">معلومات المستلم</h1>
+              <div className=" space-y-3 text-sm">
+                <div className="flex justify-between">
+
+                <span className=" text-[#6d6a67]">الاسم:</span>
+                <span className=" text-[#1A5889] font-medium">محمد أحمد</span> 
+              </div>
+              <div className="flex justify-between">
+                <span className=" text-[#6d6a67]">الهاتف:</span>
+                <span className=" text-[#1A5889] font-medium">+966 50 123 4567</span>
+              </div>
+              <div className="flex justify-between">
+                <span className=" text-[#6d6a67]">العنوان:</span>
+                <span className=" text-[#1A5889] font-medium">حي النزهة، شارع الأمير سلطان</span>
+              </div>
+              <div className="flex justify-between">
+                <span className=" text-[#6d6a67]">المدينة:</span>
+                <span className=" text-[#1A5889] font-medium">الرياض</span>
+                </div>
+              </div>
+            </div>
         </div>
+        </div>
+      
+          <div className="mt-8 v7-neu-card p-6 rounded-xl">
+            <h1 className="text-xl font-bold text-[#3498db] mb-4">الشحنات الأخيرة</h1>
+            <div className="flex items-center justify-between p-4 rounded-lg v7-neu-card-inner">
+              <div className="flex items-center gap-3">
+                 <div className="v7-neu-icon-sm">
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  strokeWidth="2"
+  strokeLinecap="round"
+  strokeLinejoin="round"
+  className="lucide lucide-circle-check-big h-6 w-6 text-green-500"
+>
+  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+<path d="m9 11 3 3L22 4"></path>
+</svg>                
+                </div>
+<div className=" flex flex-col">
+                <span className="font-medium">SE1001202504</span>
+                <span className="text-sm text-[#6d6a67]">الرياض ← جدة</span>
+  </div>
+              </div>
+              <div className=" flex flex-col">
+                <span className="text-sm font-medium text-green-500">تم التسليم</span>
+                <span className="text-xs text-[#6d6a67]">18 أبريل</span>
+              </div>
+            </div>
+            <div className="flex items-center justify-between p-4 rounded-lg v7-neu-card-inner">
+              <div className="flex items-center gap-3">
+
+                 <div className="v7-neu-icon-sm">
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  strokeWidth="2"
+  strokeLinecap="round"
+  strokeLinejoin="round"
+  className="lucide lucide-package h-6 w-6 text-blue-500"
+><path d="m7.5 4.27 9 5.15"></path>
+  <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path>
+  <path d="m3.3 7 8.7 5 8.7-5"></path>
+
+<path d="M12 22V12"></path>
+</svg>       
+  </div>
+
+   <div className=" flex flex-col">
+                <span className="font-medium">SE1001202504</span>
+                <span className="text-sm text-[#6d6a67]">
+جدة ← الدمام</span>
+                </div>
+              </div>
+              <div className=" flex flex-col"> 
+                <span className="text-sm font-medium text-blue-500">قيد المعالجة</span>
+                <span className="text-xs text-[#6d6a67]">15 أبريل</span>
+              </div>
+            </div>
+            <div className="flex items-center justify-between p-4 rounded-lg v7-neu-card-inner">
+              <div className="flex items-center gap-3">
+                <div className="v7-neu-icon-sm">
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  strokeWidth="2"
+  strokeLinecap="round"
+  strokeLinejoin="round"
+  className="lucide lucide-package h-6 w-6 text-purple-500"
+><path d="m7.5 4.27 9 5.15"></path>
+  <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path>
+  <path d="m3.3 7 8.7 5 8.7-5"></path>
+
+<path d="M12 22V12"></path>
+</svg>              
+                </div>
+  <div className=" flex flex-col">
+                <span className="font-medium">SE1001202504</span>
+                <span className="text-sm text-[#6d6a67]"> الرياض ← مكة </span>
+  </div>
+              </div>
+              <div className=" flex flex-col">
+                <span className="text-sm font-medium text-gray-500">جاهز للشحن </span>
+                <span className="text-xs text-[#6d6a67]">17 أبريل</span>
+              </div>
+            </div>
+          </div>
       </div>
     </V7Layout>
   )

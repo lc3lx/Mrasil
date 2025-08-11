@@ -302,23 +302,42 @@ export function V7ShipmentCard({
               </Button>
             </Link>
             {/* 0000000000000 */}
+             {/* {
+             carrierInfo.name.toLowerCase() === "smsa" &&
+                    shipment?.smsaResponse?.label && (
+                      <Button
+                        className="mt-2"
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          downloadBase64File(
+                            shipment.smsaResponse.label,
+                            `smsa-label-${shipment._id || "label"}.pdf`
+                          )
+                        }
+                      >
+                        تحميل الليبل (SMSA)
+                      </Button>
+                    )} */}
 {labelUrl ? (
-              labelUrl.includes("base64") ? (
-                // إذا كانت base64 (سمسا)
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full v7-neu-button-sm group h-8 text-xs flex items-center justify-center gap-x-2"
-                  onClick={() =>
-                    downloadBase64File(
-                      labelUrl,
-                      `label-${shipment._id || "label"}.pdf`
-                    )
-                  }
-                >
-                  <Printer className="h-4 w-4 group-hover:text-[#3498db] transition-colors" />
-                  <span className="sr-only sm:not-sr-only">تحميل البوليصة</span>
-                </Button>
+carrierInfo.name.toLowerCase() === "smsa" ?
+                    shipment?.smsaResponse?.label  &&(
+                      <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full v7-neu-button-sm group h-8 text-xs flex items-center justify-center gap-x-2"
+                        onClick={() =>
+                          downloadBase64File(
+                            shipment.smsaResponse.label,
+                            `smsa-label-${shipment._id || "label"}.pdf`
+                          )
+                        }
+                      >
+                    <Printer className="h-4 w-4 group-hover:text-[#3498db] transition-colors" />
+                    <span className="sr-only sm:not-sr-only">
+                      تحميل البوليصة
+                    </span>
+                      </Button>
               ) : (
                 // إذا كانت رابط مباشر
                 <a
@@ -351,77 +370,6 @@ export function V7ShipmentCard({
                 <span className="sr-only sm:not-sr-only">تحميل البوليصة</span>
               </Button>
             )}
-             {/* زر تحميل الليبل إذا كانت الشركة smsa والليبل base64 */}
-{/* {carrierInfo.name.toLowerCase() === "redbox" && shipment?.redboxResponse?.label && (
-  <Button
-    className="sm:w-full v7-neu-button-sm group sm:h-8 size-3 flex items-center justify-center gap-x-2 mx-auto"
-    variant="outline"
-    size="sm"
-    onClick={() =>
-      downloadBase64File(
-        shipment.redboxResponse.label,
-        `${carrierInfo.name}-label-${shipment._id || "label"}.pdf`
-      )
-    }
-  >
-    <Printer className="h-4 w-4 group-hover:text-[#3498db] transition-colors" />
-    <span className="sr-only sm:not-sr-only">تحميل البوليصة</span>
-  </Button>
-)} */}
-
-             {/* {labelUrl ? (
-              labelUrl.includes("base64") ? (
-                // إذا كانت base64 (سمسا)
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="sm:w-full v7-neu-button-sm group sm:h-8 size-3   text-xs flex items-center justify-center gap-x-2"
-                       onClick={() =>
-                          downloadBase64File(
-        shipment[`${carrierInfo.name.toLowerCase()}Response`].label,
-        `${carrierInfo.name}-label-${shipment._id || "label"}.pdf`
-                          )
-                        }
-                >
-                  <Printer className="h-4 w-4 group-hover:text-[#3498db] transition-colors" />
-                  <span className="sr-only sm:not-sr-only">تحميل البوليصة</span>
-                </Button>
-              ) : (
-                // إذا كانت رابط مباشر
-                <a
-                  href={labelUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full"
-                  download
-                >
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="sm:w-full v7-neu-button-sm group sm:h-8 size-3 text-xs flex items-center justify-center gap-x-2"
-                  >
-                    <Printer className="h-4 w-4 group-hover:text-[#3498db] transition-colors" />
-                    <span className="sr-only sm:not-sr-only">
-                      تحميل البوليصة
-                    </span>
-                  </Button>
-                </a>
-              )
-            )
-             : (
-              <Button
-                variant="outline"
-                size="sm"
-                className="sm:w-full v7-neu-button-sm group sm:h-8 size-3 flex items-center justify-center gap-x-2 opacity-50 cursor-not-allowed"
-                disabled
-              >
-                <Printer className="h-4 w-4" />
-                <span className="sr-only sm:not-sr-only">تحميل البوليصة</span>
-              </Button>
-            )
-            }  */}
-
-
 
 
             {

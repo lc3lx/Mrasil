@@ -20,12 +20,12 @@ import ResponseModal from "../../components/ResponseModal";
 const schema = yup
   .object({
     alias: yup.string().required("اسم العنوان مطلوب"),
-    email: yup.string().required("الأيميل مطلوب"),
-    location: yup.string().required("العنوان التفصيلي مطلوب"),
+    email: yup.string(),
+    location: yup.string(),
     phone: yup.string().required("رقم الجوال مطلوب"),
     city: yup.string().required("المدينة مطلوبة"),
     country: yup.string().required("الدولة مطلوبة"),
-    district: yup.string().required("الحي/الرمز البريدي مطلوب"),
+    district: yup.string(),
   })
   .required();
 
@@ -97,9 +97,9 @@ export function EditSenderAddressForm({
   return (
     <>
       <Dialog open={isOpen} onOpenChange={handleClose}>
-        <DialogContent className=" border-none">
+        <DialogContent className=" border-none overflow-y-auto  max-h-screen  scroll" dir="ltr">
           <DialogHeader>
-            <DialogTitle className="sm:text-2xl text-lg font-bold text-[#1a365d] flex items-center gap-4 mt-0 sm:mt-4">
+            <DialogTitle className="sm:text-2xl text-lg font-bold text-[#1a365d] flex items-center gap-4 mt-0 sm:mt-4" dir="rtl">
               <Building className="h-4 w-4 text-[#1A5889]]" />
               تعديل عنوان الالتقاط
             </DialogTitle>
@@ -107,6 +107,7 @@ export function EditSenderAddressForm({
           <form
             onSubmit={handleSubmit(handleFormSubmit)}
             className="sm:space-y-4 space-y-2 "
+            dir="rtl"
           >
             {/* اسم العنوان */}
             <div className="space-y-2">
@@ -176,8 +177,8 @@ export function EditSenderAddressForm({
                 }
                 style={{ direction: "rtl", fontFamily: "inherit" }}
               />
-              {errors.phone && (
-                <p className="text-sm text-red-500">{errors.phone.message}</p>
+              {errors.email && (
+                <p className="text-sm text-red-500">{errors.email.message}</p>
               )}
             </div>
             {/* الدولة */}

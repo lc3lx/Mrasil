@@ -174,9 +174,9 @@ await onSubmit({
   return (
     <>
       <Dialog open={isOpen} onOpenChange={handleClose}>
-        <DialogContent className=" border-none ">
+        <DialogContent className=" border-none overflow-y-auto  max-h-screen  scroll   " dir="ltr">
           <DialogHeader>
-            <DialogTitle className=" text-black/90 w-full sm:mt-6 mt-0 text-right sm:text-2xl text-lg flex items-center gap-4  ">
+            <DialogTitle className=" text-black/90 w-full sm:mt-6 mt-0 text-right sm:text-2xl text-lg flex items-center gap-4  " dir="rtl">
               <User className="h-[1.5rem] w-[1.5rem] text-[#1A5889] bg-[#3498db]/20  rounded-full  " />
               إضافة مستلم
             </DialogTitle>
@@ -184,8 +184,8 @@ await onSubmit({
           <form
             onSubmit={handleSubmit(handleFormSubmit)}
             className="space-y-2  flex flex-col gap-2"
+            dir="rtl"
           >
-            {/* <Input name="clientName" placeholder="الاسم" value={form.clientName} onChange={handleChange} required /> */}
             <div className="space-y-2">
               <Label
                 htmlFor="clientName"
@@ -275,34 +275,6 @@ await onSubmit({
                   "v7-neu-input bg-transparent border-none shadow-none outline-none text-base w-full text-[#1A5889]"
                 )}
               />
-                            {/* <div className="relative">
-<input
-  name="country"
-  // value={countrySearch || form.country}
-  value={"السعودية"}
-  onChange={(e) => {
-    setCountrySearch(e.target.value);
-    setForm({ ...form, country: "" });
-  }}
-  placeholder="السعودية"
-  readOnly
-  className={cn("v7-neu-input bg-transparent border-none shadow-none outline-none text-base w-full")}
-  onFocus={() => setFocused("country")}
-  onBlur={() => setTimeout(() => setFocused(""), 200)}
-/>
-{focused === "country" && countrySearch && (
-  <CountryAutocompleteDropdown
-  
-    search={countrySearch}
-    onSelect={(obj) => {
-      setForm({ ...form, country: obj.name_ar });
-      setCountrySearch("");
-      setFocused("");
-    }}
-  />
-)} */}
-
-              {/* </div> */}
             </div>
             <div className="space-y-2 ">
               <Label
@@ -320,7 +292,7 @@ await onSubmit({
                   value={search || form.city}
                   onChange={e => {
                     setSearch(e.target.value);
-                    setForm({ ...form, city: "" }); // امسح قيمة المدينة والمنطقة حتى يختار المستخدم من القائمة
+                    setForm({ ...form, city: "" });
                   }}
                   required
                   placeholder="المدينة"

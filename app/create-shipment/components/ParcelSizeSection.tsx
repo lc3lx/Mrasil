@@ -84,6 +84,7 @@ export function ParcelSizeSection({ parcelsData, setValue, errors }: ParcelSizeS
   const handleShowMore = () => {
     setVisibleCount(sizeCards.length); // أو زد العدد تدريجيًا إذا بدك
   };
+const [error, setError] = React.useState("");
 
   return (
     <>
@@ -216,10 +217,11 @@ export function ParcelSizeSection({ parcelsData, setValue, errors }: ParcelSizeS
       <Input
                         className="v7-neu-input w-full pr-10 py-2 text-sm "
                         
-                        type="text"
+                        type="number"
                         value={customParcel.length}
                         onChange={(e) => setCustomParcel({ ...customParcel, length: e.target.value })}
                         required
+                      min="0"
                         />
                         </div>
                         <div>
@@ -231,6 +233,7 @@ export function ParcelSizeSection({ parcelsData, setValue, errors }: ParcelSizeS
         value={customParcel.width}
         onChange={(e) => setCustomParcel({ ...customParcel, width: e.target.value })}
         required
+        min="0"
         />
         </div>
         <div>
@@ -244,6 +247,7 @@ export function ParcelSizeSection({ parcelsData, setValue, errors }: ParcelSizeS
                         value={customParcel.height}
                         onChange={(e) => setCustomParcel({ ...customParcel, height: e.target.value })}
                         required
+                        min="0"
                         />
                         </div>
 
@@ -255,39 +259,53 @@ export function ParcelSizeSection({ parcelsData, setValue, errors }: ParcelSizeS
           type="button"
           className="bg-blue-500 text-white w-full text-lg"
           disabled={isCreatingParcel}
-          onClick={async () => {
-            try {
-              await createParcel({
-                title: customParcel.title,
-                dimensions: {
-                  length: Number(customParcel.length),
-                  width: Number(customParcel.width),
-                  height: Number(customParcel.height),
-                },
-                maxWeight: customParcel.maxWeight ? Number(customParcel.maxWeight) : undefined,
-                price: customParcel.price ? Number(customParcel.price) : undefined,
-                description: customParcel.description,
-                isPublic: false,
-              }).unwrap();
+        onClick={async () => {
+   if(
+      !customParcel.title.trim() ||
+      !customParcel.length.trim() ||
+      !customParcel.width.trim() ||
+      !customParcel.height.trim()
+    ) {
 
-              setCustomModalOpen(false);
-              setCustomParcel({
-                title: '',
-                length: '',
-                width: '',
-                height: '',
-                maxWeight: '',
-                price: '',
-                description: '',
-              });
-            } catch (err) {
-              console.error("فشل إنشاء الطرد:", err);
-            }
-          }}
+
+      setError("جميع الحفول مطلوبة");
+      return;
+    }
+    setError("");
+
+    try {
+      await createParcel({
+        title: customParcel.title,
+        dimensions: {
+          length: Number(customParcel.length),
+          width: Number(customParcel.width),
+          height: Number(customParcel.height),
+        },
+        maxWeight: customParcel.maxWeight ? Number(customParcel.maxWeight) : undefined,
+        price: customParcel.price ? Number(customParcel.price) : undefined,
+        description: customParcel.description,
+        isPublic: false,
+      }).unwrap();
+
+      setCustomModalOpen(false);
+      setCustomParcel({
+        title: '',
+        length: '',
+        width: '',
+        height: '',
+        maxWeight: '',
+        price: '',
+        description: '',
+      });
+    } catch (err) {
+      console.error("فشل إنشاء الطرد:", err);
+    }
+  }}
         >
           {isCreatingParcel ? 'جاري الإضافة...' : 'إضافة'}
         </Button>
     </div>
+        {error && <p className="text-red-500 ">{error}</p>}
   </DialogContent>
 </Dialog>
 

@@ -1,4 +1,4 @@
-import { useState, Dispatch, SetStateAction } from "react";
+import { useState, Dispatch, SetStateAction, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   Building,
@@ -60,19 +60,21 @@ export function SenderAddressSection({
   const [showAllSenders, setShowAllSenders] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [addressToEdit, setAddressToEdit] = useState<any | null>(null);
+  const [localAddresses, setLocalAddresses] = useState<any[]>([]);
 
   // Use API data for sender cards (customer addresses)
-  const senderCards = (customerMeData?.data.addresses || []).map(
-    (address, idx) => ({
-      id: address._id || idx,
-      _id: address._id,
-      name: address.alias || "-",
-      mobile: address.phone || "-",
-      city: address.city || "-",
-      address: address.location || "-",
-      email: customerMeData?.data.email || "-",
-    })
-  );
+const senderCards = (customerMeData?.data.addresses || []).map(
+  (address, idx) => ({
+    id: address._id || idx,
+    _id: address._id,
+    name: address.alias || "-",
+    mobile: address.phone || "-",
+    city: address.city || "-",
+    address: address.location || "-",
+    email: customerMeData?.data.email || "-",
+  })
+);
+
 const normalize = (str: string) =>
   str
     .toLowerCase()
@@ -119,19 +121,25 @@ const search = searchSender.trim().toLowerCase();
     ? filteredSenderCards
     : filteredSenderCards.slice(0, 6);
 
-  const handleAddSenderAddress = async (data: any) => {
-    try {
-      await createAddress({
-        alias: data.clientName,
-        location: data.clientAddress,
-        phone: data.clientPhone,
-        city: data.city,
-        country: data.country,
-      }).unwrap();
-    } catch (error) {
-      throw error;
-    }
-  };
+const handleAddSenderAddress = async (data: any) => {
+  try {
+    await createAddress({
+      alias: data.clientName,
+      location: data.clientAddress,
+      phone: data.clientPhone,
+      city: data.city,
+      country: data.country,
+    }).unwrap();
+    refetch()
+
+    setOpenAddSenderModal(false);
+  } catch (error) {
+    console.error("Error creating address:", error);
+  }
+};
+
+
+console.log(displayedSenderCards);
 
   return (
     <motion.div variants={staggerChildren}>
@@ -156,18 +164,19 @@ const search = searchSender.trim().toLowerCase();
         <h3 className="text-3xl font-bold text-gray-800"> بيانات المرسل</h3>
       </div>
       <div className="flex  flex-col sm:flex-row  gap-3 mb-4">
-        <div className="relative flex-1">
-          <span className="absolute inset-y-0 right-0 flex items-center pr-5 pointer-events-none">
-            <Search className="h-5 w-5 text-[#3498db]" />
-          </span>
+        
+          <div className="relative v7-neu-input-container flex-1 min-w-[240px]">
+            <Search className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6d6a67]" />
+                 
           <Input
-            className="pr-16   m-v7-neu-input"
+            className="v7-neu-input w-full pr-12 pe-4 text-gry  text-base"
             placeholder="ابحث ضمن عناوين الالتقاط الخاصة بك"
             type="text"
             value={searchSender}
             onChange={(e) => setSearchSender(e.target.value)}
             style={{ direction: "rtl", fontFamily: "inherit" }}
-          />
+            />
+        
         </div>
         <button
           type="button"
@@ -237,9 +246,7 @@ const search = searchSender.trim().toLowerCase();
                 <MapPin className="h-4 w-4 text-[#3498db]" />
                 <span>{card.city}</span>
               </div>
-              {card.address && (
-                <div className="text-lg text-gray-700">{card.address}</div>
-              )}
+                <div className="text-lg text-gray-700">{card?.address}</div>
               <div className="flex items-center gap-2 text-base text-gray-500">
                 <Mail className="h-4 w-4 text-[#3498db]" />
                 <span>{card.email}</span>
