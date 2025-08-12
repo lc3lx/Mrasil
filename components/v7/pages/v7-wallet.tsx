@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+"use client";
+
+import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Upload, type LucideIcon } from "lucide-react";
+import { Upload } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -25,33 +26,64 @@ import creditCard3 from "../../../public/creditCard3.png";
 import creditCard4 from "../../../public/creditCard4.png";
 import creditCard5 from "../../../public/creditCard5.png";
 import creditCard6 from "../../../public/creditCard6.png";
-import Head from "next/head";
-import Script from "next/script";
 import realBlue from "../../../public/real-blue.png";
 import realWhite from "../../../public/real-white.png";
-interface StatItem {
-  label: string;
-  value: React.ReactNode;
-  progress?: number;
-  trend?: "up" | "down";
+
+// Global type declaration for Moyasar
+interface MoyasarPaymentForm {
+  init: (config: {
+    element: HTMLElement | string;
+    amount: number;
+    currency: string;
+    description: string;
+    publishable_api_key: string;
+    callback_url: string;
+    methods: string[];
+    on_completed: (payment: any) => void;
+    on_failed: (error: any) => void;
+    style?: {
+      base?: {
+        color?: string;
+        fontFamily?: string;
+        fontSmoothing?: string;
+        fontSize?: string;
+        '::placeholder'?: {
+          color?: string;
+        };
+      };
+      invalid?: {
+        color?: string;
+        iconColor?: string;
+      };
+    };
+  }) => void;
 }
+
 declare global {
   interface Window {
-    Moyasar?: any;
+    Moyasar?: {
+      init: MoyasarPaymentForm['init'];
+    };
   }
 }
-interface V7StatsWalletProps {
-  isOpen;
-  onClose;
+
+interface V7WalletProps {
+  isOpen: boolean;
+  onClose: () => void;
+  balance: number;
+  onBalanceUpdate: (newBalance: number) => void;
   theme?: "light" | "dark";
 }
+
 export default function V7Wallet({
   theme = "light",
   isOpen,
   onClose,
-}: V7StatsWalletProps) {
+  balance,
+  onBalanceUpdate,
+}: V7WalletProps) {
   const handleClose = () => {
-    onClose(false);
+    onClose();
   };
 
   // Credit card form fields
@@ -65,75 +97,197 @@ export default function V7Wallet({
   const [error, setError] = useState("");
   const [selectedAmount, setSelectedAmount] = useState<string | null>(null);
   // Bank transfer form fields
-  const [paymentMethod, setPaymentMethod] = useState(null); // "card" أو "bank"
-  const [amount, setAmount] = useState(null);
+  const [paymentMethod, setPaymentMethod] = useState<'card' | 'bank' | null>(null);
+  const [paymentAmount, setPaymentAmount] = useState<number>(100);
   const [customAmount, setCustomAmount] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [transferImage, setTransferImage] = useState(null);
-  const [transferImagePreview, setTransferImagePreview] = useState(null);
-  const [isMoyasarLoaded, setIsMoyasarLoaded] = useState(false);
+  const [transferImage, setTransferImage] = useState<File | null>(null);
+  const [transferImagePreview, setTransferImagePreview] = useState<string | null>(null);
+
+  const [isMoyasarReady, setIsMoyasarReady] = useState(false);
+  const moyasarFormRef = useRef<HTMLDivElement>(null);
+  
+
 
   // NEW
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const [rechargeWallet, { isLoading: isRecharging }] = useRechargeWalletMutation();
+  const [rechargeByBank, { isLoading: isBankTransferring }] = useRechargeWalletByBankMutation();
+
+  // Load Moyasar script when component mounts
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://cdn.moyasar.com/mpf/1.13.0/moyasar.js';
+    script.async = true;
+    script.onload = () => {
+      setIsMoyasarReady(true);
+      console.log('Moyasar script loaded successfully');
+    };
+    script.onerror = () => {
+      console.error('Failed to load Moyasar script');
+      setError('فشل تحميل نظام الدفع. يرجى تحديث الصفحة والمحاولة مرة أخرى');
+    };
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
+  const preparePayment = async () => {
+    if (!paymentAmount || paymentAmount <= 0) {
+      setError('الرجاء إدخال مبلغ صالح');
+      return;
+    }
+
+    if (!isMoyasarReady) {
+      setError('جاري تحميل نظام الدفع، يرجى الانتظار...');
+      return;
+    }
+
     setIsSubmitting(true);
-    setError("");
+    setError('');
 
     try {
-      const token = "pk_live_3p2q5Kj7WiDPJZ2kYRSNc16SFQ47C6hfAvkKLkCc";
-      const userToken = localStorage.getItem("token");
+      // Call your backend to prepare payment and get the amount in halalas
+      const response = await fetch('/api/wallet/prepare-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: paymentAmount })
+      });
 
-      const res = await fetch(
-        "https://backend-marasil.onrender.com/api/wallet/rechargeWallet",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${userToken}`,
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'فشل في تحضير عملية الدفع');
+      }
+
+      // Clear previous form if any
+      if (moyasarFormRef.current) {
+        moyasarFormRef.current.innerHTML = '';
+      }
+
+      // Initialize Moyasar payment form
+      if (window.Moyasar && moyasarFormRef.current) {
+        window.Moyasar.init({
+          element: moyasarFormRef.current,
+          amount: data.amountInHalalas,
+          currency: 'SAR',
+          description: `شحن المحفظة (رصيدك بعد الخصم ${data.netAmount} ريال)`,
+          publishable_api_key: 'pk_live_3p2q5Kj7WiDPJZ2kYRSNc16SFQ47C6hfAvkKLkCc',
+          callback_url: `${window.location.origin}/payment/success`,
+          methods: ['creditcard', 'mada'],
+          on_completed: (payment: any) => {
+            toast({
+              title: "تمت العملية بنجاح",
+              description: `تم شحن رصيدك بنجاح بمبلغ ${paymentAmount} ريال`,
+              variant: "default",
+            });
+            onClose();
+            // Optional: Redirect to success page or refresh wallet balance
+            window.location.href = `${window.location.origin}/payment/success?amount=${paymentAmount}`;
           },
-          body: JSON.stringify({ token, amount: 10000 }),
-        }
-      );
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || "فشل في الدفع");
+          on_failed: (error: any) => {
+            setError('فشلت عملية الدفع. الرجاء التحقق من البيانات والمحاولة مرة أخرى');
+            console.error('Payment failed:', error);
+          },
+          // Add more customization as needed
+          style: {
+            base: {
+              color: '#32325d',
+              fontFamily: 'Arial, sans-serif',
+              fontSmoothing: 'antialiased',
+              fontSize: '16px',
+              '::placeholder': {
+                color: '#aab7c4'
+              }
+            },
+            invalid: {
+              color: '#fa755a',
+              iconColor: '#fa755a'
+            }
+          }
+        });
+      } else {
+        throw new Error('نظام الدفع غير متوفر حالياً. يرجى المحاولة لاحقاً');
       }
-
-      if (!data.transaction_url) {
-        throw new Error("الرابط غير موجود");
-      }
-
-      window.location.href = data.transaction_url;
     } catch (err: any) {
-      setError(err.message || "خطأ غير معروف");
+      console.error('Payment preparation error:', err);
+      setError(err.message || 'حدث خطأ أثناء تحضير عملية الدفع');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // القديم
-  // عند اختيار مبلغ
-  const handleAmountSelect = (val) => {
-    setAmount(Number(val));
-    setCustomAmount("")
-    setSelect(true);
-  };
-  // مبلغ مخصص
-  const handleCustomAmountChange = (e) => {
-    const val = e.target.value;
-    // فقط أرقام وصفر أو أكثر
-    if (/^\d*$/.test(val)) {
-      setCustomAmount(val);
-      setAmount(Number(val));
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    
+    if (paymentMethod === 'card') {
+      await preparePayment();
+    } else if (paymentMethod === 'bank') {
+      // Handle bank transfer submission
+      if (!transferImage) {
+        setError('الرجاء رفع صورة إيصال التحويل');
+        return;
+      }
+      
+      setIsSubmitting(true);
+      setError('');
+      
+      try {
+        const formData = new FormData();
+        formData.append('amount', paymentAmount.toString());
+        if (transferImage) {
+          formData.append('transferImage', transferImage);
+        }
+        
+        const response = await rechargeByBank(formData).unwrap();
+        
+        toast({
+          title: "تم استلام طلبك",
+          description: "سيتم مراجعة طلبك وتفعيل الرصيد خلال 24 ساعة",
+          variant: "default",
+        });
+        
+        onClose();
+      } catch (err: any) {
+        console.error('Bank transfer error:', err);
+        setError(err.data?.message || 'حدث خطأ أثناء إرسال طلبك');
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
-  // رفع صورة الإيصال
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
+  // القديم
+  // عند اختيار مبلغ
+  const handleAmountClick = (amount: string) => {
+    setSelectedAmount(amount);
+    setCustomAmount("");
+    const numAmount = parseFloat(amount);
+    if (!isNaN(numAmount)) {
+      setPaymentAmount(numAmount);
+    }
+  };
+
+  // Alias for handleAmountClick for backward compatibility
+  const handleAmountSelect = handleAmountClick;
+  // مبلغ مخصص
+  const handleCustomAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setCustomAmount(value);
+    const numValue = parseFloat(value);
+    if (!isNaN(numValue)) {
+      setPaymentAmount(numValue);
+    } else {
+      setPaymentAmount(0);
+    }
+    setSelectedAmount("");
+  };
+
+  // Handle image upload for bank transfer
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (file) {
       setTransferImage(file);
       setTransferImagePreview(URL.createObjectURL(file));
@@ -159,8 +313,8 @@ export default function V7Wallet({
           style={{ border: "none" , direction:"ltr"}}
         >
           <DialogHeader>
-            <DialogTitle className="text-[#4A7ED0] w-full mt-4  text-right sm:text-2xl text-sm  border-b border-[#8888] pb-4  ">
-              إختر طريقة الدفع
+            <DialogTitle className="text-[#4A7ED0] w-full mt-4 text-right sm:text-2xl text-sm border-b border-[#8888] pb-4">
+              شحن المحفظة
             </DialogTitle>
           </DialogHeader>
           <form
@@ -185,8 +339,22 @@ export default function V7Wallet({
                 معالجة التحويل المصرفي 24 ساعة
               </p>
             </div>
-            <div className=" flex flex-col gap-6">
-              <div className="  grid grid-cols-5 gap-2 ">
+            <div className="flex flex-col gap-6">
+              <div className="space-y-4">
+                <label className="block text-right text-sm font-medium text-gray-700">
+                  المبلغ (ريال):
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={paymentAmount}
+                  onChange={(e) => setPaymentAmount(Number(e.target.value))}
+                  className="w-full p-2 border rounded-md text-right"
+                  min="1"
+                />
+              </div>
+              
+              <div className="grid grid-cols-5 gap-2">
                 {["100", "500", "1000", "2000", "5000"].map((val) => {
                   const isSelected = selectedAmount === val;
                   return (
@@ -357,28 +525,28 @@ export default function V7Wallet({
                 <h2 className="sm:text-lg text-base font-bold text-right">
                   إيصال التحويل البنكي
                 </h2>
-                <div className="  flex flex-col gap-1 v7-neu-card">
-                  <span>اسم البنك : مصرف الراجحي </span>
-                  <span>المستفيد : شركة مراسيل لخدمات الأعمال</span>
-                  <span>رقم الحساب : 177608016234509</span>
-                  <span>الايبان : SA8180000177608016234509</span>
-                  <span className=" py-4  text-red-500">
+                <div className="flex flex-col gap-1 v7-neu-card p-4">
+                  <span className="text-sm sm:text-base">اسم البنك: مصرف الراجحي</span>
+                  <span className="text-sm sm:text-base">المستفيد: شركة مراسيل لخدمات الأعمال</span>
+                  <span className="text-sm sm:text-base">رقم الحساب: 177608016234509</span>
+                  <span className="text-sm sm:text-base">الايبان: SA8180000177608016234509</span>
+                  <span className="py-4 text-red-500 text-sm sm:text-base">
                     إذا كنت تستخدم بنك خارج المملكة العربية السعودية الرجاء شحن
                     المحفظة عن طريق البطاقة
                   </span>
                 </div>
 
-                <p className="text-right sm:text-lg text-base font-bold pt-8 text-gray-600">
+                <p className="text-right sm:text-lg text-base font-bold pt-4 text-gray-600">
                   قم برفع صورة إيصال التحويل البنكي
                 </p>
 
                 <div className="flex justify-center">
                   <label
-                    className={`cursor-pointer border-2 border-dashed rounded-lg sm:p-8 p-2 text-center transition-all hover:border-blue-500 ${
+                    className={`cursor-pointer border-2 border-dashed rounded-lg w-full p-6 text-center transition-all hover:border-blue-500 ${
                       isDarkMode
                         ? "border-gray-600 bg-dark-card"
                         : "border-gray-300 bg-gray-50"
-                    }`}
+                    } ${transferImagePreview ? 'border-green-500' : ''}`}
                   >
                     <input
                       type="file"
@@ -386,46 +554,98 @@ export default function V7Wallet({
                       onChange={handleImageUpload}
                       className="hidden"
                     />
-                    {transferImagePreview ? (
-                      <div className="space-y-2">
-                        <img
-                          src={transferImagePreview}
-                          alt="Transfer receipt"
-                          className="sm:w-22 sm:h-22 w-16 h-16 object-cover rounded-lg mx-auto"
-                        />
-                        <p className="text-sm text-green-600">
-                          تم رفع الصورة بنجاح
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="space-y-2">
-                        <Upload className="w-12 h-12 mx-auto text-gray-400" />
-                        <p className="text-sm">اضغط لرفع صورة الإيصال</p>
-                        <p className="text-xs text-gray-500">
-                          JPG, PNG, GIF حتى 5MB
-                        </p>
-                      </div>
-                    )}
+                    <div>
+                      {transferImagePreview ? (
+                        <>
+                          <div className="text-green-500 mb-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                          </div>
+                          <p className="text-sm text-green-600 mb-2 text-center">تم تحميل الصورة بنجاح</p>
+                          <div className="flex justify-center">
+                            <img
+                              src={transferImagePreview}
+                              alt="Transfer Receipt"
+                              className="mt-2 max-h-32 max-w-full rounded"
+                              onLoad={(e) => URL.revokeObjectURL(transferImagePreview)}
+                            />
+                          </div>
+                          <div className="text-center mt-2">
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setTransferImage(null);
+                                setTransferImagePreview(null);
+                              }}
+                              className="text-sm text-red-500 hover:text-red-700"
+                            >
+                              حذف الصورة
+                            </button>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="text-center">
+                          <Upload className="w-10 h-10 text-gray-400 mb-2 mx-auto" />
+                          <p className="text-sm text-gray-500">
+                            اسحب وأفلت الملف هنا أو انقر للاختيار
+                          </p>
+                          <p className="text-xs text-gray-400 mt-1">
+                            (يُفضل صيغة JPG أو PNG)
+                          </p>
+                        </div>
+                      )}
+                    </div>
                   </label>
                 </div>
               </div>
             )}
 
-            {/* <PaymentForm amount={2500} description="طلب رقم #302" /> */}
-            {/* // <MoyasarLoader /> */}
-            <div className="flex justify-center flex-col  items-center text-center  gap-4 mt-16  ">
-              {error && <p className="text-red-600">{error}</p>}
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className={`px-16 py-6 text-lg mt-8 ${
-                  isDarkMode
-                    ? "bg-blue-600 hover:bg-blue-700  disabled:bg-gray-700"
-                    : "v7-neu-button disabled:opacity-50 hover:text-white"
-                }`}
-              >
-                {isLoading ? "جاري المعالجة..." : "استمرار"}
-              </Button>
+            {paymentMethod === 'card' && (
+              <div className="space-y-4">
+                <Button
+                  type="button"
+                  onClick={preparePayment}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded"
+                  disabled={isSubmitting || !paymentAmount}
+                >
+                  {isSubmitting ? 'جاري التحميل...' : 'إدفع الآن'}
+                </Button>
+                <div ref={moyasarFormRef} id="moyasar-payment-form" className="mt-4"></div>
+              </div>
+            )}
+            
+            {paymentMethod === 'bank' && (
+              <DialogFooter className="pt-4">
+                <Button
+                  type="submit"
+                  className={`w-full font-bold py-2 px-4 rounded transition-colors ${
+                    isSubmitting || !paymentAmount || !transferImage
+                      ? 'bg-gray-400 cursor-not-allowed'
+                      : 'bg-blue-600 hover:bg-blue-700 text-white'
+                  }`}
+                  disabled={isSubmitting || !paymentAmount || !transferImage}
+                >
+                  {isSubmitting ? 'جاري إرسال الطلب...' : 'تأكيد إرسال الإيصال'}
+                </Button>
+              </DialogFooter>
+            )}
+            
+            {error && (
+              <div className="mt-2 text-red-500 text-sm text-center w-full">
+                {error}
+              </div>
+            )}
+            
+            {/* Payment form container */}
+            <div className="mt-6 w-full">
+              <div ref={moyasarFormRef} id="moyasar-payment-form" className="w-full">
+                {/* Moyasar form will be injected here */}
+              </div>
+              <p className="mt-2 text-xs text-gray-500 text-right">
+                مدعوم بواسطة ميسر للدفع الإلكتروني
+              </p>
             </div>
           </form>
         </DialogContent>
