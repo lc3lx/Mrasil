@@ -26,54 +26,17 @@ export interface RechargeWalletRequest {
 
 export interface RechargeWalletResponse {
   success: boolean;
-  payment: {
-    id: string;
-    status: string;
-    amount: number;
-    fee: number;
-    currency: string;
-    refunded: number;
-    refunded_at: string | null;
-    captured: number;
-    captured_at: string | null;
-    voided_at: string | null;
-    description: string;
-    amount_format: string;
-    fee_format: string;
-    refunded_format: string;
-    captured_format: string;
-    invoice_id: string | null;
-    ip: string;
-    callback_url: string;
-    created_at: string;
-    updated_at: string;
-    metadata: {
-      customerId: string;
-    };
-    source: {
-      type: string;
-      company: string;
-      name: string;
-      number: string;
-      gateway_id: string;
-      reference_number: string | null;
-      token: string | null;
-      message: string | null;
-      transaction_url: string;
-      response_code: string | null;
-      authorization_code: string | null;
-      issuer_name: string;
-      issuer_country: string;
-      issuer_card_type: string;
-      issuer_card_category: string;
-    };
-  };
+  amountInHalalas: number;
+  netAmount: string;
+  customerId: string;
 }
 
 export interface GetPaymentStatusResponse {
   success: boolean;
   status: string;
-  payment: RechargeWalletResponse['payment'];
+  amountInHalalas: number;
+  netAmount: string;
+  customerId: string;
 }
 
 export const walletApi = createApi({
