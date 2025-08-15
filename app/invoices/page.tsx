@@ -13,16 +13,13 @@ export default function InvoicesPage() {
 
   return (
     <div
-      className="min-h-screen flex flex-col"
+      className="min-h-screen flex flex-col px-6"
       style={{ background: "#D4DBE3" }}
     >
       <ModernHeader />
-      <main className="flex-1">
-        <Hero />
-
+        <Hero/>
         <Features />
         <Platform />
-      </main>
       <Footer />
     </div>
   );

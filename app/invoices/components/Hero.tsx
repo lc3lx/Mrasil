@@ -8,6 +8,7 @@ import { AIVisualizer } from "./AIVisualizer";
 import { CircuitBrainBackground } from "./CircuitBrainBackground";
 import { CircuitBackgroundElement } from "./CircuitBackgroundElement";
 import { CerebellarBrainBackground } from "./CerebellarBrainBackground";
+import { useRouter } from "next/navigation";
 
 export function Hero() {
   const [isClient, setIsClient] = useState(false);
@@ -21,7 +22,14 @@ export function Hero() {
     "Neural network powered logistics solutions",
     "Machine learning algorithms for route optimization",
   ];
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
+  const handleSignup = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    router.push("/signup");
+  };
   useEffect(() => {
     setIsClient(true);
 
@@ -32,9 +40,26 @@ export function Hero() {
 
     return () => clearInterval(interval);
   }, []);
+  const [logoSize, setLogoSize] = useState(200);
 
+  useEffect(() => {
+    const updateSize = () => {
+      const width = window.innerWidth;
+      if (width < 640) {
+        setLogoSize(160); // موبايل
+      } else if (width < 1024) {
+        setLogoSize(240); // تابلت
+      } else {
+        setLogoSize(320); // ديسكتوب
+      }
+    };
+
+    updateSize(); // تشغيل أول مرة
+    window.addEventListener("resize", updateSize);
+    return () => window.removeEventListener("resize", updateSize);
+  }, []);
   return (
-    <section className="relative w-full min-h-[400px] flex flex-col items-center justify-center">
+    <section className="relative w-full min-h-[400px] flex flex-col items-center justify-center mt-16">
       {/* Hero content - centered column layout with responsive sizing */}
       <div className="container relative z-10 mx-auto px-4 py-8 flex flex-col items-center">
         {/* Pioneer in Saudi Arabia Badge - Now as a top ribbon */}
@@ -44,8 +69,8 @@ export function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
         >
-          <div className="inline-flex items-center gap-2 rounded-full bg-[#0F2F55]/10 backdrop-blur-sm px-4 py-2 border border-[#0F2F55]/20">
-            <div className="relative h-5 w-5">
+          {/* <div className="inline-flex items-center gap-2 rounded-full bg-[#0F2F55]/10 backdrop-blur-sm px-4 py-2 border border-[#0F2F55]/20"> */}
+            {/* <div className="relative h-5 w-5">
               <motion.div
                 className="absolute inset-0 rounded-full bg-[#0F2F55]"
                 animate={{
@@ -70,16 +95,16 @@ export function Hero() {
                   repeatType: "reverse",
                 }}
               />
-            </div>
-            <span className="text-sm font-medium text-[#0F2F55]">
+            </div> */}
+            {/* <span className="text-sm font-medium text-[#0F2F55]">
               World's First AI-Powered Logistics Platform
             </span>
-          </div>
+          </div> */}
         </motion.div>
 
         {/* 3D Atom Logo container with improved dimensions */}
         <motion.div
-          className="relative mb-16 w-full max-w-[min(100%,320px)] mx-auto"
+          className="relative mb-16 w-full max-w-[min(100%,320px)] mx-auto "
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.7, delay: 0.2 }}
@@ -87,16 +112,16 @@ export function Hero() {
           {/* Updated 3D Rotating Atom Logo with individually rotating rings */}
           <div className="flex justify-center">
             <MarasilAtomLogo
-              size={320}
-              animated={true}
-              className="w-full h-auto"
+        size={logoSize}
+        animated={true}
+        className="h-auto"
             />
           </div>
 
           {/* Enhanced glow effect around the 3D atom */}
-          <div className="absolute inset-0 -m-6 rounded-full pointer-events-none">
+          <div className="absolute inset-0 -m-6 rounded-full pointer-events-none ">
             <motion.div
-              className="absolute inset-0 rounded-full border border-[#3B82F6]/20"
+              className="absolute inset-0 rounded-full"
               // animate={{
               //   scale: [1, 1.05, 1],
               //   opacity: [0.3, 0.5, 0.3],
@@ -114,7 +139,7 @@ export function Hero() {
         <div className="max-w-3xl mx-auto text-center">
           {/* Main headline with Saudi Arabia emphasis */}
           <motion.h1
-            className="mb-6 text-4xl md:text-5xl font-bold tracking-tight text-[#0F2F55]"
+            className="mb-6 text-2xl md:text-5xl font-bold tracking-tight text-[#0F2F55]"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.3 }}
@@ -187,21 +212,21 @@ export function Hero() {
 
           {/* Stats */}
           <motion.div
-            className="flex flex-wrap justify-center gap-4 md:gap-8 mb-10"
+            className=" grid grid-cols-1 sm:grid-cols-3  justify-center gap-4 md:gap-8 mb-10"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.5 }}
           >
-            <div className="bg-white/70 backdrop-blur-md rounded-xl p-4 border border-[#0F2F55]/10 shadow-sm">
+            <div className=" v7-neu-Home  bg-[#D4DBE3] py-4 ">
               <h2 className="text-3xl font-bold text-[#3B82F6]">10,000+</h2>
               <p className="text-sm text-[#0F2F55]/70">Daily Shipments</p>
             </div>
-            <div className="bg-white/70 backdrop-blur-md rounded-xl p-4 border border-[#0F2F55]/10 shadow-sm">
+            <div className=" v7-neu-Home bg-[#D4DBE3] py-4 ">
               <h2 className="text-3xl font-bold text-[#10B981]">99.9%</h2>
               <p className="text-sm text-[#0F2F55]/70">Accuracy Rate</p>
             </div>
-            <div className="bg-white/70 backdrop-blur-md rounded-xl p-4 border border-[#0F2F55]/10 shadow-sm relative overflow-hidden">
-              <div className="flex items-center gap-2">
+            <div className=" v7-neu-Home bg-[#D4DBE3]  py-4">
+          
                 <h2 className="text-3xl font-bold text-[#3B82F6]">#1</h2>
                 <div className="flex flex-col">
                   <span className="text-xs font-semibold text-[#0F2F55]">
@@ -211,13 +236,13 @@ export function Hero() {
                     24/7 AI Monitoring
                   </span>
                 </div>
-              </div>
+          
             </div>
           </motion.div>
 
           {/* Main description text */}
           <motion.p
-            className="mb-8 text-[#0F2F55]/80 max-w-xl mx-auto"
+            className="mb-8 text-[#0F2F55]/80 max-w-xl mx-auto sm:text-base text-sm"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.55 }}
@@ -234,10 +259,13 @@ export function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.6 }}
           >
-            <Button className="bg-[#0F2F55] hover:bg-[#0F2F55]/90 text-white rounded-full px-8 py-6">
+            <Button 
+               onClick={handleSignup}
+            className="bg-[#0F2F55] hover:bg-[#0F2F55]/90 text-white rounded-full px-8 py-6">
               Get Started Now
             </Button>
             <Button
+            
               variant="outline"
               className="rounded-2xl shadow-md border border-gray-100 text-[#0F2F55] hover:bg-[#0F2F55]/5 rounded-full px-8 py-6"
             >

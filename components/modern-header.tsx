@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export function ModernHeader() {
   const router = useRouter();
@@ -15,32 +15,48 @@ export function ModernHeader() {
     setLoading(true);
     router.push("/signup");
   };
+    const [isSmall, setIsSmall] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsSmall(window.scrollY > 50);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200/50 flex items-center justify-between h-24 px-8">
+    <nav  className={` v7-neu-header sm:py-1 px-16 py-2   mx-auto  fixed sm:left-1/2  sm:-translate-x-1/2   z-50 bg-white/10 backdrop-blur-md border-b border-white/20  transform transition-transform duration-700 ease-in-out  scale-105
+    ${
+          isSmall ? "sm:min-w-[65rem] min-w-[20rem]     top-4  rounded-full  mx-auto  " : "  w-full     top-0  "
+        }
+    `}>
+      <div className={` mx-auto px-4  flex justify-between items-center transition-all duration-300`}>
+
       {/* Right side: Navigation */}
-      <nav className="flex items-center gap-8 text-black font-bold text-lg">
-        <Link href="#">الرئيسية</Link>
-        <Link href="#">الأسعار</Link>
-        <Link href="#">الشركاء</Link>
-        <Link href="#">المدونة</Link>
-      </nav>
+      <ul className={`flex items-center gap-6 text-black font-bold   text-lg `}>
+        <Link href="#" className=" hidden sm:block">الرئيسية</Link>
+        <Link href="#" className=" hidden sm:block">الأسعار</Link>
+        <Link href="#" className=" hidden sm:block">الشركاء</Link>
+        <Link href="#" className=" hidden sm:block">المدونة</Link>
+      </ul>
 
       {/* Center: Logo */}
-      <div className="flex flex-col items-center">
-        <Image src="/logo.png" alt="MARASIL Logo" width={120} height={60} />
+      <div className="   sm:w-[12rem] sm:h-[6rem] w-[6rem] h-[3rem] ">
+        <Image src="/logo.png" alt="MARASIL Logo" width={120} height={60} className=" w-full h-full object-contain" />
       </div>
 
       {/* Left side: Auth links */}
       <div className="flex items-center gap-6">
-        <Link href="/login" className="text-black font-bold text-lg">
+        <Link href="/login" className="text-black font-bold sm:text-lg text-sm">
           تسجيل دخول
         </Link>
         <Button
-          className="font-bold text-base rounded-lg px-6 py-3 bg-blue-900 text-white hover:bg-blue-800 transition-colors min-w-[140px] shadow"
+          className=" hidden sm:block font-medium sm:text-base text-sm rounded-lg  px-6 py-3 bg-[#0F2F55] hover:bg-[#0F2F55]/90 text-white  transition-colors sm:min-w-[140px] shadow"
           onClick={handleSignup}
           disabled={loading}
-        >
+          >
           {loading ? (
             <span className="flex items-center gap-2">
               <svg
@@ -48,7 +64,7 @@ export function ModernHeader() {
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
-              >
+                >
                 <circle
                   className="opacity-25"
                   cx="12"
@@ -61,7 +77,7 @@ export function ModernHeader() {
                   className="opacity-75"
                   fill="currentColor"
                   d="M4 12a8 8 0 018-8v8z"
-                ></path>
+                  ></path>
               </svg>
               جاري التحميل...
             </span>
@@ -70,6 +86,7 @@ export function ModernHeader() {
           )}
         </Button>
       </div>
-    </header>
+          </div>
+    </nav>
   );
 }

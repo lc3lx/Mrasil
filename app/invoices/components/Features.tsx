@@ -4,17 +4,17 @@ const features = [
   {
     title: "أسعار الشحن",
     desc: "احصل على أفضل أسعار الشحن لجميع الوجهات مع خيارات متعددة تناسب احتياجاتك.",
-    img: "/homePageImages/price.jpeg",
+    img: "/homePageImages/real.png"   ,
   },
   {
     title: "الربط مع مراسيل",
     desc: "اربط متجرك أو شركتك مع مراسيل بسهولة، واستمتع بإدارة وشحن طلباتك بكفاءة من خلال منصة واحدة تجمع لك أفضل حلول التوصيل.",
-    img: "/homePageImages/contact.jpeg",
+    img: "/homePageImages/contect.png",
   },
   {
     title: "تتبع الشحنات و إدارة الطلبات",
     desc: "تابع شحناتك خطوة بخطوة وتحكم بأدارتها عبر منصتنا الذكية، واستمتع بتجربة شحن سلسة وموثوقة",
-    img: "/homePageImages/tracking.jpeg",
+    img: "/homePageImages/traking.png",
   },
 ];
 
@@ -27,7 +27,7 @@ export function Features() {
           {features.map((feature, idx) => (
             <div
               key={idx}
-              className="rounded-2xl shadow-md border border-gray-100 p-8 flex flex-col items-center text-center transition-transform duration-200 hover:shadow-2xl hover:-translate-y-2 hover:border-blue-400 cursor-pointer group bg-transparent"
+              className=" v7-neu-Home rounded-2xl shadow-md  p-8  transition-transform duration-200 hover:shadow-2xl hover:-translate-y-2 hover:border-blue-400 cursor-pointer group bg-transparent"
             >
               <div className="w-32 h-32 mb-6 flex items-center justify-center bg-transparent">
                 <Image
