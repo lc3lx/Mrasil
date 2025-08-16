@@ -27,7 +27,7 @@ export function ModernHeader() {
   }, []);
 
   return (
-    <nav  className={` v7-neu-header sm:py-1 px-16 py-2   mx-auto  fixed sm:left-1/2  sm:-translate-x-1/2   z-50 bg-white/10 backdrop-blur-md border-b border-white/20  transform transition-transform duration-700 ease-in-out  scale-105
+    <nav  className={` v7-neu-header-home sm:py-1 px-16 py-2   mx-auto  fixed sm:left-1/2  sm:-translate-x-1/2   z-50 bg-white/10 backdrop-blur-md border-b border-white/20  transform transition-transform duration-700 ease-in-out  scale-105
     ${
           isSmall ? "sm:min-w-[65rem] min-w-[20rem]     top-4  rounded-full  mx-auto  " : "  w-full     top-0  "
         }

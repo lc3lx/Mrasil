@@ -57,12 +57,20 @@ export function PaymentLineChart({ data, height = 300, totalDeposits, totalPayme
           }}
           formatter={(value) => [value === 0 ? "0 ريال" : `${value} ريال`]}
         />
-        <Legend align="right" verticalAlign="top" wrapperStyle={{ paddingBottom: "10px" }} iconType="circle" />
-        <Line
+<Legend
+  align="right"
+  verticalAlign="top"
+  wrapperStyle={{ paddingBottom: "10px" }}
+  iconType="circle"
+  formatter={(value: string) => (
+    <span style={{ marginInlineStart: "6px" }}>{value}</span>
+  )}
+/>        <Line
           type="monotone"
           dataKey="إيرادات"
           stroke={chartColors.secondary}
           strokeWidth={2}
+          
           activeDot={{ r: 6, strokeWidth: 0 }}
           dot={{ r: 4, strokeWidth: 0, fill: chartColors.secondary }}
         />

@@ -25,15 +25,15 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import moment from "moment";
 
 const companyLogoMap: Record<string, string> = {
-  smsa: "/smsa_b2c.jpg",
+  smsa: "/companies/smsa.jpg",
   jandt: "/jandt.jpg",
-  aramex: "/araMex.png",
+  aramex: "/companies/araMex.png",
   aymakan: "/AyMakan.jpg",
   imile: "/iMile.jpg",
   thabit: "/Thabit.jpg",
-  redbox: "/RedBox.jpg",
+  redbox: "/companies/redBox.png",
   dal: "/Dal.jpg",
-  omniclama: "/lamaBox.png",
+  omniclama: "/companies/lamaBox.png",
 };
 
 interface V7ShipmentCardProps {

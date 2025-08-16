@@ -124,7 +124,7 @@
     -o-border-radius: 16px;
 }
 
-.v7-neu-header { 
+.v7-neu-header-Home { 
 background-color: rgba(0, 0, 0, 0.05);
 }
   .v7-neu-card-wallet{
@@ -453,6 +453,18 @@ button[data-state="open"] {
 
 }
 .v7-neu-input:focus {
+  box-shadow: inset 4px 4px 8px rgba(197, 204, 211, 0.5),
+    inset -4px -4px 8px rgba(255, 255, 255, 0.8);
+}
+.v7-neu-input-hollow {
+  background-color: transparent;
+border: none;
+padding-top: 10px;
+padding-bottom: 10px;
+width: 100%;
+border-radius: 12px;
+outline: none;
+padding-right: 40px;
   box-shadow: inset 4px 4px 8px rgba(197, 204, 211, 0.5),
     inset -4px -4px 8px rgba(255, 255, 255, 0.8);
 }

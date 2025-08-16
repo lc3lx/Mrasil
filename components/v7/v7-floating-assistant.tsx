@@ -525,7 +525,7 @@ export function V7FloatingAssistant({style, styleBoot, size}:{style?:string, sty
       {/* نص توضيحي */}
       {isHovered && !showPositionControls && !isDragging && (
         <div
-          className="fixe  h-fit  me-[35rem] mt-[2rem] hidden sm:block  bg-white dark:bg-gray-800 px-4 py-2 rounded-lg shadow-md text-sm font-medium whitespace-nowrap transition-all duration-300 z-40"
+          className="fixe  h-fit  me-[25rem]  mt-[3rem] hidden sm:block  bg-white dark:bg-gray-800 px-4 py-2 rounded-lg shadow-md text-sm font-medium whitespace-nowrap transition-all duration-300 z-40"
           style={{
             ...getPositionStyle(),
             transform: "translate(85px, 20px)",
@@ -535,15 +535,15 @@ export function V7FloatingAssistant({style, styleBoot, size}:{style?:string, sty
             border: `1px solid rgba(75, 174, 209, 0.3)`,
           }}
         >
-          <div className="font-bold mb-1">مساعد الذكاء الاصطناعي</div>
-          <div className="text-xs opacity-80">اضغط للحصول على مساعدة ذكية</div>
+          <div className="font-bold mb-1">... Comming Soon</div>
+          <div className="text-xs opacity-80 text-center">قريباً الإطلاق </div>
         </div>
       )}
 
       {/* تعليمات تغيير الموضع */}
 
 
-      <V7AIChat isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
+      {/* <V7AIChat isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} /> */}
 
 
      

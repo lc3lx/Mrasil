@@ -38,15 +38,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 
 const companyLogoMap: Record<string, string> = {
-  smsa: "/smsa_b2c.jpg",
+  smsa: "/companies/smsa.jpg",
   jandt: "/jandt.jpg",
-  aramex: "/araMex.jpg",
+  aramex: "/companies/araMex.png",
   aymakan: "/AyMakan.jpg",
   imile: "/iMile.jpg",
   thabit: "/Thabit.jpg",
-  redbox: "/RedBox.jpg",
+  redbox: "/companies/redBox.png",
   dal: "/Dal.jpg",
-  omniclama: "/lamaBox.png",
+  omniclama: "/companies/lamaBox.png",
   // Add more mappings as needed
 }
 
@@ -86,13 +86,13 @@ function CarrierCard({ carrier, logo }: { carrier: ShipmentCompany; logo: string
   const isLocal = carrier.shippingTypes.some((st) => st.type === 'Dry');
 
   return (
-    <Card className="shadow-lg bg-[#f7fafd] rounded-2xl p-0 border-0 flex flex-col items-center text-center">
+    <Card className="shadow-lg  rounded-2xl p-0 border-0 flex flex-col items-center text-center">
       <CardContent className="flex flex-col items-center p-8 w-full">
         {/* Logo and Name */}
-        <div className="w-28 h-28 rounded-2xl overflow-hidden bg-white flex items-center justify-center mx-auto mb-3">
+        <div className="w-28  rounded-2xl overflow-hidden bg-white flex items-center justify-center mx-auto mb-3">
           <img src={logo} alt={carrier.company} className="w-full h-full object-contain" />
         </div>
-        <div className="text-2xl font-extrabold text-[#294D8B] mb-2">{carrier.company}</div>
+        <div className="text-2xl font-extrabold text-[#294D8B] mb-2">{carrier.company === "omniclama" ? "lamabox" :carrier.company}</div>
         {/* Type Badge */}
         <div className="mb-6 flex justify-center gap-3">
           <Badge className={isLocal ? 'bg-green-100 text-green-700 text-lg px-4 py-1' : 'bg-blue-100 text-blue-700 text-lg px-4 py-1'}>
@@ -123,19 +123,6 @@ function CarrierCard({ carrier, logo }: { carrier: ShipmentCompany; logo: string
               Tracking Link
             </a>
           </div>
-          {/* <div className="flex items-start gap-3">
-            <Box className="h-7 w-7 text-green-500 mt-1" />
-            <div>
-              <span className="text-lg text-gray-700 font-semibold">أحجام الصناديق المسموحة:</span>
-              <ul className="list-disc pl-6 space-y-1 text-lg mt-2">
-                {carrier.allowedBoxSizes.map((box) => (
-                  <li key={box._id} className="text-gray-700">
-                    {box.length}×{box.width}×{box.height} سم
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div> */}
         </div>
         {/* Status Switch at the bottom */}
         <div className="mt-8 flex justify-center w-full items-center gap-3">
@@ -237,7 +224,7 @@ export function CarriersContent() {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
               placeholder="البحث عن شركة شحن..."
-              className="pl-10 v7-neu-input"
+              className="pl-10 v7-neu-input text-gry"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />

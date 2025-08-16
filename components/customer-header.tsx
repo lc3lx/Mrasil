@@ -94,7 +94,7 @@ export function CustomerHeader({ onMenuClick }: { onMenuClick: () => void }) {
               شحناتي
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-500 hover:text-red-500">
+            <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-[#e05d34] hover:text-red-500">
               <LogOut className="mr-2 h-4 w-4" />
               تسجيل الخروج
             </DropdownMenuItem>

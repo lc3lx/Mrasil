@@ -334,12 +334,12 @@ const {
             <div className="mb-10">
               <div className="flex items-center justify-between relative">
                 {/* Connection line between steps */}
-                <div className="absolute top-7 left-0  right-10 h-1 bg-gray-200 max-w-[80rem] "></div>
+                <div className="absolute top-7 left-0  right-10 h-1  "></div>
                 {/* Progress line */}
                 <div
-                  className="absolute top-7 rtl:right-1 ltr:left-0 "
+                  className={`absolute top-7 rtl:right-1 ltr:left-0  `}
                   style={{
-                    width: `${(step - 1) * 49}%  `,
+                    width: `${(step - 1) * 48}%  `,
                     height: "4px",
                     background: "linear-gradient(to left, #3498db, #2980b9) ",
                     borderRadius: "2px",
@@ -400,8 +400,8 @@ const {
 
                 {/* Step 3 */}
                 <div
-                  className={`flex flex-col items-center relative z-0 ${
-                    step >= 3 ? "text-[#3498db]" : "text-gry"
+                  className={`flex flex-col items-center relative z-0  ${
+                    step >= 3 ? "text-[#3498db] " : "text-gry"
                   }`}
                 >
                   <div

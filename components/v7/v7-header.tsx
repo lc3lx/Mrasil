@@ -34,6 +34,7 @@ import {
 import { useGetProfileQuery } from "@/app/api/profileApi";
 import { useAuth } from "@/app/providers/AuthProvider";
 import { V7FloatingAssistant } from "./v7-floating-assistant";
+import Image from "next/image";
 
 interface V7HeaderProps {
   onMenuClick: () => void;
@@ -146,7 +147,7 @@ export function V7Header({
           </Button>
           <Link href="/">
             <div>
-              <img src="/logo.png" alt="شعار الشركة" className="h-8 w-auto" />
+              <Image src="/logo.png" alt="شعار الشركة" className="h-8 w-auto" width={50} height={50} />
             </div>
             <div className="flex flex-col">
               <span className="text-[10px] sm:text-xs text-gry">
@@ -168,7 +169,7 @@ export function V7Header({
   }
 
   return (
-    <header className="  fixed  -top-2 sm:-top-4 w-full z-30 flex  h-16  items-center justify-between v7-neu-header px-3 sm:px-4 md:px-6 mt-2 mb-2 sm:mt-4 sm:mb-4">
+    <header className="  bg-white fixed  -top-2 sm:-top-4 w-full z-30 flex  h-16  items-center justify-between v7-neu-header px-3 sm:px-4 md:px-6 mt-2 mb-2 sm:mt-4 sm:mb-4">
       <div className="flex items-center gap-2 sm:gap-4">
         <Button
           variant="ghost"
@@ -182,7 +183,7 @@ export function V7Header({
         </Button>
         <Link href="/" className="">
 
-            <img src="/logo.png" alt="شعار الشركة" className="h-12 w-auto" />
+            <Image src="/logo.png" alt="شعار الشركة" className="h-12 w-auto" width={50} height={50}/>
  
         </Link>
       </div>
@@ -224,7 +225,7 @@ export function V7Header({
               <V7FloatingAssistant style="v7-neu-button-sm-boot h-[40px] w-[40px]" styleBoot="w-[40px] h-[40px]" size={40}/>
       </div>
         <DropdownMenu>
-          <DropdownMenuTrigger asChild className=" hidden sm:block  ">
+          <DropdownMenuTrigger asChild className=" hidden ">
             <Button
               variant="ghost"
               size="icon"
@@ -236,13 +237,13 @@ export function V7Header({
               title="تغيير اللغة"
               aria-label="تغيير اللغة"
             >
-              <Globe className="h-4 sm:h-8 w-4 sm:w-8 mx-auto" />
+              <Globe className="h-4 sm:min-h-[1.2rem] w-4 sm:min-w-[1.2rem] mx-auto flex items-center justify-center" />
               <span className="sr-only">تغيير اللغة</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"
-            className="w-32 rounded-xl v7-neu-dropdown"
+            className=" w-32 rounded-xl v7-neu-dropdown"
           >
             <DropdownMenuItem
               className={`cursor-pointer rounded-lg ${
@@ -284,16 +285,17 @@ export function V7Header({
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+              <div className="sr-only">
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild className="  hidden sm:block ">
+        <DropdownMenu >
+          <DropdownMenuTrigger asChild className="  ">
             <Button
               variant="ghost"
               size="icon"
               className={`relative ${
                 currentTheme === "dark"
-                  ? "bg-[#1e263a] border border-[#2a3349] text-[#8b5cf6] hover:bg-[#252e45] hover:text-[#a78bfa]"
-                  : "v7-neu-button-sm text-gry hover:text-[#3498db]"
+                  ? "bg-[#1e263a] border border-[#2a3349] text-[#8b5cf6] hover:bg-[#252e45] hover:text-[#a78bfa] "
+                  : "v7-neu-button-sm text-gry hover:text-[#3498db]  flex items-center justify-center"
               }`}
               title={
                 currentTheme === "light"
@@ -304,9 +306,9 @@ export function V7Header({
               data-theme-toggle="true"
             >
               {currentTheme === "dark" ? (
-                <Sun className="h-4 sm:h-5 w-4 sm:w-5 text-[#8b5cf6] " />
+                <Sun className="h-4 sm:min-h-[1.2rem] w-4 sm:min-w-[1.2rem] mx-auto flex items-center justify-center text-[#8b5cf6] " />
               ) : (
-                <Moon className="h-4 sm:h-5 w-4 sm:w-5 " />
+                <Moon className="h-4 sm:min-h-[1.2rem] w-4 sm:min-w-[1.2rem] mx-auto flex items-center justify-center " />
               )}
               <span className="sr-only">تغيير المظهر</span>
             </Button>
@@ -339,8 +341,8 @@ export function V7Header({
             <DropdownMenuItem
               className={`cursor-pointer rounded-lg ${
                 currentTheme === "dark"
-                  ? "bg-[#294D8B]/10 text-[#294D8B] font-medium"
-                  : ""
+                ? "bg-[#294D8B]/10 text-[#294D8B] font-medium"
+                : ""
               }`}
               onClick={() => {
                 setTheme("dark");
@@ -359,6 +361,7 @@ export function V7Header({
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+                </div>
 
         {/* زر البحث الجديد */}
         <Button
@@ -379,7 +382,7 @@ export function V7Header({
               size="icon"
               className="v7-neu-button-sm relative hover:text-[#3498db] transition-colors"
             >
-              <Bell className="h-4 sm:h-8 w-4 sm:w-8 text-[#294D8B] mx-auto" />
+              <Bell className="h-4 sm:min-h-[1.2rem] w-4 sm:min-w-[1.2rem] mx-auto flex items-center justify-center text-[#294D8B]" />
               <span className="absolute -right-1 -top-1 flex h-3 sm:h-4 w-3 sm:w-4 items-center justify-center rounded-full bg-red-600 text-[8px] sm:text-[10px] font-medium text-white animate-pulse">
                 {unreadCountLoading ? "..." : unreadCountData?.unreadCount || 0}
               </span>
@@ -461,10 +464,12 @@ export function V7Header({
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="flex items-center gap-2">
             <div className="v7-neu-avatar overflow-hidden rounded-full w-8 h-8 border border-[#e5e7eb]">
-              <img
+              <Image
                 src="/abstract-user-icon.png"
                 alt="صورة المستخدم"
                 className="h-full w-full object-cover rounded-full"
+              width={50}
+              height={50}
               />
             </div>
             <div className="hidden flex-col items-start md:flex">
@@ -509,7 +514,7 @@ export function V7Header({
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
-            className="cursor-pointer rounded-lg text-red-500 hover:text-red-500"
+            className="cursor-pointer rounded-lg text-[#e05d34] hover:text-red-500"
             onClick={handleLogout}
           >
             <LogOut className="mr-2 h-4 w-4" />

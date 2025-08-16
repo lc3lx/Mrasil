@@ -963,9 +963,9 @@ const [openTheme, setOpenTheme] = useState(false);
                 ))}
               </div>
             </div>
-            <div className=" flex items-center   justify-center gap-8">
+            <div className=" flex items-center   justify-center gap-8 sr-only">
 
- <DropdownMenu  open={openLang} onOpenChange={(isOpen) => {setOpenLang(isOpen); if(isOpen) setOpenTheme(false) }}>
+                        <DropdownMenu  open={openLang} onOpenChange={(isOpen) => {setOpenLang(isOpen); if(isOpen) setOpenTheme(false) }}>
                         <DropdownMenuTrigger asChild className=" outline-none shadow-none focus:outline-none focus:shadow-none  ">
                           <Button
                             variant="ghost"
@@ -1105,7 +1105,7 @@ const [openTheme, setOpenTheme] = useState(false);
                         </DropdownMenuContent>
                       </DropdownMenu>
                                 </div>
-            <V7FloatingAssistant />
+            {/* <V7FloatingAssistant /> */}
             <div className="mt-6 border-t border-gray-200 dark:border-[#2a3349] pt-4 px-3">
               <button
                 onClick={handleSignOut}

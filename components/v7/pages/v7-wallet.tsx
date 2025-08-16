@@ -340,19 +340,7 @@ export default function V7Wallet({
               </p>
             </div>
             <div className="flex flex-col gap-6">
-              <div className="space-y-4">
-                <label className="block text-right text-sm font-medium text-gray-700">
-                  المبلغ (ريال):
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={paymentAmount}
-                  onChange={(e) => setPaymentAmount(Number(e.target.value))}
-                  className="w-full p-2 border rounded-md text-right"
-                  min="1"
-                />
-              </div>
+
               
               <div className="grid grid-cols-5 gap-2">
                 {["100", "500", "1000", "2000", "5000"].map((val) => {
