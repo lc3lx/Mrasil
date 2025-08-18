@@ -52,7 +52,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col relative" style={{ backgroundImage: 'url(/login.jpeg)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+    <div className="min-h-screen flex flex-col relative" style={{ backgroundImage: 'url(/login.png)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
       <div className="absolute inset-0 bg-black/40 z-0" />
       <ResponseModal isOpen={modalOpen} onClose={() => setModalOpen(false)} status="fail" message={modalMessage} />
       <main className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative z-10">
@@ -60,7 +60,7 @@ export default function LoginPage() {
           <div className="w-full max-w-md mx-auto bg-white/20 backdrop-blur-xl border border-white/30 rounded-3xl shadow-xl p-10 flex flex-col items-center">
             {/* Title */}
             <Link href={"/"}>
-                    <Image src="/logo.png" alt="شعار الشركة" className="h-12 mb-2 w-auto" width={60} height={60} />
+                    <Image src="/logo.png" alt="شعار الشركة" className="h-16 mb-2 w-auto" width={100} height={100} />
             </Link>
             <h2 className="text-3xl font-bold text-white mb-8 tracking-wide text-center drop-shadow">Login</h2>
             {/* Form Section */}

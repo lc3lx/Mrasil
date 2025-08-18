@@ -125,12 +125,7 @@ function CarrierCard({ carrier, logo }: { carrier: ShipmentCompany; logo: string
           </div>
         </div>
         {/* Status Switch at the bottom */}
-        <div className="mt-8 flex justify-center w-full items-center gap-3">
-          <Switch checked={carrier.status === 'Enabled'} disabled className="scale-125 data-[state=checked]:bg-[blue] data-[state=unchecked]:bg-gray-300" />
-          <span className={`text-xl font-bold ${carrier.status === 'Enabled' ? 'text-[#294D8B]' : 'text-red-700'}`}>
-            {carrier.status === 'Enabled' ? 'مفعل' : 'غير مفعل'}
-          </span>
-        </div>
+       
       </CardContent>
     </Card>
   );

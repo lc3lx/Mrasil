@@ -465,7 +465,7 @@ export function V7Header({
           <Button variant="ghost" className="flex items-center gap-2">
             <div className="v7-neu-avatar overflow-hidden rounded-full w-8 h-8 border border-[#e5e7eb]">
               <Image
-                src="/abstract-user-icon.png"
+                src="/homePageImages/user.jpg"
                 alt="صورة المستخدم"
                 className="h-full w-full object-cover rounded-full"
               width={50}
@@ -489,8 +489,8 @@ export function V7Header({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
-          align="end"
-          className="w-48 sm:w-56 rounded-xl v7-neu-dropdown"
+          align="start"
+          className="w-48 sm:w-56 rounded-xl v7-neu-dropdown text-start"
         >
           <DropdownMenuLabel>حسابي</DropdownMenuLabel>
           <DropdownMenuSeparator />

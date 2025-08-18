@@ -220,26 +220,24 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
     return () => clearTimeout(timer);
   }, []);
 
- console.log("myShipmentsData", shipmentCompanyInfo);
+  console.log("myShipmentsData", shipmentCompanyInfo);
 
-const companiesWithTypes = (shipmentCompanyInfo || []).flatMap((company) =>
-  company.shippingTypes.map((shippingType) => {
-    let displayName = company.name;
+  const companiesWithTypes = (shipmentCompanyInfo || []).flatMap((company) =>
+    company.shippingTypes.map((shippingType) => {
+      let displayName = company.name;
 
-    // إذا سمسا وDry خليها سمسا برو
-    if (company.name === "smsa" && shippingType.type === "Dry") {
-      displayName = "smsa Pro"; // أو أي اسم آخر حسب واجهتك
-    }
+      // إذا سمسا وDry خليها سمسا برو
+      if (company.name === "smsa" && shippingType.type === "Dry") {
+        displayName = "smsa Pro"; // أو أي اسم آخر حسب واجهتك
+      }
 
-    return {
-      ...company,
-      companyName: displayName, // استخدم هذا الاسم للعرض
-      shippingType,
-    };
-  })
-);
-
-
+      return {
+        ...company,
+        companyName: displayName, // استخدم هذا الاسم للعرض
+        shippingType,
+      };
+    })
+  );
 
   // عرض حالة التحميل
   if (isLoading) {
@@ -252,7 +250,6 @@ const companiesWithTypes = (shipmentCompanyInfo || []).flatMap((company) =>
       </V7Content>
     );
   }
- 
 
   return (
     <V7Content>
@@ -421,7 +418,6 @@ const companiesWithTypes = (shipmentCompanyInfo || []).flatMap((company) =>
                     {shipmentStats?.inTransitShipments?.toLocaleString() ?? "-"}
                   </span>
                   <span>شحنة</span>
-
                 </span>
               ),
             },
@@ -449,7 +445,7 @@ const companiesWithTypes = (shipmentCompanyInfo || []).flatMap((company) =>
               ) : companiesWithTypes && Array.isArray(companiesWithTypes) ? (
                 <div className="  grid  grid-cols-1 md:grid-cols-2 gap-4  w-full">
                   {companiesWithTypes.map((company, idx) => {
-                      const isLast = idx === companiesWithTypes.length - 1;
+                    const isLast = idx === companiesWithTypes.length - 1;
                     const name = company.name?.toLowerCase() || "";
                     let imgSrc = "/placeholder-logo.png";
                     if (name.includes("aramex"))
@@ -472,7 +468,7 @@ const companiesWithTypes = (shipmentCompanyInfo || []).flatMap((company) =>
                       <div
                         key={company.name + idx}
                         className={`shadow-md rounded-lg p-4 flex flex-col items-center gap-2 bg-white/30 flex-1
-                          ${ isLast ? "md:col-span-2" : "flex-1"}
+                          ${isLast ? "md:col-span-2" : "flex-1"}
                           `}
                       >
                         <img
@@ -481,27 +477,34 @@ const companiesWithTypes = (shipmentCompanyInfo || []).flatMap((company) =>
                           className="max-h-20 max-w-20 mb-2 object-cover"
                         />
                         <div className="font-bold text-[#294D8B] text-xl">
-                          {company.companyName === "omniclama" ? "LLAMA BOX": company.companyName.toLocaleUpperCase()}</div>
+                          {company.companyName === "omniclama"
+                            ? "LLAMA BOX"
+                            : company.companyName.toLocaleUpperCase()}
+                        </div>
                         <div className="w-full">
-                         
-                        
-                            <ul className="text-sm w-full text-center flex items-center justify-center flex-col">
-                                <li
-                                  key={company.type}
-                                  className=" text-center border-b last:border-b-0 text-lg"
-                                >
-                                  <span className="font-bold text-[#3498db] flex items-center">
-                                    {company.shippingType.price}
-                                    <Image
-                                      alt="real"
-                                      src={RealBlue}
-                                      width={30}
-                                      height={30}
-                                    />
-                                  </span>
-                                </li>
-                            </ul>
-                      
+                          <ul className="text-sm w-full text-center flex items-center justify-center flex-col">
+                            <li
+                              key={company.type}
+                              className=" text-center border-b last:border-b-0 text-lg"
+                            >
+                              <span className="font-bold text-[#3498db] flex items-center">
+                                {/* {company.shippingType.price} */}
+                                {Number.isInteger(company.shippingType.price)
+                                  ? company.shippingType.price
+                                      .toString()
+                                      .slice(0, 4)
+                                  : parseFloat(
+                                      company.shippingType.price.toPrecision(4)
+                                    )}
+                                <Image
+                                  alt="real"
+                                  src={RealBlue}
+                                  width={30}
+                                  height={30}
+                                />
+                              </span>
+                            </li>
+                          </ul>
                         </div>
                       </div>
                     );

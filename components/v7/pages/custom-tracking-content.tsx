@@ -32,7 +32,7 @@ export function CustomTrackingContent() {
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState("general");
   const [trackingSettings, setTrackingSettings] = useState({
-    companyName: "شيب إكسبرس",
+    companyName: "",
     logo: "/wtshn.jpg",
     primaryColor: "#3498db",
     secondaryColor: "#f8f9fa",
@@ -80,11 +80,11 @@ export function CustomTrackingContent() {
                   </Label>
                   <Input
                     id="companyName"
-                    value={trackingSettings.companyName}
+                   placeholder="أدخل اسم الشركة"
                     onChange={(e) =>
                       handleSettingChange("companyName", e.target.value)
                     }
-                    className=" text-black/90 text-lg"
+                    className="  text-gry"
                   />
                 </div>
               </div>
