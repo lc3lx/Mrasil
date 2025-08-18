@@ -92,7 +92,7 @@ function CarrierCard({ carrier, logo }: { carrier: ShipmentCompany; logo: string
         <div className="w-28  rounded-2xl overflow-hidden bg-white flex items-center justify-center mx-auto mb-3">
           <img src={logo} alt={carrier.company} className="w-full h-full object-contain" />
         </div>
-        <div className="text-2xl font-extrabold text-[#294D8B] mb-2">{carrier.company === "omniclama" ? "lamabox" :carrier.company}</div>
+        <div className="text-2xl font-extrabold text-[#294D8B] mb-2">{carrier.company === "omniclama" ? "LLAMA BOX" :carrier.company}</div>
         {/* Type Badge */}
         <div className="mb-6 flex justify-center gap-3">
           <Badge className={isLocal ? 'bg-green-100 text-green-700 text-lg px-4 py-1' : 'bg-blue-100 text-blue-700 text-lg px-4 py-1'}>

@@ -33,11 +33,24 @@ import {
   useDeleteClientAddressMutation,
   useUpdateClientAddressMutation,
 } from "../../api/clientAdressApi";
+import CityAutocompleteDropdown from "./CityAutocompleteDropdown";
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 interface RecipientAddressSectionProps {
   selectedRecipient: string | null;
   setSelectedRecipient: Dispatch<SetStateAction<string | null>>;
   setValue: (field: string, value: any) => void;
+  initialValues: {
+    name: string;
+    location: string;
+    phone: string;
+    city: string;
+    country: string;
+    district: string;
+    email: string;
+  };
 }
 
 const staggerChildren = {
@@ -49,11 +62,22 @@ const staggerChildren = {
     },
   },
 };
-
+const schema = yup
+  .object({
+    alias: yup.string().required("اسم العنوان مطلوب"),
+    email: yup.string(),
+    location: yup.string(),
+    phone: yup.string().required("رقم الجوال مطلوب"),
+    city: yup.string().required("المدينة مطلوبة"),
+    country: yup.string().required("الدولة مطلوبة"),
+    district: yup.string(),
+  })
+  .required();
 export function RecipientAddressSection({
   selectedRecipient,
   setSelectedRecipient,
   setValue,
+  initialValues,
 }: RecipientAddressSectionProps) {
   const { data: clientAddressesData } = useGetAllClientAddressesQuery();
   const [createClientAddress, { isLoading: isCreating, error: createError }] =
@@ -86,7 +110,17 @@ export function RecipientAddressSection({
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertStatus, setAlertStatus] = useState<"success" | "fail">("success");
   const [alertMessage, setAlertMessage] = useState("");
+  const [descFocused, setDescFocused] = useState(false);
+  const [search, setSearch] = useState("");
 
+  const [form, setForm] = useState({
+    city: initialValues?.city || "",
+    country: initialValues?.country || "",
+  });
+  const methods = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: initialValues,
+  });
   const handleSelectRecipient = (card: any) => {
     if (selectedRecipient === card._id) {
       setSelectedRecipient(null);
@@ -198,10 +232,9 @@ export function RecipientAddressSection({
       </div>
       <div className="flex flex-col sm:flex-row items-center gap-3 mb-4">
         <div className="relative v7-neu-input-container flex-1 min-w-[240px]">
-            <Search className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6d6a67]" />
-       
+          <Search className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6d6a67]" />
+
           <Input
-          
             type="text"
             placeholder="ابحث ضمن عناوين العملاء"
             value={searchRecipient}
@@ -417,24 +450,35 @@ export function RecipientAddressSection({
         open={editRecipientModalOpen}
         onOpenChange={setEditRecipientModalOpen}
       >
-        <DialogContent className=" border-none overflow-y-auto  max-h-screen  scroll" dir="ltr">
+        <DialogContent
+          className=" border-none overflow-y-auto  max-h-screen  scroll"
+          dir="ltr"
+        >
           <DialogHeader>
-            <DialogTitle className="sm:text-2xl text-lg font-bold text-[#1a365d] flex items-center gap-4 mt-0 sm:mt-4" dir="rtl">
+            <DialogTitle
+              className="sm:text-2xl text-lg font-bold text-[#1a365d] flex items-center gap-4 mt-0 sm:mt-4"
+              dir="rtl"
+            >
               تعديل بيانات العميل
             </DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleEditRecipientSubmit} className="sm:space-y-4 space-y-2" dir="rtl">
+          <form
+            onSubmit={handleEditRecipientSubmit}
+            className="sm:space-y-4 space-y-2"
+            dir="rtl"
+          >
             {/* اسم العنوان */}
             <div className="space-y-2">
               <Label
-                htmlFor="alias"
+                htmlFor="clientName"
+                
                 className="sm:text-lg text-base font-medium flex items-center gap-2 text-[#1A5889]"
               >
                 <User className="h-4 w-4 text-[#1A5889]" />
                 اسم العميل
               </Label>
               <Input
-                id="alias"
+                name="clientName"
                 value={editRecipient.clientName}
                 onChange={handleEditRecipientChange}
                 placeholder="اسم العميل"
@@ -444,7 +488,7 @@ export function RecipientAddressSection({
             </div>
             <div className="space-y-2">
               <Label
-                htmlFor="alias"
+                htmlFor="clientPhone"
                 className="sm:text-lg text-base font-medium flex items-center gap-2 text-[#1A5889]"
               >
                 <Phone className="h-4 w-4 text-[#1A5889]" />
@@ -462,7 +506,7 @@ export function RecipientAddressSection({
             </div>
             <div className="space-y-2">
               <Label
-                htmlFor="alias"
+                htmlFor="clientEmail"
                 className="sm:text-lg text-base font-medium flex items-center gap-2 text-[#1A5889]"
               >
                 <Mail className="h-4 w-4 text-[#1A5889]" />
@@ -473,7 +517,6 @@ export function RecipientAddressSection({
                 placeholder="البريد الإلكتروني"
                 value={editRecipient.clientEmail}
                 onChange={handleEditRecipientChange}
-                
                 className={"v7-neu-input"}
                 style={{ direction: "rtl", fontFamily: "inherit" }}
               />
@@ -481,7 +524,7 @@ export function RecipientAddressSection({
             {/* الدولة*/}
             <div className="space-y-2">
               <Label
-                htmlFor="alias"
+                htmlFor="country"
                 className="sm:text-lg text-base font-medium flex items-center gap-2 text-[#1A5889]"
               >
                 <User className="h-4 w-4 text-[#1A5889]" />
@@ -500,26 +543,50 @@ export function RecipientAddressSection({
             {/* المدينة*/}
             <div className="space-y-2">
               <Label
-                htmlFor="alias"
+                htmlFor="city"
                 className="sm:text-lg text-base font-medium flex items-center gap-2 text-[#1A5889]"
               >
                 <User className="h-4 w-4 text-[#1A5889]" />
                 المدينة
               </Label>
-              <Input
-                name="city"
-                placeholder="المدينة"
-                value={editRecipient.city}
-                onChange={handleEditRecipientChange}
-                className={"v7-neu-input"}
-                style={{ direction: "rtl", fontFamily: "inherit" }}
-              />
+              <div className="relative">
+                <input
+                  id="city"
+                  autoComplete="off"
+                  value={search || form.city}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    setForm({ ...form, city: "" });
+                  }}
+                  required
+                  placeholder="المدينة"
+                  className={ "v7-neu-input"}
+                  onFocus={() => setDescFocused(true)}
+                  onBlur={() => setTimeout(() => setDescFocused(false), 200)}
+                />
+                {/* Dropdown results */}
+                {descFocused && search && (
+                  <CityAutocompleteDropdown
+                    search={search}
+                    onSelect={(cityObj) => {
+                      setForm({ ...form, city: cityObj.name_ar });
+                      setEditRecipient({
+                        ...editRecipient,
+                        city: cityObj.name_ar,
+                      });
+
+                      setSearch("");
+                      setDescFocused(false);
+                    }}
+                  />
+                )}
+              </div>
             </div>
 
             {/* العنوان*/}
             <div className="space-y-2">
               <Label
-                htmlFor="alias"
+                htmlFor="district"
                 className="sm:text-lg text-base font-medium flex items-center gap-2 text-[#1A5889]"
               >
                 <User className="h-4 w-4 text-[#1A5889]" />
@@ -530,7 +597,6 @@ export function RecipientAddressSection({
                 placeholder="الحي/المنطقة"
                 value={editRecipient.district}
                 onChange={handleEditRecipientChange}
-                
                 className={"v7-neu-input"}
                 style={{ direction: "rtl", fontFamily: "inherit" }}
               />
@@ -538,21 +604,18 @@ export function RecipientAddressSection({
             {/* العنوان*/}
             <div className="space-y-2">
               <Label
-                htmlFor="alias"
+                htmlFor="clientAddress"
                 className="sm:text-lg text-base font-medium flex items-center gap-2 text-[#1A5889]"
               >
                 <User className="h-4 w-4 text-[#1A5889]" />
                 الرمز البريدي
               </Label>
               <Input
-                id="alias"
+                id="clientAddress"
                 name="clientAddress"
                 placeholder="البريدي الرمز"
                 value={editRecipient.customer}
                 onChange={handleEditRecipientChange}
-                
-                className={"v7-neu-input"}
-                style={{ direction: "rtl", fontFamily: "inherit" }}
               />
             </div>
 

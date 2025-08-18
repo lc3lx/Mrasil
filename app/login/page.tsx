@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { toast } from 'react-hot-toast';
 import ResponseModal from '../components/ResponseModal';
 import { Eye, EyeOff } from 'lucide-react';
+import Image from 'next/image';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -58,6 +59,9 @@ export default function LoginPage() {
         <div className="w-full flex justify-center items-center min-h-[80vh]">
           <div className="w-full max-w-md mx-auto bg-white/20 backdrop-blur-xl border border-white/30 rounded-3xl shadow-xl p-10 flex flex-col items-center">
             {/* Title */}
+            <Link href={"/"}>
+                    <Image src="/logo.png" alt="شعار الشركة" className="h-12 mb-2 w-auto" width={60} height={60} />
+            </Link>
             <h2 className="text-3xl font-bold text-white mb-8 tracking-wide text-center drop-shadow">Login</h2>
             {/* Form Section */}
             <form onSubmit={handleSubmit} className="w-full flex flex-col gap-6">

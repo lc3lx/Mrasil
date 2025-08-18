@@ -87,7 +87,7 @@ const translations: Translations = {
     maxWeight: "الوزن الأقصى: 30 كجم",
     maxDimensions: "الأبعاد القصوى: 30 × 30 × 30 سم",
     customParcelTitle: "تخصيص حجم الطرد",
-    customParcelDesc: "أدخل أبعاد ووزن الطرد المخصص الخاص بك",
+    customParcelDesc: "أدخل أبعاد  الطرد  الخاص بك",
     length: "الطول (سم)",
     width: "العرض (سم)",
     height: "الارتفاع (سم)",
@@ -322,6 +322,7 @@ export default function ParcelsContent() {
     }
   }
 
+  
   return (
     <div className="p-6 max-w-6xl mx-auto my-16">
       <div className="flex items-center justify-between mb-6">
@@ -410,7 +411,7 @@ export default function ParcelsContent() {
                       </div>
                       <div className="flex items-center gap-2 text-base text-gray-600">
                         <Scale className="h-5 w-5 text-[#3498db]" />
-                        <span>{currentTranslations.upTo} {size.maxWeight}</span>
+                        <span>{currentTranslations.upTo} 30 كغ </span>
                       </div>
                     </div>
                     <p className="text-base text-gray-600 mb-4">{size.description}</p>

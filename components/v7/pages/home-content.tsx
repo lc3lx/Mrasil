@@ -36,6 +36,7 @@ import { useGetShipmentCompanyInfoQuery } from "@/app/api/shipmentCompanyApi";
 import { FaRoadCircleExclamation } from "react-icons/fa6";
 import { useGetMyTransactionsQuery } from "@/app/api/transicationApi";
 import Image from "next/image";
+import RealBlue from "../../../public/real-blue.png"
 // Remove RiyalIcon import if not used elsewhere
 // import { RiyalIcon } from '@/components/icons';
 
@@ -448,8 +449,8 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
                     // Map company name to logo file
                     const name = company.name?.toLowerCase() || "";
                     let imgSrc = "/placeholder-logo.png";
-                    if (name.includes("aramex")) imgSrc = "/araMex.png";
-                    else if (name.includes("smsa")) imgSrc = "/smsa_b2c.jpg";
+                    if (name.includes("aramex")) imgSrc = "/companies/araMex.png";
+                    else if (name.includes("smsa")) imgSrc = "/companies/smsa.jpg";
                     else if (name.includes("imile"))
                       imgSrc = "/carriers/imile-logo.png";
                     else if (name.includes("fedex"))
@@ -458,14 +459,14 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
                       imgSrc = "/carriers/dhl-logo.png";
                     else if (name.includes("ups"))
                       imgSrc = "/carriers/ups-logo.png";
-                    else if (name.includes("redbox")) imgSrc = "/redBox.jpg";
+                    else if (name.includes("redbox")) imgSrc = "/companies/redBox.png";
                     else if (name.includes("omniclama"))
-                      imgSrc = "/lamaBox.png";
+                      imgSrc = "/companies/lamaBox.png";
                     // Add more mappings as needed
                     return (
                       <div
                         key={company.name + idx}
-                        className="shadow-md rounded-lg p-4 flex flex-col items-center bg-white/30"
+                        className="shadow-md rounded-lg p-4 flex flex-col items-center gap-2 bg-white/30"
                       >
                         <img
                           src={imgSrc}
@@ -473,7 +474,7 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
                           className=" max-h-20 max-w-20 mb-2 object-cover"
                         />
                         <div className="font-bold text-[#294D8B] text-xl">
-                          {company.name}
+                          {company.name == "omniclama" ? "LLAMA BOX" : company.name}
                         </div>
                         <div className="w-full">
                           {company.shippingTypes &&
@@ -485,12 +486,12 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
                                   i: number
                                 ) => (
                                   <li
-                                    key={type.type + i}
+                                    key={type.type + i  }
                                     className="flex flex-col items-center border-b last:border-b-0 text-lg"
                                   >
-                                    <span>شحن</span>
-                                    <span className="font-bold text-[#3498db]">
-                                      {type.price} ريال
+
+                                    <span className="font-bold text-[#3498db] flex items-center">
+                                      {type.price} <Image alt="real" src={RealBlue} width={30} height={30}/>
                                     </span>
                                   </li>
                                 )
@@ -512,7 +513,7 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
                 </div>
               )}
               <div className="mt-4 text-xs text-gray-500 text-center">
-                * الأسعار تشمل الضريبة وتختلف حسب الوزن والمسافة
+                  الأسعار تشمل  قيمة الضريبة المضافة   
               </div>
             </CardContent>
           </Card>
@@ -524,7 +525,7 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
               الإحصائيات
             </CardTitle>
           </CardHeader>
-          <CardContent className="grid gap-5">
+          <CardContent className="grid gap-8">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="v7-neu-icon-sm p-2">
@@ -598,21 +599,13 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
                 </span>
               </div>
             </div>
-
-            <Button
-              className="mt-3 w-full v7-neu-button text-lg py-3"
-              onClick={() => router.push("/reports")}
-            >
-              <TrendingUp className="mr-2 h-5 w-5" />
-              تقرير مفصل
-            </Button>
           </CardContent> 
         </Card>
       </div>
 
-      <div className="v7-fade-in" style={{ transitionDelay: "0.3s" }}>
-        <div className="flex items-center mb-4">
-          <h2 className="text-2xl font-bold text-[#3498db]">آخر الشحنات</h2>
+      <div className="v7-fade-in  " style={{ transitionDelay: "0.3s" }}>
+        <div className="flex items-center mt-24 mb-10">
+          <h2 className="sm:text-3xl text-2xl font-bold text-[#3498db] ms-4">آخر الشحنات</h2>
         </div>
 
         <div className="grid gap-4">

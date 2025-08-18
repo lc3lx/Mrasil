@@ -90,7 +90,8 @@ const handleSelectAll = () => {
       {/* Bulk actions bar */}
       {selectedShipmentId && selectedShipmentId !== "all" && (
         <div className=" mb-4 p-2 bg-blue-50 rounded-md flex items-center justify-between">
-          <span className="text-sm font-medium text-blue-700">تم تحديد شحنة</span>
+          <span className="text-sm font-medium text-blue-700">تم تحديد شحنة {selectedShipmentId.length}</span>
+         
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -129,52 +130,7 @@ const handleSelectAll = () => {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-      )}
-      {/* Select All Button */}
-      {/* Shipments Grid */}
-      {/* Place the Select All button above the grid */}
-      {/* <RadioGroup
-        value={selectedShipmentId === 'all' ? 'all' : selectedShipmentId || ''}
-        onValueChange={val => setSelectedShipmentId(val === 'all' ? 'all' : val)}
-        className="flex flex-wrap -mx-2 justify-center "
-      >
-        {/* Select All option as a radio button inside RadioGroup */}
-        {/* <div className="flex items-center justify-end w-full mb-4 px-2 ">
-          <RadioGroupItem
-            value="all"
-            id="shipment-all"
-            aria-label="تحديد كل الشحنات"
-            className={allSelected ? 'ring-2  ring-blue-500 mr-2' : 'mr-2'}
-          />
-          <Button
-            type="button"
-            variant={allSelected ? "default" : "outline"}
-            className={`flex items-center gap-2 ${allSelected ? "bg-blue-500 text-white" : ""}`}
-            onClick={handleSelectAll}
-            tabIndex={-1}
-          >
-            تحديد الكل
-          </Button>
-        </div>
-        {sortedShipments.map((shipment) => (
-          <div
-            key={shipment._id}
-            className="w-full flex items-start justify-center mb-6"
-          >
-                        <div className="flex-grow    w-full relative">
-              <V7ShipmentCard shipment={shipment} selectedShipmentId={selectedShipmentId} allSelected={allSelected} />
-             <RadioGroupItem
-                value={shipment._id}
-                id={`shipment-${shipment._id}`}
-                aria-label={`تحديد الشحنة ${shipment._id}`}
-                checked={allSelected || selectedShipmentId === shipment._id}
-                className={` absolute top-12   right-2 ${(allSelected || selectedShipmentId === shipment._id) ? 'ring-2 ring-blue-500' : ''}`}
-                />
-                
-            </div>
-          </div>
-        ))}
-      </RadioGroup> */} 
+      )} 
       <div className="flex flex-wrap -mx-2 justify-center">
   {/* زر تحديد الكل */}
   <div className="flex items-center justify-end w-full mb-4 px-2">
@@ -223,10 +179,6 @@ const handleSelectAll = () => {
     );
   })}
 </div>
-
-
-
-
       {/* Pagination UI */}
       {totalPages > 1 && (
         <div className="flex flex-wrap justify-center mt-8 gap-2">

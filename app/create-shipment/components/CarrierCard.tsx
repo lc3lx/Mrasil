@@ -4,8 +4,6 @@ import React from "react";
 import realBlue from "../../../public/real-blue.png"
 export default function CarrierCard({ company, selectedCompany, handleCompanySelect, logoSrc, firstType }: any) {
   const isSelected = selectedCompany === company.company;
-
-  console.log(company.company);
   
   return (
     <div
@@ -23,7 +21,7 @@ export default function CarrierCard({ company, selectedCompany, handleCompanySel
         <div className="  rounded-lg   overflow-hidden">
           <Image sizes="20" width={20} height={20} src={logoSrc} alt={company.company} className="object-contain w-[5rem] sm:min-w-[7rem]  sm:min-h-[10rem]" onError={e => { e.currentTarget.src = '/carriers/carrier-placeholder.png'; }} />
         </div>
-        <span className="text-[#3498db] font-bold text-xl whitespace-nowrap">{company.company == "omniclama" ? "lamabox" : company.company }</span>
+        <span className="text-[#3498db] font-bold text-xl whitespace-nowrap">{company.company == "omniclama" ? "LLAMA BOX" : company.company }</span>
       </div>
       <div className="flex flex-col items-end min-w-[120px]  gap-4">
         <input

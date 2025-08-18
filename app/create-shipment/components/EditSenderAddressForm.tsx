@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Phone, Mail, MapPin, User, Building } from "lucide-react";
 import ResponseModal from "../../components/ResponseModal";
+import CityAutocompleteDropdown from "./CityAutocompleteDropdown";
 
 const schema = yup
   .object({
@@ -55,7 +56,12 @@ export function EditSenderAddressForm({
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertStatus, setAlertStatus] = useState<"success" | "fail">("success");
   const [alertMessage, setAlertMessage] = useState("");
-
+  const [search, setSearch] = useState("");
+  const [descFocused, setDescFocused] = useState(false);
+  const [form, setForm] = useState({
+    city: initialValues?.city || "",
+    country: initialValues?.country || "",
+  });
   const methods = useForm({
     resolver: yupResolver(schema),
     defaultValues: initialValues,
@@ -97,9 +103,15 @@ export function EditSenderAddressForm({
   return (
     <>
       <Dialog open={isOpen} onOpenChange={handleClose}>
-        <DialogContent className=" border-none overflow-y-auto  max-h-screen  scroll" dir="ltr">
+        <DialogContent
+          className=" border-none overflow-y-auto  max-h-screen  scroll z-[99]"
+          dir="ltr"
+        >
           <DialogHeader>
-            <DialogTitle className="sm:text-2xl text-lg font-bold text-[#1a365d] flex items-center gap-4 mt-0 sm:mt-4" dir="rtl">
+            <DialogTitle
+              className="sm:text-2xl text-lg font-bold text-[#1a365d] flex items-center gap-4 mt-4  "
+              dir="rtl"
+            >
               <Building className="h-4 w-4 text-[#1A5889]]" />
               تعديل عنوان الالتقاط
             </DialogTitle>
@@ -215,20 +227,40 @@ export function EditSenderAddressForm({
                 <MapPin className="h-4 w-4 text-[#1A5889]" />
                 المدينة
               </Label>
-              <Input
-                id="city"
-                {...register("city")}
-                placeholder="المدينة"
-                className={
-                  errors.city
-                    ? "v7-neu-input border-red-500 focus:border-red-500"
-                    : "v7-neu-input"
-                }
-                style={{ direction: "rtl", fontFamily: "inherit" }}
-              />
-              {errors.city && (
-                <p className="text-sm text-red-500">{errors.city.message}</p>
-              )}
+              <div className="relative">
+                <input
+                  id="city"
+                  autoComplete="off"
+                  value={search || form.city}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    setForm({ ...form, city: "" });
+                  }}
+                  required
+                  placeholder="المدينة"
+                  className={
+                    errors.city
+                      ? "v7-neu-input border-red-500 focus:border-red-500"
+                      : "v7-neu-input"
+                  }
+                  onFocus={() => setDescFocused(true)}
+                  onBlur={() => setTimeout(() => setDescFocused(false), 200)}
+                />
+                {/* Dropdown results */}
+                {descFocused && search && (
+                  <CityAutocompleteDropdown
+                    search={search}
+                    onSelect={(cityObj) => {
+                      setForm({ ...form, city: cityObj.name_ar });
+                      setValue("city", cityObj.name_ar, {
+                        shouldValidate: true,
+                      });
+                      setSearch("");
+                      setDescFocused(false);
+                    }}
+                  />
+                )}
+              </div>
             </div>
             {/*  الرمز البريدي */}
             <div className="space-y-2">
@@ -286,7 +318,7 @@ export function EditSenderAddressForm({
             <DialogFooter>
               <Button
                 type="submit"
-                className="bg-gradient-to-r from-[#3498db] to-[#2980b9] text-white hover:from-[#2980b9] hover:to-[#3498db] sm:text-base text-sm mt-2"
+                className="bg-gradient-to-r from-[#3498db] to-[#2980b9] text-white hover:from-[#2980b9] hover:to-[#3498db] sm:text-base text-sm "
                 disabled={isLoading}
               >
                 {isLoading ? "جاري التعديل..." : "حفظ التعديلات"}

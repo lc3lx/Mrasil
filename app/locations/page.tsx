@@ -105,34 +105,15 @@ export default function LocationsPage() {
 
   return (
     <V7Layout>
-      <div className="space-y-8 pb-20">
-        <div className="flex justify-between items-center">
-          <div>
+      <div className="space-y-8 pb-20 mt-16">
+        <div className=" flex justify-start flex-col">
             <h1 className="text-2xl font-bold text-[#294D8B]">العناوين</h1>
             <p className="text-sm text-gry">مواقع الإستلام الخاصة بك</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              onClick={() => setShowFavorites((prev) => !prev)}
-              className={`bg-blue-600 text-white hover:bg-blue-700 flex items-center gap-2 rounded px-4 py-2 transition ${showFavorites ? 'ring-2 ring-amber-400 ring-offset-2' : ''}`}
-            >
-              <Star className="h-5 w-5 mr-1" fill={showFavorites ? '#f59e42' : 'none'} />
-              المفضلة
-            </Button>
-            <Button
-              onClick={() => setIsAddDialogOpen(true)}
-              className="bg-blue-600 text-white hover:bg-blue-700 flex items-center gap-2"
-            >
-              <PlusCircle className="h-4 w-4" />
-              اضافة عنوان
-            </Button>
-          </div>
         </div>
 
         <div className={`v7-neu-card p-6 rounded-xl v7-fade-in ${isLoaded ? "opacity-100" : "opacity-0"}`}>
           <div className="flex flex-col md:flex-row md:items-center justify-start gap-4 mb-6">
-            <div className="relative v7-neu-input-container md:w-1/3">
-              <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gry" />
+            <div className="relative v7-neu-input-container w-full">
               <input
                 type="search"
                 placeholder="ابحث عن موقع..."
@@ -140,6 +121,7 @@ export default function LocationsPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
+              <Search className="absolute  right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gry" />
             </div>
           </div>
 

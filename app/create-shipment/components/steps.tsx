@@ -971,6 +971,9 @@ function Step3Content({
     }
   };
 
+  console.log("values" ,companiesData);
+  
+  
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
 
@@ -997,14 +1000,14 @@ function Step3Content({
       <circle cx="17" cy="18" r="2" />
     </svg>
           </div>
-        <h2 className="text-2xl font-semibold text-[#1a365d]"> أختر الناقل</h2>
+        <h2 className="text-2xl font-semibold text-[#1a365d]"> إختر الناقل</h2>
         </div>
         <div className="flex flex-col gap-4">
           {isLoadingCompanies ? (
             <div>جاري التحميل...</div>
           ) : (
             uniqueCompanies
-              .map((company) => {
+              ?.map((company) => {
                 const firstType =
                   company.shippingTypes.find(
                     (type) => type.type === selectedShipmentType

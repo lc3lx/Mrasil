@@ -35,9 +35,9 @@ export default function TeamPage() {
       <div className="flex items-center justify-center min-h-[70vh]">
         <div className="text-center">
           <div className="text-4xl md:text-6xl font-extrabold mb-4" style={{ fontFamily: 'Cairo, sans-serif' }}>
-            قريبا الاطلاق ...........
+            قريباً الإطلاق
           </div>
-          <div className="text-2xl md:text-3xl font-semibold text-gray-600" style={{ fontFamily: 'Cairo, sans-serif' }}>
+          <div className="text-2xl md:text-3xl font-semibold text-gray-600 text-center" style={{ fontFamily: 'Cairo, sans-serif' }}>
             we are coming soon
           </div>
         </div>

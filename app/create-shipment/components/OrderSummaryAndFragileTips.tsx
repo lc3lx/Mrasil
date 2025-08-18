@@ -39,7 +39,7 @@ export function OrderSummaryAndFragileTips({ values }: { values: any }) {
           نصائح للشحنات القابلة للكسر
         </h3>
       </div>
-      <div className="v7-neu-card-inner p-6 bg-gradient-to-br from-amber-50 to-white border border-amber-100">
+      <div className="v7-neu-card-inner p-6 bg ">
         <div className="flex items-start gap-4">
           <div className="w-12 h-12 rounded-full bg-[#3498db]/20 flex items-center justify-center flex-shrink-0">
             <svg
@@ -100,14 +100,19 @@ export function OrderSummaryAndFragileTips({ values }: { values: any }) {
                 <div className="w-5 h-5 rounded-full bg-[#3498db]/20 flex items-center justify-center mt-0.5 flex-shrink-0">
                   <span className="text-[#3498db] text-xs font-bold">٤</span>
                 </div>
+              <div className=" flex flex-col gap-3">
                 <p className="text-gray-700">
-                  نوصي بشدة بإضافة تأمين الشحنة لتغطية أي أضرار محتملة أثناء
+                  نوصي بشدة بإضافة تأمين للشحنة لتغطية أي أضرار محتملة أثناء
                   النقل
                 </p>
+                           <p className="text-gray-700">
+            بحيث انه اذا اتلفت الشحنة بأي شكل من الاشكال يكون التعويض ( 100 ريال ) فقط كما تنص عليه قوانين شركات الشحن
+                </p>
+              </div>
               </li>
             </ul>
 
-            <div className="flex items-center gap-2 mt-2 bg-[#3498db]/20 p-3 rounded-lg">
+            <div className="flex items-center gap-2 mt-4    rounded-lg">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -122,7 +127,7 @@ export function OrderSummaryAndFragileTips({ values }: { values: any }) {
               >
                 <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path>
               </svg>
-              <p className="text-amber-700 font-medium">
+              <p className="text-red-500 font-medium">
                 يمكنك إضافة تأمين على الشحنة من خلال الفرع كل ماعليك فعله عند
                 تسليم الشحنة أخبرهم انك تريد التأمين عليها.
               </p>
@@ -176,7 +181,7 @@ export function OrderSummaryAndFragileTips({ values }: { values: any }) {
               </svg>
             </div>
             <input
-              className="flex h-10 w-full rounded-lg border-[0.5px] border-transparent bg-background/5 px-3 py-2 text-sm shadow-[inset_0_2px_4px_rgba(0,0,0,0.08)] hover:shadow-[inset_0_2px_5px_rgba(0,0,0,0.12)] transition-all duration-300 ease-in-out file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground/60 focus-visible:outline-none focus-visible:border-input/20 focus-visible:bg-gradient-to-b focus-visible:from-background/10 focus-visible:to-background/5 focus-visible:shadow-[inset_0_2px_6px_rgba(0,0,0,0.15)] hover:border-input/20 disabled:cursor-not-allowed disabled:opacity-60 disabled:bg-muted/20 disabled:shadow-none pr-10 v7-neu-input"
+              className="flex h-10 w-full rounded-lg border-[0.5px] border-transparent bg-background/5 px-3 py-2 text-sm shadow-[inset_0_2px_4px_rgba(0,0,0,0.08)] hover:shadow-[inset_0_2px_5px_rgba(0,0,0,0.12)] transition-all duration-300 ease-in-out file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground/60 focus-visible:outline-none focus-visible:border-input/20 focus-visible:bg-gradient-to-b focus-visible:from-background/10 focus-visible:to-background/5 focus-visible:shadow-[inset_0_2px_6px_rgba(0,0,0,0.15)] hover:border-input/20 disabled:cursor-not-allowed disabled:opacity-60 disabled:bg-muted/20 disabled:shadow-none pr-10 v7-neu-input-hollow  text-gry"
               placeholder="أدخل كود الخصم"
               value=""
             />
@@ -266,7 +271,7 @@ export function OrderSummaryAndFragileTips({ values }: { values: any }) {
             <div className="flex justify-between items-center  py-3 border-b border-[#3498db]/10">
               <span className="text-[#6d6a67] font-medium">خدمة التوصيل</span>
               <span className="font-medium text-[#1a365d]">
-                {values.company == "omniclama" ? "lamabox" : values.company  || "غير محدد"}
+                {values.company == "omniclama" ? "LLAMA BOX" : values.company  || "غير محدد"}
               </span>
             </div>
             <div className="flex justify-between items-center  py-4 text-xl font-bold">

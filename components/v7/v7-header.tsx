@@ -136,7 +136,7 @@ export function V7Header({
   // إذا لم يتم تحميل المكون بعد، عرض نسخة بسيطة لتجنب مشكلة عدم تطابق الخادم والعميل
   if (!mounted) {
     return (
-      <header className="sticky  top-0 z-30 flex h-14 sm:h-16 items-center justify-between v7-neu-header px-3 sm:px-4 md:px-6">
+      <header className="sticky  top-0  flex h-14 sm:h-16 items-center justify-between v7-neu-header px-3 sm:px-4 md:px-6">
         <div className="flex items-center gap-2 sm:gap-4">
           <Button
             variant="ghost"
@@ -169,7 +169,7 @@ export function V7Header({
   }
 
   return (
-    <header className="  bg-white fixed  -top-2 sm:-top-4 w-full z-30 flex  h-16  items-center justify-between v7-neu-header px-3 sm:px-4 md:px-6 mt-2 mb-2 sm:mt-4 sm:mb-4">
+    <header className=" z-10 bg-white fixed  -top-2 sm:-top-4 w-full flex  h-16  items-center justify-between v7-neu-header px-3 sm:px-4 md:px-6 mt-2 mb-2 sm:mt-4 sm:mb-4">
       <div className="flex items-center gap-2 sm:gap-4">
         <Button
           variant="ghost"

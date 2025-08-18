@@ -168,12 +168,12 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
   const [descFocusedA, setDescFocusedA] = useState(false);
   const [weightFocusedAA, setWeightFocusedAA] = useState(false);
   const [descFocusedAA, setDescFocusedAA] = useState(false);
-  const [descFocusedMA, setDescFocusedMA] = useState(false);
+
   
   return (
     <>
       <Dialog open={isOpen} onOpenChange={handleClose}>
-        <DialogContent className=" border-none   overflow-y-auto  max-h-screen  scroll" dir="ltr">
+        <DialogContent className=" border-none   overflow-y-auto  max-h-screen  scroll z-[99]" dir="ltr">
           <DialogHeader>
             <DialogTitle className=" text-black/90 w-full sm:mt-6 mt-0 text-right sm:text-2xl text-lg flex items-center gap-4  " dir="rtl">
               <User className="h-[1.5rem] w-[1.5rem] text-[#1A5889] bg-[#3498db]/20  rounded-full  " />
@@ -186,7 +186,7 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
             dir="rtl"
           >
             {/* <Input name="clientName" placeholder="الاسم" value={form.clientName} onChange={handleChange} required /> */}
-            <div className="space-y-2">
+            <div className="space-y-1">
               <Label
                 htmlFor="clientName"
                 className="sm:text-lg text-base font-medium flex items-center gap-2 text-[#1A5889]"
@@ -276,33 +276,7 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
                   "v7-neu-input bg-transparent border-none shadow-none outline-none text-base w-full "
                 )}
               />
-                            {/* <div className="relative">
-<input
-  name="country"
-  value={countrySearch || form.country}
-  onChange={(e) => {
-    setCountrySearch(e.target.value);
-    setForm({ ...form, country: "" });
-  }}
-  placeholder="السعودية"
-  readOnly
-  className={cn("v7-neu-input bg-transparent border-none shadow-none outline-none text-base w-full")}
-  onFocus={() => setFocused("country")}
-  onBlur={() => setTimeout(() => setFocused(""), 200)}
-/>
-{focused === "country" && countrySearch && (
-  <CountryAutocompleteDropdown
-  
-    search={countrySearch}
-    onSelect={(obj) => {
-      setForm({ ...form, country: obj.name_ar });
-      setCountrySearch("");
-      setFocused("");
-    }}
-  />
-)}
 
-              </div> */}
             </div>
             <div className="space-y-2 ">
               <Label

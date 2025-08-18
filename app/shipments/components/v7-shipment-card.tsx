@@ -195,8 +195,9 @@ export function V7ShipmentCard({
   };
   const trackingNumber = getTrackingNumber();
   console.log("data:", shipment);
-  // 000000000000000000000000000
 
+
+console.log("shipment" + shipment);
 
   return (  
     <div
@@ -210,24 +211,24 @@ export function V7ShipmentCard({
           <div className="flex flex-col justify-between flex-1  ">
             <div className="flex flex-col  gap-4 w-fit">
               {/* Carrier */}
-              <div className="flex items-center ">
+              <div className="flex items-center  -mt-2 ms-4  ">
                 {" "}
                 {/* Increased gap for more space */}
                 <span
-                  className={`inline-flex items-center rounded-md px-2 py-1 text-lg font-bold ${carrierInfo.color}`}
+                  className={`inline-flex items-center gap-4 rounded-md py-1 text-lg font-bold ${carrierInfo.color}`}
                 >
-                  <div className="h-14 w-14  relative overflow-hidden rounded-full border-2 border-gray-200 bg-white flex items-center justify-center">
+                  <div className="min-h-20 min-w-20  relative overflow-hidden   flex items-center justify-center">
                     {" "}
                     {/* Larger, circular, spaced */}
                     <Image
                       src={carrierInfo.logo}
                       alt={carrierInfo.name}
-                      width={56}
-                      height={56}
+                      width={75}
+                      height={75}
                       className="object-contain"
                     />
                   </div>
-                  <span className="ml-6 ">{carrierInfo.name == "omniclama" ? "lamabox" : carrierInfo.name}</span>
+                  <span className="ml-6  text-[#294D8B]">{carrierInfo.name == "omniclama" ? "LLAMA BOX" : carrierInfo.name}</span>
 
                  
                 </span>

@@ -76,9 +76,9 @@ export default function CustomParcelDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px] rtl">
+      <DialogContent className="sm:max-w-[425px] rtl border-none ">
         <DialogHeader>
-          <DialogTitle className="text-right text-xl font-bold text-[#1a365d]">
+          <DialogTitle className="text-right text-xl font-bold text-[#1a365d] mt-4">
             {translations.customParcelTitle}
           </DialogTitle>
           <DialogDescription className="text-right text-gray-600">
@@ -88,15 +88,15 @@ export default function CustomParcelDialog({
         <div className="grid gap-4 py-4">
           <div className="space-y-2">
             <Label htmlFor="title" className="text-right block text-gray-600">
-              Package Name
+             اسم الطرد
             </Label>
             <Input
               id="title"
               name="title"
-              className="v7-neu-input text-right"
+              className="v7-neu-input text-right text-gry"
               value={customParcel.title}
               onChange={onCustomParcelChange}
-              placeholder="Enter package name"
+              placeholder="أضف اسم الطرد"
             />
           </div>
           <div className="grid grid-cols-3 gap-4">
@@ -109,7 +109,7 @@ export default function CustomParcelDialog({
                 name="length"
                 type="number"
                 min="1"
-                className="v7-neu-input text-right"
+                className="v7-neu-input text-right text-gry"
                 value={customParcel.length}
                 onChange={onCustomParcelChange}
               />
@@ -123,7 +123,7 @@ export default function CustomParcelDialog({
                 name="width"
                 type="number"
                 min="1"
-                className="v7-neu-input text-right"
+                className="v7-neu-input text-right text-gry"
                 value={customParcel.width}
                 onChange={onCustomParcelChange}
               />
@@ -137,39 +137,14 @@ export default function CustomParcelDialog({
                 name="height"
                 type="number"
                 min="1"
-                className="v7-neu-input text-right"
+                className="v7-neu-input text-right text-gry"
                 value={customParcel.height}
                 onChange={onCustomParcelChange}
               />
             </div>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="weight" className="text-right block text-gray-600">
-              {translations.weight}
-            </Label>
-            <Input
-              id="weight"
-              name="weight"
-              type="number"
-              min="0.1"
-              step="0.1"
-              className="v7-neu-input text-right"
-              value={customParcel.weight}
-              onChange={onCustomParcelChange}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="description" className="text-right block text-gray-600">
-              {translations.description}
-            </Label>
-            <Input
-              id="description"
-              name="description"
-              className="v7-neu-input text-right"
-              value={customParcel.description}
-              onChange={onCustomParcelChange}
-            />
-          </div>
+          
+
         </div>
         <DialogFooter className="flex justify-between sm:justify-between">
           <Button
