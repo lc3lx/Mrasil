@@ -4,6 +4,7 @@ import React from "react";
 import realBlue from "../../../public/real-blue.png"
 export default function CarrierCard({ company, selectedCompany, handleCompanySelect, logoSrc, firstType }: any) {
   const isSelected = selectedCompany === company.company;
+  console.log("company", company.shippingType.profitPrice);
   
   return (
     <div
@@ -21,7 +22,7 @@ export default function CarrierCard({ company, selectedCompany, handleCompanySel
         <div className="  rounded-lg   overflow-hidden">
           <Image sizes="20" width={20} height={20} src={logoSrc} alt={company.company} className="object-contain w-[5rem] sm:min-w-[7rem]  sm:min-h-[10rem]" onError={e => { e.currentTarget.src = '/carriers/carrier-placeholder.png'; }} />
         </div>
-        <span className="text-[#3498db] font-bold text-xl whitespace-nowrap">{company.company == "omniclama" ? "LLAMA BOX" : company.company }</span>
+        <span className="text-[#3498db] font-bold text-xl whitespace-nowrap">{company.company == "omniclama" ? "LLAMA BOX" : company.company == "smsapro" ? "SMSA PRO" : company.company.toLocaleUpperCase() }</span>
       </div>
       <div className="flex flex-col items-end min-w-[120px]  gap-4">
         <input
@@ -42,11 +43,11 @@ export default function CarrierCard({ company, selectedCompany, handleCompanySel
   </span>
   ):<span className="text-[9px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full border bg-sky-50 text-sky-500  border-sky-200 font-semibold">شحن الخزائن</span>
 }
-        <span className="text-[#3498db] font-bold  flex text-lg">{firstType?.basePrice ? `${firstType.basePrice}` : '-'}
+        <span className="text-[#3498db] font-bold  flex text-lg">{ company.shippingType.basePrice +  company.shippingType.profitPrice}
           <Image alt="real" src={realBlue} width={20} height={20}/>
         </span>
     </div>
-        {["smsa", "aramex"].includes(company.company) && (
+        {["smsa", "aramex"].includes(company.company) ? (
   <span className="text-[#3498db] text-sm sm:text-lg font-medium flex items-center gap-1">
     توصيل من الباب للباب 
     ( 
@@ -56,8 +57,8 @@ export default function CarrierCard({ company, selectedCompany, handleCompanySel
     </span>
     )
   </span>
-)}      
-        {["redbox", "omniclama"].includes(company.company) && (
+):     
+        (
   <span className="text-[#3498db] text-sm sm:text-lg font-medium flex items-center gap-1">
     توصيل من الباب للباب 
      (

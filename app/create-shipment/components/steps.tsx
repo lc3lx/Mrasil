@@ -25,7 +25,7 @@ import {
   Car,
 } from "lucide-react";
 import ResponseModal from "../../components/ResponseModal";
-import { yupResolver } from '@hookform/resolvers/yup';
+import { yupResolver } from "@hookform/resolvers/yup";
 
 import {
   useCreateShipmentMutation,
@@ -74,7 +74,7 @@ import { RecipientAddressSection } from "./RecipientAddressSection";
 import { ParcelSizeSection } from "./ParcelSizeSection";
 import CarrierCard from "./CarrierCard";
 import { OrderSummaryAndFragileTips } from "./OrderSummaryAndFragileTips";
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams } from "next/navigation";
 import Privace from "./Privace";
 const cities = [
   "الرياض",
@@ -148,7 +148,7 @@ const schema = yup
     total: yup.number().required("الاجمالي مطلوب").typeError("الأجمالي مطلوب"),
     description: yup.string().optional(),
     customerAddress: yup.string().optional(),
-    paymentMethod: yup.string().required("طريقة الدفع مطلوبة")
+    paymentMethod: yup.string().required("طريقة الدفع مطلوبة"),
   })
   .required();
 
@@ -165,46 +165,45 @@ export function CreateShipmentSteps() {
   const [modalMessage, setModalMessage] = useState("");
   const [selectedProvider, setSelectedProvider] = useState(providerOptions[0]);
   const [shipmentType, setShipmentType] = useState("الدفع المسبق");
-  const initialStepParam = searchParams.get('step');
+  const initialStepParam = searchParams.get("step");
   const initialStep = initialStepParam ? parseInt(initialStepParam) : 1;
   const [step, setStep] = useState(initialStep);
 
-const methods = useForm({
-  resolver: yupResolver(schema),
-  defaultValues: {
-    shipper_full_name: "",
-    shipper_mobile: "",
-    shipper_city: "",
-    shipper_address: "",
-    recipient_full_name: "",
-    recipient_mobile: "",
-    recipient_city: "",
-    recipient_address: "",
-    recipient_email: "",
-    recipient_district: "",
-    weight: undefined,
-    Parcels:  1,
-    dimension_high: undefined,
-    dimension_width: undefined,
-    dimension_length: undefined,
-    paymentMethod: "",
-    company: providerOptions[0].label,
-    shipmentType: "",
-    orderDescription: "",
-    total: undefined,
-    description: "",
-    customerAddress: "",
+  const methods = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      shipper_full_name: "",
+      shipper_mobile: "",
+      shipper_city: "",
+      shipper_address: "",
+      recipient_full_name: "",
+      recipient_mobile: "",
+      recipient_city: "",
+      recipient_address: "",
+      recipient_email: "",
+      recipient_district: "",
+      weight: undefined,
+      Parcels: 1,
+      dimension_high: undefined,
+      dimension_width: undefined,
+      dimension_length: undefined,
+      paymentMethod: "",
+      company: providerOptions[0].label,
+      shipmentType: "",
+      orderDescription: "",
+      total: undefined,
+      description: "",
+      customerAddress: "",
+    },
+  });
 
-  },
-});
-
-const {
-  handleSubmit,
-  register,
-  setValue,
-  getValues,
-  formState: { errors },
-} = methods;
+  const {
+    handleSubmit,
+    register,
+    setValue,
+    getValues,
+    formState: { errors },
+  } = methods;
 
   const [createShipment] = useCreateShipmentMutation();
   const { refetch: refetchShipments } = useGetMyShipmentsQuery({});
@@ -413,7 +412,7 @@ const {
                   >
                     <Package className="h-7 w-7" />
                   </div>
-                 
+
                   <span className="mt-3 text-sm font-medium">اختر الناقل</span>
                 </div>
               </div>
@@ -421,7 +420,8 @@ const {
 
             {/* Step Content */}
             {step === 1 && <Step1Content nextStep={nextStep} />}
-            {step === 2 && (<Step2Content nextStep={nextStep} prevStep={prevStep} />
+            {step === 2 && (
+              <Step2Content nextStep={nextStep} prevStep={prevStep} />
             )}
             {step === 3 && (
               <Step3Content
@@ -530,7 +530,6 @@ function Step1Content({ nextStep }: { nextStep: () => void }) {
 function Step2Content({
   nextStep,
   prevStep,
-  
 }: {
   nextStep: () => void;
   prevStep: () => void;
@@ -542,7 +541,7 @@ function Step2Content({
     trigger,
     watch,
   } = useFormContext();
-  const {data : parcelsData, isLoading: isLoadingParcels } =
+  const { data: parcelsData, isLoading: isLoadingParcels } =
     useGetAllParcelsQuery();
   const paymentMethod = watch("paymentMethod");
   const { data: customerMeData } = useGetCustomerMeQuery();
@@ -564,24 +563,25 @@ function Step2Content({
   }, [customerMeData, setValue]);
 
   // On submit, validate as before
-const handleSubmit = async (e: any) => {
-  e.preventDefault();
-  const valid = await trigger([
-    "weight",
-    "Parcels",
-    "dimension_high",
-    "dimension_width",
-    "dimension_length",
-    "orderDescription",
-    "paymentMethod",
-    "total"
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    const valid = await trigger([
+      "weight",
+      "Parcels",
+      "dimension_high",
+      "dimension_width",
+      "dimension_length",
+      "orderDescription",
+      "paymentMethod",
+      "total",
+    ]);
+    console.log("Form valid?", valid);
+    if (valid == true) {
+      nextStep();
+    }
+  };
 
-  ]);
-  console.log("Form valid?", valid);
-  if (valid == true) { nextStep();}
-};
-
-    const [openPrivacyModal, setOpenPrivacyModal] = useState(false)
+  const [openPrivacyModal, setOpenPrivacyModal] = useState(false);
   return (
     <>
       <form onSubmit={handleSubmit} className="space-y-8">
@@ -603,7 +603,6 @@ const handleSubmit = async (e: any) => {
               setValue={setValue}
               errors={errors}
             />
-
           </div>
           {/* Shipment type (right, 1/3) */}
           <div className="w-full md:w-1/3 flex flex-col gap-2">
@@ -621,7 +620,7 @@ const handleSubmit = async (e: any) => {
                   desc: "مناسب للدفع قبل الشحن",
                   sendValue: "Prepaid",
                 },
-                { 
+                {
                   value: "الدفع عند الاستلام",
                   label: "الدفع عند الاستلام",
                   desc: "مناسب للدفع عند استلام الشحنة",
@@ -679,8 +678,10 @@ const handleSubmit = async (e: any) => {
               })}
             </div>
             {errors.paymentMethod && (
-  <p className="text-red-500 text-sm mt-2">{errors.paymentMethod.message}</p>
-)}
+              <p className="text-red-500 text-sm mt-2">
+                {errors.paymentMethod.message}
+              </p>
+            )}
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8 ">
@@ -698,7 +699,6 @@ const handleSubmit = async (e: any) => {
                 type="number"
                 min="0"
                 {...register("weight", { required: "الوزن مطلوب" })}
-                
                 placeholder="أدخل وزن الشحنة"
                 onFocus={() => setWeightFocused(true)}
                 onBlur={() => setWeightFocused(false)}
@@ -706,11 +706,11 @@ const handleSubmit = async (e: any) => {
                 style={weightFocused ? { boxShadow: "0 2px 0 0 #3498db" } : {}}
               />
             </div>
-{errors.weight && typeof errors.weight.message === "string" && (
-  <div className="text-red-500 text-sm mt-1">
-    {errors.weight.message}
-  </div>
-)}
+            {errors.weight && typeof errors.weight.message === "string" && (
+              <div className="text-red-500 text-sm mt-1">
+                {errors.weight.message}
+              </div>
+            )}
           </motion.div>
 
           {/* عدد الصناديق */}
@@ -744,7 +744,6 @@ const handleSubmit = async (e: any) => {
                   {watch("Parcels") || 1}
                 </div>
                 <Button
-               
                   type="button"
                   variant="outline"
                   size="icon"
@@ -758,10 +757,10 @@ const handleSubmit = async (e: any) => {
               </div>
             </div>
             {errors.Parcels && typeof errors.Parcels.message === "string" && (
-  <div className="text-red-500 text-sm mt-1">
-    {errors.Parcels.message}
-  </div>
-)}
+              <div className="text-red-500 text-sm mt-1">
+                {errors.Parcels.message}
+              </div>
+            )}
           </motion.div>
 
           {/* وصف محتويات الشحنة */}
@@ -777,19 +776,19 @@ const handleSubmit = async (e: any) => {
               <textarea
                 placeholder="أدخل وصفاً لمحتويات الشحنة"
                 rows={4}
-                  {...register("orderDescription", { required: "الوصف مطلوب" })}
-
+                {...register("orderDescription", { required: "الوصف مطلوب" })}
                 onFocus={() => setDescFocused(true)}
                 onBlur={() => setDescFocused(false)}
                 className="v7-neu-input text-base min-h-[120px] "
               />
             </div>
 
-              {errors.orderDescription && typeof errors.orderDescription.message === "string" && (
-  <div className="text-red-500 text-sm mt-1">
-    {errors.orderDescription.message}
-  </div>
-)}
+            {errors.orderDescription &&
+              typeof errors.orderDescription.message === "string" && (
+                <div className="text-red-500 text-sm mt-1">
+                  {errors.orderDescription.message}
+                </div>
+              )}
           </motion.div>
         </div>
         {/* الإجمالى والوصف في نفس الصف */}
@@ -806,7 +805,7 @@ const handleSubmit = async (e: any) => {
               <input
                 type="number"
                 min="0"
-                {...register("total", {required:"الحقل مطلوب"})}
+                {...register("total", { required: "الحقل مطلوب" })}
                 placeholder="أدخل الإجمالى"
                 className="v7-neu-input text-base"
               />
@@ -824,7 +823,7 @@ const handleSubmit = async (e: any) => {
         </Label>
         <input
           type="text"
-          {...register("customerAddress", {required:"عنوان العميل مطلوب"})}
+          {...register("customerAddress", { required: "عنوان العميل مطلوب" })}
           className="hidden"
         />
 
@@ -847,8 +846,8 @@ const handleSubmit = async (e: any) => {
             <div className="bg-white/60 rounded-xl px-4 py-3 text-sm text-[#6b7a90] border border-[#e3eaf3] text-right">
               بالمتابعة، أنت توافق على{" "}
               <button
-                       type="button"
-                      onClick={() => setOpenPrivacyModal(true)}
+                type="button"
+                onClick={() => setOpenPrivacyModal(true)}
                 className="text-[#3498db] font-bold underline hover:text-blue-700"
               >
                 شروط الخدمة وسياسة الخصوصية
@@ -905,8 +904,8 @@ const handleSubmit = async (e: any) => {
           </button>
         </div>
       </form>
-      <Privace 
-              isOpen={openPrivacyModal}
+      <Privace
+        isOpen={openPrivacyModal}
         onClose={() => setOpenPrivacyModal(false)}
       />
     </>
@@ -971,73 +970,84 @@ function Step3Content({
     }
   };
 
-  console.log("values" ,companiesData);
-  
-  
+  console.log("values", companiesData);
+
+  const companiesWithTypes = (companiesData || []).flatMap((company) =>
+    company.shippingTypes.map((shippingType) => ({
+      ...company,
+      company:
+        company.company === "smsa" && shippingType.type === "Dry"
+          ? "smsapro"
+          : company.company,
+      shippingType,
+    }))
+  );
+
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
-
       {/* Carrier Cards Second */}
       <div className="space-y-4">
         <div className=" flex items-center gap-2">
           <div className=" v7-neu-icon-sm bg-gradient-to-br from-[#3498db]/80 to-[#3498db]">
             <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="30"
-      height="30"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="lucide lucide-truck h-5 w-5 text-white"
-    >
-      <path d="M5 18H3c-.6 0-1-.4-1-1V7c0-.6.4-1 1-1h10c.6 0 1 .4 1 1v11" />
-      <path d="M14 9h4l4 4v4c0 .6-.4 1-1 1h-2" />
-      <circle cx="7" cy="18" r="2" />
-      <path d="M15 18H9" />
-      <circle cx="17" cy="18" r="2" />
-    </svg>
+              xmlns="http://www.w3.org/2000/svg"
+              width="30"
+              height="30"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="lucide lucide-truck h-5 w-5 text-white"
+            >
+              <path d="M5 18H3c-.6 0-1-.4-1-1V7c0-.6.4-1 1-1h10c.6 0 1 .4 1 1v11" />
+              <path d="M14 9h4l4 4v4c0 .6-.4 1-1 1h-2" />
+              <circle cx="7" cy="18" r="2" />
+              <path d="M15 18H9" />
+              <circle cx="17" cy="18" r="2" />
+            </svg>
           </div>
-        <h2 className="text-2xl font-semibold text-[#1a365d]"> إختر الناقل</h2>
+          <h2 className="text-2xl font-semibold text-[#1a365d]">
+            {" "}
+            إختر الناقل
+          </h2>
         </div>
         <div className="flex flex-col gap-4">
           {isLoadingCompanies ? (
             <div>جاري التحميل...</div>
           ) : (
-            uniqueCompanies
-              ?.map((company) => {
-                const firstType =
-                  company.shippingTypes.find(
-                    (type) => type.type === selectedShipmentType
-                  ) || company.shippingTypes[0];
-                const logoSrc = (function getCompanyLogo(
-                  companyName: string
-                ): string {
-                  const map: Record<string, string> = {
-                    redbox: `/companies/redBox.png`,
-                    smsa: "/companies/smsa.jpg",
-                    omniclama: "/companies/lamaBox.png",
-                    aramex: `/companies/araMex.png`,
-                  };
-                  return (
-                    map[companyName.toLowerCase()] ||
-                    "/carriers/carrier-placeholder.png"
-                  );
-                })(company.company);
-                const isSelected = selectedCompany === company.company;
+            companiesWithTypes.map((company) => {
+              const { shippingType } = company; // صار واضح
+              const logoSrc = (function getCompanyLogo(
+                companyName: string
+              ): string {
+                const map: Record<string, string> = {
+                  redbox: `/companies/redBox.png`,
+                  smsa: "/companies/smsa.jpg",
+                  smsapro: "/companies/smsa.jpg",
+                  omniclama: "/companies/lamaBox.png",
+                  aramex: `/companies/araMex.png`,
+                };
                 return (
-                  <CarrierCard
-                    key={company._id}
-                    company={company}
-                    selectedCompany={selectedCompany}
-                    handleCompanySelect={handleCompanySelect}
-                    logoSrc={logoSrc}
-                    firstType={firstType}
-                  />
+                  map[company.company.toLowerCase()] ||
+                  "/carriers/carrier-placeholder.png"
                 );
-              })
+              })(company.company);
+
+              const isSelected = selectedCompany === company.company;
+
+              return (
+                <CarrierCard
+                  key={company._id + shippingType.type}
+                  company={company}
+                  selectedCompany={selectedCompany}
+                  handleCompanySelect={handleCompanySelect}
+                  logoSrc={logoSrc}
+                  firstType={shippingType} // ✅ ما عاد في داعي للـ find
+                />
+              );
+            })
           )}
         </div>
       </div>

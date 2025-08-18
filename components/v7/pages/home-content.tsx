@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
-import Real from "../../../public/real.png"
+import Real from "../../../public/real.png";
 import {
   Wallet,
   ShoppingBag,
@@ -36,7 +36,7 @@ import { useGetShipmentCompanyInfoQuery } from "@/app/api/shipmentCompanyApi";
 import { FaRoadCircleExclamation } from "react-icons/fa6";
 import { useGetMyTransactionsQuery } from "@/app/api/transicationApi";
 import Image from "next/image";
-import RealBlue from "../../../public/real-blue.png"
+import RealBlue from "../../../public/real-blue.png";
 // Remove RiyalIcon import if not used elsewhere
 // import { RiyalIcon } from '@/components/icons';
 
@@ -220,6 +220,27 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
     return () => clearTimeout(timer);
   }, []);
 
+ console.log("myShipmentsData", shipmentCompanyInfo);
+
+const companiesWithTypes = (shipmentCompanyInfo || []).flatMap((company) =>
+  company.shippingTypes.map((shippingType) => {
+    let displayName = company.name;
+
+    // إذا سمسا وDry خليها سمسا برو
+    if (company.name === "smsa" && shippingType.type === "Dry") {
+      displayName = "smsa Pro"; // أو أي اسم آخر حسب واجهتك
+    }
+
+    return {
+      ...company,
+      companyName: displayName, // استخدم هذا الاسم للعرض
+      shippingType,
+    };
+  })
+);
+
+
+
   // عرض حالة التحميل
   if (isLoading) {
     return (
@@ -231,6 +252,7 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
       </V7Content>
     );
   }
+ 
 
   return (
     <V7Content>
@@ -291,47 +313,42 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
             {
               label: "طلبات اليوم",
 
-              value: ordersLoading ? "..." : (
-              <span className=" flex items-center gap-1">
-                <span>
-
-              {todayOrders.length.toString() }
+              value: ordersLoading ? (
+                "..."
+              ) : (
+                <span className=" flex items-center gap-1">
+                  <span>{todayOrders.length.toString()}</span>
+                  طلب
                 </span>
-              طلب
-              </span>),
+              ),
               type: "طلب",
             },
             {
               label: "جميع الطلبات",
-              value: ordersLoading
-                ? "..."
-                : (
-                   <span className=" flex items-center gap-1">
-                      <span>
-                  {ordersData?.data.length?.toString() ?? "-"}  
-                      </span>
-                      طلب
-                   </span>),
+              value: ordersLoading ? (
+                "..."
+              ) : (
+                <span className=" flex items-center gap-1">
+                  <span>{ordersData?.data.length?.toString() ?? "-"}</span>
+                  طلب
+                </span>
+              ),
               type: "طلب",
             },
             {
               label: "الطلبات المعلقة",
-              value: ordersLoading ? "..." :(
+              value: ordersLoading ? (
+                "..."
+              ) : (
                 <span className=" flex items-center gap-1">
-                  <span>
-
-                {pendingOrdersCount.toString()}
-                  </span>
+                  <span>{pendingOrdersCount.toString()}</span>
                   طلب
-                  </span>
+                </span>
               ),
-            
               type: "طلب",
-              // progress: 85,
             },
           ]}
         />
-
         <V7StatsCard
           title="إحصائيات الشحن"
           icon={CreditCard}
@@ -347,10 +364,10 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
                 <span className="flex items-center justify-end gap-4">
                   <span>
                     {typeof shipmentStats?.totalValue === "number"
-  ? shipmentStats.totalValue.toLocaleString()
-  : typeof shipmentStats?.totalValue === "string"
-    ? shipmentStats.totalValue
-    : "-"} 
+                      ? shipmentStats.totalValue.toLocaleString()
+                      : typeof shipmentStats?.totalValue === "string"
+                      ? shipmentStats.totalValue
+                      : "-"}
                   </span>
                   <Image
                     src={Real}
@@ -358,7 +375,6 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
                     className="w-6 h-6 align-baseline"
                     style={{ display: "inline", verticalAlign: "middle" }}
                   />
-                  
                 </span>
               ),
             },
@@ -371,13 +387,12 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
                 <span className="flex items-center justify-end gap-1">
                   <span>
                     {typeof shipmentStats?.pendingShipments === "number"
-  ? shipmentStats.pendingShipments.toLocaleString()
-  : typeof shipmentStats?.pendingShipments === "string"
-    ? shipmentStats.pendingShipments
-    : "-"}
+                      ? shipmentStats.pendingShipments.toLocaleString()
+                      : typeof shipmentStats?.pendingShipments === "string"
+                      ? shipmentStats.pendingShipments
+                      : "-"}
                   </span>
                   <span>شحنة</span>
-                  {/* <MdOutlinePendingActions className='w-6 h-6 text-yellow-500' /> */}
                 </span>
               ),
             },
@@ -392,8 +407,6 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
                     {shipmentStats?.deliveredShipments?.toLocaleString() ?? "-"}
                   </span>
                   <span>شحنة</span>
-
-                  {/* <RiFolderReceivedFill className='w-6 h-6 text-green-600' /> */}
                 </span>
               ),
             },
@@ -409,14 +422,12 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
                   </span>
                   <span>شحنة</span>
 
-                  {/* <FaRoadCircleExclamation className='w-6 h-6 text-blue-600' /> */}
                 </span>
               ),
             },
           ]}
         />
       </div>
-
       <div
         className="grid gap-6 lg:grid-cols-3 v7-fade-in"
         style={{ transitionDelay: "0.2s" }}
@@ -435,22 +446,16 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
                 <div className="text-center p-4 text-lg">
                   جاري تحميل أسعار الشحن...
                 </div>
-              ) : shipmentCompanyInfo && Array.isArray(shipmentCompanyInfo) ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Show each company only once */}
-                  {Array.from(
-                    new Map(
-                      shipmentCompanyInfo.map((company) => [
-                        company.name?.toLowerCase(),
-                        company,
-                      ])
-                    ).values()
-                  ).map((company, idx) => {
-                    // Map company name to logo file
+              ) : companiesWithTypes && Array.isArray(companiesWithTypes) ? (
+                <div className="  grid  grid-cols-1 md:grid-cols-2 gap-4  w-full">
+                  {companiesWithTypes.map((company, idx) => {
+                      const isLast = idx === companiesWithTypes.length - 1;
                     const name = company.name?.toLowerCase() || "";
                     let imgSrc = "/placeholder-logo.png";
-                    if (name.includes("aramex")) imgSrc = "/companies/araMex.png";
-                    else if (name.includes("smsa")) imgSrc = "/companies/smsa.jpg";
+                    if (name.includes("aramex"))
+                      imgSrc = "/companies/araMex.png";
+                    else if (name.includes("smsa"))
+                      imgSrc = "/companies/smsa.jpg";
                     else if (name.includes("imile"))
                       imgSrc = "/carriers/imile-logo.png";
                     else if (name.includes("fedex"))
@@ -459,49 +464,44 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
                       imgSrc = "/carriers/dhl-logo.png";
                     else if (name.includes("ups"))
                       imgSrc = "/carriers/ups-logo.png";
-                    else if (name.includes("redbox")) imgSrc = "/companies/redBox.png";
+                    else if (name.includes("redbox"))
+                      imgSrc = "/companies/redBox.png";
                     else if (name.includes("omniclama"))
                       imgSrc = "/companies/lamaBox.png";
-                    // Add more mappings as needed
                     return (
                       <div
                         key={company.name + idx}
-                        className="shadow-md rounded-lg p-4 flex flex-col items-center gap-2 bg-white/30"
+                        className={`shadow-md rounded-lg p-4 flex flex-col items-center gap-2 bg-white/30 flex-1
+                          ${ isLast ? "md:col-span-2" : "flex-1"}
+                          `}
                       >
                         <img
                           src={imgSrc}
-                          alt={company.name}
-                          className=" max-h-20 max-w-20 mb-2 object-cover"
+                          alt={company.companyName}
+                          className="max-h-20 max-w-20 mb-2 object-cover"
                         />
                         <div className="font-bold text-[#294D8B] text-xl">
-                          {company.name == "omniclama" ? "LLAMA BOX" : company.name}
-                        </div>
+                          {company.companyName === "omniclama" ? "LLAMA BOX": company.companyName.toLocaleUpperCase()}</div>
                         <div className="w-full">
-                          {company.shippingTypes &&
-                          company.shippingTypes.length > 0 ? (
-                            <ul className="text-sm w-full">
-                              {company.shippingTypes.map(
-                                (
-                                  type: { type: string; price: number },
-                                  i: number
-                                ) => (
-                                  <li
-                                    key={type.type + i  }
-                                    className="flex flex-col items-center border-b last:border-b-0 text-lg"
-                                  >
-
-                                    <span className="font-bold text-[#3498db] flex items-center">
-                                      {type.price} <Image alt="real" src={RealBlue} width={30} height={30}/>
-                                    </span>
-                                  </li>
-                                )
-                              )}
+                         
+                        
+                            <ul className="text-sm w-full text-center flex items-center justify-center flex-col">
+                                <li
+                                  key={company.type}
+                                  className=" text-center border-b last:border-b-0 text-lg"
+                                >
+                                  <span className="font-bold text-[#3498db] flex items-center">
+                                    {company.shippingType.price}
+                                    <Image
+                                      alt="real"
+                                      src={RealBlue}
+                                      width={30}
+                                      height={30}
+                                    />
+                                  </span>
+                                </li>
                             </ul>
-                          ) : (
-                            <div className="text-gray-400 text-base">
-                              لا توجد أنواع شحن متاحة
-                            </div>
-                          )}
+                      
                         </div>
                       </div>
                     );
@@ -513,13 +513,13 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
                 </div>
               )}
               <div className="mt-4 text-xs text-gray-500 text-center">
-                  الأسعار تشمل  قيمة الضريبة المضافة   
+                الأسعار تشمل قيمة الضريبة المضافة
               </div>
             </CardContent>
           </Card>
         </div>
 
-        <Card className="v7-neu-card overflow-hidden border-none">
+        <Card className="v7-neu-card overflow-hidden border-none h-fit">
           <CardHeader>
             <CardTitle className="text-lg font-bold text-[#294D8B]">
               الإحصائيات
@@ -599,13 +599,15 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
                 </span>
               </div>
             </div>
-          </CardContent> 
+          </CardContent>
         </Card>
       </div>
 
       <div className="v7-fade-in  " style={{ transitionDelay: "0.3s" }}>
         <div className="flex items-center mt-24 mb-10">
-          <h2 className="sm:text-3xl text-2xl font-bold text-[#3498db] ms-4">آخر الشحنات</h2>
+          <h2 className="sm:text-3xl text-2xl font-bold text-[#3498db] ms-4">
+            آخر الشحنات
+          </h2>
         </div>
 
         <div className="grid gap-4">

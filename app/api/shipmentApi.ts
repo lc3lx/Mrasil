@@ -36,7 +36,6 @@ export interface Shipment {
   shapmentingType: string;
   shapmentCompany: string;
   shapmentType: string;
- 
   orderSou: string;
   totalprice: number;
   createdAt: string;
