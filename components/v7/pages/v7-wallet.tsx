@@ -1,6 +1,6 @@
 "use client";
 
-"use client";
+
 
 import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
@@ -149,9 +149,13 @@ export default function V7Wallet({
 
     try {
       // Call your backend to prepare payment and get the amount in halalas
-      const response = await fetch('/api/wallet/prepare-payment', {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+      const response = await fetch('https://www.marasil.site/api/wallet/rechargeWallet', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token.replace(/^Bearer\s+/i, '')}` } : {})
+        },
         body: JSON.stringify({ amount: paymentAmount })
       });
 
@@ -220,6 +224,7 @@ export default function V7Wallet({
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  console.log('handleSubmit called. paymentMethod:', paymentMethod, 'transferImage:', transferImage, 'paymentAmount:', paymentAmount);
     e.preventDefault();
     
     if (paymentMethod === 'card') {
@@ -238,7 +243,7 @@ export default function V7Wallet({
         const formData = new FormData();
         formData.append('amount', paymentAmount.toString());
         if (transferImage) {
-          formData.append('transferImage', transferImage);
+          formData.append('bankreceipt', transferImage);
         }
         
         const response = await rechargeByBank(formData).unwrap();
@@ -251,6 +256,7 @@ export default function V7Wallet({
         
         onClose();
       } catch (err: any) {
+        console.log('Bank transfer error details:', err);
         console.error('Bank transfer error:', err);
         setError(err.data?.message || 'حدث خطأ أثناء إرسال طلبك');
       } finally {
