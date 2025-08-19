@@ -17,11 +17,6 @@ interface GetMyWalletResponse {
 
 export interface RechargeWalletRequest {
   amount: number;
-  name: string;
-  number: string;
-  cvc: string;
-  month: string;
-  year: string;
 }
 
 export interface RechargeWalletResponse {
@@ -58,18 +53,13 @@ export const walletApi = createApi({
         credentials: 'include',
       }),
     }),
-    rechargeWalletByBank: builder.mutation<any, { amount: number | string; bankreceipt: File }>({
-      query: ({ amount, bankreceipt }) => {
-        const formData = new FormData();
-        formData.append('amount', amount.toString());
-        formData.append('bankreceipt', bankreceipt);
-        return {
-          url: '/wallet/rechargeWalletbyBank',
-          method: 'POST',
-          body: formData,
-          credentials: 'include',
-        };
-      },
+    rechargeWalletByBank: builder.mutation<any, FormData>({
+      query: (formData) => ({
+        url: '/wallet/rechargeWalletbyBank',
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
+      }),
     }),
     getPaymentStatus: builder.query<GetPaymentStatusResponse, string>({
       query: (id) => ({
