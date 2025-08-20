@@ -1,6 +1,6 @@
 "use client";
 
-
+"use client";
 
 import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
@@ -116,7 +116,7 @@ export default function V7Wallet({
   // Load Moyasar script when component mounts
   useEffect(() => {
     const script = document.createElement('script');
-    script.src = 'https://cdn.moyasar.com/mpf/1.13.0/moyasar.js';
+    script.src = 'https://unpkg.com/moyasar-payment-form@2.0.16/dist/moyasar.umd.js';
     script.async = true;
     script.onload = () => {
       setIsMoyasarReady(true);
@@ -632,15 +632,6 @@ export default function V7Wallet({
               </div>
             )}
             
-            {/* Payment form container */}
-            <div className="mt-6 w-full">
-              <div ref={moyasarFormRef} id="moyasar-payment-form" className="w-full">
-                {/* Moyasar form will be injected here */}
-              </div>
-              <p className="mt-2 text-xs text-gray-500 text-right">
-                مدعوم بواسطة ميسر للدفع الإلكتروني
-              </p>
-            </div>
           </form>
         </DialogContent>
       </Dialog>
