@@ -8,37 +8,21 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
-import {
-  User,
-  Settings,
-  Shield,
-  Package,
-  History,
-  Save,
-  Camera,
-  Briefcase,
-  Upload,
-  MapPin,
-  Map,
-  Building,
-  MailOpen,
-  Info,
-} from "lucide-react"
+import {User,Settings,Shield,Package,History,Save,Camera,Briefcase,Upload,MapPin,Map, Building,MailOpen, Info,} from "lucide-react"
 import { useGetProfileQuery } from "@/app/api/profileApi"
 import ChangePasswordForm from "./ChangePasswordForm"
 import { useGetCustomerMeQuery, useUpdateCustomerMeMutation } from '../api/customerApi'
 import { useState, useEffect } from 'react'
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogAction } from '@/components/ui/alert-dialog'
 import { useGetShipmentStatsQuery } from "@/app/api/homePageApi"
-
+import ProfileUpLoad from "../parcels/components/ProfileUpLoad"
 
 export default function ProfilePage() {
   const { data: profileData, isLoading } = useGetProfileQuery()
   const { data: customerData, isLoading: isCustomerLoading } = useGetCustomerMeQuery()
   const [updateCustomerMe, { isLoading: isUpdating, error: updateError, data: updateData }] = useUpdateCustomerMeMutation()
   const { data: shipmentStats } = useGetShipmentStatsQuery();
-
-  // For company info
+  const [image, setImage]= useState<string | null>(null);
   const [brandColor, setBrandColor] = useState(customerData?.data.brand_color || '')
   const [brandLogo, setBrandLogo] = useState<File | null>(null)
   const [companyNameAr, setCompanyNameAr] = useState(customerData?.data.company_name_ar || '')
@@ -48,11 +32,9 @@ export default function ProfilePage() {
   const [taxNumber, setTaxNumber] = useState(customerData?.data.tax_number || '')
   const [commercialRegistrationNumber, setCommercialRegistrationNumber] = useState(customerData?.data.commercial_registration_number || '')
   const [brandWebsite, setBrandWebsite] = useState(customerData?.data.brand_website || '')
-
   const [alertOpen, setAlertOpen] = useState(false)
   const [alertMsg, setAlertMsg] = useState<string | null>(null)
   const [alertStatus, setAlertStatus] = useState<'success' | 'error'>('success')
-
   useEffect(() => {
     if (customerData) {
       setBrandColor(customerData.data.brand_color || '')
@@ -65,13 +47,11 @@ export default function ProfilePage() {
       setBrandWebsite(customerData.data.brand_website || '')
     }
   }, [customerData])
-
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setBrandLogo(e.target.files[0])
     }
   }
-
   const handleCompanySubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     const formData = new FormData()
@@ -95,11 +75,28 @@ export default function ProfilePage() {
       setAlertOpen(true)
     }
   }
-
   // Function to get the year from createdAt
   const getMemberSince = (createdAt: string) => {
     return new Date(createdAt).getFullYear()
   }
+
+const handelImageUpload = async (file: File) => {
+  try {
+    const formData = new FormData();
+    formData.append('brand_logo', file); 
+
+    const res = await updateCustomerMe(formData).unwrap();
+    setAlertMsg(res?.message || 'تم رفع الشعار بنجاح');
+    setAlertStatus('success');
+    setAlertOpen(true);
+  } catch (err: any) {
+    setAlertMsg(err?.data?.message || 'فشل رفع الشعار');
+    setAlertStatus('error');
+    setAlertOpen(true);
+  }
+};
+
+
 
   if (isLoading) {
     return (
@@ -108,7 +105,6 @@ export default function ProfilePage() {
       </div>
     )
   }
-
   return (
     <V7Layout>
       <V7Content title="الملف الشخصي" description="إدارة معلوماتك الشخصية وإعدادات الحساب">
@@ -116,15 +112,8 @@ export default function ProfilePage() {
           {/* بطاقة معلومات المستخدم */}
           <div className="md:col-span-1 space-y-6">
             <div className="v7-neu-card p-6 text-center space-y-4">
-              <div className="relative mx-auto w-32 h-32 mb-4">
-                <div className="v7-neu-avatar w-32 h-32 mx-auto overflow-hidden flex items-center justify-center">
-                  <img src="/abstract-user-icon.png" alt="صورة الملف الشخصي" className="w-full h-full object-cover" />
-                </div>
-                <button className="absolute bottom-0 right-0 v7-neu-button-sm p-2 rounded-full">
-                  <Camera className="h-4 w-4 text-[#3498db]" />
-                </button>
-              </div>
 
+<ProfileUpLoad onFileSelect={handelImageUpload} initialImage={customerData?.data.brand_logo || "/homePageImages/user.jpg"} />
               <h2 className="text-xl font-bold">{profileData?.data.firstName} {profileData?.data.lastName}</h2>
 
               <div className="flex justify-center gap-2">
@@ -133,20 +122,6 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              <div className="pt-4 grid grid-cols-3 gap-2 text-center">
-                <div>
-                  <div className="text-lg font-bold text-[#3498db]">{shipmentStats?.deliveredShipments ?? 0}</div>
-                  <div className="text-xs text-gry">شحنة</div>
-                </div>
-                <div>
-                  <div className="text-lg font-bold text-[#3498db]">12</div>
-                  <div className="text-xs text-gry">دولة</div>
-                </div>
-                <div>
-                  <div className="text-lg font-bold text-[#3498db]">{shipmentStats?.totalShipments ? `${Math.round((shipmentStats.pendingShipments / shipmentStats.totalShipments) * 100)}%` : '0%'}</div>
-                  <div className="text-xs text-gry">تقييم</div>
-                </div>
-              </div>
             </div>
 
             <div className="v7-neu-card p-6 space-y-4">
@@ -198,7 +173,7 @@ export default function ProfilePage() {
           <div className="md:col-span-2">
             <Tabs defaultValue="preferences" className="v7-neu-card p-6">
               <TabsList className="v7-neu-tabs mb-6">
-                <TabsTrigger value="preferences" className="v7-neu-tab">
+                <TabsTrigger value="" className="v7-neu-tab">
                   <Settings className="h-4 w-4 ml-2" />
                   التفضيلات
                 </TabsTrigger>
@@ -460,13 +435,13 @@ export default function ProfilePage() {
                     <h3 className="text-md font-bold mb-4">الإشعارات</h3>
 
                     <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium">إشعارات البريد الإلكتروني</p>
-                          <p className="text-sm text-gry">استلام تحديثات الشحنات عبر البريد الإلكتروني</p>
-                        </div>
-                        <Switch id="email-notifications" defaultChecked />
-                      </div>
+                     <div className="flex items-center justify-between" style={{ minWidth: '200px' }}>
+  <div>
+    <p className="font-medium">إشعارات البريد الإلكتروني</p>
+    <p className="text-sm text-gry">استلام تحديثات الشحنات عبر البريد الإلكتروني</p>
+  </div>
+  <Switch id="email-notifications" defaultChecked style={{ flexShrink: 0 }}  />
+</div>
 
                       <div className="flex items-center justify-between">
                         <div>
@@ -515,7 +490,7 @@ export default function ProfilePage() {
                   </div>
 
                   <div className="flex justify-end">
-                    <Button className="v7-neu-button-accent">
+                    <Button className="v7-neu-button-accent" type="submit">
                       <Save className="h-4 w-4 ml-2" />
                       حفظ التغييرات
                     </Button>

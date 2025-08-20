@@ -226,7 +226,7 @@ export function RecipientAddressSection({
             <circle cx="12" cy="7" r="4" />
           </svg>
         </div>
-        <h2 className="text-3xl font-semibold text-[#1a365d]">
+        <h2 className="text-2xl font-semibold text-[#1a365d]">
           بيانات المستلم
         </h2>
       </div>

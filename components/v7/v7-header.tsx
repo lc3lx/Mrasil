@@ -63,10 +63,8 @@ export function V7Header({
   const router = useRouter();
 
   // Fetch notifications and unread count from API
-  const { data: notificationsData, isLoading: notificationsLoading } =
-    useGetMyNotificationsQuery();
-  const { data: unreadCountData, isLoading: unreadCountLoading } =
-    useGetUnreadNotificationsCountQuery();
+  const { data: notificationsData, isLoading: notificationsLoading } = useGetMyNotificationsQuery();
+  const { data: unreadCountData, isLoading: unreadCountLoading } = useGetUnreadNotificationsCountQuery();
   const [markNotificationAsRead] = useMarkNotificationAsReadMutation();
 
   const { data: profileData, isLoading: profileLoading } = useGetProfileQuery();
@@ -132,7 +130,8 @@ export function V7Header({
       localStorage.setItem("v7-lang", language);
     }
   }, [currentTheme, mounted, language]);
-
+  console.log("notificationsData",notificationsData);
+  
   // إذا لم يتم تحميل المكون بعد، عرض نسخة بسيطة لتجنب مشكلة عدم تطابق الخادم والعميل
   if (!mounted) {
     return (

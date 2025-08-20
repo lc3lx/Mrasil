@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useFormContext } from "react-hook-form";
 
 export function OrderSummaryAndFragileTips({ values }: { values: any }) {
-  console.log(values);
+  console.log("data",values);
 
   const { watch } = useFormContext();
   const length = watch("dimension_length") || 0;
@@ -271,7 +271,7 @@ export function OrderSummaryAndFragileTips({ values }: { values: any }) {
             <div className="flex justify-between items-center  py-3 border-b border-[#3498db]/10">
               <span className="text-[#6d6a67] font-medium">خدمة التوصيل</span>
               <span className="font-medium text-[#1a365d]">
-                {values.company == "omniclama" ? "LLAMA BOX" : values.company == "smsapro" ? "SMSA PRO" : values.company.toLocaleUpperCase()  || "غير محدد"}
+                {values.company == "omniclama" ? "LLAMA BOX" : values.company == "smsapro" ? "SMSA PRO" : values.company == "aramexpro" ? "ARAMEX PRO" : values.company.toLocaleUpperCase()  || "غير محدد"}
               </span>
             </div>
             <div className="flex justify-between items-center  py-4 text-xl font-bold">

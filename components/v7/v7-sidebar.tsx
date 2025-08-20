@@ -86,7 +86,7 @@ type TranslationType = {
     history: string;
     payments: string;
     team: string;
-    salary: string;
+
     settings: string;
   };
 };
@@ -126,7 +126,7 @@ const translations: Translations = {
       payments: "المحفظة",
 
       team: "الفريق",
-      salary: "الرواتب",
+
       settings: "الإعدادات",
     },
   },
@@ -159,7 +159,6 @@ const translations: Translations = {
       history: "Shipment History",
       payments: "Wallet",
       team: "Team",
-      salary: "Salaries",
       settings: "Settings",
     },
   },
@@ -366,12 +365,6 @@ export function V7Sidebar({ open, onClose, them,onThemeToggle, onMenuClick  }: S
         active: isActiveRoute(currentPath, routes.team),
       },
       {
-        title: currentTranslations.navItems.salary,
-        href: routes.salary,
-        icon: BarChart3,
-        active: isActiveRoute(currentPath, routes.salary),
-      },
-      {
         title: currentTranslations.navItems.settings,
         href: routes.settings,
         icon: Settings,
@@ -460,7 +453,7 @@ const [openTheme, setOpenTheme] = useState(false);
       >
         <ScrollArea className="h-[calc(100vh-4rem)] ">
           <div className="flex h-full flex-col gap-2 p-4 sm:p-5">
-            <div className="mb-3 px-3 text-base font-bold text-[#5791F4] uppercase tracking-wider">
+            <div className="mb-3 px-3 text-base font-bold text-[#5791F4] uppercase tracking-wider" dir="rtl">
               {currentTranslations.mainMenu}
             </div>
 
@@ -498,7 +491,7 @@ const [openTheme, setOpenTheme] = useState(false);
             </div>
 
             {/* قسم الشحنات والطرود */}
-            <div className="mb-2 px-3 text-base font-medium text-muted-foreground">
+            <div className="mb-2 px-3 text-base font-medium text-[#5791F4]" dir="rtl">
               {currentTranslations.shipmentsAndParcels}
             </div>
             <div className="space-y-1.5 mb-4">
@@ -535,7 +528,7 @@ const [openTheme, setOpenTheme] = useState(false);
             </div>
 
             {/* قسم التكامل والواجهات البرمجية */}
-            <div className="mb-2 px-3 text-base font-medium text-muted-foreground">
+            <div className="mb-2 px-3 text-base font-medium text-[#5791F4]" dir="rtl">
               {currentTranslations.storeIntegration}
             </div>
             <div className="space-y-1.5 mb-4">
@@ -572,7 +565,7 @@ const [openTheme, setOpenTheme] = useState(false);
             </div>
 
             {/* قسم التتبع والمواقع */}
-            <div className="mb-2 px-3 text-base font-medium text-muted-foreground">
+            <div className="mb-2 px-3 text-base font-medium text-[#5791F4]" dir="rtl">
               {currentTranslations.trackingAndLocations}
             </div>
             <div className="space-y-1.5 mb-4">
@@ -609,7 +602,7 @@ const [openTheme, setOpenTheme] = useState(false);
             </div>
 
             {/* قسم المالية والفواتير */}
-            <div className="mb-2 px-3 text-base font-medium text-muted-foreground">
+            <div className="mb-2 px-3 text-base font-medium text-[#5791F4]" dir="rtl">
               {currentTranslations.financeAndBilling}
             </div>
             <div className="space-y-1.5 mb-4">
@@ -646,7 +639,7 @@ const [openTheme, setOpenTheme] = useState(false);
             </div>
 
             {/* قسم إدارة الحساب */}
-            <div className="mb-3 px-3 text-base font-bold text-[#5791F4] uppercase tracking-wider">
+            <div className="mb-3 px-3 text-base font-bold  uppercase tracking-wider text-[#5791F4]" dir="rtl">
               {currentTranslations.accountManagement}
             </div>
             <div className="space-y-1.5">

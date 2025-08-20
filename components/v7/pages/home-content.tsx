@@ -220,7 +220,7 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
     return () => clearTimeout(timer);
   }, []);
 
-  console.log("myShipmentsData", shipmentCompanyInfo);
+
 
   const companiesWithTypes = (shipmentCompanyInfo || []).flatMap((company) =>
     company.shippingTypes.map((shippingType) => {
@@ -238,6 +238,15 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
       };
     })
   );
+const priorityOrder = ["smsa Pro" ,  "aramex", "smsa" , "redbox",  "omniclama"];
+
+const sortedCompanies = companiesWithTypes.sort((a, b) => {
+  const aIndex = priorityOrder.indexOf(a.companyName);
+  const bIndex = priorityOrder.indexOf(b.companyName);
+
+  return (aIndex === -1 ? Infinity : aIndex) - (bIndex === -1 ? Infinity : bIndex);
+});
+
 
   // عرض حالة التحميل
   if (isLoading) {
@@ -444,7 +453,7 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
                 </div>
               ) : companiesWithTypes && Array.isArray(companiesWithTypes) ? (
                 <div className="  grid  grid-cols-1 md:grid-cols-2 gap-4  w-full">
-                  {companiesWithTypes.map((company, idx) => {
+                  {sortedCompanies.map((company, idx) => {
                     const isLast = idx === companiesWithTypes.length - 1;
                     const name = company.name?.toLowerCase() || "";
                     let imgSrc = "/placeholder-logo.png";
@@ -478,7 +487,7 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
                         />
                         <div className="font-bold text-[#294D8B] text-xl">
                           {company.companyName === "omniclama"
-                            ? "LLAMA BOX"
+                            ? "LLAMA BOX" : company.companyName === "redbox" ? "RED BOX" : company.companyName == "aramex" ? "ARAMEX PRO"
                             : company.companyName.toLocaleUpperCase()}
                         </div>
                         <div className="w-full">

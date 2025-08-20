@@ -68,6 +68,7 @@ export const customerApi = createApi({
         method: 'PUT',
         body: formData,
         credentials: 'include',
+        
       }),
       invalidatesTags: ['Customer'],
     }),

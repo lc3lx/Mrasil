@@ -320,7 +320,7 @@ export function CreateShipmentSteps() {
               <div className="v7-neu-icon bg-gradient-to-br from-[#3498db]/80 to-[#3498db]">
                 <Package className="h-5 w-5 text-white" />
               </div>
-              <h1 className="text-3xl font-bold text-[#1a365d]">
+              <h1 className="text-2xl font-bold text-[#1a365d]">
                 إنشاء شحنة جديدة
               </h1>
             </div>
@@ -941,6 +941,8 @@ function Step3Content({
     { label: "الشحن السريع", value: "Express" },
     { label: "الشحن البارد", value: "Cold" },
   ];
+  const priorityOrder = ["smsapro", "aramexpro", "smsa", "omniclama", "redbox"];
+
   const [selectedShipmentType, setSelectedShipmentType] = useState("Dry");
   const selectedCompany = watch("company");
   useEffect(() => {
@@ -978,10 +980,16 @@ function Step3Content({
       company:
         company.company === "smsa" && shippingType.type === "Dry"
           ? "smsapro"
-          : company.company,
+          : company.company === "aramex" ? "aramexpro":
+           company.company,
       shippingType,
     }))
   );
+  const sortedCompanies = companiesWithTypes.sort((a, b) => {
+  const aIndex = priorityOrder.indexOf(a.company);
+  const bIndex = priorityOrder.indexOf(b.company);
+  return (aIndex === -1 ? Infinity : aIndex) - (bIndex === -1 ? Infinity : bIndex);
+});
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
@@ -1009,7 +1017,6 @@ function Step3Content({
             </svg>
           </div>
           <h2 className="text-2xl font-semibold text-[#1a365d]">
-            {" "}
             إختر الناقل
           </h2>
         </div>
@@ -1017,7 +1024,7 @@ function Step3Content({
           {isLoadingCompanies ? (
             <div>جاري التحميل...</div>
           ) : (
-            companiesWithTypes.map((company) => {
+            sortedCompanies.map((company) => {
               const { shippingType } = company; // صار واضح
               const logoSrc = (function getCompanyLogo(
                 companyName: string
@@ -1027,7 +1034,7 @@ function Step3Content({
                   smsa: "/companies/smsa.jpg",
                   smsapro: "/companies/smsa.jpg",
                   omniclama: "/companies/lamaBox.png",
-                  aramex: `/companies/araMex.png`,
+                  aramexpro: `/companies/araMex.png`,
                 };
                 return (
                   map[company.company.toLowerCase()] ||

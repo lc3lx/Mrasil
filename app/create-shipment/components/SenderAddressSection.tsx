@@ -161,7 +161,7 @@ console.log(displayedSenderCards);
             <circle cx="12" cy="7" r="4" />
           </svg>
         </div>
-        <h3 className="text-3xl font-bold text-gray-800"> بيانات المرسل</h3>
+        <h3 className="text-2xl font-bold text-gray-800"> بيانات المرسل</h3>
       </div>
       <div className="flex  flex-col sm:flex-row  gap-3 mb-4">
         
