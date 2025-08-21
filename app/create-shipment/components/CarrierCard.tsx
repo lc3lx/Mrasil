@@ -2,9 +2,16 @@ import { Check, Plus, X } from "lucide-react";
 import Image from "next/image";
 import React from "react";
 import realBlue from "../../../public/real-blue.png"
-export default function CarrierCard({ company, selectedCompany, handleCompanySelect, logoSrc, firstType , displayName}: any) {
-  const isSelected = selectedCompany === company.company;
-    const price =  company.shippingType.basePrice +  company.shippingType.profitPrice 
+export default function CarrierCard({ company, selectedCompany, handleCompanySelect, logoSrc, firstType , values}: any) {
+const isSelected =
+  selectedCompany === company.company &&
+  values.shipmentType === company.shippingType.type;
+const price = (company?.shippingType?.basePrice || 0) + (company?.shippingType?.profitPrice || 0);
+const displayName =
+  company.company === "omniclama" ? "LLAMA BOX" :
+  company.company === "smsa" ? (company.shippingType.type === "Dry" ? "SMSA PRO" : "SMSA") :
+  company.company === "aramex" ? "ARAMEX PRO" :
+  company.company.toUpperCase();
   return (
     <div
       className={`flex items-center justify-between v7-neu-card-inner px-6   py-4 transition-all duration-300 relative overflow-hidden w-full
@@ -19,9 +26,9 @@ export default function CarrierCard({ company, selectedCompany, handleCompanySel
     >
       <div className="flex flex-col sm:flex-row items-center justify-center sm:gap-6  gap-0  ">
         <div className="  rounded-lg   overflow-hidden">
-          <Image sizes="20" width={20} height={20} src={logoSrc} alt={company.company} className="object-contain w-[5rem] sm:min-w-[7rem]  sm:min-h-[10rem]" onError={e => { e.currentTarget.src = '/carriers/carrier-placeholder.png'; }} />
+          <Image sizes="20px" width={20} height={20} src={logoSrc} alt={company.company} className="object-contain w-[5rem] sm:min-w-[7rem]  sm:min-h-[10rem]" onError={e => { e.currentTarget.src = '/carriers/carrier-placeholder.png'; }} />
         </div>
-        <span className="text-[#3498db] font-bold text-xl whitespace-nowrap">{company.company == "omniclama" ? "LLAMA BOX" : company.company == "smsapro" ? "SMSA PRO" : company.company == "aramex" ? "ARAMEX PRO" : company.company.toLocaleUpperCase() }</span>
+        <span className="text-[#3498db] font-bold text-xl whitespace-nowrap">  {displayName}</span>
       </div>
       <div className="flex flex-col items-end min-w-[120px]  gap-4">
         <input

@@ -944,13 +944,9 @@ function Step3Content({
   const priorityOrder = ["smsapro", "aramex", "smsa", "omniclama", "redbox"];
 
   const [selectedShipmentType, setSelectedShipmentType] = useState("Dry");
+  
   const selectedCompany = watch("company");
-  useEffect(() => {
-    if (!values.shipmentType) {
-      setValue("shipmentType", "Dry");
-      setSelectedShipmentType("Dry");
-    }
-  }, []);
+
   const handleShipmentTypeTab = (type: string) => {
     setSelectedShipmentType(type);
     setValue("shipmentType", type);
@@ -968,36 +964,29 @@ function Step3Content({
       setIsSubmitting(false);
     }
   };
-
 const companiesWithTypes = (companiesData || []).flatMap(company => {
-  const types = Array.isArray(company?.shippingTypes) && company.shippingTypes.length > 0
-    ? company.shippingTypes
-    : [{ type: "Dry" }]; 
-
-  return types.map((shippingType) => ({
+  if (!company.shippingTypes || company.shippingTypes.length === 0) return [];
+  return company.shippingTypes.map(shippingType => ({
     ...company,
-    company:
-      company?.company === "smsa" && shippingType.type === "Dry"
-        ? "smsapro"
-        : company?.company,
-    shippingType,
+    shippingType, 
   }));
 });
 
-console.log("values", values);
 
 
-  const sortedCompanies = companiesWithTypes.sort((a, b) => {
-  const aIndex = priorityOrder.indexOf(a.company);
-  const bIndex = priorityOrder.indexOf(b.company);
-  return (aIndex === -1 ? Infinity : aIndex) - (bIndex === -1 ? Infinity : bIndex);
-});
-const handleCompanySelect = async (company: string) => {
- setValue("company", company);
 
+const companyData = companiesData?.find(c => c.company === selectedCompany);
+const validTypes = companyData?.shippingTypes?.map(t => t.type) || [];
+const shipmentTypeToUse = validTypes.includes(values.shipmentType)
+  ? values.shipmentType
+  : validTypes[0];
+  
+const handleCompanySelect = async (company: string, shippingType:string) => {
+  setValue("company", company);          
+  setValue("shipmentType", shippingType);
 const payload = {
-  company: company,
-  shapmentingType: values.shipmentType || "Dry",
+  company: selectedCompany,
+  shapmentingType: shipmentTypeToUse,
   order: {
     customer: {
       full_name: values.recipient_full_name || "",
@@ -1025,7 +1014,8 @@ const payload = {
     console.error("Error fetching price:", err.data?.message || err.message);
   }
 };
-
+  
+console.log("values", data?.data);
 
 
   return (
@@ -1060,7 +1050,7 @@ const payload = {
           {isLoadingCompanies ? (
             <div>جاري التحميل...</div>
           ) : (
-            sortedCompanies.map((company) => {
+            companiesWithTypes?.map((company) => {
               const { shippingType } = company; 
               const logoSrc = (function getCompanyLogo(
                 companyName: string
@@ -1082,12 +1072,15 @@ const payload = {
 
               return (
 <CarrierCard
-  key={company._id + shippingType.type}
-  company={company}
-  selectedCompany={selectedCompany}
-  handleCompanySelect={handleCompanySelect}
-  logoSrc={logoSrc}
-  firstType={shippingType}
+      key={company.shippingType._id +  company.shippingType.type}
+      company={company}
+      selectedCompany={selectedCompany}
+  handleCompanySelect={() =>
+    handleCompanySelect(company.company, company.shippingType.type)
+  }
+  values={values}
+      logoSrc={logoSrc}
+      firstType={company?.shippingType} 
 />
               );
             })
@@ -1095,7 +1088,7 @@ const payload = {
         </div>
       </div>
 
-      <OrderSummaryAndFragileTips values={values} />
+      <OrderSummaryAndFragileTips values={values} data={data?.data} />
 
       <div className="flex justify-between mt-8">
         <Button

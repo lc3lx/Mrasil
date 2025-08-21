@@ -75,7 +75,7 @@ export default function V7Wallet({
   const [cardYear, setCardYear] = useState("");
   const [select, setSelect] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState("");
+  // const [error, setError] = useState("");
   const [selectedAmount, setSelectedAmount] = useState<string | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'bank' | null>(null);
   const [paymentAmount, setPaymentAmount] = useState<number>(100);
@@ -146,45 +146,47 @@ const preparePayment = async () => {
     moyasarFormRef.current.innerHTML = '';
 
     // إعداد config واحد فقط
-    const config = {
-      element: moyasarFormRef.current,
-      amount: data.amountInHalalas,
-      currency: 'SAR',
-      description: `شحن المحفظة (رصيدك بعد الخصم ${data.netAmount} ريال)`,
-      publishable_api_key: 'pk_live_3p2q5Kj7WiDPJZ2kYRSNc16SFQ47C6hfAvkKLkCc',
-      callback_url: `${window.location.origin}/payment/success`,
-      methods: ['creditcard', 'mada'],
-      on_completed: async (payment: any) => {
-        toast({
-          title: "تمت العملية بنجاح",
-          description: `تم شحن رصيدك بنجاح بمبلغ ${paymentAmount} ريال`,
-          variant: "default",
-        });
-        onClose();
-        window.location.href = `${window.location.origin}/payment/success?amount=${paymentAmount}`;
-        return Promise.resolve();
-      },
-      on_failed: async (error: any) => {
-        setError('فشلت عملية الدفع. الرجاء التحقق من البيانات والمحاولة مرة أخرى');
-        console.error('Payment failed:', error);
-        return Promise.resolve();
-      },
-      style: {
-        base: {
-          color: '#32325d',
-          fontFamily: 'Arial, sans-serif',
-          fontSmoothing: 'antialiased',
-          fontSize: '16px',
-          '::placeholder': {
-            color: '#aab7c4'
-          }
-        },
-        invalid: {
-          color: '#fa755a',
-          iconColor: '#fa755a'
-        }
-      }
-    };
+    // const config = {
+    //   element: moyasarFormRef.current,
+    //   amount: data.amountInHalalas,
+    //   currency: 'SAR',
+    //   description: `شحن المحفظة (رصيدك بعد الخصم ${data.netAmount} ريال)`,
+    //   // publishable_api_key: 'pk_live_3p2q5Kj7WiDPJZ2kYRSNc16SFQ47C6hfAvkKLkCc',
+    //   publishable_api_key: "pk_test_XXXXXXX",
+
+    //   callback_url: `${window.location.origin}/payment/success`,
+    //   methods: ['creditcard', 'mada'],
+    //   on_completed: async (payment: any) => {
+    //     toast({
+    //       title: "تمت العملية بنجاح",
+    //       description: `تم شحن رصيدك بنجاح بمبلغ ${paymentAmount} ريال`,
+    //       variant: "default",
+    //     });
+    //     onClose();
+    //     window.location.href = `${window.location.origin}/payment/success?amount=${paymentAmount}`;
+    //     return Promise.resolve();
+    //   },
+    //   on_failed: async (error: any) => {
+    //     setError('فشلت عملية الدفع. الرجاء التحقق من البيانات والمحاولة مرة أخرى');
+    //     console.error('Payment failed:', error);
+    //     return Promise.resolve();
+    //   },
+    //   style: {
+    //     base: {
+    //       color: '#32325d',
+    //       fontFamily: 'Arial, sans-serif',
+    //       fontSmoothing: 'antialiased',
+    //       fontSize: '16px',
+    //       '::placeholder': {
+    //         color: '#aab7c4'
+    //       }
+    //     },
+    //     invalid: {
+    //       color: '#fa755a',
+    //       iconColor: '#fa755a'
+    //     }
+    //   }
+    // };
 
     window.Moyasar.init(config);
 
@@ -270,12 +272,73 @@ const handleAmountClick = async (amount: string) => {
       setCardNumber(formatted);
     }
   };
+
+// NEW
+
+ const [formData, setFormData] = useState({
+    name: "",
+    number: "",
+    month: "",
+    year: "",
+    cvc: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const initiatePayment = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      // 1. طلب token من ميسر
+      let response = await fetch("https://api.moyasar.com/v1/tokens", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          publishable_api_key: "pk_test_XXXXXXX", // المفتاح العام تبعك
+          save_only: true,
+          ...formData,
+        }),
+      });
+
+      response = await response.json();
+
+      if (response.errors) {
+        setError("فشل إنشاء رمز البطاقة: " + response.errors[0].message);
+        setLoading(false);
+        return;
+      }
+
+      const token = response.id;
+
+      // 2. إرسال token للـ backend تبعك
+      let backendResponse = await fetch("https://www.marasil.site/api/wallet/rechargeWallet", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token }),
+      });
+
+      backendResponse = await backendResponse.json();
+      console.log("تم الدفع");
+      
+    } catch (err) {
+      setError("صار خطأ أثناء الدفع");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const isDarkMode = theme === "dark";
   return (
     <div>
       <Dialog open={isOpen} onOpenChange={handleClose}>
         <DialogContent
-          className=" border-none max-w-3xl overflow-y-auto  max-h-screen  scroll"
+          className=" border-none max-w-xl overflow-y-auto  max-h-screen  scroll"
           style={{ border: "none" , direction:"ltr"}}
         >
           <DialogHeader>
@@ -558,15 +621,92 @@ const handleAmountClick = async (amount: string) => {
 
             {paymentMethod === 'card' && (
               <div className="space-y-4">
-                <Button
+                {/* <Button
                   type="button"
                   onClick={preparePayment}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded"
                   disabled={isSubmitting || !paymentAmount}
                 >
                   {isSubmitting ? 'جاري التحميل...' : 'إدفع الآن'}
-                </Button>
-                <div ref={moyasarFormRef} id="moyasar-payment-form" className="mt-4"></div>
+                </Button> */}
+{/* NEW */}
+  <form onSubmit={initiatePayment} className=" v7-neu-card border-none overflow-hidden h-full space-y-4" dir="rtl">
+      <div>
+        <label className="block text-sm font-medium mb-1">الاسم على البطاقة</label>
+        <input
+          type="text"
+          name="name"
+          placeholder="marasil company"
+          value={formData.name}
+          onChange={handleChange}
+          className="v7-neu-input-hollow text-gry"
+          required
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1">رقم البطاقة</label>
+        <input
+          type="text"
+          name="number"
+          value={formData.number}
+          onChange={handleChange}
+          placeholder="1234 5678 9101 1121"
+          className="v7-neu-input-hollow text-gry"
+          required
+        />
+      </div>
+
+      <div className="grid grid-cols-3 gap-2">
+        <div>
+          <label className="block text-sm mb-1">شهر الانتهاء</label>
+          <input
+            type="text"
+            name="month"
+            value={formData.month}
+            onChange={handleChange}
+            placeholder="MM"
+            className="v7-neu-input-hollow text-gry"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-sm mb-1">سنة الانتهاء</label>
+          <input
+            type="text"
+            name="year"
+            value={formData.year}
+            onChange={handleChange}
+            placeholder="YY"
+            className="v7-neu-input-hollow text-gry"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-sm mb-1">CVC</label>
+          <input
+            type="text"
+            name="cvc"
+            placeholder="123"
+            value={formData.cvc}
+            onChange={handleChange}
+            className="v7-neu-input-hollow text-gry"
+            required
+          />
+        </div>
+      </div>
+
+      <button
+        type="submit"
+        disabled={loading}
+        className="w-full bg-primary text-white py-2 rounded-lg "
+      >
+        {loading ? "جاري المعالجة..." : "ادفع الآن"}
+      </button>
+    </form>
+      
+                {/* <div ref={moyasarFormRef} id="moyasar-payment-form" className="mt-16  w-full" ></div> */}
+ 
               </div>
             )}
             

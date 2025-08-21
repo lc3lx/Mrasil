@@ -3,15 +3,22 @@ import { FileText, Package, Shield, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useFormContext } from "react-hook-form";
-
-export function OrderSummaryAndFragileTips({ values }: { values: any }) {
+ interface OrderSummaryAndFragileTipsProps{
+  values: any,
+  data:any
+ }
+export function OrderSummaryAndFragileTips({ values, data }: OrderSummaryAndFragileTipsProps) {
 
   const { watch } = useFormContext();
   const length = watch("dimension_length") || 0;
   const width = watch("dimension_width") || 0;
   const height = watch("dimension_high") || 0;
  const volume = length * width * height;
-
+const displayName =
+  values.company === "omniclama" ? "LLAMA BOX" :
+  values.company === "smsa" ? (values.shipmentType === "Dry" ? "SMSA PRO" : "SMSA") :
+  values.company === "aramex" ? "ARAMEX PRO" :
+  values.company.toUpperCase();
   return (
     <>
       {/* نصائح للشحنات القابلة للكسر */}
@@ -270,13 +277,14 @@ export function OrderSummaryAndFragileTips({ values }: { values: any }) {
             <div className="flex justify-between items-center  py-3 border-b border-[#3498db]/10">
               <span className="text-[#6d6a67] font-medium">خدمة التوصيل</span>
               <span className="font-medium text-[#1a365d]">
-                {values.company == "omniclama" ? "LLAMA BOX" : values.company == "smsapro" ? "SMSA PRO" : values.company == "aramexpro" ? "ARAMEX PRO" : values.company.toLocaleUpperCase()  || "غير محدد"}
+                { displayName  || "غير محدد"}
               </span>
             </div>
             <div className="flex justify-between items-center  py-4 text-xl font-bold">
               <span className="text-[#1a365d]">سعر البوليصة</span>
               <span className="text-[#3498db] px-3 py-1.5 rounded-lg inline-flex items-center">
-              {values.total  || "غير محدد"} ريال
+              {/* {values.total  || "غير محدد"} ريال */}
+              {data?.total || "-"} ريال
               </span>
             </div>
           </div>

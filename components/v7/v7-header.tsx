@@ -130,7 +130,6 @@ export function V7Header({
       localStorage.setItem("v7-lang", language);
     }
   }, [currentTheme, mounted, language]);
-  console.log("notificationsData",notificationsData);
   
   // إذا لم يتم تحميل المكون بعد، عرض نسخة بسيطة لتجنب مشكلة عدم تطابق الخادم والعميل
   if (!mounted) {
