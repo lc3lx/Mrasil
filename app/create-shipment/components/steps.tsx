@@ -64,7 +64,7 @@ import {
   useGetAllParcelsQuery,
   useCreateParcelMutation,
 } from "../../api/parcelsApi";
-import { useGetAllShipmentCompaniesQuery } from "../../api/shipmentCompanyApi";
+import { useCreateShipmentOrderMutation, useGetAllShipmentCompaniesQuery } from "../../api/shipmentCompanyApi";
 import { motion } from "framer-motion";
 import { Building, Plus } from "lucide-react";
 import { AddSenderAddressForm } from "./AddSenderAddressForm";
@@ -575,7 +575,6 @@ function Step2Content({
       "paymentMethod",
       "total",
     ]);
-    console.log("Form valid?", valid);
     if (valid == true) {
       nextStep();
     }
@@ -931,8 +930,9 @@ function Step3Content({
   const values = getValues();
   const [isSubmitting, setIsSubmitting] = useState(false);
   // Fetch companies
-  const { data: companiesData, isLoading: isLoadingCompanies } =
-    useGetAllShipmentCompaniesQuery();
+  const { data: companiesData, isLoading: isLoadingCompanies } =useGetAllShipmentCompaniesQuery();
+  const [createShipmentOrder, { data, isLoading, error }] = useCreateShipmentOrderMutation();
+
   // Shipment type tabs
   const shipmentTypes = [
     { label: "الشحن العادي", value: "Dry" },
@@ -941,7 +941,7 @@ function Step3Content({
     { label: "الشحن السريع", value: "Express" },
     { label: "الشحن البارد", value: "Cold" },
   ];
-  const priorityOrder = ["smsapro", "aramexpro", "smsa", "omniclama", "redbox"];
+  const priorityOrder = ["smsapro", "aramex", "smsa", "omniclama", "redbox"];
 
   const [selectedShipmentType, setSelectedShipmentType] = useState("Dry");
   const selectedCompany = watch("company");
@@ -951,9 +951,6 @@ function Step3Content({
       setSelectedShipmentType("Dry");
     }
   }, []);
-  const handleCompanySelect = (company: string) => {
-    setValue("company", company);
-  };
   const handleShipmentTypeTab = (type: string) => {
     setSelectedShipmentType(type);
     setValue("shipmentType", type);
@@ -972,28 +969,67 @@ function Step3Content({
     }
   };
 
-  console.log("values", companiesData);
+const companiesWithTypes = (companiesData || []).flatMap(company => {
+  const types = Array.isArray(company?.shippingTypes) && company.shippingTypes.length > 0
+    ? company.shippingTypes
+    : [{ type: "Dry" }]; 
 
-  const companiesWithTypes = (companiesData || []).flatMap((company) =>
-    company.shippingTypes.map((shippingType) => ({
-      ...company,
-      company:
-        company.company === "smsa" && shippingType.type === "Dry"
-          ? "smsapro"
-          : company.company === "aramex" ? "aramexpro":
-           company.company,
-      shippingType,
-    }))
-  );
+  return types.map((shippingType) => ({
+    ...company,
+    company:
+      company?.company === "smsa" && shippingType.type === "Dry"
+        ? "smsapro"
+        : company?.company,
+    shippingType,
+  }));
+});
+
+console.log("values", values);
+
+
   const sortedCompanies = companiesWithTypes.sort((a, b) => {
   const aIndex = priorityOrder.indexOf(a.company);
   const bIndex = priorityOrder.indexOf(b.company);
   return (aIndex === -1 ? Infinity : aIndex) - (bIndex === -1 ? Infinity : bIndex);
 });
+const handleCompanySelect = async (company: string) => {
+ setValue("company", company);
+
+const payload = {
+  company: company,
+  shapmentingType: values.shipmentType || "Dry",
+  order: {
+    customer: {
+      full_name: values.recipient_full_name || "",
+      mobile: values.recipient_mobile || "",
+      email: values.recipient_email || "",
+      address: values.recipient_address || "",
+      city: values.recipient_city || "",
+      district: values.recipient_district || "",
+      country: "sa",
+    },
+    description: values.orderDescription || "",
+    direction: "straight",
+    paymentMethod: values.paymentMethod,
+    source: "salla",
+    total: { amount: Number(values.total), currency: "SAR" },
+    weight: Number(values.weight) || 1,
+  },
+};
+
+
+    try {
+    const response = await createShipmentOrder(payload).unwrap();
+    console.log("Price response:", response);
+  } catch (err: any) {
+    console.error("Error fetching price:", err.data?.message || err.message);
+  }
+};
+
+
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
-      {/* Carrier Cards Second */}
       <div className="space-y-4">
         <div className=" flex items-center gap-2">
           <div className=" v7-neu-icon-sm bg-gradient-to-br from-[#3498db]/80 to-[#3498db]">
@@ -1025,7 +1061,7 @@ function Step3Content({
             <div>جاري التحميل...</div>
           ) : (
             sortedCompanies.map((company) => {
-              const { shippingType } = company; // صار واضح
+              const { shippingType } = company; 
               const logoSrc = (function getCompanyLogo(
                 companyName: string
               ): string {
@@ -1034,7 +1070,7 @@ function Step3Content({
                   smsa: "/companies/smsa.jpg",
                   smsapro: "/companies/smsa.jpg",
                   omniclama: "/companies/lamaBox.png",
-                  aramexpro: `/companies/araMex.png`,
+                  aramex: `/companies/araMex.png`,
                 };
                 return (
                   map[company.company.toLowerCase()] ||
@@ -1045,14 +1081,14 @@ function Step3Content({
               const isSelected = selectedCompany === company.company;
 
               return (
-                <CarrierCard
-                  key={company._id + shippingType.type}
-                  company={company}
-                  selectedCompany={selectedCompany}
-                  handleCompanySelect={handleCompanySelect}
-                  logoSrc={logoSrc}
-                  firstType={shippingType} // ✅ ما عاد في داعي للـ find
-                />
+<CarrierCard
+  key={company._id + shippingType.type}
+  company={company}
+  selectedCompany={selectedCompany}
+  handleCompanySelect={handleCompanySelect}
+  logoSrc={logoSrc}
+  firstType={shippingType}
+/>
               );
             })
           )}

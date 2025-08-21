@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { useFormContext } from "react-hook-form";
 
 export function OrderSummaryAndFragileTips({ values }: { values: any }) {
-  console.log("data",values);
 
   const { watch } = useFormContext();
   const length = watch("dimension_length") || 0;

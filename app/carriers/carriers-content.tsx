@@ -82,8 +82,7 @@ function StatCard({
 }
 
 function CarrierCard({ carrier, logo }: { carrier: ShipmentCompany; logo: string }) {
-  // Determine if any shipping type is 'Dry' (محلي), else 'دولي'
-  const isLocal = carrier.shippingTypes.some((st) => st.type === 'Dry');
+
 
   return (
     <Card className="shadow-lg  rounded-2xl p-0 border-0 flex flex-col items-center text-center">
@@ -94,10 +93,17 @@ function CarrierCard({ carrier, logo }: { carrier: ShipmentCompany; logo: string
         </div>
         <div className="text-2xl font-extrabold text-[#294D8B] mb-2">{carrier.company === "omniclama" ? "LLAMA BOX" :carrier.company}</div>
         {/* Type Badge */}
-        <div className="mb-6 flex justify-center gap-3">
-          <Badge className={isLocal ? 'bg-green-100 text-green-700 text-lg px-4 py-1' : 'bg-blue-100 text-blue-700 text-lg px-4 py-1'}>
-            {isLocal ? 'محلي' : 'دولي'}
+        <div className="mb-6 ">
+          {["redbox","omniclama", "smsa", "aramex" ].includes(carrier.company) && (
+          <Badge className={' bg-green-100 text-green-700 text-lg px-4 py-1'}>
+          محلي
           </Badge>
+            )}
+          {["aramex" ].includes(carrier.company)&& (
+          <Badge className={'bg-blue-100 text-blue-700 text-lg px-4 py-1 ' }>
+            دولي
+          </Badge>
+            )}
         </div>
         {/* Info Section */}
         <div className="flex flex-col items-start gap-4 w-full max-w-sm mx-auto text-right">
@@ -169,7 +175,6 @@ export function CarriersContent() {
   const totalCarriers = carriersList?.length ?? 0
   const activeCarriers = carriersList?.filter((c) => c.status === "Enabled").length ?? 0
   // Count international carriers (none of their shippingTypes is 'Dry')
-  const internationalCarriers = carriersList?.filter((carrier) => !carrier.shippingTypes.some((st) => st.type === 'Dry')).length ?? 0
 
   return (
     <div className="p-6 space-y-6 my-16">
@@ -178,7 +183,7 @@ export function CarriersContent() {
           <h1 className="text-3xl font-bold text-[#294D8B]">شركات الشحن</h1>
           <p className="text-gray-500 text-2xl">إدارة شركات الشحن والناقلين المتعاقد معهم</p>
         </div>
-        <div className="flex gap-2">
+        {/* <div className="flex gap-2">
           <Button
             className="bg-[#294D8B] hover:bg-[#1a2a6c] text-white text-xl font-bold rounded-full px-8 py-3 shadow-lg flex items-center gap-2 transition-all"
             onClick={() => router.push("/carriers/integration")}
@@ -186,7 +191,7 @@ export function CarriersContent() {
             <FileContract className="ml-2 h-5 w-5" />
             أضف عقدك الخاص
           </Button>
-        </div>
+        </div> */}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -207,7 +212,7 @@ export function CarriersContent() {
         <StatCard
           icon={<Package size={44} color="#0891b2" />}
           title="شركات شحن دولية"
-          value={isLoading ? "..." : internationalCarriers.toString()}
+          value={isLoading ? "..." : "1"}
           color="text-indigo-600"
           large
         />

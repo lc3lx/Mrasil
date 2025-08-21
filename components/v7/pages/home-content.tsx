@@ -606,8 +606,8 @@ const sortedCompanies = companiesWithTypes.sort((a, b) => {
                   {statsLoading
                     ? "..."
                     : homeStats?.growthRate !== undefined
-                    ? `${homeStats.growthRate}%`
-                    : "-"}
+                    && `${homeStats.growthRate}%`
+                    }
                 </span>
               </div>
             </div>

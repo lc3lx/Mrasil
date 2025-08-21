@@ -130,7 +130,7 @@ export function V7ShipmentCard({
   const carrierInfo = {
     name: shipment?.shapmentCompany || "غير معروف",
     logo: carrierLogo,
-    color: "text-gray-600", // Default color
+    color: "text-gray-600",
   };
   console.log(shipment);
   
@@ -151,8 +151,6 @@ export function V7ShipmentCard({
     }
     return null;
   };
-  console.log(shipment);
-  
   // Helper: Download base64 label as file
   function downloadBase64File(base64: string, fileName: string) {
     const arr = base64.split(",");
@@ -172,8 +170,6 @@ export function V7ShipmentCard({
     URL.revokeObjectURL(url);
   }
   const labelUrl = getLabelUrl();
-
-  // Helper: Get tracking number for the 'تتبع' button
   const getTrackingNumber = () => {
     const company = (shipment?.shapmentCompany || "").toLowerCase();
     if (company === "redbox" && shipment?.redboxResponse?.trackingNumber) {
@@ -206,7 +202,7 @@ console.log("shipment" + shipment);
     >
       {/* Main Card Content - Always visible */}
       <div className="p-6 flex    w-full  gap-4">
-        <div className="flex flex-col md:flex-row items-start gap-6 sm:max-w-[50%] ">
+        <div className="flex flex-col md:flex-row items-start gap-6 sm:ma w-full ">
           {/* Left: Main Info */}
           <div className="flex flex-col justify-between flex-1  ">
             <div className="flex flex-col  gap-4 w-fit">
@@ -239,14 +235,14 @@ console.log("shipment" + shipment);
 
               <div className="flex items-center gap-3">
                 <span className="font-bold text-sm sm:text-2xl text-[#294D8B] whitespace-nowrap">
-                  رقم الشحنة #{shipment?._id || "غير متوفر"}
+                  رقم التتبع : {trackingNumber || "غير متوفر"}
                 </span>
               </div>
               {/* Order ID */}
               <div className="flex items-center gap-1 text-gry">
-                <span className="text-sm sm:text-base ">رقم الطلب: </span>
-                <span className="font-medium ml-2">
-                  {shipment?.orderId?._id || "غير متوفر"}
+                <span className="text-sm sm:text-base flex items-center ">رقم الطلب: </span>
+                <span className="ml-2  sm:text-base text-sm text-[#444]">
+                  {shipment?._id.slice(0, 10) || "غير متوفر"}
                 </span>
               </div>
               {/* </RadioGroup> */}
@@ -267,7 +263,7 @@ console.log("shipment" + shipment);
                 </span>
                 <MapPin className="sm:h-5 sm:w-5 h-4 w-4 text-emerald-500" />
                 <span className="text-base sm:text-lg   text-emerald-700 font-medium">
-                  {shipment?.senderAddress?.address || "غير محدد"}
+                  {shipment?.receiverAddress?.city || "غير محدد"}
                 </span>
               </div>
               {/* Status */}

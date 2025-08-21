@@ -1,21 +1,9 @@
 "use client";
-
-"use client";
-
 import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Upload } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import {
-  useRechargeWalletMutation,
-  useRechargeWalletByBankMutation,
-} from "@/app/api/walletApi";
+import {Dialog,DialogContent,DialogHeader,DialogTitle,DialogFooter,} from "@/components/ui/dialog";
+import {useRechargeWalletMutation,useRechargeWalletByBankMutation,} from "@/app/api/walletApi";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import Image from "next/image";
@@ -28,8 +16,6 @@ import creditCard5 from "../../../public/creditCard5.png";
 import creditCard6 from "../../../public/creditCard6.png";
 import realBlue from "../../../public/real-blue.png";
 import realWhite from "../../../public/real-white.png";
-
-// Global type declaration for Moyasar
 interface MoyasarPaymentForm {
   init: (config: {
     element: HTMLElement | string;
@@ -58,7 +44,6 @@ interface MoyasarPaymentForm {
     };
   }) => void;
 }
-
 declare global {
   interface Window {
     Moyasar?: {
@@ -66,7 +51,6 @@ declare global {
     };
   }
 }
-
 interface V7WalletProps {
   isOpen: boolean;
   onClose: () => void;
@@ -74,7 +58,6 @@ interface V7WalletProps {
   onBalanceUpdate: (newBalance: number) => void;
   theme?: "light" | "dark";
 }
-
 export default function V7Wallet({
   theme = "light",
   isOpen,
@@ -85,8 +68,6 @@ export default function V7Wallet({
   const handleClose = () => {
     onClose();
   };
-
-  // Credit card form fields
   const [cardName, setCardName] = useState("");
   const [cardNumber, setCardNumber] = useState("");
   const [cardCvc, setCardCvc] = useState("");
@@ -96,20 +77,13 @@ export default function V7Wallet({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [selectedAmount, setSelectedAmount] = useState<string | null>(null);
-  // Bank transfer form fields
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'bank' | null>(null);
   const [paymentAmount, setPaymentAmount] = useState<number>(100);
   const [customAmount, setCustomAmount] = useState("");
   const [transferImage, setTransferImage] = useState<File | null>(null);
   const [transferImagePreview, setTransferImagePreview] = useState<string | null>(null);
-
   const [isMoyasarReady, setIsMoyasarReady] = useState(false);
   const moyasarFormRef = useRef<HTMLDivElement>(null);
-  
-
-
-  // NEW
-
   const [rechargeWallet, { isLoading: isRecharging }] = useRechargeWalletMutation();
   const [rechargeByBank, { isLoading: isBankTransferring }] = useRechargeWalletByBankMutation();
 
@@ -132,15 +106,105 @@ export default function V7Wallet({
       document.body.removeChild(script);
     };
   }, []);
+const preparePayment = async () => {
+  if (!paymentAmount || paymentAmount <= 0) {
+    setError('الرجاء إدخال مبلغ صالح');
+    return;
+  }
+  if (!isMoyasarReady) {
+    setError('جاري تحميل نظام الدفع، يرجى الانتظار...');
+    return;
+  }
 
-  const preparePayment = async () => {
-    if (!paymentAmount || paymentAmount <= 0) {
-      setError('الرجاء إدخال مبلغ صالح');
-      return;
+  setIsSubmitting(true);
+  setError('');
+
+  try {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+
+    // استدعاء API لتحضير الدفع
+    const response = await fetch('https://www.marasil.site/api/wallet/rechargeWallet', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token.replace(/^Bearer\s+/i, '')}` } : {})
+      },
+      body: JSON.stringify({ amount: paymentAmount })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'فشل في تحضير عملية الدفع');
     }
 
-    if (!isMoyasarReady) {
-      setError('جاري تحميل نظام الدفع، يرجى الانتظار...');
+    if (!window.Moyasar || !moyasarFormRef.current) {
+      throw new Error('نظام الدفع غير متوفر حالياً. يرجى المحاولة لاحقاً');
+    }
+
+    // تنظيف العنصر قبل إنشاء الفورم
+    moyasarFormRef.current.innerHTML = '';
+
+    // إعداد config واحد فقط
+    const config = {
+      element: moyasarFormRef.current,
+      amount: data.amountInHalalas,
+      currency: 'SAR',
+      description: `شحن المحفظة (رصيدك بعد الخصم ${data.netAmount} ريال)`,
+      publishable_api_key: 'pk_live_3p2q5Kj7WiDPJZ2kYRSNc16SFQ47C6hfAvkKLkCc',
+      callback_url: `${window.location.origin}/payment/success`,
+      methods: ['creditcard', 'mada'],
+      on_completed: async (payment: any) => {
+        toast({
+          title: "تمت العملية بنجاح",
+          description: `تم شحن رصيدك بنجاح بمبلغ ${paymentAmount} ريال`,
+          variant: "default",
+        });
+        onClose();
+        window.location.href = `${window.location.origin}/payment/success?amount=${paymentAmount}`;
+        return Promise.resolve();
+      },
+      on_failed: async (error: any) => {
+        setError('فشلت عملية الدفع. الرجاء التحقق من البيانات والمحاولة مرة أخرى');
+        console.error('Payment failed:', error);
+        return Promise.resolve();
+      },
+      style: {
+        base: {
+          color: '#32325d',
+          fontFamily: 'Arial, sans-serif',
+          fontSmoothing: 'antialiased',
+          fontSize: '16px',
+          '::placeholder': {
+            color: '#aab7c4'
+          }
+        },
+        invalid: {
+          color: '#fa755a',
+          iconColor: '#fa755a'
+        }
+      }
+    };
+
+    window.Moyasar.init(config);
+
+  } catch (err: any) {
+    console.error('Payment preparation error:', err);
+    setError(err.message || 'حدث خطأ أثناء تحضير عملية الدفع');
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
+
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+
+  if (paymentMethod === 'card') {
+    await preparePayment();
+  } else if (paymentMethod === 'bank') {
+    if (!transferImage) {
+      setError('الرجاء رفع صورة إيصال التحويل');
       return;
     }
 
@@ -148,137 +212,37 @@ export default function V7Wallet({
     setError('');
 
     try {
-      // Call your backend to prepare payment and get the amount in halalas
-      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-      const response = await fetch('https://www.marasil.site/api/wallet/rechargeWallet', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token.replace(/^Bearer\s+/i, '')}` } : {})
-        },
-        body: JSON.stringify({ amount: paymentAmount })
+      const formData = new FormData();
+      formData.append('amount', paymentAmount.toString());
+      formData.append('bankreceipt', transferImage);
+
+      const response = await rechargeByBank(formData).unwrap();
+
+      toast({
+        title: "تم استلام طلبك",
+        description: "سيتم مراجعة طلبك وتفعيل الرصيد خلال 24 ساعة",
+        variant: "default",
       });
 
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.error || 'فشل في تحضير عملية الدفع');
-      }
-
-      // Clear previous form if any
-      if (moyasarFormRef.current) {
-        moyasarFormRef.current.innerHTML = '';
-      }
-
-      // Initialize Moyasar payment form
-      if (window.Moyasar && moyasarFormRef.current) {
-        window.Moyasar.init({
-          element: moyasarFormRef.current,
-          amount: data.amountInHalalas,
-          currency: 'SAR',
-          description: `شحن المحفظة (رصيدك بعد الخصم ${data.netAmount} ريال)`,
-          publishable_api_key: 'pk_live_3p2q5Kj7WiDPJZ2kYRSNc16SFQ47C6hfAvkKLkCc',
-          callback_url: `${window.location.origin}/payment/success`,
-          methods: ['creditcard', 'mada'],
-          on_completed: (payment: any) => {
-            toast({
-              title: "تمت العملية بنجاح",
-              description: `تم شحن رصيدك بنجاح بمبلغ ${paymentAmount} ريال`,
-              variant: "default",
-            });
-            onClose();
-            // Optional: Redirect to success page or refresh wallet balance
-            window.location.href = `${window.location.origin}/payment/success?amount=${paymentAmount}`;
-          },
-          on_failed: (error: any) => {
-            setError('فشلت عملية الدفع. الرجاء التحقق من البيانات والمحاولة مرة أخرى');
-            console.error('Payment failed:', error);
-          },
-          // Add more customization as needed
-          style: {
-            base: {
-              color: '#32325d',
-              fontFamily: 'Arial, sans-serif',
-              fontSmoothing: 'antialiased',
-              fontSize: '16px',
-              '::placeholder': {
-                color: '#aab7c4'
-              }
-            },
-            invalid: {
-              color: '#fa755a',
-              iconColor: '#fa755a'
-            }
-          }
-        });
-      } else {
-        throw new Error('نظام الدفع غير متوفر حالياً. يرجى المحاولة لاحقاً');
-      }
+      onClose();
     } catch (err: any) {
-      console.error('Payment preparation error:', err);
-      setError(err.message || 'حدث خطأ أثناء تحضير عملية الدفع');
+      console.error('Bank transfer error:', err);
+      setError(err.data?.message || 'حدث خطأ أثناء إرسال طلبك');
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }
+};
 
-  // Handle form submission
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  console.log('handleSubmit called. paymentMethod:', paymentMethod, 'transferImage:', transferImage, 'paymentAmount:', paymentAmount);
-    e.preventDefault();
-    
-    if (paymentMethod === 'card') {
-      await preparePayment();
-    } else if (paymentMethod === 'bank') {
-      // Handle bank transfer submission
-      if (!transferImage) {
-        setError('الرجاء رفع صورة إيصال التحويل');
-        return;
-      }
-      
-      setIsSubmitting(true);
-      setError('');
-      
-      try {
-        const formData = new FormData();
-        formData.append('amount', paymentAmount.toString());
-        if (transferImage) {
-          formData.append('bankreceipt', transferImage);
-        }
-        
-        const response = await rechargeByBank(formData).unwrap();
-        
-        toast({
-          title: "تم استلام طلبك",
-          description: "سيتم مراجعة طلبك وتفعيل الرصيد خلال 24 ساعة",
-          variant: "default",
-        });
-        
-        onClose();
-      } catch (err: any) {
-        console.log('Bank transfer error details:', err);
-        console.error('Bank transfer error:', err);
-        setError(err.data?.message || 'حدث خطأ أثناء إرسال طلبك');
-      } finally {
-        setIsSubmitting(false);
-      }
-    }
-  };
-
-  // القديم
-  // عند اختيار مبلغ
-  const handleAmountClick = (amount: string) => {
-    setSelectedAmount(amount);
-    setCustomAmount("");
-    const numAmount = parseFloat(amount);
-    if (!isNaN(numAmount)) {
-      setPaymentAmount(numAmount);
-    }
-  };
-
-  // Alias for handleAmountClick for backward compatibility
+const handleAmountClick = async (amount: string) => {
+  setSelectedAmount(amount);
+  setCustomAmount("");
+  const numAmount = parseFloat(amount);
+  if (!isNaN(numAmount)) {
+    await setPaymentAmount(numAmount);
+  }
+};
   const handleAmountSelect = handleAmountClick;
-  // مبلغ مخصص
   const handleCustomAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setCustomAmount(value);
@@ -290,8 +254,6 @@ export default function V7Wallet({
     }
     setSelectedAmount("");
   };
-
-  // Handle image upload for bank transfer
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -299,7 +261,6 @@ export default function V7Wallet({
       setTransferImagePreview(URL.createObjectURL(file));
     }
   };
-
   const handleCardNumberPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     e.preventDefault();
     const pastedText = e.clipboardData.getData("text");
@@ -309,7 +270,6 @@ export default function V7Wallet({
       setCardNumber(formatted);
     }
   };
-
   const isDarkMode = theme === "dark";
   return (
     <div>
