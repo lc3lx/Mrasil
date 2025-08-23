@@ -11,9 +11,17 @@ body {
     text-wrap: balance;
   }
 }
-#moyasar-payment-form {
+#payment-form-wrapper {
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  padding: 16px;
+  max-width: 100px;
+  margin: auto;
+}
+/* #moyasar-payment-form {
   direction: rtl !important;
   text-align: right;
+  width: 100px;
 }
 
 #moyasar-payment-form input,
@@ -32,7 +40,7 @@ body {
 
 #moyasar-payment-form button:hover {
   background-color: #153273 !important;
-}
+} */
 
 @layer base {
   :root {

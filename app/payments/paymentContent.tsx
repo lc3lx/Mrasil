@@ -83,6 +83,7 @@ function PaymentsCard() {
 
 export function PaymentsContent() {
   const [isLoaded, setIsLoaded] = useState(false)
+    const [balance, setBalance] = useState(0);
   const router = useRouter()
   const { data: transactionsData, isLoading: isTransactionsLoading, isError: isTransactionsError } = useGetMyTransactionsQuery();
 
@@ -202,7 +203,10 @@ export function PaymentsContent() {
             </TabsContent>
           </Tabs>
 
-                    <V7Wallet theme="light"   isOpen={openAddSenderModal}  onClose={() => setOpenAddSenderModal(false)}/>
+                    <V7Wallet 
+                            balance={balance}
+        onBalanceUpdate={(newBalance) => setBalance(newBalance)}
+                    theme="light"   isOpen={openAddSenderModal}  onClose={() => setOpenAddSenderModal(false)}/>
         </div>
       </div>
     </div>

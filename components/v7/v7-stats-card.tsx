@@ -198,6 +198,7 @@ export function V7StatsCard({
   const [transferImagePreview, setTransferImagePreview] = useState(null);
   const [isMoyasarLoaded, setIsMoyasarLoaded] = useState(false);
  const [openAddSenderModal, setOpenAddSenderModal] = useState(false);
+   const [balance, setBalance] = useState(0);
    const iconColor = isDark ? "text-white" : colorMap[color].iconColor;
 
 
@@ -289,7 +290,10 @@ export function V7StatsCard({
               ></div>
             </Button>
           )}
-          <V7Wallet theme="light"   isOpen={openAddSenderModal}
+          <V7Wallet
+                                      balance={balance}
+        onBalanceUpdate={(newBalance) => setBalance(newBalance)}
+           theme="light"   isOpen={openAddSenderModal}
         onClose={() => setOpenAddSenderModal(false)}
 
         />

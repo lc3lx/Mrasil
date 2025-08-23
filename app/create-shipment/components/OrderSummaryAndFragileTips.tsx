@@ -284,7 +284,7 @@ const displayName =
               <span className="text-[#1a365d]">سعر البوليصة</span>
               <span className="text-[#3498db] px-3 py-1.5 rounded-lg inline-flex items-center">
               {/* {values.total  || "غير محدد"} ريال */}
-              {data?.total || "-"} ريال
+              {data?.total || "0"} ريال
               </span>
             </div>
           </div>

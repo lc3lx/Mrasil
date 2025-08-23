@@ -190,11 +190,12 @@ export function V7ShipmentCard({
     return shipment.trackingNumber || shipment._id || "";
   };
   const trackingNumber = getTrackingNumber();
-  console.log("data:", shipment);
 
-
-console.log("shipment" + shipment);
-
+const displayName =
+  carrierInfo.name === "omniclama" ? "LLAMA BOX" :
+  carrierInfo.name === "smsa" ? (shipment?.shapmentingType === "Dry" ? "SMSA PRO" : "SMSA") :
+  carrierInfo.name === "aramex" ? "ARAMEX PRO" :
+  carrierInfo.name.toUpperCase();
   return (  
     <div
       className={`v7-neu-card-inner rounded-xl border border-gray-100 w-full bg-white`}
@@ -224,7 +225,7 @@ console.log("shipment" + shipment);
                       className="object-contain"
                     />
                   </div>
-                  <span className="ml-6  text-[#294D8B]">{carrierInfo.name == "omniclama" ? "LLAMA BOX" : carrierInfo.name}</span>
+                  <span className="ml-6  text-[#294D8B]"> {displayName}</span>
 
                  
                 </span>

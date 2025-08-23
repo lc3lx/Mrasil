@@ -2,7 +2,7 @@ import { Check, Plus, X } from "lucide-react";
 import Image from "next/image";
 import React from "react";
 import realBlue from "../../../public/real-blue.png"
-export default function CarrierCard({ company, selectedCompany, handleCompanySelect, logoSrc, firstType , values}: any) {
+export default function CarrierCard({ company, selectedCompany, handleCompanySelect, logoSrc, firstType , values, data}: any) {
 const isSelected =
   selectedCompany === company.company &&
   values.shipmentType === company.shippingType.type;
@@ -43,21 +43,13 @@ const displayName =
         />
         <div className=" flex items-center gap-4">
 
-         {["smsa", "aramex", "smsapro"].includes(company.company) ? (
+         {["smsa", "aramex"].includes(company.company) ? (
            <span className="text-[9px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full border bg-green-50 text-[#27ae60] border-green-200 font-semibold">
     الشحن العادي
   </span>
   ):<span className="text-[9px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full border bg-sky-50 text-sky-500  border-sky-200 font-semibold">شحن الخزائن</span>
 }
-        <span className="text-[#3498db] font-bold  flex text-lg">{
-                                          Number.isInteger(price)
-                                  ? price
-                                      .toString()
-                                      .slice(0, 4)
-                                  : parseFloat(
-                                      price.toPrecision(4)
-                                    )
-          }
+        <span className="text-[#3498db] font-bold  flex text-lg">{data?.total || 0}
           <Image alt="real" src={realBlue} width={20} height={20}/>
         </span>
     </div>
@@ -72,20 +64,20 @@ const displayName =
     )
   </span>
 )}
-     { ["smsa", "omniclama", "redbox"].includes(company.company) && (
-      <span className="text-[#3498db] text-sm sm:text-lg font-medium flex items-center gap-1">
-      توصيل من الباب للباب 
-     (
-    <span className=" text-[#e74c3c] flex items-center gap-1">
+
+     { [ "omniclama", "redbox"].includes(company.company) ? (
+       <span className="text-[#3498db] text-sm sm:text-lg font-medium flex items-center gap-1">
+       توصيل من الباب للباب 
+       (
+         <span className=" text-[#e74c3c] flex items-center gap-1">
      <X className=" w-4 h-4"/>
        غير متوفر 
     </span>
      )
-  </span>
-)}  
-{
-  ["smsapro"].includes(company.company) && (
-     <span className="text-[#3498db] text-sm sm:text-lg font-medium flex items-center gap-1">
+     </span>
+    ):(
+    (["smsa"].includes(company.company) && ["Dry"].includes(company.shippingType.type) ? (
+    <span className="text-[#3498db] text-sm sm:text-lg font-medium flex items-center gap-1">
       توصيل من الباب للباب 
      (
           <span className=" text-[#27ae60] flex items-center gap-1">
@@ -99,8 +91,21 @@ const displayName =
     </span>
     )
       </span>
-  )
-} 
+  ):
+  ( ["offices"].includes(company.shippingType.type) && (
+       <span className="text-[#3498db] text-sm sm:text-lg font-medium flex items-center gap-1">
+       توصيل من الباب للباب 
+       (
+         <span className=" text-[#e74c3c] flex items-center gap-1">
+     <X className=" w-4 h-4"/>
+       غير متوفر 
+    </span>
+     )
+     </span>
+    )
+)))
+  }  
+
   
 </div>
     </div>

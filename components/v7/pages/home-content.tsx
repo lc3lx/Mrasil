@@ -259,6 +259,8 @@ const sortedCompanies = companiesWithTypes.sort((a, b) => {
       </V7Content>
     );
   }
+  console.log("walletData",walletData);
+  
 
   return (
     <V7Content>
@@ -291,7 +293,6 @@ const sortedCompanies = companiesWithTypes.sort((a, b) => {
               ) : (
                 "-"
               ),
-              // type: "ريال",
             },
             {
               label: "آخر معاملة",

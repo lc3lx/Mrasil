@@ -941,7 +941,6 @@ function Step3Content({
     { label: "الشحن السريع", value: "Express" },
     { label: "الشحن البارد", value: "Cold" },
   ];
-  const priorityOrder = ["smsapro", "aramex", "smsa", "omniclama", "redbox"];
 
   const [selectedShipmentType, setSelectedShipmentType] = useState("Dry");
   
@@ -985,8 +984,8 @@ const handleCompanySelect = async (company: string, shippingType:string) => {
   setValue("company", company);          
   setValue("shipmentType", shippingType);
 const payload = {
-  company: selectedCompany,
-  shapmentingType: shipmentTypeToUse,
+  company: company,
+  shapmentingType: shippingType,
   order: {
     customer: {
       full_name: values.recipient_full_name || "",
@@ -1015,7 +1014,6 @@ const payload = {
   }
 };
   
-console.log("values", data?.data);
 
 
   return (
@@ -1081,6 +1079,7 @@ console.log("values", data?.data);
   values={values}
       logoSrc={logoSrc}
       firstType={company?.shippingType} 
+      data={data?.data}
 />
               );
             })
@@ -1151,7 +1150,7 @@ function InputField({
   if (readOnly) return null;
   return (
     <div className="space-y-2">
-      <label className="block mb-2 font-bold text-[#1a365d] text-center flex items-center gap-1 justify-center w-full">
+      <label className=" mb-2 font-bold text-[#1a365d] text-center flex items-center gap-1 justify-center w-full">
         {Icon && <Icon className="w-5 h-5 text-[#3498db]" />}
         <span>{label}</span>
         <span className="text-red-500">*</span>
