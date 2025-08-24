@@ -3,11 +3,13 @@ import { FileText, Package, Shield, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useFormContext } from "react-hook-form";
+import RealBlue from "../../../public/real-blue.png"
+import Image from "next/image";
  interface OrderSummaryAndFragileTipsProps{
   values: any,
-  data:any
+  prices:any
  }
-export function OrderSummaryAndFragileTips({ values, data }: OrderSummaryAndFragileTipsProps) {
+export function OrderSummaryAndFragileTips({ values,prices }: OrderSummaryAndFragileTipsProps) {
 
   const { watch } = useFormContext();
   const length = watch("dimension_length") || 0;
@@ -284,7 +286,9 @@ const displayName =
               <span className="text-[#1a365d]">سعر البوليصة</span>
               <span className="text-[#3498db] px-3 py-1.5 rounded-lg inline-flex items-center">
               {/* {values.total  || "غير محدد"} ريال */}
-              {data?.total || "0"} ريال
+   {prices
+  ?.filter(p => p.company === values?.company && p.type === values?.shipmentType)[0]?.price || "0"} <Image alt="price" src={RealBlue} className=" w-[20px] h-[20px]"/>
+
               </span>
             </div>
           </div>

@@ -29,6 +29,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 
 import {
   useCreateShipmentMutation,
+  useCreateShipmentOrderMutation,
   useGetMyShipmentsQuery,
 } from "../../api/shipmentApi";
 import {
@@ -64,7 +65,7 @@ import {
   useGetAllParcelsQuery,
   useCreateParcelMutation,
 } from "../../api/parcelsApi";
-import { useCreateShipmentOrderMutation, useGetAllShipmentCompaniesQuery } from "../../api/shipmentCompanyApi";
+import {  useGetAllShipmentCompaniesQuery } from "../../api/shipmentCompanyApi";
 import { motion } from "framer-motion";
 import { Building, Plus } from "lucide-react";
 import { AddSenderAddressForm } from "./AddSenderAddressForm";
@@ -969,7 +970,12 @@ const companiesWithTypes = (companiesData || []).flatMap(company => {
     ...company,
     shippingType, 
   }));
-});
+})  .sort((a, b) => {
+    // نحط "Dry" أول شي
+    if (a.shippingType.type === "Dry" && b.shippingType.type !== "Dry") return -1;
+    if (a.shippingType.type !== "Dry" && b.shippingType.type === "Dry") return 1;
+    return 0; // الباقي حسب الترتيب الأصلي
+  });
 
 
 
@@ -983,38 +989,106 @@ const shipmentTypeToUse = validTypes.includes(values.shipmentType)
 const handleCompanySelect = async (company: string, shippingType:string) => {
   setValue("company", company);          
   setValue("shipmentType", shippingType);
-const payload = {
-  company: company,
-  shapmentingType: shippingType,
-  order: {
-    customer: {
-      full_name: values.recipient_full_name || "",
-      mobile: values.recipient_mobile || "",
-      email: values.recipient_email || "",
-      address: values.recipient_address || "",
-      city: values.recipient_city || "",
-      district: values.recipient_district || "",
-      country: "sa",
-    },
-    description: values.orderDescription || "",
-    direction: "straight",
-    paymentMethod: values.paymentMethod,
-    source: "salla",
-    total: { amount: Number(values.total), currency: "SAR" },
-    weight: Number(values.weight) || 1,
-  },
-};
+// const payload = {
+//   company: company,
+//   shapmentingType: shippingType,
+//   order: {
+//     customer: {
+//       full_name: values.recipient_full_name || "",
+//       mobile: values.recipient_mobile || "",
+//       email: values.recipient_email || "",
+//       address: values.recipient_address || "",
+//       city: values.recipient_city || "",
+//       district: values.recipient_district || "",
+//       country: "sa",
+//     },
+//     description: values.orderDescription || "",
+//     direction: "straight",
+//     paymentMethod: values.paymentMethod,
+//     source: "salla",
+//     total: { amount: Number(values.total), currency: "SAR" },
+//     weight: Number(values.weight) || 1,
+//   },
+// };
+// console.log(companiesData);
 
 
-    try {
-    const response = await createShipmentOrder(payload).unwrap();
-    console.log("Price response:", response);
-  } catch (err: any) {
-    console.error("Error fetching price:", err.data?.message || err.message);
-  }
+  //   try {
+  //   const response = await createShipmentOrder(payload).unwrap();
+  //   console.log("Price response:", response);
+  // } catch (err: any) {
+  //   console.error("Error fetching price:", err.data?.message || err.message);
+  // }
 };
+  // NEW  
+
+  // NEW: Fetch prices for all companies - FIXED INFINITE RENDER
+  const [prices, setPrices] = useState<any[]>([]);
+  const [pricesFetched, setPricesFetched] = useState(false);
   
+  useEffect(() => {
+    // Only run if we have companies data and haven't fetched prices yet
+    if (pricesFetched || !companiesData?.length || !values) return;
 
+    const fetchAllPrices = async () => {
+      const companiesWithTypes = companiesData.flatMap(c =>
+        c.shippingTypes?.map(type => ({ ...c, shippingType: type })) || []
+      );
+
+      try {
+        const fetches = companiesWithTypes.map(async (company) => {
+          try {
+            const payload = {
+              company: company.company,
+              shapmentingType: company.shippingType.type,
+              order: {
+                customer: {
+                  full_name: values.recipient_full_name || "",
+                  mobile: values.recipient_mobile || "",
+                  email: values.recipient_email || "",
+                  address: values.recipient_address || "",
+                  city: values.recipient_city || "",
+                  district: values.recipient_district || "",
+                  country: "sa",
+                },
+                description: values.orderDescription || "",
+                direction: "straight",
+                paymentMethod: values.paymentMethod,
+                source: "salla",
+                total: { amount: Number(values.total), currency: "SAR" },
+                weight: Number(values.weight) || 1,
+              },
+            };
+            
+            const res = await createShipmentOrder(payload).unwrap();
+   const price = res?.data?.total;
+return {
+  company: company.company,
+  type: company.shippingType.type,
+  price: price
+};
+          } catch (err: any) {
+            console.error(`Error fetching price for ${company.company}:`, err);
+            return {
+              company: company.company,
+              type: company.shippingType.type,
+              error: err.data?.message || err.message
+            };
+          }
+
+        });
+        const results = await Promise.all(fetches);
+        setPrices(results);
+        setPricesFetched(true); // Mark as fetched to prevent re-fetching
+      } catch (error) {
+        console.error("Error in fetchAllPrices:", error);
+        setPricesFetched(true); // Still set to true to prevent infinite retries
+      }
+    };
+
+    fetchAllPrices();
+  }, [companiesData]); // Added pricesFetched to dependenciesشركات
+console.log(prices)
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
@@ -1070,16 +1144,14 @@ const payload = {
 
               return (
 <CarrierCard
-      key={company.shippingType._id +  company.shippingType.type}
-      company={company}
-      selectedCompany={selectedCompany}
-  handleCompanySelect={() =>
-    handleCompanySelect(company.company, company.shippingType.type)
-  }
+  key={company.shippingType._id + company.shippingType.type}
+  company={company}
+  selectedCompany={selectedCompany}
+  handleCompanySelect={() => handleCompanySelect(company.company, company.shippingType.type)}
+  logoSrc={logoSrc}
+  firstType={company.shippingType}
   values={values}
-      logoSrc={logoSrc}
-      firstType={company?.shippingType} 
-      data={data?.data}
+  prices={prices} 
 />
               );
             })
@@ -1087,7 +1159,7 @@ const payload = {
         </div>
       </div>
 
-      <OrderSummaryAndFragileTips values={values} data={data?.data} />
+      <OrderSummaryAndFragileTips values={values} prices={prices} />
 
       <div className="flex justify-between mt-8">
         <Button

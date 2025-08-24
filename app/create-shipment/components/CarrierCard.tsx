@@ -2,16 +2,21 @@ import { Check, Plus, X } from "lucide-react";
 import Image from "next/image";
 import React from "react";
 import realBlue from "../../../public/real-blue.png"
-export default function CarrierCard({ company, selectedCompany, handleCompanySelect, logoSrc, firstType , values, data}: any) {
+export default function CarrierCard({ company, selectedCompany, handleCompanySelect, logoSrc, firstType , values, data, prices}: any) {
+
 const isSelected =
   selectedCompany === company.company &&
   values.shipmentType === company.shippingType.type;
-const price = (company?.shippingType?.basePrice || 0) + (company?.shippingType?.profitPrice || 0);
 const displayName =
   company.company === "omniclama" ? "LLAMA BOX" :
   company.company === "smsa" ? (company.shippingType.type === "Dry" ? "SMSA PRO" : "SMSA") :
   company.company === "aramex" ? "ARAMEX PRO" :
   company.company.toUpperCase();
+// NEW
+
+
+
+
   return (
     <div
       className={`flex items-center justify-between v7-neu-card-inner px-6   py-4 transition-all duration-300 relative overflow-hidden w-full
@@ -49,7 +54,11 @@ const displayName =
   </span>
   ):<span className="text-[9px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full border bg-sky-50 text-sky-500  border-sky-200 font-semibold">شحن الخزائن</span>
 }
-        <span className="text-[#3498db] font-bold  flex text-lg">{data?.total || 0}
+        <span className="text-[#3498db] font-bold  flex text-lg">
+  {prices
+    ?.filter(p => p.company === company.company && p.type === company.shippingType.type)
+    .map(p => p.price) || "0"}
+          {/* {data?.total || 0} */}
           <Image alt="real" src={realBlue} width={20} height={20}/>
         </span>
     </div>

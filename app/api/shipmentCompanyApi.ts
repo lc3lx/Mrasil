@@ -54,54 +54,8 @@ interface ErrorResponse {
   message: string;
 }
 
-export interface CreateShipmentOrderPayload {
-  company: string;
-  shapmentingType: string;
-  order: {
-    weight: number;
-    total: {
-      amount: number;
-      currency: string;
-    };
-    paymentMethod: string;
-    description: string;
-    source: string;
-    direction: string;
-    customer: {
-      full_name: string;
-      mobile: string;
-      city: string;
-      country: string;
-      address: string;
-      email: string;
-      district: string;
-    };
-  };
-}
 
-export interface ShipmentOrderResponse {
-  success: boolean;
-  data: any; 
-  message?: string;
-}
 
-// ---------------- shipmentApi ----------------
-export const shipmentApi = createApi({
-  reducerPath: "shipmentApi",
-  baseQuery: baseQueryWithTokenErrorHandling,
-  tagTypes: ["ShipmentOrder"],
-  endpoints: (builder) => ({
-    createShipmentOrder: builder.mutation<ShipmentOrderResponse, CreateShipmentOrderPayload>({
-      query: (payload) => ({
-        url: "/shipment/accountingshipmentprice",
-        method: "POST",
-        body: payload,
-        credentials: "include",
-      }),
-      // invalidatesTags: ["ShipmentOrder"],
-    }),
-  }),
-});
 
 // ---------------- shipmentCompanyApi ----------------
 export const shipmentCompanyApi = createApi({
@@ -150,5 +104,4 @@ export const shipmentCompanyApi = createApi({
 });
 
 // ---------------- Export hooks ----------------
-export const { useCreateShipmentOrderMutation } = shipmentApi;
 export const { useGetAllShipmentCompaniesQuery, useGetShipmentCompanyInfoQuery } = shipmentCompanyApi;
