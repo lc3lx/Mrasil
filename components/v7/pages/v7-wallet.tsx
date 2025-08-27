@@ -262,7 +262,7 @@ export default function V7Wallet({ isOpen, onClose, balance, onBalanceUpdate }: 
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-xl max-h-screen overflow-y-auto border-none" dir="ltr">
+      <DialogContent className="max-w-xl max-h-screen overflow-y-auto border-none py-10" dir="ltr">
         <DialogHeader>
           <DialogTitle className="text-right text-xl mb-4 border-b border-gray-300 pb-2 flex items-center justify-between" dir="rtl">
             <span className=" mt-4">شحن المحفظة</span>
@@ -273,17 +273,17 @@ export default function V7Wallet({ isOpen, onClose, balance, onBalanceUpdate }: 
           <div className="space-y-2">
             <Label className="text-right block">اختر المبلغ</Label>
             <div className="grid grid-cols-5 gap-2">
-              {["50", "100", "200", "500", "1000"].map((val) => {
+              {["100", "200", "500", "1000", "5000"].map((val) => {
                 const isSelected = selectedAmount === val;
                 return (
                   <button
                     type="button"
                     key={val}
                     onClick={() => handleAmountSelect(val)}
-                    className={`p-2 text-sm rounded transition-colors flex items-center justify-center ${
+                    className={`p-2 text-sm rounded transition-colors flex items-center justify-center v7-neu-btn max-h-10  ${
                       isSelected
-                        ? "text-white bg-gradient-to-r from-[#3498db] to-[#2980b9] hover:from-[#2980b9] hover:to-[#3498db] transition-all duration-300"
-                        : "bg-blue-50 text-blue-800 hover:bg-blue-100"
+                        ? " text-white bg-primary "
+                        : "bg-blue-50 text-[#5791F4] hover:bg-blue-100 "
                     }`}
                   >
                     {val}
@@ -306,10 +306,9 @@ export default function V7Wallet({ isOpen, onClose, balance, onBalanceUpdate }: 
                     placeholder="مبلغ آخر"
               value={customAmount}
               onChange={handleCustomAmountChange}
-              className="text-right v7-neu-input-hollow text-gry"
-              type="number"
-              min="1"
-              step="1"
+              className="v7-neu-input-hollow text-gry"
+            pattern="[0-9]"
+              min="0"
             />
           </div>
                     {/* اختيار طريقة الدفع */}
@@ -442,7 +441,7 @@ export default function V7Wallet({ isOpen, onClose, balance, onBalanceUpdate }: 
                   onChange={(e) => {
                     const value = e.target.value.replace(/\D/g, '');
                     if (value.length <= 16) {
-                      setCardNumber(value.replace(/(\d{4})/g, '$1 ').trim());
+                       setCardNumber(value);
                     }
                   }}
                   maxLength={19}
@@ -450,10 +449,11 @@ export default function V7Wallet({ isOpen, onClose, balance, onBalanceUpdate }: 
                 />
               </div>
               
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
+              <div className=" flex flex-col  space-y-4 mt-2">
                   <Label className="text-right block">تاريخ الانتهاء</Label>
-                  <div className="flex gap-2">
+                  <div className="flex gap-6">
+                              <div className="space-y-2">
+                  <Label className="text-right block">شهر</Label>
                     <Input
                       placeholder="MM"
                       value={cardMonth}
@@ -465,6 +465,9 @@ export default function V7Wallet({ isOpen, onClose, balance, onBalanceUpdate }: 
                       maxLength={2}
                       required
                     />
+                    </div>
+                       <div className="space-y-2">
+                  <Label className="text-right block">سنة</Label>
                     <Input
                       placeholder="YY"
                       value={cardYear}
@@ -476,8 +479,9 @@ export default function V7Wallet({ isOpen, onClose, balance, onBalanceUpdate }: 
                       maxLength={2}
                       required
                     />
+                    </div>
                   </div>
-                </div>
+             
                 
                 <div className="space-y-2">
                   <Label className="text-right block">رمز الأمان (CVC)</Label>
@@ -493,6 +497,7 @@ export default function V7Wallet({ isOpen, onClose, balance, onBalanceUpdate }: 
                     required
                   />
                 </div>
+                 
               </div>
             </div>
           )}

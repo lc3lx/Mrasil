@@ -23,6 +23,7 @@ import {
   Scale,
   CreditCard,
   Car,
+  Check,
 } from "lucide-react";
 import ResponseModal from "../../components/ResponseModal";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -65,7 +66,7 @@ import {
   useGetAllParcelsQuery,
   useCreateParcelMutation,
 } from "../../api/parcelsApi";
-import {  useGetAllShipmentCompaniesQuery } from "../../api/shipmentCompanyApi";
+import { useGetAllShipmentCompaniesQuery } from "../../api/shipmentCompanyApi";
 import { motion } from "framer-motion";
 import { Building, Plus } from "lucide-react";
 import { AddSenderAddressForm } from "./AddSenderAddressForm";
@@ -292,16 +293,17 @@ export function CreateShipmentSteps() {
         weight: Number(data.weight),
         Parcels: Number(data.Parcels) || 1,
         dimension: {
-          high: Number(data.dimension_high),
-          width: Number(data.dimension_width),
-          length: Number(data.dimension_length),
+          high: Number(data.boxSize.height),
+          width: Number(data.boxSize.width),
+          length: Number(data.boxSize.length),
         },
       };
-      await createShipment(payload).unwrap();
-      setModalStatus("success");
+   const newShipment = await createShipment(payload).unwrap();
+   setModalStatus("success");
       setModalMessage("تمت إضافة الشحنة بنجاح");
       setModalOpen(true);
       await refetchShipments();
+        localStorage.setItem("lastShipment", JSON.stringify(newShipment));
       setTimeout(() => {
         router.push("/shipments");
       }, 1200);
@@ -930,9 +932,15 @@ function Step3Content({
   } = useFormContext();
   const values = getValues();
   const [isSubmitting, setIsSubmitting] = useState(false);
+const [boxSizes, setBoxSizes] = useState<any[]>([]);
+const [selectedBoxSize, setSelectedBoxSize] = useState<any>(null);
+
+
   // Fetch companies
-  const { data: companiesData, isLoading: isLoadingCompanies } =useGetAllShipmentCompaniesQuery();
-  const [createShipmentOrder, { data, isLoading, error }] = useCreateShipmentOrderMutation();
+  const { data: companiesData, isLoading: isLoadingCompanies } =
+    useGetAllShipmentCompaniesQuery();
+  const [createShipmentOrder, { data, isLoading, error }] =
+    useCreateShipmentOrderMutation();
 
   // Shipment type tabs
   const shipmentTypes = [
@@ -943,18 +951,8 @@ function Step3Content({
     { label: "الشحن البارد", value: "Cold" },
   ];
 
-  const [selectedShipmentType, setSelectedShipmentType] = useState("Dry");
-  
   const selectedCompany = watch("company");
 
-  const handleShipmentTypeTab = (type: string) => {
-    setSelectedShipmentType(type);
-    setValue("shipmentType", type);
-  };
-
-  const uniqueCompanies = (companiesData || []).filter(
-    (c, idx, arr) => arr.findIndex((x) => x.company === c.company) === idx
-  );
 
   const handleSubmit = async (e: any) => {
     setIsSubmitting(true);
@@ -964,75 +962,59 @@ function Step3Content({
       setIsSubmitting(false);
     }
   };
-const companiesWithTypes = (companiesData || []).flatMap(company => {
-  if (!company.shippingTypes || company.shippingTypes.length === 0) return [];
-  return company.shippingTypes.map(shippingType => ({
-    ...company,
-    shippingType, 
-  }));
-})  .sort((a, b) => {
-    // نحط "Dry" أول شي
-    if (a.shippingType.type === "Dry" && b.shippingType.type !== "Dry") return -1;
-    if (a.shippingType.type !== "Dry" && b.shippingType.type === "Dry") return 1;
-    return 0; // الباقي حسب الترتيب الأصلي
-  });
+  const companiesWithTypes = (companiesData || [])
+    .flatMap((company) => {
+      if (!company.shippingTypes || company.shippingTypes.length === 0)
+        return [];
+      return company.shippingTypes.map((shippingType) => ({
+        ...company,
+        shippingType,
+      }));
+    })
+    .sort((a, b) => {
+      // نحط "Dry" أول شي
+      if (a.shippingType.type === "Dry" && b.shippingType.type !== "Dry")
+        return -1;
+      if (a.shippingType.type !== "Dry" && b.shippingType.type === "Dry")
+        return 1;
+      return 0; // الباقي حسب الترتيب الأصلي
+    });
 
+  const companyData = companiesData?.find((c) => c.company === selectedCompany);
+  const validTypes = companyData?.shippingTypes?.map((t) => t.type) || [];
+  const shipmentTypeToUse = validTypes.includes(values.shipmentType)
+    ? values.shipmentType
+    : validTypes[0];
 
+const handleCompanySelect = (company: string, shippingType: string) => {
+  const selected = companiesData?.find(c => c.company === company);
+  if (selected) {
+    setValue("company", company);
+    setValue("shipmentType", shippingType);
+    // ✅ ضيف label وخلّي المعرف هو _id
+    const sizes = (selected.allowedBoxSizes || []).map((s: any) => ({
+      ...s,
+      label: `${s.length}×${s.width}×${s.height} سم`,
+    }));
 
-
-const companyData = companiesData?.find(c => c.company === selectedCompany);
-const validTypes = companyData?.shippingTypes?.map(t => t.type) || [];
-const shipmentTypeToUse = validTypes.includes(values.shipmentType)
-  ? values.shipmentType
-  : validTypes[0];
-  
-const handleCompanySelect = async (company: string, shippingType:string) => {
-  setValue("company", company);          
-  setValue("shipmentType", shippingType);
-// const payload = {
-//   company: company,
-//   shapmentingType: shippingType,
-//   order: {
-//     customer: {
-//       full_name: values.recipient_full_name || "",
-//       mobile: values.recipient_mobile || "",
-//       email: values.recipient_email || "",
-//       address: values.recipient_address || "",
-//       city: values.recipient_city || "",
-//       district: values.recipient_district || "",
-//       country: "sa",
-//     },
-//     description: values.orderDescription || "",
-//     direction: "straight",
-//     paymentMethod: values.paymentMethod,
-//     source: "salla",
-//     total: { amount: Number(values.total), currency: "SAR" },
-//     weight: Number(values.weight) || 1,
-//   },
-// };
-// console.log(companiesData);
-
-
-  //   try {
-  //   const response = await createShipmentOrder(payload).unwrap();
-  //   console.log("Price response:", response);
-  // } catch (err: any) {
-  //   console.error("Error fetching price:", err.data?.message || err.message);
-  // }
+    setBoxSizes(sizes);
+    setSelectedBoxSize(null);
+    setValue("boxSize", null); // امسح القدي
+  }
 };
-  // NEW  
 
-  // NEW: Fetch prices for all companies - FIXED INFINITE RENDER
+  // NEW
   const [prices, setPrices] = useState<any[]>([]);
   const [pricesFetched, setPricesFetched] = useState(false);
-  
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+
   useEffect(() => {
-    // Only run if we have companies data and haven't fetched prices yet
     if (pricesFetched || !companiesData?.length || !values) return;
 
     const fetchAllPrices = async () => {
-      const companiesWithTypes = companiesData.flatMap(c =>
-        c.shippingTypes?.map(type => ({ ...c, shippingType: type })) || []
+      const companiesWithTypes = companiesData.flatMap(
+        (c) =>
+          c.shippingTypes?.map((type) => ({ ...c, shippingType: type })) || []
       );
 
       try {
@@ -1059,37 +1041,37 @@ const handleCompanySelect = async (company: string, shippingType:string) => {
                 weight: Number(values.weight) || 1,
               },
             };
-            
+                console.log("Sending payload:", payload);
             const res = await createShipmentOrder(payload).unwrap();
-   const price = res?.data?.total;
-return {
-  company: company.company,
-  type: company.shippingType.type,
-  price: price
-};
+            const price = res?.data?.total;
+            return {
+              company: company.company,
+              type: company.shippingType.type,
+              price: price,
+            };
           } catch (err: any) {
             console.error(`Error fetching price for ${company.company}:`, err);
             return {
               company: company.company,
               type: company.shippingType.type,
-              error: err.data?.message || err.message
+              error: err.data?.message || err.message,
             };
           }
-
         });
         const results = await Promise.all(fetches);
         setPrices(results);
-        setPricesFetched(true); // Mark as fetched to prevent re-fetching
+        setPricesFetched(true);
       } catch (error) {
         console.error("Error in fetchAllPrices:", error);
-        setPricesFetched(true); // Still set to true to prevent infinite retries
+        setPricesFetched(true);
       }
+      
     };
 
     fetchAllPrices();
-  }, [companiesData]); // Added pricesFetched to dependenciesشركات
-console.log(prices)
-
+  }, [companiesData]);
+  console.log("values",values);
+  
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
       <div className="space-y-4">
@@ -1114,16 +1096,14 @@ console.log(prices)
               <circle cx="17" cy="18" r="2" />
             </svg>
           </div>
-          <h2 className="text-2xl font-semibold text-[#1a365d]">
-            إختر الناقل
-          </h2>
+          <h2 className="text-2xl font-semibold text-[#1a365d]">إختر الناقل</h2>
         </div>
         <div className="flex flex-col gap-4">
           {isLoadingCompanies ? (
             <div>جاري التحميل...</div>
           ) : (
             companiesWithTypes?.map((company) => {
-              const { shippingType } = company; 
+              const { shippingType } = company;
               const logoSrc = (function getCompanyLogo(
                 companyName: string
               ): string {
@@ -1143,23 +1123,31 @@ console.log(prices)
               const isSelected = selectedCompany === company.company;
 
               return (
-<CarrierCard
-  key={company.shippingType._id + company.shippingType.type}
-  company={company}
-  selectedCompany={selectedCompany}
-  handleCompanySelect={() => handleCompanySelect(company.company, company.shippingType.type)}
-  logoSrc={logoSrc}
-  firstType={company.shippingType}
-  values={values}
-  prices={prices} 
-/>
+                <CarrierCard
+                  key={company.shippingType._id + company.shippingType.type}
+                  company={company}
+                  selectedCompany={selectedCompany}
+                  handleCompanySelect={() =>
+                    handleCompanySelect(
+                      company.company,
+                      company.shippingType.type
+                    )
+                  }
+                  logoSrc={logoSrc}
+                  firstType={company.shippingType}
+                  values={values}
+                  prices={prices}
+                  boxSizes={boxSizes}
+                  selectedBoxSize={selectedBoxSize}
+                  setValue={setValue}
+                  setSelectedBoxSize={setSelectedBoxSize}
+                />
               );
             })
           )}
         </div>
       </div>
-
-      <OrderSummaryAndFragileTips values={values} prices={prices} />
+      <OrderSummaryAndFragileTips values={values} prices={prices}  />
 
       <div className="flex justify-between mt-8">
         <Button

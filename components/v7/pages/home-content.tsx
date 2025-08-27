@@ -281,7 +281,7 @@ const sortedCompanies = companiesWithTypes.sort((a, b) => {
               value: walletLoading ? (
                 "..."
               ) : walletData?.wallet.balance !== undefined ? (
-                <span className="flex items-center justify-end gap-1">
+                <span className="flex items-center text-[#0d904f] justify-end gap-1">
                   <span>{walletData.wallet.balance.toString() ?? "-"}</span>
                   <Image
                     src={Real}

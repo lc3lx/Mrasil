@@ -60,7 +60,7 @@ export default function SignupPage() {
         <div className="w-full flex justify-center items-center min-h-[80vh]">
           <div className="w-full max-w-md mx-auto bg-white/20 backdrop-blur-xl border border-white/30 rounded-3xl shadow-xl p-10 flex flex-col items-center">
             {/* Title */}
-            <h2 className="text-3xl font-bold text-white mb-8 tracking-wide text-center drop-shadow">Sign Up</h2>
+            <h2 className="text-3xl font-bold text-white mb-8 tracking-wide text-center drop-shadow">تسجيل دخول جديد</h2>
             {/* Form Section */}
             <form onSubmit={handleSubmit} className="w-full flex flex-col gap-6">
               <div className="w-full grid grid-cols-1 gap-4">
@@ -72,7 +72,7 @@ export default function SignupPage() {
                     type="text"
                     required
                     className="block w-full py-3 px-4 bg-white/10 text-white placeholder-white/70 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-white/60 focus:border-none text-base"
-                    placeholder="First Name"
+                    placeholder="الأسم الأول"
                     value={formData.firstName}
                     onChange={handleChange}
                   />
@@ -85,7 +85,7 @@ export default function SignupPage() {
                     type="text"
                     required
                     className="block w-full py-3 px-4 bg-white/10 text-white placeholder-white/70 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-white/60 focus:border-none text-base"
-                    placeholder="Last Name"
+                    placeholder="الأسم الأخير"
                     value={formData.lastName}
                     onChange={handleChange}
                   />
@@ -104,7 +104,7 @@ export default function SignupPage() {
                       type="email"
                       required
                       className="block w-full pl-12 pr-4 py-3 bg-white/10 text-white placeholder-white/70 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-white/60 focus:border-none text-base"
-                      placeholder="Email"
+                      placeholder="البريد الإلكتروني"
                       value={formData.email}
                       onChange={handleChange}
                     />
@@ -124,7 +124,7 @@ export default function SignupPage() {
                       type={showPassword ? "text" : "password"}
                       required
                       className="block w-full pl-12 pr-10 py-3 bg-white/10 text-white placeholder-white/70 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-white/60 focus:border-none text-base"
-                      placeholder="Password"
+                      placeholder="كلمة المرور"
                       value={formData.password}
                       onChange={handleChange}
                     />
@@ -153,7 +153,7 @@ export default function SignupPage() {
                       type={showConfirmPassword ? "text" : "password"}
                       required
                       className="block w-full pl-12 pr-10 py-3 bg-white/10 text-white placeholder-white/70 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-white/60 focus:border-none text-base"
-                      placeholder="Confirm Password"
+                      placeholder="تأكيد المرور"
                       value={formData.confirmPassword}
                       onChange={handleChange}
                     />
@@ -173,7 +173,7 @@ export default function SignupPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3 rounded-full bg-white text-blue-700 font-bold text-lg shadow hover:shadow-2xl transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full py-3 rounded-full text-white bg-primary font-bold text-lg shadow hover:shadow-2xl transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {isLoading ? (
                   <div className="flex items-center justify-center">
@@ -181,17 +181,17 @@ export default function SignupPage() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    Signing up...
+                   جار تسجيل دخول...
                   </div>
                 ) : (
-                  'Sign Up'
+                  'تسجيل دخول جديد'
                 )}
               </button>
               {/* Login Link */}
               <div className="w-full flex justify-center mt-4">
-                <p className="text-white/80 text-base font-medium">
-                  Already have an account?{' '}
-                  <Link href="/login" className="underline hover:text-white">Login</Link>
+                <p className="text-white/80 text-base font-medium flex gap-2">
+                 هل لديك حساب بالفعل؟
+                  <Link href="/login" className="underline hover:text-white">تسجيل دخول</Link>
                 </p>
               </div>
             </form>

@@ -166,7 +166,6 @@ export function ParcelSizeSection({
                     <Check className="h-4 w-4 text-white" />
                   </div>
                 )}
-                <div></div>
               </div>
             </motion.div>
           );

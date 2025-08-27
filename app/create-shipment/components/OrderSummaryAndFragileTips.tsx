@@ -1,28 +1,54 @@
-import React from "react";
-import { FileText, Package, Shield, X } from "lucide-react";
+import React, { useState } from "react";
+import { Check, FileText, Package, Shield, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useFormContext } from "react-hook-form";
-import RealBlue from "../../../public/real-blue.png"
+import RealBlue from "../../../public/real-blue.png";
 import Image from "next/image";
- interface OrderSummaryAndFragileTipsProps{
-  values: any,
-  prices:any
- }
-export function OrderSummaryAndFragileTips({ values,prices }: OrderSummaryAndFragileTipsProps) {
+import { motion } from "framer-motion";
 
+interface OrderSummaryAndFragileTipsProps {
+  values: any;
+  prices: any;
+
+}
+interface SizeCard {
+  key: string;
+  label: string;
+
+  length: number;
+  width: number;
+  height: number;
+  desc: string;
+  maxWeight?: number;
+  price?: number;
+  examples?: any;
+}
+export function OrderSummaryAndFragileTips({
+  values,
+  prices,
+
+}: OrderSummaryAndFragileTipsProps) {
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const { watch } = useFormContext();
   const length = watch("dimension_length") || 0;
   const width = watch("dimension_width") || 0;
   const height = watch("dimension_high") || 0;
- const volume = length * width * height;
-const displayName =
-  values.company === "omniclama" ? "LLAMA BOX" :
-  values.company === "smsa" ? (values.shipmentType === "Dry" ? "SMSA PRO" : "SMSA") :
-  values.company === "aramex" ? "ARAMEX PRO" :
-  values.company.toUpperCase();
+  const volume = length * width * height;
+  const displayName =
+    values.company === "omniclama"
+      ? "LLAMA BOX"
+      : values.company === "smsa"
+      ? values.shipmentType === "Dry"
+        ? "SMSA PRO"
+        : "SMSA"
+      : values.company === "aramex"
+      ? "ARAMEX PRO"
+      : values.company.toUpperCase();
   return (
     <>
+
+
       {/* نصائح للشحنات القابلة للكسر */}
       <div className="flex items-center gap-3">
         <div className="v7-neu-icon-sm bg-amber-100">
@@ -108,15 +134,16 @@ const displayName =
                 <div className="w-5 h-5 rounded-full bg-[#3498db]/20 flex items-center justify-center mt-0.5 flex-shrink-0">
                   <span className="text-[#3498db] text-xs font-bold">٤</span>
                 </div>
-              <div className=" flex flex-col gap-3">
-                <p className="text-gray-700">
-                  نوصي بشدة بإضافة تأمين للشحنة لتغطية أي أضرار محتملة أثناء
-                  النقل
-                </p>
-                           <p className="text-gray-700">
-            بحيث انه اذا اتلفت الشحنة بأي شكل من الاشكال يكون التعويض ( 100 ريال ) فقط كما تنص عليه قوانين شركات الشحن
-                </p>
-              </div>
+                <div className=" flex flex-col gap-3">
+                  <p className="text-gray-700">
+                    نوصي بشدة بإضافة تأمين للشحنة لتغطية أي أضرار محتملة أثناء
+                    النقل
+                  </p>
+                  <p className="text-gray-700">
+                    بحيث انه اذا اتلفت الشحنة بأي شكل من الاشكال يكون التعويض (
+                    100 ريال ) فقط كما تنص عليه قوانين شركات الشحن
+                  </p>
+                </div>
               </li>
             </ul>
 
@@ -251,44 +278,74 @@ const displayName =
             <div className="flex justify-between items-center py-3 border-b border-[#3498db]/10">
               <span className="text-[#6d6a67] font-medium">من</span>
               <span className="font-medium text-[#1a365d]">
-                {values.shipper_city  || "غير محدد"}
+                {values.shipper_city || "غير محدد"}
               </span>
             </div>
             <div className="flex justify-between items-center  py-3 border-b border-[#3498db]/10">
               <span className="text-[#6d6a67] font-medium">إلى</span>
-              <span className="font-medium text-[#1a365d]">{values.recipient_city  || "غير محدد"}</span>
+              <span className="font-medium text-[#1a365d]">
+                {values.recipient_city || "غير محدد"}
+              </span>
             </div>
             <div className="flex justify-between items-center  py-3 border-b border-[#3498db]/10">
               <span className="text-[#6d6a67] font-medium">نوع الشحنة</span>
-              <span className="font-medium text-[#1a365d]">{values.paymentMethod == "Prepaid" ? "الدفع مسبق" :"الدفع عند الأستلام" }</span>
+              <span className="font-medium text-[#1a365d]">
+                {values.paymentMethod == "Prepaid"
+                  ? "الدفع مسبق"
+                  : "الدفع عند الأستلام"}
+              </span>
             </div>
             <div className="flex justify-between items-center  py-3 border-b border-[#3498db]/10">
               <span className="text-[#6d6a67] font-medium">حجم الطرد</span>
-              {values.dimension_width ?
-              <span className="font-medium text-[#1a365d] ">{values.dimension_high} * {values.dimension_length} * {values.dimension_width} </span>
-             :<span className="font-medium text-[#1a365d] ">غير محدد</span> }
+              {values.boxSize ? (
+                <span className="font-medium text-[#1a365d] ">
+                  {values.boxSize.height} * {values.boxSize.length} *{" "}
+                  {values.boxSize.width}{" "}
+                </span>
+              ) : (
+                <span className="font-medium text-[#1a365d] ">غير محدد</span>
+              )}
             </div>
             <div className="flex justify-between items-center  py-3 border-b border-[#3498db]/10">
               <span className="text-[#6d6a67] font-medium">الوزن</span>
-              <span className="font-medium text-[#1a365d]">{values.weight || "غير محدد"}</span>
+              <span className="font-medium text-[#1a365d]">
+                {values.weight || "غير محدد"}
+              </span>
             </div>
             <div className="flex justify-between items-center  py-3 border-b border-[#3498db]/10">
               <span className="text-[#6d6a67] font-medium">عدد الصناديق</span>
-              <span className="font-medium text-[#1a365d]">{values.Parcels || "غير محدد"}</span>
+              <span className="font-medium text-[#1a365d]">
+                {values.Parcels || "غير محدد"}
+              </span>
             </div>
             <div className="flex justify-between items-center  py-3 border-b border-[#3498db]/10">
               <span className="text-[#6d6a67] font-medium">خدمة التوصيل</span>
               <span className="font-medium text-[#1a365d]">
-                { displayName  || "غير محدد"}
+                {displayName || "غير محدد"}
               </span>
             </div>
             <div className="flex justify-between items-center  py-4 text-xl font-bold">
               <span className="text-[#1a365d]">سعر البوليصة</span>
               <span className="text-[#3498db] px-3 py-1.5 rounded-lg inline-flex items-center">
-              {/* {values.total  || "غير محدد"} ريال */}
-   {prices
-  ?.filter(p => p.company === values?.company && p.type === values?.shipmentType)[0]?.price || "0"} <Image alt="price" src={RealBlue} className=" w-[20px] h-[20px]"/>
+                {/* {values.total  || "غير محدد"} ريال */}
+                {(() => {
+                  const price =
+                    prices?.filter(
+                      (p: any) =>
+                        p.company === values?.company &&
+                        p.type === values?.shipmentType
+                    )[0]?.price || 0;
 
+                  return Number.isInteger(Number(price))
+                    ? Number(price)
+                    : Number(price).toPrecision(4);
+                })()}
+
+                <Image
+                  alt="price"
+                  src={RealBlue}
+                  className=" w-[20px] h-[20px]"
+                />
               </span>
             </div>
           </div>

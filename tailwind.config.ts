@@ -2,13 +2,14 @@ import type { Config } from "tailwindcss"
 
 const config = {
   darkMode: ["class"],
-  content: [
-    "./pages/**/*.{ts,tsx}",
-    "./components/**/*.{ts,tsx}",
-    "./app/**/*.{ts,tsx}",
-    "./src/**/*.{ts,tsx}",
-    "*.{js,ts,jsx,tsx,mdx}",
-  ],
+content: [
+  "./pages/**/*.{ts,tsx}",
+  "./components/**/*.{ts,tsx}",
+  "./app/**/*.{ts,tsx,js,jsx}",
+  "./src/**/*.{ts,tsx}",
+  "*.{js,ts,jsx,tsx,mdx}",
+],
+
   prefix: "",
   theme: {
     container: {
@@ -19,8 +20,9 @@ const config = {
       },
     },
     extend: {
-      fontFamily: {
-        sans: ["var(--font-cairo)"],
+       fontFamily: {
+        sans: ['Cairo', 'ui-sans-serif', 'system-ui'],
+        tajawal: ['Tajawal', 'ui-sans-serif', 'system-ui'],
       },
       colors: {
         gry:"#6d6a67",

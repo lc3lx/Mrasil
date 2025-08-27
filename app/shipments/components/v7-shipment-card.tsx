@@ -299,24 +299,7 @@ const displayName =
                 <span className="sr-only sm:not-sr-only">تتبع</span>
               </Button>
             </Link>
-            {/* 0000000000000 */}
-             {/* {
-             carrierInfo.name.toLowerCase() === "smsa" &&
-                    shipment?.smsaResponse?.label && (
-                      <Button
-                        className="mt-2"
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          downloadBase64File(
-                            shipment.smsaResponse.label,
-                            `smsa-label-${shipment._id || "label"}.pdf`
-                          )
-                        }
-                      >
-                        تحميل الليبل (SMSA)
-                      </Button>
-                    )} */}
+
 {labelUrl ? (
 carrierInfo.name.toLowerCase() === "smsa" ?
                     shipment?.smsaResponse?.label  &&(

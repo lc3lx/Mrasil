@@ -40,6 +40,7 @@ import { useGetMyShipmentsQuery } from "@/app/api/shipmentApi"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { ShipmentsGrid } from "./components/ShipmentsGrid";
 
+
 type ShipmentStatus = "delivered" | "transit" | "processing" | "ready"
 type ShipmentPriority = "فائق السرعة" | "سريع" | "عادي"
 
@@ -96,10 +97,9 @@ export default function ShipmentsPage() {
   const [filterSource, setFilterSource] = useState("all") // إضافة حالة لفلترة المصدر
   const [filterCarrier, setFilterCarrier] = useState("all") // إضافة حالة لفلترة شركة الشحن
   // Replace selectedShipments state with selectedShipmentId
-  const [selectedShipmentId, setSelectedShipmentId] = useState<string[]>([])
+const [selectedShipmentId, setSelectedShipmentId] = useState<string[]>([]);
   const [activeFilters, setActiveFilters] = useState<string[]>([]) // لتتبع الفلاتر النشطة
   const [currentPage, setCurrentPage] = useState(1)
-
   // Fetch shipments data from API
   const { data: shipmentsResponse, isLoading, error } = useGetMyShipmentsQuery({ page: currentPage, itemsPerPage: 5 })
 
@@ -217,6 +217,55 @@ export default function ShipmentsPage() {
     { id: "smsa", name: "سمسا" },
     { id: "imile", name: "آي مايل" },
   ]
+  function downloadBase64File(base64: string, fileName: string) {
+    const arr = base64.split(",");
+    const mime = arr[0].match(/:(.*?);/)?.[1] || "application/pdf";
+    const bstr = atob(arr[arr.length - 1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) u8arr[n] = bstr.charCodeAt(n);
+    const blob = new Blob([u8arr], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+useEffect(() => {
+  if (typeof window === "undefined") return;
+  if ((window as any).hasPrintedLastShipment) return;
+  (window as any).hasPrintedLastShipment = true;
+
+  const lastShipmentStr = localStorage.getItem("lastShipment");
+  console.log("data", lastShipmentStr);
+  
+  if (!lastShipmentStr) return;
+
+  const lastShipment = JSON.parse(lastShipmentStr);
+  const carrier = lastShipment?.data?.shipment?.shapmentCompany;
+  const labelUrl = lastShipment?.data?.shipment?.redboxResponse?.label;
+console.log("lastShipment",lastShipment?.data?.shipment);
+
+  const printLabel = () => {
+    if (carrier == "smsa") {
+      downloadBase64File(
+        lastShipment?.data?.shipment?.smsaResponse.label,
+        `smsa-label-${lastShipment.data.shipment._id}.pdf`
+      );
+    } else if (labelUrl) {
+      const win = window.open(labelUrl, "_blank");
+      win?.print();
+    } else {
+      console.log("لا توجد بوليصة للطباعة");
+    }
+    localStorage.removeItem("lastShipment");
+  }
+
+  setTimeout(printLabel, 500);
+}, []);
 
   // استخدام البيانات المحولة من API
   const shipments = transformApiDataToShipments()
@@ -385,6 +434,9 @@ export default function ShipmentsPage() {
     )
   }
 
+
+
+
   return (
     <V7Layout>
       <V7Content title="شحناتي" description="إدارة ومتابعة جميع شحناتك">
@@ -408,7 +460,7 @@ export default function ShipmentsPage() {
             </div>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-4">
+          <div className="grid gap-6  grid-cols-2 lg:grid-cols-4">
             <V7ShipmentStatus
               title="تم التوصيل"
               count={deliveredCount}
@@ -427,9 +479,9 @@ export default function ShipmentsPage() {
             />
           </div>
 
-          <div className={`v7-neu-card p-6 rounded-xl v7-fade-in ${isLoaded ? "opacity-100" : "opacity-0"}`}>
-            <Tabs defaultValue="all" className="w-full" onValueChange={setActiveTab}>
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+          <div className={`v7-neu-card  p-6 rounded-xl v7-fade-in ${isLoaded ? "opacity-100" : "opacity-0"}`}>
+            <Tabs defaultValue="all" className="w-full " onValueChange={setActiveTab}>
+              <div className="  flex flex-col lg:flex-row justify-between gap-4  mb-6 ">
                 <TabsList className="v7-neu-tabs">
                   <TabsTrigger value="all" className="v7-neu-tab  text-lg text-gry">
                     جميع الشحنات

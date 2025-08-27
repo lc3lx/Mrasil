@@ -108,6 +108,14 @@
     -8px -8px 16px rgba(255, 255, 255, 0.8);
     border-radius: 16px;
   }
+.v7-neu-btn {
+    box-shadow: 8px 8px 16px rgba(197, 204, 211, 0.5),    -8px -8px 16px rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    -ms-border-radius: 10px;
+    -o-border-radius: 10px;
+}
 .v7-neu-Home {
 
     box-shadow: -8px -8px 15px rgba(255, 255, 255, 0.3) ,
@@ -251,13 +259,14 @@ background-color: rgba(0, 0, 0, 0.05);
 
 .v7-neu-button:hover::after {
   animation: v7Ripple 1s ease-out;
+  -webkit-animation: v7Ripple 1s ease-out;
 }
 
 .v7-neu-button:hover {
   box-shadow: 6px 6px 12px rgba(197, 204, 211, 0.6),
     -6px -6px 12px rgba(255, 255, 255, 0.9);
   transform: translateY(-2px);
-  color: #294d8b;
+  color: white;
 }
 
 .v7-neu-button:active {
@@ -434,6 +443,16 @@ background-color: rgba(0, 0, 0, 0.05);
 
 .v7-neu-input {
   background-color: transparent;
+  border: none;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  width: 100%;
+  border-radius: 12px;
+  outline: none;
+  padding-right: 40px;
+}
+.v7-neu-input-profile{
+    background-color: transparent;
   border: none;
   padding-top: 10px;
   padding-bottom: 10px;

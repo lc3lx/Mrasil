@@ -35,22 +35,18 @@ export default function LoginPage() {
       [e.target.name]: e.target.value,
     });
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     try {
       const result = await loginMutation(formData).unwrap();
       login(result.token, result.data);
       toast.success('تم تسجيل الدخول بنجاح!');
-      
-      // The useEffect will handle the redirect when isAuthenticated becomes true
+
     } catch (error: any) {
       setModalMessage(error.data?.message || 'فشل في تسجيل الدخول');
       setModalOpen(true);
     }
   };
-
   return (
     <div className="min-h-screen flex flex-col relative" style={{ backgroundImage: 'url(/login.png)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
       <div className="absolute inset-0 bg-black/40 z-0" />
@@ -62,7 +58,7 @@ export default function LoginPage() {
             <Link href={"/"}>
                     <Image src="/logo.png" alt="شعار الشركة" className="h-16 mb-2 w-auto" width={100} height={100} />
             </Link>
-            <h2 className="text-3xl font-bold text-white mb-8 tracking-wide text-center drop-shadow">Login</h2>
+            <h2 className="text-3xl font-bold text-white mb-8 tracking-wide text-center drop-shadow">تسجيل دخول</h2>
             {/* Form Section */}
             <form onSubmit={handleSubmit} className="w-full flex flex-col gap-6">
               {/* Email Field */}
@@ -79,7 +75,7 @@ export default function LoginPage() {
                     type="email"
                     required
                     className="block w-full pl-12 pr-4 py-3 bg-white/10 text-white placeholder-white/70 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-white/60 focus:border-none text-base"
-                    placeholder="Email"
+                      placeholder="البريد الإلكتروني"
                     value={formData.email}
                     onChange={handleChange}
                   />
@@ -99,7 +95,7 @@ export default function LoginPage() {
                     type={showPassword ? "text" : "password"}
                     required
                     className="block w-full pl-12 pr-10 py-3 bg-white/10 text-white placeholder-white/70 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-white/60 focus:border-none text-base"
-                    placeholder="Password"
+                    placeholder="كلمة المرور"
                     value={formData.password}
                     onChange={handleChange}
                   />
@@ -123,15 +119,15 @@ export default function LoginPage() {
                     type="checkbox"
                     className="h-4 w-4 text-white bg-white/20 border-white/40 rounded focus:ring-2 focus:ring-white/60"
                   />
-                  <span>Remember me</span>
+                  <span>تذكرني</span>
                 </label>
-                <Link href="/forgot-password" className="hover:underline text-white/80">Forgot password</Link>
+                <Link href="/forgot-password" className="hover:underline text-white/80">نسيت كلمة المرور</Link>
               </div>
               {/* Login Button */}
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3 rounded-full bg-white text-blue-700 font-bold text-lg shadow hover:shadow-2xl transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full py-3 rounded-full text-white bg-primary font-bold text-lg shadow hover:shadow-2xl transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {isLoading ? (
                   <div className="flex items-center justify-center">
@@ -139,17 +135,17 @@ export default function LoginPage() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    Loging in...
+                    جار تسجيل الدخول
                   </div>
                 ) : (
-                  'Login'
+                  'تسجيل دخول'
                 )}
               </button>
               {/* Register Link */}
-              <div className="w-full flex justify-center mt-4">
-                <p className="text-white/80 text-base font-medium">
-                  Don't have an account?{' '}
-                  <Link href="/signup" className="underline hover:text-white">Register</Link>
+              <div className="w-full flex justify-center gap-4 mt-4">
+                <p className="text-white/80 text-base font-medium  flex gap-2">
+                  ليس لديك حساب؟
+                  <Link href="/signup" className="underline hover:text-white">تسجيل دخول جديد</Link>
                 </p>
               </div>
             </form>

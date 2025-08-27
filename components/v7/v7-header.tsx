@@ -488,24 +488,30 @@ export function V7Header({
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="start"
-          className="w-48 sm:w-56 rounded-xl v7-neu-dropdown text-start"
+
+          className="w-48 sm:w-56 rounded-xl v7-neu-dropdown text-end"
         >
           <DropdownMenuLabel>حسابي</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem
+          dir="rtl"
             className="cursor-pointer rounded-lg"
             onClick={() => router.push("/profile")}
           >
             <User className="mr-2 h-4 w-4" />
             الملف الشخصي
           </DropdownMenuItem>
-          <DropdownMenuItem className="cursor-pointer rounded-lg">
+          <DropdownMenuItem className="cursor-pointer rounded-lg"
+            onClick={() => router.push("/shipments")}
+             dir="rtl"
+          >
             <Package className="mr-2 h-4 w-4" />
             شحناتي
           </DropdownMenuItem>
           <DropdownMenuItem
             className="cursor-pointer rounded-lg"
             onClick={() => router.push("/settings")}
+             dir="rtl"
           >
             <Settings className="mr-2 h-4 w-4" />
             الإعدادات
@@ -514,6 +520,7 @@ export function V7Header({
           <DropdownMenuItem
             className="cursor-pointer rounded-lg text-[#e05d34] hover:text-red-500"
             onClick={handleLogout}
+             dir="rtl"
           >
             <LogOut className="mr-2 h-4 w-4" />
             تسجيل الخروج

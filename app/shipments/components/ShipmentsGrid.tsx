@@ -47,8 +47,8 @@ export interface Shipment {
 
 interface ShipmentsGridProps {
   sortedShipments: Shipment[];
-  selectedShipmentId: string | null;
-  setSelectedShipmentId: (id: string | null) => void;
+  selectedShipmentId: string[];
+  setSelectedShipmentId: (id: string[]) => void;
   handleBulkAction: (action: string) => void;
   totalPages: number;
   currentPage: number;

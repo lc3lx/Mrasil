@@ -35,6 +35,7 @@ export interface Customer {
   company_name_ar?: string;
   company_name_en?: string;
   tax_number?: string;
+  profileImage?:string
 }
 
 export interface CustomerResponse {
@@ -62,16 +63,32 @@ export const customerApi = createApi({
       }),
       providesTags: ['Customer'],
     }),
-    updateCustomerMe: builder.mutation<CustomerResponse, FormData>({
-      query: (formData) => ({
+    updateCustomerMe: builder.mutation<CustomerResponse, FormData | Record<string, any>>({
+  query: (body) => {
+    // إذا body من نوع FormData → multipart
+    if (body instanceof FormData) {
+      return {
         url: '/customer/updateMe',
         method: 'PUT',
-        body: formData,
+        body,
         credentials: 'include',
-        
-      }),
-      invalidatesTags: ['Customer'],
-    }),
+      };
+    }
+
+    // إذا body object عادي → JSON
+    return {
+      url: '/customer/updateMe',
+      method: 'PUT',
+      body: JSON.stringify(body),
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    };
+  },
+  invalidatesTags: ['Customer'],
+}),
+
   }),
 });
 

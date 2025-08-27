@@ -78,7 +78,7 @@ export default function ChangePasswordForm() {
               <FormItem>
                 <FormLabel>كلمة المرور الحالية</FormLabel>
                 <FormControl>
-                  <Input type="password" {...field} />
+                  <Input type="password" {...field}  className="v7-neu-input text-gry"/>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -91,7 +91,7 @@ export default function ChangePasswordForm() {
               <FormItem>
                 <FormLabel>كلمة المرور الجديدة</FormLabel>
                 <FormControl>
-                  <Input type="password" {...field} />
+                  <Input type="password" {...field}  className="v7-neu-input text-gry"/>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -104,7 +104,7 @@ export default function ChangePasswordForm() {
               <FormItem>
                 <FormLabel>تأكيد كلمة المرور الجديدة</FormLabel>
                 <FormControl>
-                  <Input type="password" {...field} />
+                  <Input type="password" {...field}  className="v7-neu-input text-gry"/>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -112,7 +112,7 @@ export default function ChangePasswordForm() {
           />
           <Button 
             type="submit" 
-            className="w-full flex items-center justify-center py-3 text-base font-semibold bg-[#165a8f] text-white rounded-lg hover:bg-[#1a6bb8] transition-colors gap-2"
+            className=" v7-neu-button-accent"
             disabled={form.formState.isSubmitting}
           >
             <Save className="h-5 w-5" />
