@@ -75,8 +75,7 @@ export function ParcelSizeSection({
     price: "",
     description: "",
   });
-  const [createParcel, { isLoading: isCreatingParcel }] =
-    useCreateParcelMutation();
+  const [createParcel, { isLoading: isCreatingParcel }] =useCreateParcelMutation();
   const [visibleCount, setVisibleCount] = useState(6);
 
   const handleCustomParcelFormSubmit = async (e: any) => {

@@ -226,6 +226,8 @@ background-color: rgba(0, 0, 0, 0.05);
 .v7-neu-card-inner:hover {
   box-shadow: 6px 6px 12px rgba(197, 204, 211, 0.5),
     -6px -6px 12px rgba(255, 255, 255, 0.8);
+    font-style: #f0f4f8;
+    
 }
 
 /* تحديث أزرار المنصة */

@@ -544,8 +544,8 @@ function Step2Content({
     trigger,
     watch,
   } = useFormContext();
-  const { data: parcelsData, isLoading: isLoadingParcels } =
-    useGetAllParcelsQuery();
+  // const { data: parcelsData, isLoading: isLoadingParcels } =
+  //   useGetAllParcelsQuery();
   const paymentMethod = watch("paymentMethod");
   const { data: customerMeData } = useGetCustomerMeQuery();
 
@@ -934,7 +934,8 @@ function Step3Content({
   const [isSubmitting, setIsSubmitting] = useState(false);
 const [boxSizes, setBoxSizes] = useState<any[]>([]);
 const [selectedBoxSize, setSelectedBoxSize] = useState<any>(null);
-
+  const { data: parcelsData, isLoading: isLoadingParcels } =
+    useGetAllParcelsQuery();
 
   // Fetch companies
   const { data: companiesData, isLoading: isLoadingCompanies } =
@@ -1141,6 +1142,7 @@ const handleCompanySelect = (company: string, shippingType: string) => {
                   selectedBoxSize={selectedBoxSize}
                   setValue={setValue}
                   setSelectedBoxSize={setSelectedBoxSize}
+                  parcelsData={parcelsData}
                 />
               );
             })
