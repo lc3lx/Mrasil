@@ -599,13 +599,13 @@ function Step2Content({
         {/* --- Main layout: Cards and Shipment Type --- */}
         <div className="flex flex-col md:flex-row gap-8 mb-8">
           {/* Parcel size cards (left, 2/3) */}
-          <div className="flex-1">
+          {/* <div className="flex-1">
             <ParcelSizeSection
               parcelsData={parcelsData}
               setValue={setValue}
               errors={errors}
             />
-          </div>
+          </div> */}
           {/* Shipment type (right, 1/3) */}
           <div className="w-full md:w-1/3 flex flex-col gap-2">
             <div className="flex items-center gap-2 mb-4">
