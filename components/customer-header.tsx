@@ -85,7 +85,7 @@ export function CustomerHeader({ onMenuClick }: { onMenuClick: () => void }) {
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel>حسابي</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer">
+            <DropdownMenuItem className="cursor-pointer ">
               <User className="mr-2 h-4 w-4" />
               الملف الشخصي
             </DropdownMenuItem>

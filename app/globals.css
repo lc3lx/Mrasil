@@ -488,8 +488,12 @@ outline: none;
 padding-right: 40px;
   box-shadow: inset 4px 4px 8px rgba(197, 204, 211, 0.5),
     inset -4px -4px 8px rgba(255, 255, 255, 0.8);
-}
+    font-style: #646a67;
 
+}
+.v7-neu-input-hollow:focus{
+  border: none;
+}
 .v7-neu-inset {
   background-color: #f0f4f8;
   box-shadow: inset 3px 3px 6px rgba(197, 204, 211, 0.5),

@@ -118,7 +118,14 @@ export function V7ShipmentCard({
   
   // Helper functions for status, etc.
   const getStatusIcon = () => <Package className="h-5 w-5 text-violet-500" />;
-  const getStatusText = () => "جاهز للشحن";
+const getStatusText = () => {
+  switch (shipment.shipmentstates) {
+    case "Delivered": return "تم التسليم";
+    case "Cancelled": return "ملغاة";
+    case "Pending": return "قيد الانتظار";
+    default: return "جاهز للشحن";
+  }
+};
   const getStatusColor = () => "bg-violet-50 text-violet-700 border-violet-200";
 
   // Carrier details
@@ -287,7 +294,7 @@ const displayName =
             <Link
               href={`/tracking?id=${trackingNumber}`}
               className="w-full"
-              target="_blank"
+              // target="_blank"
               rel="noopener noreferrer"
             >
               <Button

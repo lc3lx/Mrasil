@@ -17,6 +17,7 @@ import {
   XCircle,
   Eye,
   CheckCircle,
+  Clock,
 } from "lucide-react";
 import { MdOutlinePendingActions } from "react-icons/md";
 import { RiFolderReceivedFill } from "react-icons/ri";
@@ -259,9 +260,6 @@ const sortedCompanies = companiesWithTypes.sort((a, b) => {
       </V7Content>
     );
   }
-  console.log("walletData",walletData);
-  
-
   return (
     <V7Content>
       <V7WelcomeBanner theme={theme} />
@@ -323,7 +321,7 @@ const sortedCompanies = companiesWithTypes.sort((a, b) => {
               value: ordersLoading ? (
                 "..."
               ) : (
-                <span className=" flex items-center gap-1">
+                <span className=" flex items-center gap-2">
                   <span>{todayOrders.length.toString()}</span>
                   طلب
                 </span>
@@ -335,7 +333,7 @@ const sortedCompanies = companiesWithTypes.sort((a, b) => {
               value: ordersLoading ? (
                 "..."
               ) : (
-                <span className=" flex items-center gap-1">
+                <span className=" flex items-center gap-2">
                   <span>{ordersData?.data.length?.toString() ?? "-"}</span>
                   طلب
                 </span>
@@ -347,7 +345,7 @@ const sortedCompanies = companiesWithTypes.sort((a, b) => {
               value: ordersLoading ? (
                 "..."
               ) : (
-                <span className=" flex items-center gap-1">
+                <span className=" flex items-center gap-2">
                   <span>{pendingOrdersCount.toString()}</span>
                   طلب
                 </span>
@@ -391,7 +389,7 @@ const sortedCompanies = companiesWithTypes.sort((a, b) => {
               value: shipmentStatsLoading ? (
                 "..."
               ) : (
-                <span className="flex items-center justify-end gap-1">
+                <span className="flex items-center justify-end gap-2">
                   <span>
                     {typeof shipmentStats?.pendingShipments === "number"
                       ? shipmentStats.pendingShipments.toLocaleString()
@@ -409,7 +407,7 @@ const sortedCompanies = companiesWithTypes.sort((a, b) => {
               value: shipmentStatsLoading ? (
                 "..."
               ) : (
-                <span className="flex items-center justify-end gap-1">
+                <span className="flex items-center justify-end gap-2">
                   <span>
                     {shipmentStats?.deliveredShipments?.toLocaleString() ?? "-"}
                   </span>
@@ -423,7 +421,7 @@ const sortedCompanies = companiesWithTypes.sort((a, b) => {
               value: shipmentStatsLoading ? (
                 "..."
               ) : (
-                <span className="flex items-center justify-end gap-1">
+                <span className="flex items-center justify-end gap-2">
                   <span>
                     {shipmentStats?.inTransitShipments?.toLocaleString() ?? "-"}
                   </span>
@@ -486,7 +484,7 @@ const sortedCompanies = companiesWithTypes.sort((a, b) => {
                           alt={company.companyName}
                           className="max-h-20 max-w-20 mb-2 object-cover"
                         />
-                        <div className="font-bold text-[#294D8B] text-xl">
+                        <div className="font-bold  text-primary text-xl">
                           {company.companyName === "omniclama"
                             ? "LLAMA BOX" : company.companyName === "redbox" ? "RED BOX" : company.companyName == "aramex" ? "ARAMEX PRO"
                             : company.companyName.toLocaleUpperCase()}
@@ -515,6 +513,40 @@ const sortedCompanies = companiesWithTypes.sort((a, b) => {
                               </span>
                             </li>
                           </ul>
+                        <ul className="  mt-2 text-gry space-y-1">
+  {["smsa", "redbox", "omniclama"].includes(company.companyName ?? "") ? (
+    <>
+      <li className="flex items-center justify-center gap-2 text-center">
+        {/* <span className="h-2 w-2 rounded-full bg-[#3498db] inline-block"></span> */}
+     <Clock className="w-4 h-4"/>3 - 2 أيام عمل
+      </li>
+      <li className="flex items-center justify-center gap-2">
+        <span className="h-2 w-2 rounded-full bg-[#3498db] inline-block"></span>
+        أسعار اقتصادية
+      </li>
+      <li className="flex items-center justify-center gap-2">
+        <span className="h-2 w-2 rounded-full bg-[#3498db] inline-block"></span>
+        تتبع مباشر
+      </li>
+    </>
+  ) : 
+    <>
+      <li className="flex items-center justify-center gap-2 text-center">
+          <Clock className="w-4 h-4"/>3 - 2 أيام عمل
+      </li>
+      <li className="flex items-center justify-center gap-2">
+        <span className="h-2 w-2 rounded-full bg-[#3498db] inline-block"></span>
+        توصيل من الباب للباب 
+      </li>
+      <li className="flex items-center justify-center gap-2">
+        <span className="h-2 w-2 rounded-full bg-[#3498db] inline-block"></span>
+        تتبع مباشر
+      </li>
+    </>
+  
+  }
+</ul>
+
                         </div>
                       </div>
                     );

@@ -495,13 +495,13 @@ export function V7Header({
           <DropdownMenuSeparator />
           <DropdownMenuItem
           dir="rtl"
-            className="cursor-pointer rounded-lg"
+            className="cursor-pointer rounded-lg hover:border-2 border-primary ease-linear "
             onClick={() => router.push("/profile")}
           >
             <User className="mr-2 h-4 w-4" />
             الملف الشخصي
           </DropdownMenuItem>
-          <DropdownMenuItem className="cursor-pointer rounded-lg"
+          <DropdownMenuItem className="cursor-pointer rounded-lg hover:border-2 border-primary ease-linear "
             onClick={() => router.push("/shipments")}
              dir="rtl"
           >
@@ -509,7 +509,7 @@ export function V7Header({
             شحناتي
           </DropdownMenuItem>
           <DropdownMenuItem
-            className="cursor-pointer rounded-lg"
+            className="cursor-pointer rounded-lg hover:border-2 border-primary ease-linear "
             onClick={() => router.push("/settings")}
              dir="rtl"
           >

@@ -54,7 +54,7 @@ const handleTrack = async (e: React.FormEvent) => {
     setTrackingResult(null);
     const token = window.localStorage.getItem("token")
    const res = await axios.post(
-      "https://backend-marasil.onrender.com/api/shipment/traking",
+      "http://localhost:8000/api/shipment/traking",
       {
         trackingNumber: number,
       },
@@ -70,7 +70,7 @@ const handleTrack = async (e: React.FormEvent) => {
     
     // ✅ لازم نعرف شو شكل الـ response يلي راجع من الباك
     // هون بفرض إنه راجع بالشكل المطلوب مباشرة
-    setTrackingResult(res.data?.data);
+    setTrackingResult(res?.data?.data);
 
   } catch (err) {
     console.error("Error", err);
@@ -128,8 +128,8 @@ const result = trackingResult?.detail
 const sender = result?.sender
 const customer = result?.customer
 const serviceCharge = result?.service_charge
-  console.log("data",trackingResult);
-  const resultSmsa= trackingResult?.tracking
+const resultSmsa= trackingResult?.tracking
+console.log("data",trackingResult);
   return (
     <V7Layout>
       <div className="space-y-8 pb-20 my-16">
@@ -225,7 +225,7 @@ const serviceCharge = result?.service_charge
                         <span className="text-sm text-gry">تاريخ الشحن</span>
                       </div>
                       <div className="font-medium"> {result?.created_at && new Date(result.created_at).toLocaleDateString("en-SA")}
-                        {new Date(resultSmsa?.scans[7].ScanDateTime).toLocaleString('en-EG', {
+                        {new Date(resultSmsa?.scans[7]?.ScanDateTime)?.toLocaleString('en-EG', {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
@@ -239,7 +239,7 @@ const serviceCharge = result?.service_charge
                         <span className="text-sm text-gry">موعد التسليم المتوقع</span>
                       </div>
                       <div className="font-medium">{trackingResult?.estimatedDelivery}
-                        {new Date(resultSmsa?.scans[0]?.ScanDateTime).toLocaleString('ar-EG', {
+                        {new Date(resultSmsa?.scans[0]?.ScanDateTime)?.toLocaleString('ar-EG', {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
@@ -259,7 +259,7 @@ const serviceCharge = result?.service_charge
                         <Truck className="h-4 w-4 text-gry" />
                         <span className="text-sm text-gry">نوع الخدمة</span>
                       </div>
-                      <div className="font-medium">{trackingResult.service}</div>
+                      <div className="font-medium">{trackingResult?.service}</div>
                     </div>
                   </div>
                 </div>
@@ -275,9 +275,9 @@ const serviceCharge = result?.service_charge
 
       return (
         <div key={idx} className="relative flex gap-4 mb-4">
-          <div className={`h-8 w-8 rounded-full ${act.status === "Delivered" ? "bg-green-500" : "bg-gray-300"}`}></div>
+          <div className={`h-8 w-8 rounded-full ${act?.status === "Delivered" ? "bg-green-500" : "bg-gray-300"}`}></div>
           <div>
-            <div className="text-sm font-medium">{act.description}</div>
+            <div className="text-sm font-medium">{act?.description}</div>
             <div className="text-xs text-gray-500">{formattedDate} - {formattedTime}</div>
           </div>
         </div>
@@ -329,7 +329,7 @@ const serviceCharge = result?.service_charge
               </div>
             </div>
         </div>
-        
+        {/*  */}
         </div>
       
           <div className="mt-8 v7-neu-card p-6 rounded-xl">

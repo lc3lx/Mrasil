@@ -27,9 +27,11 @@ import { salaryApi } from "../api/salaryApi";
 import { homePageApi } from "../api/homePageApi";
 import { shopifyApi } from "../api/shopifyApi";
 import { cityApi } from "../api/cityApi";
+import { trackingApi } from "../api/trakingApi";
 
 export const store = configureStore({
   reducer: {
+    [trackingApi.reducerPath]: trackingApi.reducer,
     [ordersApi.reducerPath]: ordersApi.reducer,
     [authApi.reducerPath]: authApi.reducer,
     [parcelsApi.reducerPath]: parcelsApi.reducer,
@@ -63,6 +65,7 @@ export const store = configureStore({
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
+    .concat(trackingApi.middleware)
       .concat(ordersApi.middleware)
       .concat(authApi.middleware)
       .concat(parcelsApi.middleware)
