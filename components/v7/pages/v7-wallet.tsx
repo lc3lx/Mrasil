@@ -1,21 +1,22 @@
 'use client';
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Banknote, CreditCard, AlertCircle, Upload, X, Loader2 } from "lucide-react";
-import RealBlue from "../../../public/real-blue.png"
-import RealWhite from "../../../public/real-white.png"
+import RealBlue from "../../../public/real-blue.png";
+import RealWhite from "../../../public/real-white.png";
 import Image from "next/image";
-import bankTransfer from "../../../public/bankTransfer .png";
+import bankTransfer from "../../../public/bankTransfer.png";
 import creditCard1 from "../../../public/creditCard1.png";
 import creditCard2 from "../../../public/creditCard2.png";
 import creditCard3 from "../../../public/creditCard3.png";
 import creditCard4 from "../../../public/creditCard4.png";
 import creditCard5 from "../../../public/creditCard5.png";
 import creditCard6 from "../../../public/creditCard6.png";
+
 interface PaymentDialogProps {
   isOpen: boolean;
   onClose: () => void;
@@ -31,20 +32,101 @@ export default function V7Wallet({ isOpen, onClose, balance, onBalanceUpdate }: 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  
-  // بيانات البطاقة
   const [cardName, setCardName] = useState("");
   const [cardNumber, setCardNumber] = useState("");
   const [cardMonth, setCardMonth] = useState("");
   const [cardYear, setCardYear] = useState("");
   const [cardCvc, setCardCvc] = useState("");
-  
-  // رفع الإيصال البنكي
   const [transferImage, setTransferImage] = useState<File | null>(null);
   const [transferImagePreview, setTransferImagePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // تغيير المبلغ عند اختيار زر جاهز
+  // مراقبة رابط الكول باك (Callback URL) ومعالجة الإغلاق التلقائي
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const status = params.get('status');
+    const message = params.get('message');
+    const token = params.get('id');
+
+    if ((status === 'paid' || message === 'APPROVED') && token) {
+      if (window.opener) {
+        // إذا كانت نافذة منبثقة، أرسل رسالة إلى النافذة الأم وأغلق النافذة
+        window.opener.postMessage({ type: 'payment_success', token, amount: paymentAmount }, '*'); // استخدم origin محدد في الإنتاج
+        setTimeout(() => window.close(), 1000); // إغلاق تلقائي بعد 1 ثانية
+      } else {
+        // إذا لم تكن منبثقة، معالجة عادية
+        setIsSubmitting(true);
+        fetch('http://localhost:8000/api/wallet/rechargeWallet', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(localStorage.getItem('token') ? { 'Authorization': `Bearer ${localStorage.getItem('token')}` } : {}),
+          },
+          body: JSON.stringify({ token, amount: paymentAmount }),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              return response.json().then((data) => { throw new Error(data.message || 'فشل في معالجة الدفع'); });
+            }
+            return response.json();
+          })
+          .then(() => {
+            setSuccess('تمت عملية الدفع بنجاح!');
+            onBalanceUpdate(balance + paymentAmount);
+            setTimeout(() => {
+              handleClose();
+              window.location.replace('/'); // إعادة توجيه نظيفة
+            }, 2000);
+          })
+          .catch((error) => {
+            setError(error.message || 'حدث خطأ أثناء معالجة الدفع');
+          })
+          .finally(() => {
+            setIsSubmitting(false);
+            // تنظيف معلمات URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+          });
+      }
+    }
+  }, [paymentAmount, balance, onBalanceUpdate]);
+
+  // استماع لرسائل postMessage من النافذة المنبثقة
+  useEffect(() => {
+    const onMessage = (event: MessageEvent) => {
+      if (event.data.type === 'payment_success') {
+        const { token, amount } = event.data;
+        setIsSubmitting(true);
+        fetch('http://localhost:8000/api/wallet/rechargeWallet', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(localStorage.getItem('token') ? { 'Authorization': `Bearer ${localStorage.getItem('token')}` } : {}),
+          },
+          body: JSON.stringify({ token, amount }),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              return response.json().then((data) => { throw new Error(data.message || 'فشل في معالجة الدفع'); });
+            }
+            return response.json();
+          })
+          .then(() => {
+            setSuccess('تمت عملية الدفع بنجاح!');
+            onBalanceUpdate(balance + amount);
+            setTimeout(handleClose, 2000);
+          })
+          .catch((error) => {
+            setError(error.message || 'حدث خطأ أثناء معالجة الدفع');
+          })
+          .finally(() => setIsSubmitting(false));
+      }
+    };
+    window.addEventListener('message', onMessage);
+    return () => window.removeEventListener('message', onMessage);
+  }, [balance, onBalanceUpdate]);
+
+  // بقية الدوال كما هي (handleAmountSelect, handleCustomAmountChange, handleImageUpload, removeImage, handleClose, validateCardData)
+
   const handleAmountSelect = (amount: string) => {
     setSelectedAmount(amount);
     setCustomAmount("");
@@ -53,7 +135,6 @@ export default function V7Wallet({ isOpen, onClose, balance, onBalanceUpdate }: 
     setError("");
   };
 
-  // تغيير المبلغ عند إدخال مبلغ مخصص
   const handleCustomAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setCustomAmount(value);
@@ -64,7 +145,6 @@ export default function V7Wallet({ isOpen, onClose, balance, onBalanceUpdate }: 
     setError("");
   };
 
-  // رفع صورة التحويل البنكي
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -72,19 +152,16 @@ export default function V7Wallet({ isOpen, onClose, balance, onBalanceUpdate }: 
         setError("حجم الملف يجب أن يكون أقل من 5MB");
         return;
       }
-      
       if (!file.type.startsWith('image/')) {
         setError("الملف يجب أن يكون صورة");
         return;
       }
-      
       setTransferImage(file);
       setTransferImagePreview(URL.createObjectURL(file));
       setError("");
     }
   };
 
-  // إزالة الصورة المرفوعة
   const removeImage = () => {
     setTransferImage(null);
     setTransferImagePreview(null);
@@ -94,7 +171,6 @@ export default function V7Wallet({ isOpen, onClose, balance, onBalanceUpdate }: 
     setError("");
   };
 
-  // إغلاق النافذة وإعادة تعيين الحقول
   const handleClose = () => {
     setPaymentMethod("card");
     setSelectedAmount(null);
@@ -112,140 +188,195 @@ export default function V7Wallet({ isOpen, onClose, balance, onBalanceUpdate }: 
     onClose();
   };
 
-  // التحقق من صحة البيانات
   const validateCardData = () => {
     if (!cardName.trim()) {
       setError("اسم حامل البطاقة مطلوب");
       return false;
     }
-      const nameParts = cardName.trim().split(/\s+/);
-  if (nameParts.length < 2) {
-    setError("يرجى إدخال الاسم واسم العائلة");
-    return false;
-  }
-
+    const nameParts = cardName.trim().split(/\s+/);
+    if (nameParts.length < 2) {
+      setError("يرجى إدخال الاسم واسم العائلة");
+      return false;
+    }
     const cleanedCardNumber = cardNumber.replace(/\s/g, '');
     if (!cleanedCardNumber || cleanedCardNumber.length !== 16) {
       setError("رقم البطاقة يجب أن يكون 16 رقمًا");
       return false;
     }
-    
     if (!cardMonth || cardMonth.length !== 2) {
       setError("شهر الانتهاء يجب أن يكون رقمين");
       return false;
     }
-    
     if (!cardYear || cardYear.length !== 2) {
       setError("سنة الانتهاء يجب أن تكون رقمين");
       return false;
     }
-    
     if (!cardCvc || cardCvc.length !== 3) {
       setError("رمز الأمان يجب أن يكون 3 أرقام");
       return false;
     }
-    
     return true;
   };
 
-  // معالجة الدفع - الجزء المصحح
+  // معالجة التحقق من 3D Secure (فتح نافذة منبثقة)
+  const handle3DSecureVerification = (verificationUrl: string, tokenId: string): Promise<boolean> => {
+    return new Promise((resolve, reject) => {
+      try {
+        const width = 500;
+        const height = 600;
+        const left = (window.screen.width - width) / 2;
+        const top = (window.screen.height - height) / 2;
+
+        let popup: Window | null = null;
+        try {
+          popup = window.open(
+            verificationUrl,
+            '3DSecureVerification',
+            `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes`
+          );
+        } catch (err) {
+          console.warn('تم حظر النافذة المنبثقة، جاري إعادة التوجيه في نفس النافذة');
+          window.location.href = verificationUrl;
+          resolve(true);
+          return;
+        }
+
+        if (!popup || popup.closed || typeof popup.closed === 'undefined') {
+          console.warn('تم حظر النافذة المنبثقة، جاري إعادة التوجيه في نفس النافذة');
+          window.location.href = verificationUrl;
+          resolve(true);
+          return;
+        }
+
+        const checkPopup = setInterval(() => {
+          try {
+            if (popup.closed) {
+              clearInterval(checkPopup);
+              resolve(true);
+            }
+          } catch (e) {
+            console.error('خطأ في فحص النافذة المنبثقة:', e);
+            clearInterval(checkPopup);
+            resolve(true);
+          }
+        }, 1000);
+      } catch (error) {
+        console.error('خطأ في التحقق من 3D Secure:', error);
+        setError('حدث خطأ أثناء عملية التحقق من البطاقة');
+        reject(error);
+      }
+    });
+  };
+
+  // إرسال طلب الدفع إلى الباك إند
+  const createPayment = async (tokenId: string) => {
+    try {
+      if (!tokenId) {
+        throw new Error('رمز الدفع غير صالح');
+      }
+      setError('جاري إرسال الطلب إلى الباك إند...');
+      const userToken = localStorage.getItem('token');
+      const backendResponse = await fetch('http://localhost:8000/api/wallet/rechargeWallet', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(userToken ? { 'Authorization': `Bearer ${userToken}` } : {}),
+        },
+        body: JSON.stringify({
+          token: tokenId,
+          amount: paymentAmount,
+          cardName,
+          cardNumber,
+          cardMonth,
+          cardYear,
+          cardCvc,
+        }),
+      });
+      const backendResult = await backendResponse.json();
+
+      if (!backendResponse.ok) {
+        throw new Error(backendResult.message || 'فشل في معالجة الدفع عبر الباك إند');
+      }
+
+      setSuccess('تم إرسال طلب الدفع بنجاح! سيتم معالجة العملية من قبل الإدارة.');
+      onBalanceUpdate(balance + paymentAmount);
+      setTimeout(() => {
+        handleClose();
+        window.location.replace('/'); // إعادة توجيه نظيفة
+      }, 2000);
+    } catch (error: any) {
+      setError(error.message || 'حدث خطأ أثناء معالجة الدفع');
+      setIsSubmitting(false);
+    }
+  };
+
+  // معالجة تقديم الدفع
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-     if (isSubmitting) return;
+    if (isSubmitting) return;
     setError("");
     setSuccess("");
-    
+
     if (paymentAmount <= 0) {
       setError("يرجى إدخال مبلغ صالح");
       return;
     }
-    
+
     setIsSubmitting(true);
-    
+
     try {
       if (paymentMethod === "card") {
         if (!validateCardData()) {
           setIsSubmitting(false);
           return;
         }
-        
-        // إنشاء FormData الصحيح لطلب Moyasar
-        const formData = new URLSearchParams();
-        formData.append('publishable_api_key', 'pk_test_EHPGwD3HWQA7pKqbEPeJvWv3LT7PMPvEsdfAu5Ad');
-        formData.append('name', cardName);
-        formData.append('number', cardNumber.replace(/\s/g, ''));
-        formData.append('month', cardMonth);
-        formData.append('year', cardYear);
-        formData.append('cvc', cardCvc);
-        formData.append('amount', (paymentAmount * 100).toString());
-        formData.append('currency', 'SAR');
-        formData.append('callback_url', window.location.href);
-        
-        // إنشاء token مع Content-Type الصحيح
-        const response = await fetch('https://api.moyasar.com/v1/tokens', {
-          method: 'POST',
-          headers:{
-            'Content-Type': 'application/x-www-form-urlencoded'
-          },
-          body: formData.toString(),
-        });
-        
-        const data = await response.json();
-        
-        if (!response.ok) {
-          throw new Error(data.message || JSON.stringify(data.errors) || "فشل في إنشاء token الدفع");
-        }
-        
-        if (!data.id) {
-          throw new Error("فشل في إنشاء token الدفع");
-        }
-        const userToken = localStorage.getItem("token");
-        // إرسال token إلى الخادم الخلفي
-        const backendResponse = await fetch('https://www.marasil.site/api/wallet/rechargeWallet', {
+
+        const tokenParams = new URLSearchParams();
+        tokenParams.append('publishable_api_key', 'pk_test_EHPGwD3HWQA7pKqbEPeJvWv3LT7PMPvEsdfAu5Ad');
+        tokenParams.append('name', cardName);
+        tokenParams.append('number', cardNumber.replace(/\s/g, ''));
+        tokenParams.append('month', cardMonth);
+        tokenParams.append('year', `20${cardYear}`.slice(-4));
+        tokenParams.append('cvc', cardCvc);
+        tokenParams.append('callback_url', window.location.origin + '/'); // الـ callback يعالج في النافذة الأم
+
+        const tokenResponse = await fetch('https://api.moyasar.com/v1/tokens', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
-              'Authorization': `Bearer ${userToken}`,
+            'Content-Type': 'application/x-www-form-urlencoded',
           },
-          body: JSON.stringify({
-            token: data.id,
-            amount: paymentAmount * 100,
-            description: `شحن محفظة بمبلغ ${paymentAmount} ريال`
-          }),
-          credentials: 'include',
+          body: tokenParams,
         });
-        
-        const backendData = await backendResponse.json();
-        
-        if (!backendResponse.ok) {
-          throw new Error(backendData.message || "فشل في عملية الدفع");
+
+        const tokenData = await tokenResponse.json();
+
+        if (!tokenResponse.ok) {
+          throw new Error(tokenData.message || 'فشل في إنشاء رمز الدفع');
         }
-        
-        if (backendData.transaction_url) {
-          // توجيه المستخدم إلى صفحة الدفع
-          window.location.href = backendData.transaction_url;
-        } else if (backendData.success) {
-          // تحديث الرصيد
-          onBalanceUpdate(balance + paymentAmount);
-          setSuccess(`تم شحن ${paymentAmount} ريال إلى محفظتك بنجاح!`);
-          setTimeout(() => {
-            handleClose();
-          }, 3000);
+
+        if (!tokenData.id) {
+          throw new Error('فشل في إنشاء رمز الدفع');
+        }
+
+        if (tokenData.verification_url) {
+          setError('جاري التوجيه إلى صفحة التحقق من البطاقة...');
+          await handle3DSecureVerification(tokenData.verification_url, tokenData.id);
+          await createPayment(tokenData.id); // إرسال الطلب بعد التحقق
+        } else {
+          await createPayment(tokenData.id);
         }
       } else {
-        // معالجة التحويل البنكي
+        // معالجة التحويل البنكي (كما هي، مع إعادة توجيه)
         if (!transferImage) {
           setError("يرجى رفع صورة الإيصال");
           setIsSubmitting(false);
           return;
         }
-        
-        // محاكاة عملية التحويل البنكي (لأغراض العرض)
+
         setTimeout(() => {
           setSuccess("تم استلام إيصال التحويل بنجاح، سيتم مراجعته خلال 24 ساعة");
           setIsSubmitting(false);
           
-          // إغلاق النافذة بعد 3 ثوان
           setTimeout(() => {
             handleClose();
           }, 3000);
@@ -255,9 +386,7 @@ export default function V7Wallet({ isOpen, onClose, balance, onBalanceUpdate }: 
       console.error("خطأ في الدفع:", err);
       setError(err.message || "حدث خطأ أثناء عملية الدفع. يرجى التحقق من بيانات البطاقة والمحاولة مرة أخرى.");
       setIsSubmitting(false);
-    } finally {
-  setIsSubmitting(false); // ضمان إعادة تعيين
-}
+    }
   };
 
   return (
@@ -270,6 +399,7 @@ export default function V7Wallet({ isOpen, onClose, balance, onBalanceUpdate }: 
         </DialogHeader>
 
         <form className="flex flex-col gap-4" onSubmit={handleSubmit} dir="rtl">
+          {/* الـ JSX كما هو بالكامل، دون تغيير */}
           <div className="space-y-2">
             <Label className="text-right block">اختر المبلغ</Label>
             <div className="grid grid-cols-5 gap-2">
