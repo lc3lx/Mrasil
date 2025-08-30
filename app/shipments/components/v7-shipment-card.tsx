@@ -1,5 +1,5 @@
 "use client";
-
+import { useCancelShipmentMutation } from "@/app/api/shipmentApi"
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -196,6 +196,23 @@ const displayName =
   carrierInfo.name === "smsa" ? (shipment?.shapmentingType === "Dry" ? "SMSA PRO" : "SMSA") :
   carrierInfo.name === "aramex" ? "ARAMEX PRO" :
   carrierInfo.name.toUpperCase();
+
+
+// Inside the V7ShipmentCard component, add this:
+const [cancelShipment] = useCancelShipmentMutation()
+
+const handleCancelShipment = async () => {
+  try {
+    await cancelShipment({
+      id: trackingNumber,  // This will be used in the URL
+      company: shipment.shapmentCompany  // This will be sent in the request body
+    })
+    // You might want to show a success toast here
+  } catch (error) {
+    console.error('Failed to cancel shipment:', error)
+    // Handle error (show error toast, etc.)
+  }
+}
   return (  
     <div
       className={`v7-neu-card-inner rounded-xl border border-gray-100 w-full bg-white`}
@@ -365,7 +382,8 @@ carrierInfo.name.toLowerCase() === "smsa" ?
                             طلب شحنة عكسية
                               </span>
                             </Button>
-                          ) :                 <Button
+                          ) :  <Button
+                          onClick={handleCancelShipment }
                            variant="outline"
                     size="sm"
                     className="sm:w-full v7-neu-button-sm group sm:h-8 size-3 text-xs flex items-center justify-center gap-x-2"

@@ -168,10 +168,11 @@ export const shipmentApi = createApi({
       invalidatesTags: ['Shipment'],
     }),
 
-    cancelShipment: builder.mutation<{ status: string; message: string }, string>({
-      query: (shipmentId) => ({
-        url: `/shipment/cancel/${shipmentId}`,
+    cancelShipment: builder.mutation<{ status: string; message: string }, {id:string,company:string}>({
+      query: ({id,company}) => ({
+        url: `/shipment/cancel/${id}`,
         method: 'POST',
+        body:{company},
         credentials: 'include',
       }),
       invalidatesTags: ['Shipment'],
