@@ -137,10 +137,6 @@ const handleAddSenderAddress = async (data: any) => {
     console.error("Error creating address:", error);
   }
 };
-
-
-console.log(displayedSenderCards);
-
   return (
     <motion.div variants={staggerChildren}>
       <div className="flex items-center gap-3  pb-4 " >

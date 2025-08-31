@@ -146,6 +146,52 @@ export default function ProfilePage() {
       setAlertOpen(true);
     }
   };
+const handelSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  try {
+    let res;
+
+    if (brandLogo) {
+      const formData = new FormData();
+      formData.append("brand_logo", brandLogo);
+      formData.append("brand_color", brandColor);
+      formData.append("company_name_ar", companyNameAr);
+      formData.append("company_name_en", companyNameEn);
+      formData.append("brand_email", brandEmail);
+      formData.append("additional_info", additionalInfo);
+      formData.append("tax_number", taxNumber);
+      formData.append(
+        "commercial_registration_number",
+        commercialRegistrationNumber
+      );
+      formData.append("brand_website", brandWebsite);
+
+      res = await updateCustomerMe(formData).unwrap();
+    } else {
+      const payload = {
+        brand_color: brandColor,
+        company_name_ar: companyNameAr,
+        company_name_en: companyNameEn,
+        brand_email: brandEmail,
+        additional_info: additionalInfo,
+        tax_number: taxNumber,
+        commercial_registration_number: commercialRegistrationNumber,
+        brand_website: brandWebsite,
+      };
+
+      res = await updateCustomerMe(payload).unwrap();
+    }
+
+    setAlertMsg(res?.message || "تم تحديث البيانات بنجاح");
+    setAlertStatus("success");
+    setAlertOpen(true);
+  } catch (err: any) {
+    setAlertMsg(err?.data?.message || "حدث خطأ أثناء التحديث");
+    setAlertStatus("error");
+    setAlertOpen(true);
+  }
+};
 
   if (isLoading) {
     return (
@@ -164,39 +210,36 @@ export default function ProfilePage() {
           {/* تبويبات المعلومات والإعدادات */}
           <div className="md:col-span-2">
             <Tabs
-              defaultValue="preferences"
+              defaultValue="personal"
               className="v7-neu-card p-6"
               dir="rtl"
+              
             >
-              <TabsList className="v7-neu-tabs mb-6  ">
-                <TabsTrigger value="personal" className="v7-neu-tab">
-                  <User className="h-4 w-4 ml-2" />
+              <TabsList className="v7-neu-tabs mb-6  " >
+                <TabsTrigger value="personal"
+    className="v7-neu-tab   transition-all duration-500 ease-in-out flex items-center gap-2 border-b border-transparent data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:font-semibold"
+                 >
+                  <User className="h-4 w-4 " />
                   المعلومات الشخصية
                 </TabsTrigger>
-                <TabsTrigger value="company" className="v7-neu-tab">
-                  <Briefcase className="h-4 w-4 ml-2" />
+                <TabsTrigger value="company" 
+    className="v7-neu-tab   transition-all duration-500 ease-in-out flex  items-center gap-2 border-b border-transparent data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:font-semibold"
+                >
+                  <Briefcase className="h-4 w-4" />
                   معلومات الشركة
-                </TabsTrigger>
-                <TabsTrigger value="security" className="v7-neu-tab">
-                  <Shield className="h-4 w-4 ml-2" />
-                  الأمان
-                </TabsTrigger>
-                <TabsTrigger value="preferences" className="v7-neu-tab">
-                  <Settings className="h-4 w-4 ml-2" />
-                  التفضيلات
                 </TabsTrigger>
               </TabsList>
 
               <TabsContent value="personal" className="space-y-6">
-                <div className="space-y-4">
+                <form onSubmit={handelSubmit} className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="fullName">الاسم الكامل</Label>
                       <div className="v7-neu-input-container">
                         <Input
                           id="fullName"
-                          className="v7-neu-input"
-                          defaultValue={`${customerData?.data.firstName} ${customerData?.data.lastName}`}
+                          className="v7-neu-input-hollo text-gry border-none "
+  defaultValue={`${customerData?.data?.firstName ?? ""} ${customerData?.data?.lastName ?? ""}`.trim()}
                         />
                       </div>
                     </div>
@@ -206,31 +249,27 @@ export default function ProfilePage() {
                       <div className="v7-neu-input-container">
                         <Input
                           id="email"
-                          className="v7-neu-input"
+                          className="v7-neu-input-hollo text-gry  cursor-not-allowed   "
                           defaultValue={customerData?.data.email}
+                          readOnly
                         />
                       </div>
                     </div>
                   </div>
-
                   <div className="space-y-2">
-                    <Label htmlFor="role">الدور</Label>
-                    <div className="v7-neu-input-container">
-                      <Input
-                        id="role"
-                        className="v7-neu-input bg-gray-100 cursor-not-allowed"
-                        value={customerData?.data.role || ""}
-                        readOnly
-                      />
-                    </div>
+                    <Label htmlFor="phone">رقم الهاتف</Label>
+                                        <div className="v7-neu-input-container">
+                                          <Input id="phone" className=" v7-neu-input-hello text-gry"
+                                          // value={customerData?.data?.phone}
+                                          />
+                                        </div>
                   </div>
-
                   <div className="space-y-2">
                     <Label htmlFor="createdAt">تاريخ الإنشاء</Label>
                     <div className="v7-neu-input-container">
                       <Input
                         id="createdAt"
-                        className="v7-neu-input bg-gray-100 cursor-not-allowed"
+                          className="v7-neu-input-hollo text-gry"
                         value={
                           customerData?.data.createdAt
                             ? new Date(
@@ -250,7 +289,7 @@ export default function ProfilePage() {
                     <div className="v7-neu-input-container">
                       <Input
                         id="passwordChangedAt"
-                        className="v7-neu-input bg-gray-100 cursor-not-allowed"
+                          className="v7-neu-input-hollo text-gry  cursor-not-allowed"
                         value={
                           customerData?.data.passwordChangedAt
                             ? new Date(
@@ -268,7 +307,7 @@ export default function ProfilePage() {
                     <div className="v7-neu-input-container">
                       <Input
                         id="addresses"
-                        className="v7-neu-input bg-gray-100 cursor-not-allowed"
+                          className="v7-neu-input-hollo  text-gry cursor-not-allowed"
                         value={
                           Array.isArray(customerData?.data.addresses)
                             ? customerData.data.addresses.length
@@ -283,7 +322,10 @@ export default function ProfilePage() {
                     <Save className="h-4 w-4 ml-2" />
                     حفظ التغييرات
                   </Button>
-                </div>
+                  {
+                    alertMsg && <p className=" text-red-400 text-sm">{alertMsg}</p>
+                  }
+                </form>
               </TabsContent>
 
               {/* تبويب معلومات الشركة الجديد */}
@@ -373,7 +415,7 @@ export default function ProfilePage() {
                         <div className="v7-neu-input-container">
                           <Input
                             id="companyName"
-                            className="v7-neu-input text-gry  "
+                          className="v7-neu-input-hollo text-gry"
                             placeholder="أدخل اسم الشركة"
                             value={companyNameAr}
                             onChange={(e) => setCompanyNameAr(e.target.value)}
@@ -392,7 +434,7 @@ export default function ProfilePage() {
                         <div className="v7-neu-input-container">
                           <Input
                             id="companyNameEn"
-                            className="v7-neu-input text-gry "
+                          className="v7-neu-input-hollo text-gry"
                             placeholder="Enter Company Name in English"
                             value={companyNameEn}
                             onChange={(e) => setCompanyNameEn(e.target.value)}
@@ -411,7 +453,7 @@ export default function ProfilePage() {
                         <div className="v7-neu-input-container">
                           <Input
                             id="companyEmail"
-                            className="v7-neu-input text-gry "
+                          className="v7-neu-input-hollo text-gry"
                             type="email"
                             placeholder="example@company.com"
                             value={brandEmail}
@@ -419,7 +461,6 @@ export default function ProfilePage() {
                           />
                         </div>
                       </div>
-
                       <div className="space-y-2">
                         <Label
                           htmlFor="companyWebsite"
@@ -431,14 +472,13 @@ export default function ProfilePage() {
                         <div className="v7-neu-input-container">
                           <Input
                             id="companyWebsite"
-                            className="v7-neu-input text-gry "
+                          className="v7-neu-input-hollo text-gry"
                             placeholder="https://www.example.com"
                             value={brandWebsite}
                             onChange={(e) => setBrandWebsite(e.target.value)}
                           />
                         </div>
                       </div>
-
                       <div className="space-y-2">
                         <Label
                           htmlFor="commercialRegister"
@@ -450,7 +490,7 @@ export default function ProfilePage() {
                         <div className="v7-neu-input-container">
                           <Input
                             id="commercialRegister"
-                            className="v7-neu-input text-gry "
+                          className="v7-neu-input-hollo text-gry"
                             placeholder="أدخل رقم السجل التجاري"
                             value={commercialRegistrationNumber}
                             onChange={(e) =>
@@ -471,7 +511,7 @@ export default function ProfilePage() {
                         <div className="v7-neu-input-container">
                           <Input
                             id="taxNumber"
-                            className="v7-neu-input text-gry "
+                          className="v7-neu-input-hollo text-gry"
                             placeholder="أدخل الرقم الضريبي"
                             value={taxNumber}
                             onChange={(e) => setTaxNumber(e.target.value)}
@@ -490,7 +530,7 @@ export default function ProfilePage() {
                         <div className="v7-neu-input-container">
                           <Textarea
                             id="additionalInfo"
-                            className="v7-neu-input min-h-[80px] text-gry "
+                          className="v7-neu-input-hollo text-gry min-h-[80px]"
                             placeholder="أي معلومات إضافية تساعد في الوصول للعنوان"
                             value={additionalInfo}
                             onChange={(e) => setAdditionalInfo(e.target.value)}
@@ -545,87 +585,6 @@ export default function ProfilePage() {
                   </AlertDialogContent>
                 </AlertDialog>
               </TabsContent>
-
-              <TabsContent value="security" className="space-y-6">
-                <div className="space-y-4">
-                  <h3 className="text-md font-bold">الأمان</h3>
-                  <div className="space-y-6">
-                    <ChangePasswordForm />
-                  </div>
-                </div>
-              </TabsContent>
-
-              <TabsContent value="preferences" className="space-y-6">
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-md font-bold mb-4">الإشعارات</h3>
-
-                    <div className="space-y-4">
-                      <div
-                        className="flex items-center justify-between"
-                        style={{ minWidth: "200px" }}
-                      >
-                        <div>
-                          <p className="font-medium">
-                            إشعارات البريد الإلكتروني
-                          </p>
-                          <p className="text-sm text-gry">
-                            استلام تحديثات الشحنات عبر البريد الإلكتروني
-                          </p>
-                        </div>
-                        <Switch
-                          id="email-notifications"
-                          defaultChecked
-                          style={{ flexShrink: 0 }}
-                        />
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium">إشعارات الهاتف</p>
-                          <p className="text-sm text-gry">
-                            استلام تحديثات الشحنات عبر الرسائل النصية
-                          </p>
-                        </div>
-                        <Switch id="sms-notifications" />
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium">إشعارات التطبيق</p>
-                          <p className="text-sm text-gry">
-                            استلام إشعارات داخل التطبيق
-                          </p>
-                        </div>
-                        <Switch id="app-notifications" defaultChecked />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-md font-bold mb-4">اللغة والمنطقة</h3>
-
-                    <div className="space-y-4">
-                      <div className="space-y-2 ">
-                        <Label htmlFor="language" className="">
-                          اللغة
-                        </Label>
-                        <div className="v7-neu-input-container ">
-                          <select id="language" className="v7-neu-input w-full">
-                            <option value="ar">العربية</option>
-                            <option value="en">English</option>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <Button className="v7-neu-button-accent" type="submit">
-                    <Save className="h-4 w-4 ml-2" />
-                    حفظ التغييرات
-                  </Button>
-                </div>
-              </TabsContent>
             </Tabs>
           </div>
           {/* بطاقة معلومات المستخدم */}
@@ -640,7 +599,7 @@ export default function ProfilePage() {
               <h2 className="text-xl font-bold">
                 {profileData?.data.firstName} {profileData?.data.lastName}
               </h2>
-
+                  <p className="v7-neu-badge px-3 py-1 rounded-full text-xs w-fit">{customerData?.data.role == "user" ? null : customerData?.data?.role || ""}</p>
               <div className="flex justify-center gap-2">
                 <div className="v7-neu-badge px-3 py-1 rounded-full text-xs text-gry">
                   منذ {getMemberSince(profileData?.data.createdAt || "")}

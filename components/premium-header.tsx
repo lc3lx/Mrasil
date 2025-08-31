@@ -97,7 +97,7 @@ export function PremiumHeader({ onMenuClick }: { onMenuClick: () => void }) {
           <DropdownMenuContent align="end" className="w-56 rounded-xl">
             <DropdownMenuLabel>حسابي</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer rounded-lg">
+            <DropdownMenuItem className="cursor-pointer rounded-lg ">
               <User className="mr-2 h-4 w-4" />
               الملف الشخصي
             </DropdownMenuItem>

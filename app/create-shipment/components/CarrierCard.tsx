@@ -43,6 +43,7 @@ interface CarrierCardProps {
   setSelectedBoxSize: (box: BoxSize) => void;
   setValue: (name: string, value: any) => void;
   parcelsData: BoxSize[];
+  error:string
 }
 
 export default function CarrierCard({
@@ -57,6 +58,7 @@ export default function CarrierCard({
   setSelectedBoxSize,
   setValue,
   parcelsData = [],
+  error
 }: CarrierCardProps) {
   const [customModalOpen, setCustomModalOpen] = useState(false);
   const [customParcel, setCustomParcel] = useState({
@@ -68,7 +70,6 @@ export default function CarrierCard({
   const [createParcel, { isLoading: isCreatingParcel }] =
     useCreateParcelMutation();
 
-  const [error, setError] = useState("");
   const [imgSrc, setImgSrc] = useState<string>(
     (logoSrc as string) || "/carriers/carrier-placeholder.png"
   );
@@ -102,7 +103,7 @@ export default function CarrierCard({
         ? priceNumber
         : Number(priceNumber).toPrecision(4)
       : 0;
-console.log("parcel",parcelsData?.data);
+
 
   return (
     <>
@@ -327,6 +328,19 @@ console.log("parcel",parcelsData?.data);
           </div>
         </div>
       )}
+{/* <div className="mt-2">
+  {error && typeof error === "string" && (
+    <p className="text-red-500 text-sm">{error}</p>
+  )}
+
+  {error && typeof error === "object" && (
+    <>
+      {error.dimension_high && <p className="text-red-500 text-sm">{error.dimension_high.message}</p>}
+
+    </>
+  )}
+</div> */}
+
 
       <Dialog open={customModalOpen} onOpenChange={setCustomModalOpen}>
         <DialogContent className="flex flex-col gap-4 p-10 bg-[#f3f6fa] border-none">

@@ -141,9 +141,10 @@ const schema = yup
     recipient_district: yup.string(),
     weight: yup.number().required("الوزن مطلوب").typeError("الوزن مطلوب"),
     Parcels: yup.number(),
-    dimension_high: yup.number(),
-    dimension_width: yup.number(),
-    dimension_length: yup.number(),
+dimension_high: yup.number(),
+dimension_width: yup.number(),
+dimension_length: yup.number(),
+
     company: yup.string(),
     shipmentType: yup.string(),
     orderDescription: yup.string().required("الوصف مطلوب"),
@@ -293,9 +294,9 @@ export function CreateShipmentSteps() {
         weight: Number(data.weight),
         Parcels: Number(data.Parcels) || 1,
         dimension: {
-          high: Number(data.boxSize.height),
-          width: Number(data.boxSize.width),
-          length: Number(data.boxSize.length),
+          high: Number(data?.boxSize?.height || 0),
+          width: Number(data?.boxSize?.width || 0),
+          length: Number(data?.boxSize?.length || 0),
         },
       };
    const newShipment = await createShipment(payload).unwrap();
@@ -313,6 +314,7 @@ export function CreateShipmentSteps() {
       setModalOpen(true);
     }
   };
+console.log(errors);
 
   return (
     <FormProvider {...methods}>
@@ -955,14 +957,17 @@ const [selectedBoxSize, setSelectedBoxSize] = useState<any>(null);
   const selectedCompany = watch("company");
 
 
-  const handleSubmit = async (e: any) => {
-    setIsSubmitting(true);
-    try {
-      await onSubmit(e);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+ const handleSubmit = async (e: any) => {
+  e.preventDefault();
+
+  setIsSubmitting(true);
+  try {
+    await onSubmit(e);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
   const companiesWithTypes = (companiesData || [])
     .flatMap((company) => {
       if (!company.shippingTypes || company.shippingTypes.length === 0)
@@ -1143,6 +1148,7 @@ const handleCompanySelect = (company: string, shippingType: string) => {
                   setValue={setValue}
                   setSelectedBoxSize={setSelectedBoxSize}
                   parcelsData={parcelsData}
+                  error={error}
                 />
               );
             })
