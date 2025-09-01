@@ -293,7 +293,7 @@ export default function OrdersContent() {
                   <Input
                     dir="rtl"
                     placeholder=" البحث عن بريد إلكتروني أو رقم جوال ...  "
-                    className="v7-neu-input w-full  text-gry  text-base "
+                    className="v7-neu-input w-full  text-gry  text-sm "
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                   />

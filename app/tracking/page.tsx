@@ -7,6 +7,7 @@ import V7Layout from "@/components/v7/v7-layout"
 import axios from "axios";
 import { useParams, useSearchParams } from "next/navigation"
 import { useGetMyShipmentsQuery } from "../api/shipmentApi"
+import { useTrackShipmentMutation } from "../api/trakingApi"
 
 interface TimelineStep {
   status: string
@@ -24,6 +25,8 @@ export default function () {
   const [trackingResult, setTrackingResult] = useState<any>(null)
   const [error, setError] = useState("")
  const [number, setNumber] = useState("");
+   const [trackShipment, { isLoading }] = useTrackShipmentMutation();
+
  const searchParams = useSearchParams();
     useEffect(() => {
     const idFromUrl = searchParams.get("id");
@@ -34,52 +37,30 @@ export default function () {
   const { data: myShipmentsData, isLoading: myShipmentsLoading } =
     useGetMyShipmentsQuery({ page: 1, itemsPerPage: 2 });
   const lastTwoShipments = myShipmentsData?.data?.slice(-2) ?? [];
-
-
 console.log("lastTwoShipments",lastTwoShipments);
-
-
-
-const handleTrack = async (e: React.FormEvent) => {
-  e.preventDefault(); // منع تحديث الصفحة
-
+// handel Track
+ const handleTrack = async (e: React.FormEvent) => {
+  e.preventDefault();
   if (!number.trim()) {
     setError("الرجاء إدخال رقم الشحنة");
     return;
   }
 
   try {
-    setIsTracking(true);
     setError("");
+    setIsTracking(true);
     setTrackingResult(null);
-    const token = window.localStorage.getItem("token")
-   const res = await axios.post(
-      "http://localhost:8000/api/shipment/traking",
-      {
-        trackingNumber: number,
-      },
-      {
-      
-        headers: {
-         "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-      }
-    );
+    const res = await trackShipment({ trackingNumber: number }).unwrap();
+    setTrackingResult(res?.data || res);
 
-    
-    // ✅ لازم نعرف شو شكل الـ response يلي راجع من الباك
-    // هون بفرض إنه راجع بالشكل المطلوب مباشرة
-    setTrackingResult(res?.data?.data);
-
-  } catch (err) {
+  } catch (err: any) {
     console.error("Error", err);
-    setError("حصل خطأ أثناء جلب بيانات الشحنة");
+    const msg = err?.data?.message || "حصل خطأ أثناء جلب بيانات الشحنة";
+    setError(msg);
   } finally {
     setIsTracking(false);
   }
 };
-
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -183,6 +164,7 @@ console.log("data",trackingResult);
           )}
 
           {trackingResult && (
+            <>
             <div className="mt-8 space-y-6 v7-fade-in">
               <div className="flex flex-col md:flex-row justify-between gap-6 p-6 rounded-xl v7-neu-card-inner">
                 <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
@@ -287,7 +269,7 @@ console.log("data",trackingResult);
                 </div>
               </div>
             </div>
-          )}
+        
         <div className=" grid md:grid-cols-2 gap-6 mt-6">
 
         <div className=" p-6 rounded-xl v7-neu-card-inner">
@@ -329,6 +311,9 @@ console.log("data",trackingResult);
               </div>
             </div>
         </div>
+            </>
+       )}
+
         {/*  */}
         </div>
       

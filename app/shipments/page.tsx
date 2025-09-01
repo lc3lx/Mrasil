@@ -247,7 +247,6 @@ useEffect(() => {
   const lastShipment = JSON.parse(lastShipmentStr);
   const carrier = lastShipment?.data?.shipment?.shapmentCompany;
   const labelUrl = lastShipment?.data?.shipment?.redboxResponse?.label;
-console.log("lastShipment",lastShipment?.data?.shipment);
 
   const printLabel = () => {
     if (carrier == "smsa") {
@@ -270,23 +269,20 @@ console.log("lastShipment",lastShipment?.data?.shipment);
   // استخدام البيانات المحولة من API
   const shipments = transformApiDataToShipments()
 
-  // Toggle select all shipments
-  const toggleSelectAll = () => {
-    if (selectedShipmentId === null) {
-      setSelectedShipmentId(shipments[0]?._id || null)
-    } else {
-      setSelectedShipmentId(null)
-    }
+// Select all
+const toggleSelectAll = () => {
+  if (selectedShipmentId.length === shipments.length) {
+    setSelectedShipmentId([])
+  } else {
+    setSelectedShipmentId(shipments.map(s => s._id))
   }
-
-  // Toggle select single shipment
-  const toggleSelectShipment = (id: string) => {
-    if (selectedShipmentId === id) {
-      setSelectedShipmentId(null)
-    } else {
-      setSelectedShipmentId(id)
-    }
-  }
+}
+// Select one shipment
+const toggleSelectShipment = (id: string) => {
+  setSelectedShipmentId(prev =>
+    prev.includes(id) ? prev.filter(sid => sid !== id) : [...prev, id]
+  )
+}
 
   // إزالة فلتر معين
   const removeFilter = (filter: string) => {
@@ -504,7 +500,7 @@ console.log("lastShipment",lastShipment?.data?.shipment);
                     dir="rtl"
                       type="search"
                       placeholder="البحث برقم الشحنة ... " 
-                      className="v7-neu-input w-full pr-12 pe-4 text-gry  text-base "
+                      className="v7-neu-input w-full pr-12 pe-4 text-gry  text-sm "
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                     />
@@ -512,8 +508,8 @@ console.log("lastShipment",lastShipment?.data?.shipment);
 
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="outline" className="v7-neu-button-sm">
-                        <Filter className="h-4 w-4 md:mr-2" />
+                      <Button variant="outline" className="v7-neu-button-sm flex items-center gap-2">
+                        <Filter className="h-4 w-4 " />
                         <span className="sr-only md:not-sr-only">تصفية</span>
                       </Button>
                     </DropdownMenuTrigger>
@@ -560,8 +556,8 @@ console.log("lastShipment",lastShipment?.data?.shipment);
 
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="outline" className="v7-neu-button-sm ">
-                        <ArrowUpDown className="h-4 w-4 md:mr-2" />
+                      <Button variant="outline" className="v7-neu-button-sm flex items-center gap-2 ">
+                        <ArrowUpDown className="h-4 w-4 " />
                         <span className="sr-only md:not-sr-only">ترتيب</span>
                       </Button>
                     </DropdownMenuTrigger>
