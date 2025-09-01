@@ -332,7 +332,7 @@ export default function V7Wallet({ isOpen, onClose, balance, onBalanceUpdate }: 
         }
 
         const tokenParams = new URLSearchParams();
-        tokenParams.append('publishable_api_key', 'pk_test_EHPGwD3HWQA7pKqbEPeJvWv3LT7PMPvEsdfAu5Ad');
+        tokenParams.append('publishable_api_key', 'pk_live_3p2q5Kj7WiDPJZ2kYRSNc16SFQ47C6hfAvkKLkCc');
         tokenParams.append('name', cardName);
         tokenParams.append('number', cardNumber.replace(/\s/g, ''));
         tokenParams.append('month', cardMonth);
