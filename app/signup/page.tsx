@@ -16,6 +16,7 @@ export default function SignupPage() {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
+    phone: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -87,6 +88,18 @@ export default function SignupPage() {
                     className="block w-full py-3 px-4 bg-white/10 text-white placeholder-white/70 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-white/60 focus:border-none text-base"
                     placeholder="الأسم الأخير"
                     value={formData.lastName}
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className="w-full">
+                  <input
+                    id="phone"
+                    name="phone"
+                    type="text"
+                    required
+                    className="block w-full py-3 px-4 bg-white/10 text-white placeholder-white/70 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-white/60 focus:border-none text-base"
+                    placeholder="رقم الهاتف"
+                    value={formData.phone}
                     onChange={handleChange}
                   />
                 </div>
