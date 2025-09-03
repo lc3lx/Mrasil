@@ -226,7 +226,7 @@ export function V7StatsCard({
           {/* Stats fill the card vertically with space between */}
           <div className="flex flex-col gap-2 flex-1 justify-between ">
             {stats.map((stat, index) => (
-              <div key={index} className="flex flex-col flex-1 justify-center">
+              <div key={index} className="flex flex-col flex-1 justify-between gap-2">
                 <div className="flex items-center justify-between mb-1">
                   <span className={`text-xl font-medium ${labelTextColor}`}>
                     {stat.label}

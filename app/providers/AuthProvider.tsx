@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { parseJwt } from '../../lib/jwt';
 import { useRouter } from 'next/navigation';
 
 interface AuthContextType {
@@ -30,6 +31,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setIsAuthenticated(true);
     }
   }, []);
+
+  // تحقق من صلاحية التوكن تلقائياً
+  useEffect(() => {
+    if (!token) return;
+    const payload = parseJwt(token);
+    if (payload && payload.exp) {
+      const expiry = payload.exp * 1000;
+      const now = Date.now();
+      if (expiry < now) {
+        logout();
+      } else {
+        const timeout = setTimeout(() => {
+          logout();
+        }, expiry - now);
+        return () => clearTimeout(timeout);
+      }
+    }
+  }, [token]);
 
   const login = (newToken: string, userData: any) => {
     localStorage.setItem('token', newToken);

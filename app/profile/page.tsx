@@ -126,7 +126,6 @@ export default function ProfilePage() {
       setAlertOpen(true);
     }
   };
-  // Function to get the year from createdAt
   const getMemberSince = (createdAt: string) => {
     return new Date(createdAt).getFullYear();
   };

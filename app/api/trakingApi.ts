@@ -4,7 +4,7 @@ import { baseQueryWithTokenErrorHandling } from "./customBaseQuery";
 interface TrackingResponse {
   status: string;
   message: string;
-  data?: any; // هون بتحط شكل الداتا حسب الـ backend
+  data?: any;
 }
 
 export const trackingApi = createApi({
@@ -14,7 +14,7 @@ export const trackingApi = createApi({
   endpoints: (builder) => ({
     trackShipment: builder.mutation<TrackingResponse, { trackingNumber: string }>({
       query: ({ trackingNumber }) => ({
-        url: `/tracking`,
+        url: "/shipment/traking",
         method: "POST",
         body: { trackingNumber },
         credentials: "include",
