@@ -56,7 +56,7 @@ export default function V7Wallet({ isOpen, onClose, balance, onBalanceUpdate }: 
       } else {
         // إذا لم تكن منبثقة، معالجة عادية
         setIsSubmitting(true);
-        fetch('http://localhost:8000/api/wallet/rechargeWallet', {
+        fetch('https://www.marasil.site/api/wallet/rechargeWallet', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -96,7 +96,7 @@ export default function V7Wallet({ isOpen, onClose, balance, onBalanceUpdate }: 
       if (event.data.type === 'payment_success') {
         const { token, amount } = event.data;
         setIsSubmitting(true);
-        fetch('http://localhost:8000/api/wallet/rechargeWallet', {
+        fetch('https://www.marasil.site/api/wallet/rechargeWallet', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -276,7 +276,7 @@ export default function V7Wallet({ isOpen, onClose, balance, onBalanceUpdate }: 
       }
       setError('جاري إرسال الطلب إلى الباك إند...');
       const userToken = localStorage.getItem('token');
-      const backendResponse = await fetch('http://localhost:8000/api/wallet/rechargeWallet', {
+      const backendResponse = await fetch('https://www.marasil.site/api/wallet/rechargeWallet', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -332,7 +332,7 @@ export default function V7Wallet({ isOpen, onClose, balance, onBalanceUpdate }: 
         }
 
         const tokenParams = new URLSearchParams();
-        tokenParams.append('publishable_api_key', 'pk_live_3p2q5Kj7WisDPJZ2kYRSNc16SFQ47C6hfAvkKLkCc');
+        tokenParams.append('publishable_api_key', 'pk_live_yvEP28tLV8sHaWY1WTKuD9Fs47WX9qpVsE1gbnAF');
         tokenParams.append('name', cardName);
         tokenParams.append('number', cardNumber.replace(/\s/g, ''));
         tokenParams.append('month', cardMonth);
