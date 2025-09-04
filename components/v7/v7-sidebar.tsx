@@ -715,19 +715,15 @@ const [openTheme, setOpenTheme] = useState(false);
           </div>
         </div> */}
       </aside>
-      <Sheet open={open} onOpenChange={onClose}>
+      <Sheet open={open} onOpenChange={onClose} >
         <SheetContent
+        dir="rtl"
           side="right"
-          className={`w-64 sm:w-72 flex-shrink-0 p-0 v7-neu-sidebar ${sidebarClass}`}
+          className={`w-64 sm:w-72   flex-shrink-0 p-0 v7-neu-sidebar ${sidebarClass}`}
         >
-          <div className="flex h-14 sm:h-16 items-center justify-between border-b px-3 sm:px-4">
-            <div className="flex items-center gap-2">
-              <div className="v7-neu-logo-sm">
-                <span className="text-sm font-bold text-[#3498db]">MR</span>
-              </div>
-              <span className="text-base font-bold text-[#3498db]">مراسيل</span>
-            </div>
-            <Button
+          <div className=" h-10 sm:h-16  border-b px-3 sm:px-4 mt-10">
+              <span className="text-base font-bold text-[#3498db] ">مراسيل</span>
+                {/* <Button
               variant="ghost"
               size="icon"
               onClick={onClose}
@@ -735,17 +731,17 @@ const [openTheme, setOpenTheme] = useState(false);
               aria-label="إغلاق القائمة"
             >
               <X className="h-4 sm:h-5 w-4 sm:w-5" />
-            </Button>
+            </Button> */}
           </div>
           <ScrollArea className="h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)]">
             <div className="flex flex-col gap-2 p-3 sm:p-4 md:p-5">
               {/* قسم القائمة الرئيسية */}
-              <div className="mb-3 px-3 text-[10px] sm:text-xs font-bold text-[#5791F4] uppercase tracking-wider">
+              <div className="mb-3 px-3   font-bold text-[#5791F4] uppercase tracking-wider" dir="rtl">
                 {currentTranslations.mainMenu}
               </div>
 
               {/* تقسيم القائمة الرئيسية إلى مجموعات منطقية */}
-              <div className="space-y-1.5 mb-4 ">
+              <div className="space-y-1.5 mb-4 " dir="rtl">
                 {/* الصفحات الرئيسية */}
                 {navItems.slice(0, 4).map((item) => (
                   <button
@@ -786,10 +782,10 @@ const [openTheme, setOpenTheme] = useState(false);
               </div>
 
               {/* قسم الشحنات والطرود */}
-              <div className="mb-2 px-3 text-[10px] sm:text-xs font-medium text-muted-foreground">
+              <div className="mb-3 px-3   font-bold text-[#5791F4] uppercase tracking-wider" dir="rtl">
                 {currentTranslations.shipmentsAndParcels}
               </div>
-              <div className="space-y-1.5 mb-4">
+              <div className="space-y-1.5 mb-4" dir="rtl">
                 {navItems.slice(4, 8).map((item) => (
                   <button
                     key={item.href}
@@ -829,10 +825,10 @@ const [openTheme, setOpenTheme] = useState(false);
               </div>
 
               {/* قسم التكامل والواجهات البرمجية */}
-              <div className="mb-2 px-3 text-[10px] sm:text-xs font-medium text-muted-foreground">
+              <div className="mb-3 px-3   font-bold text-[#5791F4] uppercase tracking-wider" dir="rtl">
                 {currentTranslations.storeIntegration}
               </div>
-              <div className="space-y-1.5 mb-4">
+              <div className="space-y-1.5 mb-4" dir="rtl">
                 {navItems.slice(8, 11).map((item) => (
                   <button
                     key={item.href}
@@ -872,10 +868,10 @@ const [openTheme, setOpenTheme] = useState(false);
               </div>
 
               {/* قسم التتبع والمواقع */}
-              <div className="mb-2 px-3 text-[10px] sm:text-xs font-medium text-muted-foreground">
+              <div className="mb-3 px-3   font-bold text-[#5791F4] uppercase tracking-wider" dir="rtl">
                 {currentTranslations.trackingAndLocations}
               </div>
-              <div className="space-y-1.5 mb-4">
+              <div className="space-y-1.5 mb-4" dir="rtl">
                 {navItems.slice(11, 15).map((item) => (
                   <button
                     key={item.href}
@@ -904,7 +900,7 @@ const [openTheme, setOpenTheme] = useState(false);
                         }`}
                       />
                     </div>
-                    <span className="font-medium text-base sm:text-lg">
+                    <span className="font-medium text-base sm:text-lg" >
                       {item.title}
                     </span>
                     {item.active && (
@@ -915,7 +911,7 @@ const [openTheme, setOpenTheme] = useState(false);
               </div>
 
               {/* قسم إدارة الحساب */}
-              <div className="mb-3 px-3 text-[10px] sm:text-xs font-bold text-[#5791F4] uppercase tracking-wider">
+              <div className="mb-3 px-3   font-bold text-[#5791F4] uppercase tracking-wider" dir="rtl">
                 {currentTranslations.accountManagement}
               </div>
               <div className="space-y-1.5">
@@ -1100,7 +1096,7 @@ const [openTheme, setOpenTheme] = useState(false);
                       </DropdownMenu>
                                 </div>
             {/* <V7FloatingAssistant /> */}
-            <div className="mt-6 border-t border-gray-200 dark:border-[#2a3349] pt-4 px-3">
+            <div className="mt-6 border-t border-gray-200 dark:border-[#2a3349] pt-4 px-3 pb-16" dir="rtl">
               <button
                 onClick={handleSignOut}
                 className={`v7-sidebar-item flex w-full items-center gap-2 sm:gap-3 rounded-xl px-3 py-2.5 sm:py-3 text-sm sm:text-base transition-all ${
@@ -1109,7 +1105,7 @@ const [openTheme, setOpenTheme] = useState(false);
                     : "hover:bg-gray-100 text-[#e05d34]"
                 }`}
               >
-                <div className="v7-icon-container">
+                <div className="v7-icon-container ">
                   <LogOut className="h-6 sm:h-7 w-6 sm:w-7 text-[#e05d34]" />
                 </div>
                 <span className="text-base">{currentTranslations.signOut}</span>

@@ -227,7 +227,7 @@ const handleCancelShipment = async () => {
     >
       {/* Main Card Content - Always visible */}
       <div className="p-6 flex    w-full  gap-4">
-        <div className="flex flex-col md:flex-row items-start gap-6 sm:ma w-full ">
+        <div className="flex flex-col md:flex-row items-start gap-6  w-full ">
           {/* Left: Main Info */}
           <div className="flex flex-col justify-between flex-1  ">
             <div className="flex flex-col  gap-4 w-fit">
@@ -236,7 +236,7 @@ const handleCancelShipment = async () => {
                 {" "}
                 {/* Increased gap for more space */}
                 <span
-                  className={`inline-flex items-center gap-4 rounded-md py-1 text-lg font-bold ${carrierInfo.color}`}
+                  className={`inline-flex items-center gap-4 rounded-md py-1  font-bold ${carrierInfo.color}`}
                 >
                   <div className="min-h-20 min-w-20  relative overflow-hidden   flex items-center justify-center">
                     {" "}
@@ -249,16 +249,12 @@ const handleCancelShipment = async () => {
                       className="object-contain"
                     />
                   </div>
-                  <span className="ml-6  text-[#294D8B]"> {displayName}</span>
+                  <span className="sm:ml-6  text-[#294D8B] text-base sm:text-lg"> {displayName}</span>
 
                  
                 </span>
               </div>
-
-              {/* Order Number */}
-              {/* <RadioGroup> */}
-
-              <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3">
                 <span className="font-bold text-sm sm:text-2xl text-[#294D8B] whitespace-nowrap">
                   رقم التتبع : {trackingNumber || "غير متوفر"}
                 </span>
@@ -267,7 +263,7 @@ const handleCancelShipment = async () => {
               <div className="flex items-center gap-1 text-gry">
                 <span className="text-sm sm:text-base flex items-center ">رقم الطلب: </span>
                 <span className="ml-2  sm:text-base text-sm text-[#444]">
-                  {shipment?._id.slice(0, 10) || "غير متوفر"}
+                  {shipment?._id || "غير متوفر"}
                 </span>
               </div>
               {/* </RadioGroup> */}
