@@ -36,6 +36,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import Image from "next/image"
 
 const companyLogoMap: Record<string, string> = {
   smsa: "/companies/smsa.jpg",
@@ -82,16 +83,24 @@ function StatCard({
 }
 
 function CarrierCard({ carrier, logo }: { carrier: ShipmentCompany; logo: string }) {
+  
+let displayName = carrier.company.toLocaleUpperCase();
 
+if (carrier.company.toLowerCase() === "smsa" && carrier.shippingType === "Dry") {
+  displayName = "SMSA PRO";
+} else if (carrier.company.toLowerCase() === "omniclama") {
+  displayName = "LLAMA BOX";
+}
+console.log("carrier",carrier.minShipments);
 
   return (
     <Card className="shadow-lg  rounded-2xl p-0 border-0 flex flex-col items-center text-center">
       <CardContent className="flex flex-col items-center p-8 w-full">
         {/* Logo and Name */}
         <div className="w-28  rounded-2xl overflow-hidden bg-white flex items-center justify-center mx-auto mb-3">
-          <img src={logo} alt={carrier.company} className="w-full h-full object-contain" />
+          <Image src={logo} width={100} height={100} alt={carrier.company} className="w-full h-full object-contain" />
         </div>
-        <div className="text-2xl font-extrabold text-[#294D8B] mb-2">{carrier.company === "omniclama" ? "LLAMA BOX" :carrier.company}</div>
+        <div className="text-2xl font-extrabold text-[#294D8B] mb-2">{displayName}</div>
         {/* Type Badge */}
         <div className="mb-6 ">
           {["redbox","omniclama", "smsa", "aramex" ].includes(carrier.company) && (
@@ -143,55 +152,49 @@ export function CarriersContent() {
   const [searchTerm, setSearchTerm] = useState("")
   const [filterOption, setFilterOption] = useState("all")
   const [sortOption, setSortOption] = useState("name-asc")
-
-  const filteredCarriers = (carriersList ?? [])
-    .filter((carrier) => {
-      const matchesSearch = carrier.company.toLowerCase().includes(searchTerm.toLowerCase())
-    let matchesFilter = true
-    switch (filterOption) {
-      case "active":
-          matchesFilter = carrier.status === "Enabled"
-        break
-      case "inactive":
-          matchesFilter = carrier.status !== "Enabled"
-        break
-      default:
-        matchesFilter = true
-    }
-    return matchesSearch && matchesFilter
-  })
-
-  const sortedCarriers = [...filteredCarriers].sort((a, b) => {
-    switch (sortOption) {
-      case "name-asc":
-        return a.company.localeCompare(b.company)
-      case "name-desc":
-        return b.company.localeCompare(a.company)
-      default:
-        return 0
-    }
-  })
-
+    const expandedCarriersList = (carriersList ?? []).flatMap(carrier =>
+  carrier.shippingTypes.map(st => ({
+    ...carrier,
+    shippingType: st.type,
+    _uniqueId: `${carrier._id}-${st.type}` // key فريد
+  }))
+);
+// Filter
+const filteredCarriers = expandedCarriersList.filter(carrier => {
+  const matchesSearch = carrier.company.toLowerCase().includes(searchTerm.toLowerCase());
+  let matchesFilter = true;
+  switch (filterOption) {
+    case "active":
+      matchesFilter = carrier.status === "Enabled";
+      break;
+    case "inactive":
+      matchesFilter = carrier.status !== "Enabled";
+      break;
+  }
+  return matchesSearch && matchesFilter;
+});
+// Sort
+const sortedCarriers = [...filteredCarriers].sort((a, b) => {
+  switch (sortOption) {
+    case "name-asc":
+      return a.company.localeCompare(b.company);
+    case "name-desc":
+      return b.company.localeCompare(a.company);
+    default:
+      return 0;
+  }
+});
   const totalCarriers = carriersList?.length ?? 0
   const activeCarriers = carriersList?.filter((c) => c.status === "Enabled").length ?? 0
-  // Count international carriers (none of their shippingTypes is 'Dry')
+
 
   return (
     <div className="p-6 space-y-6 my-16">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-[#294D8B]">شركات الشحن</h1>
-          <p className="text-gray-500 text-2xl">إدارة شركات الشحن والناقلين المتعاقد معهم</p>
+          <h1  className="text-4xl font-bold text-[#294D8B]">شركات الشحن</h1>
+          <p className=" text-gry text-base">إدارة شركات الشحن والناقلين المتعاقد معهم</p>
         </div>
-        {/* <div className="flex gap-2">
-          <Button
-            className="bg-[#294D8B] hover:bg-[#1a2a6c] text-white text-xl font-bold rounded-full px-8 py-3 shadow-lg flex items-center gap-2 transition-all"
-            onClick={() => router.push("/carriers/integration")}
-          >
-            <FileContract className="ml-2 h-5 w-5" />
-            أضف عقدك الخاص
-          </Button>
-        </div> */}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -300,11 +303,11 @@ export function CarriersContent() {
       {!isLoading && !isError && sortedCarriers.length > 0 && (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {sortedCarriers.map((carrier) => (
-          <CarrierCard
-              key={carrier._id}
-            carrier={carrier}
-              logo={companyLogoMap[carrier.company.toLowerCase()] || "/placeholder.svg"}
-          />
+        <CarrierCard
+  key={carrier._uniqueId}
+  carrier={carrier}
+  logo={companyLogoMap[carrier.company.toLowerCase()] || "/placeholder.svg"}
+/>
         ))}
       </div>
       )}

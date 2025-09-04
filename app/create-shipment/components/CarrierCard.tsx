@@ -141,7 +141,7 @@ export default function CarrierCard({
             value={company.company}
             checked={isSelected}
             onChange={() => handleCompanySelect(company.company)}
-            className="text-[#3498db] mb-1"
+            className="border-none "
             style={{ width: 20, height: 20 }}
             onClick={(e) => e.stopPropagation()}
           />

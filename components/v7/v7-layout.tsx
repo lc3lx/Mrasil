@@ -240,7 +240,7 @@ export const V7Layout = ({ children, theme = "light" }: V7LayoutProps) => {
             </div>
           )}
           <div className={`container mx-auto py-6 px-4 ${isHomePage ? "pt-4" : ""} max-w-[1920px]`}>
-            {pathname === "/webhooks" && <V7WhatsAppWebhook theme={currentTheme} />}
+            {/* {pathname === "/webhooks" && <V7WhatsAppWebhook theme={currentTheme} />} */}
 
             {pathname === "/automation" && (
               <div className="mb-6">

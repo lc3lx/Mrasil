@@ -36,11 +36,11 @@ const ReturnsFiltersBar: React.FC<ReturnsFiltersBarProps> = ({
     <Tabs dir="rtl" value={value} onValueChange={onTabChange} className="w-full">
       <div className="flex flex-col lg:flex-row justify-between items-start gap-4 mb-4">
         <TabsList className="v7-neu-tabs mb-1">
-          <TabsTrigger value="all" className="text-base">الكل</TabsTrigger>
-          <TabsTrigger value="pending" className="text-base">قيد المراجعة</TabsTrigger>
-          <TabsTrigger value="approved" className="text-base">تمت الموافقة</TabsTrigger>
-          <TabsTrigger value="processed" className="text-base">تمت المعالجة</TabsTrigger>
-          <TabsTrigger value="replacement" className="text-base">صفحة الإستبدال</TabsTrigger>
+          <TabsTrigger value="all" className="text-sm sm:text-base">الكل</TabsTrigger>
+          <TabsTrigger value="pending" className="text-sm sm:text-base">قيد المراجعة</TabsTrigger>
+          <TabsTrigger value="approved" className="  text-sm sm:text-base">تمت الموافقة</TabsTrigger>
+          <TabsTrigger value="processed" className=" text-sm sm:text-base">تمت المعالجة</TabsTrigger>
+          <TabsTrigger value="replacement" className=" text-sm sm:text-base">صفحة الإستبدال</TabsTrigger>
         </TabsList>
         <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
           {/* Search filter */}
@@ -60,7 +60,7 @@ const ReturnsFiltersBar: React.FC<ReturnsFiltersBarProps> = ({
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" /></svg>
               <SelectValue placeholder="فلترة بالحالة" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className=' bg-white border-none'>
               <SelectItem value="all">جميع الحالات</SelectItem>
               <SelectItem value="pending">قيد المراجعة</SelectItem>
               <SelectItem value="approved">تم الموافقة</SelectItem>
@@ -75,7 +75,7 @@ const ReturnsFiltersBar: React.FC<ReturnsFiltersBarProps> = ({
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" /></svg>
               <SelectValue placeholder="نوع الرجيع" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className=' bg-white border-none'>
               <SelectItem value="all">جميع الأنواع</SelectItem>
               <SelectItem value="product">منتجات</SelectItem>
               <SelectItem value="waybill">بوالص شحن</SelectItem>
