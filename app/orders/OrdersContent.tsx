@@ -261,28 +261,28 @@ export default function OrdersContent() {
               className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 "
               dir="rtl"
             >
-              <TabsList className="v7-neu-tabs">
+              <TabsList className="v7-neu-tabs" dir="rtl">
                 <TabsTrigger
                   value="all"
-                  className="v7-neu-tab text-lg text-gry"
+                  className="v7-neu-tab text-base sm:text-lg text-gry"
                 >
                   جميع الطلبات
                 </TabsTrigger>
                 <TabsTrigger
                   value="active"
-                  className="v7-neu-tab text-lg text-gry"
+                  className="v7-neu-tab text-base sm:text-lg text-gry"
                 >
                   قيد التنفيذ
                 </TabsTrigger>
                 <TabsTrigger
                   value="completed"
-                  className="v7-neu-tab text-lg text-gry"
+                  className="v7-neu-tab text-base sm:text-lg text-gry"
                 >
                   مكتملة
                 </TabsTrigger>
                 <TabsTrigger
                   value="cancelled"
-                  className="v7-neu-tab text-lg text-gry"
+                  className="v7-neu-tab text-base sm:text-lg text-gry"
                 >
                   ملغاة
                 </TabsTrigger>
