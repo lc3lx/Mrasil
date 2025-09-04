@@ -12,31 +12,46 @@ import { useTheme } from "next-themes"
 import { V7WhatsAppWebhook } from "./v7-whatsapp-webhook"
 import { ArrowRight, PlusCircle, AlertCircle, Filter, Clock, BarChart3 } from "lucide-react"
 import { DateRangePicker } from "@/components/ui/date-range-picker"
+import { jwtDecode } from "jwt-decode";
 
 interface V7LayoutProps {
   children: React.ReactNode
   theme?: "light" | "dark"
 }
+interface TokenPayload {
+  customerId: string;
+  iat: number;
+  exp: number;
+}
 
 // تعريف دالة للتحقق من صلاحيات المستخدم
 const getUserPermissions = () => {
-  // في التطبيق الحقيقي، هذه الدالة ستتحقق من JWT أو من حالة المستخدم في الخادم
-  // هنا نستخدم localStorage كمثال بسيط
   try {
-    const userRole = localStorage.getItem("userRole") || "admin" // تعيين "admin" كقيمة افتراضية للاختبار
+    if (typeof window === "undefined") return { canCreateAutomation: false, userRole: "guest" };
+
+    const token = localStorage.getItem("token");
+    if (!token) return { canCreateAutomation: false, userRole: "guest" };
+
+    const decoded: TokenPayload = jwtDecode(token);
+
+    // التحقق من انتهاء صلاحية التوكين
+    if (decoded.exp * 1000 < Date.now()) {
+      localStorage.removeItem("token");
+      return { canCreateAutomation: false, userRole: "guest" };
+    }
+
+    // اجلب الدور من localStorage (أو من التوكين لو موجود فيه)
+    const userRole = localStorage.getItem("userRole") || "user";
+
     return {
       canCreateAutomation: ["admin", "manager", "supervisor"].includes(userRole),
       userRole,
-    }
+    };
   } catch (error) {
-    console.error("Error checking permissions:", error)
-    return {
-      canCreateAutomation: false,
-      userRole: "user",
-    }
+    console.error("Error checking permissions:", error);
+    return { canCreateAutomation: false, userRole: "guest" };
   }
-}
-
+};
 export const V7Layout = ({ children, theme = "light" }: V7LayoutProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)

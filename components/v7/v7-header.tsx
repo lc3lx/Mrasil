@@ -132,9 +132,35 @@ const [query, setQuery] = useState("");
   // Search
 const handleSearch = (e: React.FormEvent) => {
   e.preventDefault();
-  const trimmed = query.trim();
-
+  const trimmed = query.trim().toLowerCase();
   if (!trimmed) return;
+  const sections: Record<string, string> = {
+    "الرئيسية": "/",
+    "الطلبات": "/orders",
+    "شحناتي": "/shipments",
+    "إنشاء شحنة": "/create-shipment",
+    "إدارة الطرود": "/parcels",
+    "إدارة المرتجعات": "/returns",
+    "إدارة الاستبدال": "/replacements",
+    "الأتمتة": "/automation",
+    "توصيل المتاجر": "/webhooks",
+    "واجهة api": "/api",
+    "شركات الشحن": "/carriers",
+    "تتبع الشحنات": "/tracking",
+    "تخصيص التتبع": "/custom-tracking",
+    "العناوين": "/locations",
+    "سجل الشحنات": "/history",
+    "المحفظة": "/payments",
+    "الفريق": "/team",
+    "الإعدادات": "/settings",
+  };
+
+  const sectionPath = sections[trimmed];
+  if (sectionPath) {
+    router.push(sectionPath);
+    return;
+  }
+
   const phoneRegex = /^(\+9665\d{8}|05\d{8})$/;
   if (phoneRegex.test(trimmed)) {
     router.push(`/shipments?phone=${encodeURIComponent(trimmed)}`);
@@ -150,8 +176,8 @@ const handleSearch = (e: React.FormEvent) => {
     router.push(`/shipments?id=${encodeURIComponent(trimmed)}`);
     return;
   }
-  
 };
+
 
   if (!mounted) {
     return (
