@@ -25,7 +25,7 @@ export function V7LoadingScreen({ title = "جاري تحميل لوحة التح
         <div className="v7-loading-logo">SE</div>
       </div>
 
-      <h1 className="text-2xl font-bold text-[#3498db] mb-8">شيب إكسبرس</h1>
+      <h1 className="text-2xl font-bold text-[#3498db] mb-8">جار التحميل</h1>
 
       <div className="w-64 h-3 v7-neu-inset rounded-full overflow-hidden">
         <div
