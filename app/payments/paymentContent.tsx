@@ -14,7 +14,7 @@ import { TransactionsTable } from "./transactions-table"
 import { useGetMyWalletQuery, useGetPaymentStatusQuery } from "@/app/api/walletApi"
 import { useGetMyTransactionsQuery } from "@/app/api/transicationApi"
 import RechargeWalletDialog from "./RechargeWalletDialog"
-import PaymentForm from "../parcels/components/PaymentForm"
+
 import V7Wallet from "@/components/v7/pages/v7-wallet"
 
 // تحديث ألوان الحالات في payments-content

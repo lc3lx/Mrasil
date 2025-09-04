@@ -502,8 +502,15 @@ function Step1Content({ nextStep }: { nextStep: () => void }) {
       <RecipientAddressSection
         selectedRecipient={selectedRecipient}
         setSelectedRecipient={setSelectedRecipient}
-        setValue={setValue}
-      />
+        setValue={setValue} initialValues={{
+          name: "",
+          location: "",
+          phone: "",
+          city: "",
+          country: "",
+          district: "",
+          email: ""
+        }}      />
       <div className="flex justify-end mt-8">
         <button
           className="ring-offset-background focus-visible:outline-hidden focus-visible:ring-ring inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 text-primary-foreground hover:bg-primary/90 h-10 v7-neu-button-accent bg-gradient-to-r from-[#3498db] to-[#2980b9] px-8 py-6 text-lg relative overflow-hidden group"

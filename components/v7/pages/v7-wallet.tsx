@@ -94,8 +94,9 @@ export default function V7Wallet({ isOpen, onClose, balance, onBalanceUpdate }: 
   useEffect(() => {
     const onMessage = (event: MessageEvent) => {
       if (event.data.type === 'payment_success') {
-        const { token, amount } = event.data;
+        if (isSubmitting) return; // امنع التكرار
         setIsSubmitting(true);
+        const { token, amount } = event.data;
         fetch('https://www.marasil.site/api/wallet/rechargeWallet', {
           method: 'POST',
           headers: {
@@ -270,6 +271,8 @@ export default function V7Wallet({ isOpen, onClose, balance, onBalanceUpdate }: 
 
   // إرسال طلب الدفع إلى الباك إند
   const createPayment = async (tokenId: string) => {
+    if (isSubmitting) return; // امنع التكرار
+    setIsSubmitting(true);
     try {
       if (!tokenId) {
         throw new Error('رمز الدفع غير صالح');
@@ -304,6 +307,7 @@ export default function V7Wallet({ isOpen, onClose, balance, onBalanceUpdate }: 
         handleClose();
         window.location.replace('/'); // إعادة توجيه نظيفة
       }, 2000);
+      setIsSubmitting(false); // انتهت العملية
     } catch (error: any) {
       setError(error.message || 'حدث خطأ أثناء معالجة الدفع');
       setIsSubmitting(false);
