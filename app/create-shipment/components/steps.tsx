@@ -78,6 +78,8 @@ import CarrierCard from "./CarrierCard";
 import { OrderSummaryAndFragileTips } from "./OrderSummaryAndFragileTips";
 import { useSearchParams } from "next/navigation";
 import Privace from "./Privace";
+import type { FieldError, FieldErrorsImpl, Merge } from "react-hook-form";
+
 const cities = [
   "الرياض",
   "جدة",
@@ -115,7 +117,9 @@ const staggerChildren = {
     },
   },
 };
-
+type ErrorMessageProps = {
+  error?: any;
+};
 const providerOptions = [
   {
     key: "redbox",
@@ -141,9 +145,9 @@ const schema = yup
     recipient_district: yup.string(),
     weight: yup.number().required("الوزن مطلوب").typeError("الوزن مطلوب"),
     Parcels: yup.number(),
-dimension_high: yup.number(),
-dimension_width: yup.number(),
-dimension_length: yup.number(),
+    dimension_high: yup.number(),
+    dimension_width: yup.number(),
+    dimension_length: yup.number(),
 
     company: yup.string(),
     shipmentType: yup.string(),
@@ -302,12 +306,12 @@ export function CreateShipmentSteps() {
           length: Number(data?.boxSize?.length || 0),
         },
       };
-   const newShipment = await createShipment(payload).unwrap();
-   setModalStatus("success");
+      const newShipment = await createShipment(payload).unwrap();
+      setModalStatus("success");
       setModalMessage("تمت إضافة الشحنة بنجاح");
       setModalOpen(true);
       await refetchShipments();
-        localStorage.setItem("lastShipment", JSON.stringify(newShipment));
+      localStorage.setItem("lastShipment", JSON.stringify(newShipment));
       setTimeout(() => {
         router.push("/shipments");
       }, 1200);
@@ -317,7 +321,7 @@ export function CreateShipmentSteps() {
       setModalOpen(true);
     }
   };
-console.log(errors);
+  console.log(errors);
 
   return (
     <FormProvider {...methods}>
@@ -587,7 +591,15 @@ function Step2Content({
       nextStep();
     }
   };
-
+  const ErrorMessage = ({ error }: ErrorMessageProps) => {
+    const message =
+      typeof error === "string"
+        ? error
+        : (error?.message as string | undefined);
+    return message ? (
+      <div className="text-red-500 text-sm mt-1">{message}</div>
+    ) : null;
+  };
   const [openPrivacyModal, setOpenPrivacyModal] = useState(false);
   return (
     <>
@@ -603,16 +615,8 @@ function Step2Content({
         </div>
         {/* --- Main layout: Cards and Shipment Type --- */}
         <div className="flex flex-col md:flex-row gap-8 mb-8">
-          {/* Parcel size cards (left, 2/3) */}
-          {/* <div className="flex-1">
-            <ParcelSizeSection
-              parcelsData={parcelsData}
-              setValue={setValue}
-              errors={errors}
-            />
-          </div> */}
           {/* Shipment type (right, 1/3) */}
-          <div className="w-full md:w-1/3 flex flex-col gap-2">
+          <div className="w-full   flex flex-col gap-2">
             <div className="flex items-center gap-2 mb-4">
               <Package className="w-5 h-5 text-[#3498db]" />
               <h2 className="text-xl font-bold text-[#3498db] m-0">
@@ -638,8 +642,8 @@ function Step2Content({
                 return (
                   <div
                     key={option.value}
-                    className={` v7-neu-card-inner p-4 cursor-pointer
-                      flex-1 max-w-[220px] rounded-2xl  transition-all
+                    className={` v7-neu-card-inner p-4 cursor-pointer max-w-[200px]
+                      flex-1 w-full  rounded-2xl  transition-all
                       flex flex-col items-start 
                       ${
                         selected
@@ -650,21 +654,13 @@ function Step2Content({
                     onClick={() => setValue("paymentMethod", option.sendValue)}
                   >
                     <div className=" flex items-center  gap-2 mb-2">
-                      <span
-                        className={`
-                          flex items-center justify-center w-6 h-6 rounded-full border-2
-                          ${
-                            selected
-                              ? "border-blue-500 bg-white"
-                              : "border-gray-300 bg-white"
-                          }
-                          transition-all
-                          `}
+                      <div
+                        className={` w-6 h-6 rounded-full v7-neu-inset flex items-center justify-center `}
                       >
                         {selected ? (
-                          <span className="block w-3 h-3 rounded-full bg-blue-500" />
+                        <div className="w-3 h-3 rounded-full bg-primary"></div>
                         ) : null}
-                      </span>
+                      </div>
                       <span
                         className={`  font-bold text-lg ${
                           selected ? "text-blue-700" : "text-gray-700"
@@ -684,11 +680,7 @@ function Step2Content({
                 );
               })}
             </div>
-            {errors.paymentMethod && (
-              <p className="text-red-500 text-sm mt-2">
-                {errors.paymentMethod.message}
-              </p>
-            )}
+            <ErrorMessage error={errors.paymentMethod} />
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8 ">
@@ -713,11 +705,7 @@ function Step2Content({
                 style={weightFocused ? { boxShadow: "0 2px 0 0 #3498db" } : {}}
               />
             </div>
-            {errors.weight && typeof errors.weight.message === "string" && (
-              <div className="text-red-500 text-sm mt-1">
-                {errors.weight.message}
-              </div>
-            )}
+            <ErrorMessage error={errors.weight} />
           </motion.div>
 
           {/* عدد الصناديق */}
@@ -763,11 +751,7 @@ function Step2Content({
                 </Button>
               </div>
             </div>
-            {errors.Parcels && typeof errors.Parcels.message === "string" && (
-              <div className="text-red-500 text-sm mt-1">
-                {errors.Parcels.message}
-              </div>
-            )}
+                        <ErrorMessage error={errors.Parcels} />
           </motion.div>
 
           {/* وصف محتويات الشحنة */}
@@ -779,6 +763,12 @@ function Step2Content({
               <FileText className="h-5 w-5 text-[#3498db]" />
               وصف محتوى الشحنة
             </Label>
+            {watch("paymentMethod") === "COD" && (
+  <div className="text-sm text-red-500 mt-2">
+    ملاحظة مهمة: يجب كتابة المبلغ المراد من الشركة استلامه من العميل.
+    </div>
+)}
+
             <div className="v7-neu-input-container mt-2">
               <textarea
                 placeholder="أدخل وصفاً لمحتويات الشحنة"
@@ -789,13 +779,7 @@ function Step2Content({
                 className="v7-neu-input text-base min-h-[120px] "
               />
             </div>
-
-            {errors.orderDescription &&
-              typeof errors.orderDescription.message === "string" && (
-                <div className="text-red-500 text-sm mt-1">
-                  {errors.orderDescription.message}
-                </div>
-              )}
+            <ErrorMessage error={errors.orderDescription} />
           </motion.div>
         </div>
         {/* الإجمالى والوصف في نفس الصف */}
@@ -817,11 +801,7 @@ function Step2Content({
                 className="v7-neu-input text-base"
               />
             </div>
-            {errors.total && typeof errors.total.message === "string" && (
-              <div className="text-red-500 text-sm mt-1">
-                {errors.total.message}
-              </div>
-            )}
+            <ErrorMessage error={errors.total} />
           </motion.div>
         </div>
         {/* عنوان العميل (hidden but included in form) */}
@@ -937,8 +917,8 @@ function Step3Content({
   } = useFormContext();
   const values = getValues();
   const [isSubmitting, setIsSubmitting] = useState(false);
-const [boxSizes, setBoxSizes] = useState<any[]>([]);
-const [selectedBoxSize, setSelectedBoxSize] = useState<any>(null);
+  const [boxSizes, setBoxSizes] = useState<any[]>([]);
+  const [selectedBoxSize, setSelectedBoxSize] = useState<any>(null);
   const { data: parcelsData, isLoading: isLoadingParcels } =
     useGetAllParcelsQuery();
 
@@ -959,17 +939,16 @@ const [selectedBoxSize, setSelectedBoxSize] = useState<any>(null);
 
   const selectedCompany = watch("company");
 
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
 
- const handleSubmit = async (e: any) => {
-  e.preventDefault();
-
-  setIsSubmitting(true);
-  try {
-    await onSubmit(e);
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+    setIsSubmitting(true);
+    try {
+      await onSubmit(e);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const companiesWithTypes = (companiesData || [])
     .flatMap((company) => {
@@ -995,22 +974,22 @@ const [selectedBoxSize, setSelectedBoxSize] = useState<any>(null);
     ? values.shipmentType
     : validTypes[0];
 
-const handleCompanySelect = (company: string, shippingType: string) => {
-  const selected = companiesData?.find(c => c.company === company);
-  if (selected) {
-    setValue("company", company);
-    setValue("shipmentType", shippingType);
-    // ✅ ضيف label وخلّي المعرف هو _id
-    const sizes = (selected.allowedBoxSizes || []).map((s: any) => ({
-      ...s,
-      label: `${s.length}×${s.width}×${s.height} سم`,
-    }));
+  const handleCompanySelect = (company: string, shippingType: string) => {
+    const selected = companiesData?.find((c) => c.company === company);
+    if (selected) {
+      setValue("company", company);
+      setValue("shipmentType", shippingType);
+      // ✅ ضيف label وخلّي المعرف هو _id
+      const sizes = (selected.allowedBoxSizes || []).map((s: any) => ({
+        ...s,
+        label: `${s.length}×${s.width}×${s.height} سم`,
+      }));
 
-    setBoxSizes(sizes);
-    setSelectedBoxSize(null);
-    setValue("boxSize", null); // امسح القدي
-  }
-};
+      setBoxSizes(sizes);
+      setSelectedBoxSize(null);
+      setValue("boxSize", null); // امسح القدي
+    }
+  };
 
   // NEW
   const [prices, setPrices] = useState<any[]>([]);
@@ -1050,7 +1029,7 @@ const handleCompanySelect = (company: string, shippingType: string) => {
                 weight: Number(values.weight) || 1,
               },
             };
-                console.log("Sending payload:", payload);
+            console.log("Sending payload:", payload);
             const res = await createShipmentOrder(payload).unwrap();
             const price = res?.data?.total;
             return {
@@ -1074,13 +1053,12 @@ const handleCompanySelect = (company: string, shippingType: string) => {
         console.error("Error in fetchAllPrices:", error);
         setPricesFetched(true);
       }
-      
     };
 
     fetchAllPrices();
   }, [companiesData]);
-  console.log("values",values);
-  
+  console.log("values", values);
+
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
       <div className="space-y-4">
@@ -1158,7 +1136,7 @@ const handleCompanySelect = (company: string, shippingType: string) => {
           )}
         </div>
       </div>
-      <OrderSummaryAndFragileTips values={values} prices={prices}  />
+      <OrderSummaryAndFragileTips values={values} prices={prices} />
 
       <div className="flex justify-between mt-8">
         <Button
