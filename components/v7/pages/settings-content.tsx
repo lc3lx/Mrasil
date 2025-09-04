@@ -210,7 +210,7 @@ useEffect(() => {
                   {/* Password change form */}
                   <form
                     onSubmit={passwordForm.handleSubmit(onPasswordSubmit)}
-                    className="space-y-2"
+                    className="space-y-4"
                   >
                     <div className="space-y-2">
                       <Label htmlFor="currentPassword">كلمة المرور الحالية</Label>
@@ -218,7 +218,7 @@ useEffect(() => {
                         id="currentPassword"
                         type="password"
                         {...passwordForm.register("currentPassword")}
-                        className="v7-neu-input text-gry"
+                        className="v7-neu-input-hollo text-gry"
                       />
                       {passwordForm.formState.errors.currentPassword && (
                         <span className="text-red-500 text-xs">
@@ -232,7 +232,7 @@ useEffect(() => {
                         id="newPassword"
                         type="password"
                         {...passwordForm.register("newPassword")}
-                      className="v7-neu-input text-gry"/>
+                      className="v7-neu-input-hollo text-gry"/>
                       {passwordForm.formState.errors.newPassword && (
                         <span className="text-red-500 text-xs">
                           {passwordForm.formState.errors.newPassword.message}
@@ -245,7 +245,7 @@ useEffect(() => {
                         id="confirmPassword"
                         type="password"
                         {...passwordForm.register("confirmPassword")}
-                      className="v7-neu-input text-gry"/>
+                      className="v7-neu-input-hollo text-gry"/>
                       {passwordForm.formState.errors.confirmPassword && (
                         <span className="text-red-500 text-xs">
                           {passwordForm.formState.errors.confirmPassword.message}
@@ -265,7 +265,7 @@ useEffect(() => {
                     )}
                     <Button
                       type="submit"
-                      className="v7-neu-button gap-2 w-full flex items-center justify-center py-3 text-base font-semibold bg-[#165a8f] text-white rounded-lg hover:bg-[#1a6bb8] transition-colors"
+                      className="v7-neu-button mt-8 gap-2 w-full flex items-center justify-center py-3 text-base font-semibold bg-[#165a8f] text-white rounded-lg hover:bg-[#1a6bb8] transition-colors"
                       disabled={isPasswordSubmitting}
                     >
                       <Save className="h-5 w-5" />
