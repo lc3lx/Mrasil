@@ -1,21 +1,26 @@
 'use client';
 
-import { useState, useRef, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Banknote, CreditCard, AlertCircle, Upload, X, Loader2 } from "lucide-react";
-import RealBlue from "../../../public/real-blue.png";
-import RealWhite from "../../../public/real-white.png";
-import Image from "next/image";
-import bankTransfer from "../../../public/bankTransfer.png";
-import creditCard1 from "../../../public/creditCard1.png";
-import creditCard2 from "../../../public/creditCard2.png";
-import creditCard3 from "../../../public/creditCard3.png";
-import creditCard4 from "../../../public/creditCard4.png";
-import creditCard5 from "../../../public/creditCard5.png";
-import creditCard6 from "../../../public/creditCard6.png";
+import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { AlertCircle, Loader2, Upload, X } from 'lucide-react';
+import Image from 'next/image';
+import RealBlue from '../../../public/real-blue.png';
+import RealWhite from '../../../public/real-white.png';
+import bankTransfer from '../../../public/bankTransfer.png';
+import creditCard1 from '../../../public/creditCard1.png';
+import creditCard2 from '../../../public/creditCard2.png';
+import creditCard3 from '../../../public/creditCard3.png';
+import creditCard4 from '../../../public/creditCard4.png';
+import creditCard5 from '../../../public/creditCard5.png';
+import creditCard6 from '../../../public/creditCard6.png';
+
+// استيراد مكتبة Moyasar
+import 'moyasar-payment-form/dist/moyasar.css';
+import Moyasar from "moyasar-payment-form";
 
 interface PaymentDialogProps {
   isOpen: boolean;
@@ -25,23 +30,80 @@ interface PaymentDialogProps {
 }
 
 export default function V7Wallet({ isOpen, onClose, balance, onBalanceUpdate }: PaymentDialogProps) {
-  const [paymentMethod, setPaymentMethod] = useState<"card" | "bank">("card");
+  const [paymentMethod, setPaymentMethod] = useState<'card' | 'bank'>('card');
   const [selectedAmount, setSelectedAmount] = useState<string | null>(null);
-  const [customAmount, setCustomAmount] = useState("");
+  const [customAmount, setCustomAmount] = useState('');
   const [paymentAmount, setPaymentAmount] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const [cardName, setCardName] = useState("");
-  const [cardNumber, setCardNumber] = useState("");
-  const [cardMonth, setCardMonth] = useState("");
-  const [cardYear, setCardYear] = useState("");
-  const [cardCvc, setCardCvc] = useState("");
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [transferImage, setTransferImage] = useState<File | null>(null);
   const [transferImagePreview, setTransferImagePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
 
-  // مراقبة رابط الكول باك (Callback URL) ومعالجة الإغلاق التلقائي
+  // تنظيف URL.createObjectURL عند إلغاء تحميل المكون أو إزالة الصورة
+  useEffect(() => {
+    return () => {
+      if (transferImagePreview) {
+        URL.revokeObjectURL(transferImagePreview);
+      }
+    };
+  }, [transferImagePreview]);
+
+  // تهيئة نموذج Moyasar عند اختيار طريقة الدفع بالبطاقة
+  useEffect(() => {
+    if (paymentMethod === 'card' && paymentAmount > 0) {
+      Moyasar.init({
+        element: '.mysr-form',
+        amount: paymentAmount * 100, // المبلغ بالهللة (SAR * 100)
+        currency: 'SAR',
+        description: 'Wallet Recharge',
+        publishable_api_key: 'pk_live_yvEP28tLV8sHaWY1WTKuD9Fs47WX9qpVsE1gbnAF',
+        callback_url: `${window.location.origin}/`,
+        methods: ['creditcard'],
+        on_completed: async (payment) => {
+          setIsSubmitting(true);
+          try {
+            const userToken = localStorage.getItem('token');
+            const response = await fetch('https://www.marasil.site/api/wallet/rechargeWallet', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                ...(userToken ? { 'Authorization': `Bearer ${userToken}` } : {}),
+              },
+              body: JSON.stringify({
+                token: payment.id,
+                amount: paymentAmount,
+              }),
+            });
+
+            const result = await response.json();
+            if (!response.ok) {
+              throw new Error(result.message || 'فشل في معالجة الدفع');
+            }
+
+            setSuccess('تمت عملية الدفع بنجاح!');
+            onBalanceUpdate(balance + paymentAmount);
+            setTimeout(() => {
+              handleClose();
+              router.push('/');
+            }, 2000);
+          } catch (error: any) {
+            setError(error.message || 'حدث خطأ أثناء معالجة الدفع');
+          } finally {
+            setIsSubmitting(false);
+          }
+        },
+        on_failed: (error) => {
+          setError(error.message || 'فشل في معالجة الدفع');
+          setIsSubmitting(false);
+        },
+      });
+    }
+  }, [paymentMethod, paymentAmount, balance, onBalanceUpdate, router]);
+
+  // معالجة Callback URL و postMessage
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const status = params.get('status');
@@ -50,11 +112,12 @@ export default function V7Wallet({ isOpen, onClose, balance, onBalanceUpdate }: 
 
     if ((status === 'paid' || message === 'APPROVED') && token) {
       if (window.opener) {
-        // إذا كانت نافذة منبثقة، أرسل رسالة إلى النافذة الأم وأغلق النافذة
-        window.opener.postMessage({ type: 'payment_success', token, amount: paymentAmount }, '*'); // استخدم origin محدد في الإنتاج
-        setTimeout(() => window.close(), 1000); // إغلاق تلقائي بعد 1 ثانية
+        window.opener.postMessage(
+          { type: 'payment_success', token, amount: paymentAmount },
+          'https://www.marasil.site'
+        );
+        setTimeout(() => window.close(), 1000);
       } else {
-        // إذا لم تكن منبثقة، معالجة عادية
         setIsSubmitting(true);
         fetch('https://www.marasil.site/api/wallet/rechargeWallet', {
           method: 'POST',
@@ -66,7 +129,9 @@ export default function V7Wallet({ isOpen, onClose, balance, onBalanceUpdate }: 
         })
           .then((response) => {
             if (!response.ok) {
-              return response.json().then((data) => { throw new Error(data.message || 'فشل في معالجة الدفع'); });
+              return response.json().then((data) => {
+                throw new Error(data.message || 'فشل في معالجة الدفع');
+              });
             }
             return response.json();
           })
@@ -75,7 +140,7 @@ export default function V7Wallet({ isOpen, onClose, balance, onBalanceUpdate }: 
             onBalanceUpdate(balance + paymentAmount);
             setTimeout(() => {
               handleClose();
-              window.location.replace('/'); // إعادة توجيه نظيفة
+              router.push('/');
             }, 2000);
           })
           .catch((error) => {
@@ -83,18 +148,17 @@ export default function V7Wallet({ isOpen, onClose, balance, onBalanceUpdate }: 
           })
           .finally(() => {
             setIsSubmitting(false);
-            // تنظيف معلمات URL
             window.history.replaceState({}, document.title, window.location.pathname);
           });
       }
     }
-  }, [paymentAmount, balance, onBalanceUpdate]);
+  }, [paymentAmount, balance, onBalanceUpdate, router]);
 
-  // استماع لرسائل postMessage من النافذة المنبثقة
+  // استماع لرسائل postMessage
   useEffect(() => {
     const onMessage = (event: MessageEvent) => {
       if (event.data.type === 'payment_success') {
-        if (isSubmitting) return; // امنع التكرار
+        if (isSubmitting) return;
         setIsSubmitting(true);
         const { token, amount } = event.data;
         fetch('https://www.marasil.site/api/wallet/rechargeWallet', {
@@ -107,14 +171,19 @@ export default function V7Wallet({ isOpen, onClose, balance, onBalanceUpdate }: 
         })
           .then((response) => {
             if (!response.ok) {
-              return response.json().then((data) => { throw new Error(data.message || 'فشل في معالجة الدفع'); });
+              return response.json().then((data) => {
+                throw new Error(data.message || 'فشل في معالجة الدفع');
+              });
             }
             return response.json();
           })
           .then(() => {
             setSuccess('تمت عملية الدفع بنجاح!');
             onBalanceUpdate(balance + amount);
-            setTimeout(handleClose, 2000);
+            setTimeout(() => {
+              handleClose();
+              router.push('/');
+            }, 2000);
           })
           .catch((error) => {
             setError(error.message || 'حدث خطأ أثناء معالجة الدفع');
@@ -124,308 +193,156 @@ export default function V7Wallet({ isOpen, onClose, balance, onBalanceUpdate }: 
     };
     window.addEventListener('message', onMessage);
     return () => window.removeEventListener('message', onMessage);
-  }, [balance, onBalanceUpdate]);
-
-  // بقية الدوال كما هي (handleAmountSelect, handleCustomAmountChange, handleImageUpload, removeImage, handleClose, validateCardData)
+  }, [balance, onBalanceUpdate, isSubmitting, router]);
 
   const handleAmountSelect = (amount: string) => {
     setSelectedAmount(amount);
-    setCustomAmount("");
+    setCustomAmount('');
     const numAmount = parseFloat(amount);
-    if (!isNaN(numAmount)) setPaymentAmount(numAmount);
-    setError("");
+    if (!isNaN(numAmount) && numAmount % 100 === 0) {
+      setPaymentAmount(numAmount);
+      setError('');
+    } else {
+      setPaymentAmount(0);
+      setError('المبلغ يجب أن يكون مضاعفًا لـ 100 ريال سعودي');
+    }
   };
 
   const handleCustomAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
+    const value = e.target.value.replace(/\D/g, '');
     setCustomAmount(value);
     const numValue = parseFloat(value);
-    if (!isNaN(numValue)) setPaymentAmount(numValue);
-    else setPaymentAmount(0);
+    if (!isNaN(numValue) && numValue > 0 && numValue % 100 === 0) {
+      setPaymentAmount(numValue);
+      setError('');
+    } else {
+      setPaymentAmount(0);
+      setError('المبلغ يجب أن يكون مضاعفًا لـ 100 ريال سعودي');
+    }
     setSelectedAmount(null);
-    setError("");
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
-        setError("حجم الملف يجب أن يكون أقل من 5MB");
+        setError('حجم الملف يجب أن يكون أقل من 5MB');
         return;
       }
       if (!file.type.startsWith('image/')) {
-        setError("الملف يجب أن يكون صورة");
+        setError('الملف يجب أن يكون صورة');
         return;
       }
       setTransferImage(file);
       setTransferImagePreview(URL.createObjectURL(file));
-      setError("");
+      setError('');
     }
   };
 
   const removeImage = () => {
+    if (transferImagePreview) {
+      URL.revokeObjectURL(transferImagePreview);
+    }
     setTransferImage(null);
     setTransferImagePreview(null);
     if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+      fileInputRef.current.value = '';
     }
-    setError("");
+    setError('');
   };
 
   const handleClose = () => {
-    setPaymentMethod("card");
+    setPaymentMethod('card');
     setSelectedAmount(null);
-    setCustomAmount("");
+    setCustomAmount('');
     setPaymentAmount(0);
-    setError("");
-    setSuccess("");
-    setCardName("");
-    setCardNumber("");
-    setCardMonth("");
-    setCardYear("");
-    setCardCvc("");
+    setError('');
+    setSuccess('');
     setTransferImage(null);
     setTransferImagePreview(null);
     onClose();
   };
 
-  const validateCardData = () => {
-    if (!cardName.trim()) {
-      setError("اسم حامل البطاقة مطلوب");
-      return false;
-    }
-    const nameParts = cardName.trim().split(/\s+/);
-    if (nameParts.length < 2) {
-      setError("يرجى إدخال الاسم واسم العائلة");
-      return false;
-    }
-    const cleanedCardNumber = cardNumber.replace(/\s/g, '');
-    if (!cleanedCardNumber || cleanedCardNumber.length !== 16) {
-      setError("رقم البطاقة يجب أن يكون 16 رقمًا");
-      return false;
-    }
-    if (!cardMonth || cardMonth.length !== 2) {
-      setError("شهر الانتهاء يجب أن يكون رقمين");
-      return false;
-    }
-    if (!cardYear || cardYear.length !== 2) {
-      setError("سنة الانتهاء يجب أن تكون رقمين");
-      return false;
-    }
-    if (!cardCvc || cardCvc.length !== 3) {
-      setError("رمز الأمان يجب أن يكون 3 أرقام");
-      return false;
-    }
-    return true;
-  };
-
-  // معالجة التحقق من 3D Secure (فتح نافذة منبثقة)
-  const handle3DSecureVerification = (verificationUrl: string, tokenId: string): Promise<boolean> => {
-    return new Promise((resolve, reject) => {
-      try {
-        const width = 500;
-        const height = 600;
-        const left = (window.screen.width - width) / 2;
-        const top = (window.screen.height - height) / 2;
-
-        let popup: Window | null = null;
-        try {
-          popup = window.open(
-            verificationUrl,
-            '3DSecureVerification',
-            `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes`
-          );
-        } catch (err) {
-          console.warn('تم حظر النافذة المنبثقة، جاري إعادة التوجيه في نفس النافذة');
-          window.location.href = verificationUrl;
-          resolve(true);
-          return;
-        }
-
-        if (!popup || popup.closed || typeof popup.closed === 'undefined') {
-          console.warn('تم حظر النافذة المنبثقة، جاري إعادة التوجيه في نفس النافذة');
-          window.location.href = verificationUrl;
-          resolve(true);
-          return;
-        }
-
-        const checkPopup = setInterval(() => {
-          try {
-            if (popup.closed) {
-              clearInterval(checkPopup);
-              resolve(true);
-            }
-          } catch (e) {
-            console.error('خطأ في فحص النافذة المنبثقة:', e);
-            clearInterval(checkPopup);
-            resolve(true);
-          }
-        }, 1000);
-      } catch (error) {
-        console.error('خطأ في التحقق من 3D Secure:', error);
-        setError('حدث خطأ أثناء عملية التحقق من البطاقة');
-        reject(error);
-      }
-    });
-  };
-
-  // إرسال طلب الدفع إلى الباك إند
-  const createPayment = async (tokenId: string) => {
-    if (isSubmitting) return; // امنع التكرار
-    setIsSubmitting(true);
-    try {
-      if (!tokenId) {
-        throw new Error('رمز الدفع غير صالح');
-      }
-      setError('جاري إرسال الطلب إلى الباك إند...');
-      const userToken = localStorage.getItem('token');
-      const backendResponse = await fetch('https://www.marasil.site/api/wallet/rechargeWallet', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(userToken ? { 'Authorization': `Bearer ${userToken}` } : {}),
-        },
-        body: JSON.stringify({
-          token: tokenId,
-          amount: paymentAmount,
-          cardName,
-          cardNumber,
-          cardMonth,
-          cardYear,
-          cardCvc,
-        }),
-      });
-      const backendResult = await backendResponse.json();
-
-      if (!backendResponse.ok) {
-        throw new Error(backendResult.message || 'فشل في معالجة الدفع عبر الباك إند');
-      }
-
-      setSuccess('تم إرسال طلب الدفع بنجاح! سيتم معالجة العملية من قبل الإدارة.');
-      onBalanceUpdate(balance + paymentAmount);
-      setTimeout(() => {
-        handleClose();
-        window.location.replace('/'); // إعادة توجيه نظيفة
-      }, 2000);
-      setIsSubmitting(false); // انتهت العملية
-    } catch (error: any) {
-      setError(error.message || 'حدث خطأ أثناء معالجة الدفع');
-      setIsSubmitting(false);
-    }
-  };
-
-  // معالجة تقديم الدفع
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isSubmitting) return;
-    setError("");
-    setSuccess("");
+    setError('');
+    setSuccess('');
 
-    if (paymentAmount <= 0) {
-      setError("يرجى إدخال مبلغ صالح");
+    if (paymentAmount <= 0 || paymentAmount % 100 !== 0) {
+      setError('يرجى إدخال مبلغ صالح (مضاعفات 100 ريال سعودي)');
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      if (paymentMethod === "card") {
-        if (!validateCardData()) {
+      if (paymentMethod === 'bank') {
+        if (!transferImage) {
+          setError('يرجى رفع صورة الإيصال');
           setIsSubmitting(false);
           return;
         }
 
-        const tokenParams = new URLSearchParams();
-        tokenParams.append('publishable_api_key', 'pk_live_yvEP28tLV8sHaWY1WTKuD9Fs47WX9qpVsE1gbnAF');
-        tokenParams.append('name', cardName);
-        tokenParams.append('number', cardNumber.replace(/\s/g, ''));
-        tokenParams.append('month', cardMonth);
-        tokenParams.append('year', `20${cardYear}`.slice(-4));
-        tokenParams.append('cvc', cardCvc);
-        tokenParams.append('callback_url', window.location.origin + '/'); // الـ callback يعالج في النافذة الأم
+        const formData = new FormData();
+        formData.append('amount', paymentAmount.toString());
+        formData.append('transferImage', transferImage);
+        const userToken = localStorage.getItem('token');
 
-        const tokenResponse = await fetch('https://api.moyasar.com/v1/tokens', {
+        const response = await fetch('https://www.marasil.site/api/wallet/rechargeBankTransfer', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
+            ...(userToken ? { 'Authorization': `Bearer ${userToken}` } : {}),
           },
-          body: tokenParams,
+          body: formData,
         });
 
-        const tokenData = await tokenResponse.json();
-
-        if (!tokenResponse.ok) {
-          throw new Error(tokenData.message || 'فشل في إنشاء رمز الدفع');
+        const result = await response.json();
+        if (!response.ok) {
+          throw new Error(result.message || 'فشل في رفع إيصال التحويل');
         }
 
-        if (!tokenData.id) {
-          throw new Error('فشل في إنشاء رمز الدفع');
-        }
-
-        if (tokenData.verification_url) {
-          setError('جاري التوجيه إلى صفحة التحقق من البطاقة...');
-          await handle3DSecureVerification(tokenData.verification_url, tokenData.id);
-          await createPayment(tokenData.id); // إرسال الطلب بعد التحقق
-        } else {
-          await createPayment(tokenData.id);
-        }
-      } else {
-        // معالجة التحويل البنكي (كما هي، مع إعادة توجيه)
-        if (!transferImage) {
-          setError("يرجى رفع صورة الإيصال");
-          setIsSubmitting(false);
-          return;
-        }
-
+        setSuccess('تم استلام إيصال التحويل بنجاح، سيتم مراجعته خلال 24 ساعة');
         setTimeout(() => {
-          setSuccess("تم استلام إيصال التحويل بنجاح، سيتم مراجعته خلال 24 ساعة");
-          setIsSubmitting(false);
-          
-          setTimeout(() => {
-            handleClose();
-          }, 3000);
+          handleClose();
+          router.push('/');
         }, 2000);
+        setIsSubmitting(false);
       }
+      // لا حاجة لمعالجة الدفع بالبطاقة هنا، لأن Moyasar Payment Form يتولى ذلك
     } catch (err: any) {
-      console.error("خطأ في الدفع:", err);
-      setError(err.message || "حدث خطأ أثناء عملية الدفع. يرجى التحقق من بيانات البطاقة والمحاولة مرة أخرى.");
+      console.error('خطأ في الدفع:', err);
+      setError(err.message || 'حدث خطأ أثناء عملية الدفع. يرجى المحاولة مرة أخرى.');
       setIsSubmitting(false);
     }
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-xl max-h-screen overflow-y-auto border-none py-10" dir="ltr">
+      <DialogContent className="max-w-xl max-h-screen overflow-y-auto border-none py-10" dir="rtl">
         <DialogHeader>
-          <DialogTitle className="text-right text-xl mb-4 border-b border-gray-300 pb-2 flex items-center justify-between" dir="rtl">
-            <span className=" mt-4">شحن المحفظة</span>
+          <DialogTitle className="text-right text-xl mb-4 border-b border-gray-300 pb-2 flex items-center justify-between">
+            <span className="mt-4">شحن المحفظة</span>
           </DialogTitle>
         </DialogHeader>
 
-        <form className="flex flex-col gap-4" onSubmit={handleSubmit} dir="rtl">
-          {/* الـ JSX كما هو بالكامل، دون تغيير */}
+        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
           <div className="space-y-2">
             <Label className="text-right block">اختر المبلغ</Label>
             <div className="grid grid-cols-5 gap-2">
-              {["100", "200", "500", "1000", "5000"].map((val) => {
+              {['100', '200', '500', '1000', '5000'].map((val) => {
                 const isSelected = selectedAmount === val;
                 return (
                   <button
                     type="button"
                     key={val}
                     onClick={() => handleAmountSelect(val)}
-                    className={`p-2 text-sm rounded transition-colors flex items-center justify-center v7-neu-btn max-h-10  ${
-                      isSelected
-                        ? " text-white bg-primary "
-                        : "bg-blue-50 text-[#5791F4] hover:bg-blue-100 "
+                    className={`p-2 text-sm rounded transition-colors flex items-center justify-center v7-neu-btn max-h-10 ${
+                      isSelected ? 'text-white bg-primary' : 'bg-blue-50 text-[#5791F4] hover:bg-blue-100'
                     }`}
                   >
                     {val}
-                    {isSelected ?
-                    
-                    <Image alt={"price"} src={RealWhite}  className=" w-[20px]"/>
-                    :<Image alt={"price"} src={RealBlue} className=" w-[20px]"/>
-                  }
+                    <Image alt="price" src={isSelected ? RealWhite : RealBlue} className="w-[20px]" />
                   </button>
                 );
               })}
@@ -433,229 +350,86 @@ export default function V7Wallet({ isOpen, onClose, balance, onBalanceUpdate }: 
           </div>
 
           <div className="space-y-2">
-            <p className="text-right text-xs sm:text-sm">
-                  يجب أن يكون الرقم من مضاعفات الرقم SAR 100
-                </p>
+            <p className="text-right text-xs sm:text-sm">يجب أن يكون الرقم من مضاعفات الرقم SAR 100</p>
             <Input
-                    placeholder="مبلغ آخر"
+              placeholder="مبلغ آخر (مضاعفات 100 ريال)"
               value={customAmount}
               onChange={handleCustomAmountChange}
               className="v7-neu-input-hollow text-gry"
-            pattern="[0-9]"
-              min="0"
+              pattern="[0-9]*"
+              type="text"
+              inputMode="numeric"
+              min="100"
             />
           </div>
-                    {/* اختيار طريقة الدفع */}
-            <div className=" flex items-center gap-4  ">
+
+          <div className="flex items-center gap-4">
+            <div onClick={() => setPaymentMethod('bank')} className="w-full">
               <div
-                onClick={() => setPaymentMethod("bank")}
-                className=" w-full "
+                className={`v7-neu-card h-[10rem] px-5 cursor-pointer flex flex-col items-center justify-center transition-all duration-300 v7-neu-card-accent ${
+                  paymentMethod === 'bank' ? 'border border-blue-600 bg-blue-50' : 'v7-neu-card hover:shadow-md'
+                }`}
               >
-                <div
-                  className={`v7-neu-card h-[10rem] px-5 cursor-pointer flex flex-col items-center justify-center transition-all duration-300 v7-neu-card-accent ${
-                    paymentMethod === "bank" ?
-                        "border border-blue-600 bg-blue-50"
-                      : "v7-neu-card hover:shadow-md"
-                  }`}
-                >
-                  <div className="flex items-center justify-center mb-3">
-                    <div className="w-6 h-6 rounded-full v7-neu-inset flex items-center justify-center">
-                      {paymentMethod === "bank" && (
-                        <div className="w-3 h-3 rounded-full bg-primary"></div>
-                      )}
-                    </div>
-                  </div>
-                  <div className="text-center">
-                    <p className="font-medium mb-2 text-base sm:text-xl">
-                      التحويل البنكي
-                    </p>
-                    <div className="flex justify-center">
-                      <Image
-                        alt="bank"
-                        src={bankTransfer}
-                        width={50}
-                        height={50}
-                      />
-                    </div>
+                <div className="flex items-center justify-center mb-3">
+                  <div className="w-6 h-6 rounded-full v7-neu-inset flex items-center justify-center">
+                    {paymentMethod === 'bank' && <div className="w-3 h-3 rounded-full bg-primary"></div>}
                   </div>
                 </div>
+                <div className="text-center">
+                  <p className="font-medium mb-2 text-base sm:text-xl">التحويل البنكي</p>
+                  <Image alt="bank" src={bankTransfer} width={50} height={50} />
+                </div>
               </div>
+            </div>
+            <div onClick={() => setPaymentMethod('card')} className="w-full">
               <div
-                onClick={() => setPaymentMethod("card")}
-                className=" w-full   "
+                className={`v7-neu-card h-[10rem] p-5 cursor-pointer flex flex-col items-center justify-center transition-all duration-300 v7-neu-card-accent ${
+                  paymentMethod === 'card' ? 'border border-blue-600 bg-blue-50' : 'v7-neu-card hover:shadow-md'
+                }`}
               >
-                <div
-                  className={`v7-neu-card h-[10rem] p-5 cursor-pointer flex flex-col items-center justify-center transition-all duration-300 v7-neu-card-accent ${
-                    paymentMethod === "card"?
-                    "border border-blue-600 bg-blue-50"
-                      : "v7-neu-card hover:shadow-md"
-                  }`}
-                >
-                  <div className="flex items-center justify-center mb-3">
-                    <div className="w-6 h-6 rounded-full v7-neu-inset flex items-center justify-center">
-                      {paymentMethod === "card" && (
-                        <div className="w-3 h-3 rounded-full bg-primary"></div>
-                      )}
-                    </div>
+                <div className="flex items-center justify-center mb-3">
+                  <div className="w-6 h-6 rounded-full v7-neu-inset flex items-center justify-center">
+                    {paymentMethod === 'card' && <div className="w-3 h-3 rounded-full bg-primary"></div>}
                   </div>
-                  <div className="text-center">
-                    <p className="font-medium mb-4 text-base sm:text-xl ">
-                      {" "}
-                      بطاقة الائتمان
-                    </p>
-                    <div className=" grid grid-cols-3 gap-4 items-center ">
-                      <Image
-                        alt="creditCard"
-                        src={creditCard1}
-                        className=" min-w-[1.7rem]"
-                        width={20}
-                        height={20}
-                      />
-                      <Image
-                        alt="creditCard"
-                        src={creditCard2}
-                        className=" min-w-[1.7rem]"
-                        width={20}
-                        height={20}
-                      />
-                      <Image
-                        alt="creditCard"
-                        src={creditCard3}
-                        className=" min-w-[1.7rem]"
-                        width={20}
-                        height={20}
-                      />
-                      <Image
-                        alt="creditCard"
-                        src={creditCard4}
-                        className=" min-w-[1.7rem]"
-                        width={20}
-                        height={20}
-                      />
-                      <Image
-                        alt="creditCard"
-                        src={creditCard5}
-                        className=" min-w-[1.7rem]"
-                        width={20}
-                        height={20}
-                      />
-                      <Image
-                        alt="creditCard"
-                        src={creditCard6}
-                        className=" min-w-[2rem]"
-                        width={20}
-                        height={20}
-                      />
-                    </div>
+                </div>
+                <div className="text-center">
+                  <p className="font-medium mb-4 text-base sm:text-xl">بطاقة الائتمان</p>
+                  <div className="grid grid-cols-3 gap-4 items-center">
+                    <Image alt="creditCard" src={creditCard1} className="min-w-[1.7rem]" width={20} height={20} />
+                    <Image alt="creditCard" src={creditCard2} className="min-w-[1.7rem]" width={20} height={20} />
+                    <Image alt="creditCard" src={creditCard3} className="min-w-[1.7rem]" width={20} height={20} />
+                    <Image alt="creditCard" src={creditCard4} className="min-w-[1.7rem]" width={20} height={20} />
+                    <Image alt="creditCard" src={creditCard5} className="min-w-[1.7rem]" width={20} height={20} />
+                    <Image alt="creditCard" src={creditCard6} className="min-w-[2rem]" width={20} height={20} />
                   </div>
                 </div>
               </div>
             </div>
-          {paymentMethod === "card" && (
-            <div className=" v7-neu-card space-y-4">
-              <h3 className="text-right font-medium mb-4">معلومات البطاقة</h3>
-              
-              <div className="space-y-2 ">
-                <Label className="text-right block">اسم حامل البطاقة</Label>
-                <Input
-                  placeholder="كما هو مدون على البطاقة"
-                  value={cardName}
-                  onChange={(e) => setCardName(e.target.value)}
-                  className="v7-neu-input-hollow text-gry"
-                  required
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label className="text-right block">رقم البطاقة</Label>
-                <Input
-                  placeholder="1234 5678 9012 3456"
-                  className="v7-neu-input-hollow text-gry"
-                  value={cardNumber}
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/\D/g, '');
-                    if (value.length <= 16) {
-                       setCardNumber(value);
-                    }
-                  }}
-                  maxLength={19}
-                  required
-                />
-              </div>
-              
-              <div className=" flex flex-col  space-y-4 mt-2">
-                  <Label className="text-right block">تاريخ الانتهاء</Label>
-                  <div className="flex gap-6">
-                              <div className="space-y-2">
-                  <Label className="text-right block">شهر</Label>
-                    <Input
-                      placeholder="MM"
-                      value={cardMonth}
-                      className="v7-neu-input-hollow text-gry"
-                      onChange={(e) => {
-                        const value = e.target.value.replace(/\D/g, '');
-                        if (value.length <= 2) setCardMonth(value);
-                      }}
-                      maxLength={2}
-                      required
-                    />
-                    </div>
-                       <div className="space-y-2">
-                  <Label className="text-right block">سنة</Label>
-                    <Input
-                      placeholder="YY"
-                      value={cardYear}
-                      className="v7-neu-input-hollow text-gry"
-                      onChange={(e) => {
-                        const value = e.target.value.replace(/\D/g, '');
-                        if (value.length <= 2) setCardYear(value);
-                      }}
-                      maxLength={2}
-                      required
-                    />
-                    </div>
-                  </div>
-             
-                
-                <div className="space-y-2">
-                  <Label className="text-right block">رمز الأمان (CVC)</Label>
-                  <Input
-                    placeholder="123"
-                    value={cardCvc}
-                    className="v7-neu-input-hollow text-gry"
-                    onChange={(e) => {
-                      const value = e.target.value.replace(/\D/g, '');
-                      if (value.length <= 3) setCardCvc(value);
-                    }}
-                    maxLength={3}
-                    required
-                  />
-                </div>
-                 
-              </div>
+          </div>
+
+          {paymentMethod === 'card' && (
+            <div className="v7-neu-card space-y-4">
+              <h3 className="text-right font-medium mb-4">معلومات الدفع</h3>
+              <div className="mysr-form"></div>
             </div>
           )}
 
-          {/* رفع الإيصال */}
-          {paymentMethod === "bank" && (
-            <div className="space-y-4 v7-neu-card  ">
-             <h2 className="sm:text-lg text-base font-bold text-right">
-                  إيصال التحويل البنكي
-                </h2>
-                              <div className="flex flex-col gap-1 v7-neu-card p-4">
-                  <span className="text-sm sm:text-base">اسم البنك: مصرف الراجحي</span>
-                  <span className="text-sm sm:text-base">المستفيد: شركة مراسيل لخدمات الأعمال</span>
-                  <span className="text-sm sm:text-base">رقم الحساب: 177608016234509</span>
-                  <span className="text-sm sm:text-base">الايبان: SA8180000177608016234509</span>
-                  <span className="py-4 text-red-500 text-sm sm:text-base">
-                    إذا كنت تستخدم بنك خارج المملكة العربية السعودية الرجاء شحن
-                    المحفظة عن طريق البطاقة
-                  </span>
-                </div>
+          {paymentMethod === 'bank' && (
+            <div className="space-y-4 v7-neu-card">
+              <h2 className="sm:text-lg text-base font-bold text-right">إيصال التحويل البنكي</h2>
+              <div className="flex flex-col gap-1 v7-neu-card p-4">
+                <span className="text-sm sm:text-base">اسم البنك: مصرف الراجحي</span>
+                <span className="text-sm sm:text-base">المستفيد: شركة مراسيل لخدمات الأعمال</span>
+                <span className="text-sm sm:text-base">رقم الحساب: 177608016234509</span>
+                <span className="text-sm sm:text-base">الايبان: SA8180000177608016234509</span>
+                <span className="py-4 text-red-500 text-sm sm:text-base">
+                  إذا كنت تستخدم بنك خارج المملكة العربية السعودية الرجاء شحن المحفظة عن طريق البطاقة
+                </span>
+              </div>
 
-                <p className="text-right sm:text-lg text-base font-bold pt-4 text-gray-600">
-                  قم برفع صورة إيصال التحويل البنكي
-                </p>
+              <p className="text-right sm:text-lg text-base font-bold pt-4 text-gray-600">
+                قم برفع صورة إيصال التحويل البنكي
+              </p>
               <div className="space-y-2">
                 <input
                   type="file"
@@ -664,14 +438,9 @@ export default function V7Wallet({ isOpen, onClose, balance, onBalanceUpdate }: 
                   className="hidden"
                   ref={fileInputRef}
                 />
-                
                 {transferImagePreview ? (
                   <div className="relative border rounded-lg p-4">
-                    <img
-                      src={transferImagePreview}
-                      alt="إيصال التحويل"
-                      className="max-h-48 mx-auto"
-                    />
+                    <img src={transferImagePreview} alt="إيصال التحويل" className="max-h-48 mx-auto" />
                     <button
                       type="button"
                       onClick={removeImage}
@@ -712,7 +481,7 @@ export default function V7Wallet({ isOpen, onClose, balance, onBalanceUpdate }: 
             </div>
           )}
 
-          <DialogFooter className="flex flex-col sm:flex-row gap-2 " dir="ltr"  >
+          <DialogFooter className="flex flex-col sm:flex-row gap-2" dir="rtl">
             <Button
               type="button"
               variant="outline"
@@ -724,7 +493,7 @@ export default function V7Wallet({ isOpen, onClose, balance, onBalanceUpdate }: 
             </Button>
             <Button
               type="submit"
-              className="bg-primary  text-white py-2 px-6 rounded w-full sm:w-auto flex items-center justify-center gap-2"
+              className="bg-primary text-white py-2 px-6 rounded w-full sm:w-auto flex items-center justify-center gap-2"
               disabled={isSubmitting || paymentAmount <= 0}
             >
               {isSubmitting ? (
@@ -734,18 +503,14 @@ export default function V7Wallet({ isOpen, onClose, balance, onBalanceUpdate }: 
                 </>
               ) : (
                 <>
-                <Image alt="push" src={RealWhite} className="w-[20px] h-[20px]"/>
-                  <span className=" ">
-                  {paymentAmount}
-                  </span>
-                ادفع 
+                  <Image alt="push" src={RealWhite} className="w-[20px] h-[20px]" />
+                  <span>{paymentAmount}</span>
+                  ادفع
                 </>
               )}
             </Button>
           </DialogFooter>
-           <p className="mt-2 text-xs text-gray-500 text-right">
-                مدعوم بواسطة ميسر للدفع الإلكتروني
-              </p>
+          <p className="mt-2 text-xs text-gray-500 text-right">مدعوم بواسطة ميسر للدفع الإلكتروني</p>
         </form>
       </DialogContent>
     </Dialog>
