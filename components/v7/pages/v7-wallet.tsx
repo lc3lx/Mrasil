@@ -80,15 +80,15 @@ export default function V7Wallet({ isOpen, onClose, balance, onBalanceUpdate }: 
 
             const result = await response.json();
             if (!response.ok) {
-              throw new Error(result.message || 'فشل في معالجة الدفع');
+              setError(result.message || 'فشل في معالجة الدفع');
+            } else {
+              setSuccess(result.message || 'تمت عملية الدفع بنجاح!');
+              onBalanceUpdate(balance + paymentAmount);
+              setTimeout(() => {
+                handleClose();
+                router.push('/');
+              }, 2000);
             }
-
-            setSuccess('تمت عملية الدفع بنجاح!');
-            onBalanceUpdate(balance + paymentAmount);
-            setTimeout(() => {
-              handleClose();
-              router.push('/');
-            }, 2000);
           } catch (error: any) {
             setError(error.message || 'حدث خطأ أثناء معالجة الدفع');
           } finally {
