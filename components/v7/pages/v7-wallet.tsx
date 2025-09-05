@@ -59,6 +59,54 @@ export default function V7Wallet({
     new Set()
   );
 
+  // دالة اختبار لمحاكاة السيناريوهات المختلفة (للتطوير فقط)
+  const testPaymentScenarios = () => {
+    console.log("🧪 Testing Payment Scenarios");
+
+    // اختبار 1: نجاح الدفع
+    console.log("Test 1: Success");
+    window.history.pushState({}, "", "?status=paid&id=test-success-123");
+
+    setTimeout(() => {
+      // اختبار 2: فشل الدفع - رصيد غير كافي
+      console.log("Test 2: Insufficient Funds");
+      window.history.pushState(
+        {},
+        "",
+        "?status=failed&id=test-failed-123&message=INSUFFICIENT+FUNDS"
+      );
+
+      setTimeout(() => {
+        // اختبار 3: فشل الدفع - بطاقة مرفوضة
+        console.log("Test 3: Card Declined");
+        window.history.pushState(
+          {},
+          "",
+          "?status=failed&id=test-failed-456&message=CARD+DECLINED"
+        );
+
+        setTimeout(() => {
+          // العودة للحالة الطبيعية
+          window.history.pushState({}, "", window.location.pathname);
+        }, 2000);
+      }, 2000);
+    }, 2000);
+  };
+
+  // تشغيل الاختبارات عند الضغط على Ctrl+Shift+T (للتطوير فقط)
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && e.key === "T") {
+        testPaymentScenarios();
+      }
+    };
+
+    if (process.env.NODE_ENV === "development") {
+      window.addEventListener("keydown", handleKeyPress);
+      return () => window.removeEventListener("keydown", handleKeyPress);
+    }
+  }, []);
+
   // تنظيف URL.createObjectURL عند إلغاء تحميل المكون أو إزالة الصورة
   useEffect(() => {
     return () => {
@@ -152,8 +200,89 @@ export default function V7Wallet({
           },
           on_failed: (error: any) => {
             console.error("فشل في الدفع:", error);
-            setError(error.message || "فشل في معالجة الدفع");
-            setIsSubmitting(false);
+
+            let errorMessage = "فشل في معالجة الدفع";
+            let originalErrorMessage = "";
+
+            if (error && error.message) {
+              originalErrorMessage = error.message;
+              // ترجمة رسائل الخطأ الشائعة من ميسر
+              switch (error.message) {
+                case "INSUFFICIENT_FUNDS":
+                case "insufficient_funds":
+                  errorMessage = "رصيد البطاقة غير كافي";
+                  break;
+                case "CARD_DECLINED":
+                case "card_declined":
+                  errorMessage = "تم رفض البطاقة";
+                  break;
+                case "INVALID_CARD":
+                case "invalid_card":
+                  errorMessage = "بيانات البطاقة غير صحيحة";
+                  break;
+                case "EXPIRED_CARD":
+                case "expired_card":
+                  errorMessage = "البطاقة منتهية الصلاحية";
+                  break;
+                case "TRANSACTION_TIMEOUT":
+                case "transaction_timeout":
+                  errorMessage = "انتهت مهلة العملية";
+                  break;
+                default:
+                  errorMessage = error.message || "فشل في معالجة الدفع";
+              }
+            }
+
+            setError(errorMessage);
+            setIsSubmitting(true);
+
+            // إرسال طلب للباك إند لحفظ المعاملة الفاشلة من ميسر
+            const userToken = localStorage.getItem("token");
+            if (userToken) {
+              console.log(
+                "📤 Sending failed Moyasar payment to backend for logging"
+              );
+              fetch("https://www.marasil.site/api/wallet/rechargeWallet", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${userToken}`,
+                },
+                body: JSON.stringify({
+                  id: error.id || `moyasar-failed-${Date.now()}`,
+                  amount: paymentAmount,
+                  status: "failed",
+                  error_message:
+                    originalErrorMessage || "Moyasar payment failed",
+                  source: "moyasar_callback",
+                  description: `محاولة شحن المحفظة فاشلة عبر ميسر - ${paymentAmount} ريال - السبب: ${errorMessage}`,
+                }),
+              })
+                .then((response) => {
+                  if (!response.ok) {
+                    console.warn(
+                      "Failed to log Moyasar failed payment:",
+                      response.status
+                    );
+                  } else {
+                    console.log(
+                      "✅ Moyasar failed payment logged successfully"
+                    );
+                  }
+                  return response.json().catch(() => ({}));
+                })
+                .catch((logError) => {
+                  console.error(
+                    "Error logging Moyasar failed payment:",
+                    logError
+                  );
+                })
+                .finally(() => {
+                  setIsSubmitting(false);
+                });
+            } else {
+              setIsSubmitting(false);
+            }
           },
         });
       } catch (error) {
@@ -170,7 +299,14 @@ export default function V7Wallet({
     const message = params.get("message");
     const token = params.get("id");
 
+    // تسجيل معاملات URL للتتبع
+    if (status || message || token) {
+      console.log("🔍 URL Parameters:", { status, message, token });
+    }
+
+    // معالجة حالات نجاح الدفع
     if ((status === "paid" || message === "APPROVED") && token) {
+      console.log("✅ Payment Success detected via URL");
       // تحقق من أن هذه الدفعة لم تتم معالجتها مسبقاً
       if (processedPayments.has(token)) {
         console.log("Payment already processed via URL:", token);
@@ -237,6 +373,104 @@ export default function V7Wallet({
           });
       }
     }
+
+    // معالجة حالات فشل الدفع
+    else if (status === "failed" && token) {
+      console.log("❌ Payment Failed detected via URL");
+
+      // تحقق من أن هذه الدفعة الفاشلة لم تتم معالجتها مسبقاً
+      if (processedPayments.has(token)) {
+        console.log("Failed payment already processed via URL:", token);
+        return;
+      }
+
+      setProcessedPayments((prev) => {
+        const newSet = new Set(prev);
+        newSet.add(token);
+        return newSet;
+      });
+
+      let errorMessage = "فشل في معالجة الدفع";
+      let originalMessage = "";
+
+      // ترجمة رسائل الخطأ الشائعة
+      if (message) {
+        const decodedMessage = decodeURIComponent(message.replace(/\+/g, " "));
+        originalMessage = decodedMessage;
+        console.log("🔍 Decoded error message:", decodedMessage);
+        switch (decodedMessage) {
+          case "INSUFFICIENT FUNDS":
+            errorMessage = "رصيد البطاقة غير كافي";
+            break;
+          case "CARD DECLINED":
+            errorMessage = "تم رفض البطاقة";
+            break;
+          case "INVALID CARD":
+            errorMessage = "بيانات البطاقة غير صحيحة";
+            break;
+          case "EXPIRED CARD":
+            errorMessage = "البطاقة منتهية الصلاحية";
+            break;
+          case "TRANSACTION TIMEOUT":
+            errorMessage = "انتهت مهلة العملية";
+            break;
+          default:
+            errorMessage = `فشل في الدفع: ${decodedMessage}`;
+        }
+      }
+
+      console.log("🚨 Setting error message:", errorMessage);
+      setError(errorMessage);
+      setIsSubmitting(true);
+
+      // إرسال طلب للباك إند لحفظ المعاملة الفاشلة
+      const userToken = localStorage.getItem("token");
+      if (userToken) {
+        console.log("📤 Sending failed payment to backend for logging");
+        fetch("https://www.marasil.site/api/wallet/rechargeWallet", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${userToken}`,
+          },
+          body: JSON.stringify({
+            id: token,
+            amount: paymentAmount,
+            status: "failed",
+            error_message: originalMessage || "Payment failed",
+            description: `محاولة شحن المحفظة فاشلة - ${paymentAmount} ريال - السبب: ${errorMessage}`,
+          }),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              console.warn("Failed to log failed payment:", response.status);
+            } else {
+              console.log("✅ Failed payment logged successfully");
+            }
+            return response.json().catch(() => ({}));
+          })
+          .catch((error) => {
+            console.error("Error logging failed payment:", error);
+          })
+          .finally(() => {
+            setIsSubmitting(false);
+          });
+      } else {
+        setIsSubmitting(false);
+      }
+
+      // تنظيف URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+
+      if (window.opener) {
+        console.log("📤 Sending payment_failed message to parent window");
+        window.opener.postMessage(
+          { type: "payment_failed", error: errorMessage },
+          window.location.origin
+        );
+        setTimeout(() => window.close(), 3000);
+      }
+    }
   }, [paymentAmount, balance, onBalanceUpdate, router, processedPayments]);
 
   // استماع لرسائل postMessage
@@ -298,6 +532,9 @@ export default function V7Wallet({
             setError(error.message || "حدث خطأ أثناء معالجة الدفع");
           })
           .finally(() => setIsSubmitting(false));
+      } else if (event.data.type === "payment_failed") {
+        setError(event.data.error || "فشل في معالجة الدفع");
+        setIsSubmitting(false);
       }
     };
     window.addEventListener("message", onMessage);
@@ -742,6 +979,20 @@ export default function V7Wallet({
           <p className="mt-2 text-xs text-gray-500 text-right">
             مدعوم بواسطة ميسر للدفع الإلكتروني
           </p>
+
+          {/* معلومات التطوير */}
+          {process.env.NODE_ENV === "development" && (
+            <div className="mt-4 p-3 bg-gray-100 rounded-lg text-xs">
+              <p className="font-bold mb-2">🛠️ معلومات التطوير:</p>
+              <p>• اضغط Ctrl+Shift+T لاختبار سيناريوهات الدفع</p>
+              <p>• تحقق من Console للتتبع المفصل</p>
+              <p>• المدفوعات المعالجة: {processedPayments.size}</p>
+              {processedPayments.size > 0 && (
+                <p>• آخر معاملة: {Array.from(processedPayments).pop()}</p>
+              )}
+              <p>• حالة الإرسال: {isSubmitting ? "جاري المعالجة" : "متوقف"}</p>
+            </div>
+          )}
         </form>
       </DialogContent>
     </Dialog>
