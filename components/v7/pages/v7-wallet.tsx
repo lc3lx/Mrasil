@@ -55,6 +55,9 @@ export default function V7Wallet({
   >(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+  const [processedPayments, setProcessedPayments] = useState<Set<string>>(
+    new Set()
+  );
 
   // تنظيف URL.createObjectURL عند إلغاء تحميل المكون أو إزالة الصورة
   useEffect(() => {
@@ -85,8 +88,20 @@ export default function V7Wallet({
           callback_url: `${window.location.origin}/`,
           methods: ["creditcard"],
           on_completed: async (payment: any) => {
+            // تحقق من أن هذه الدفعة لم تتم معالجتها مسبقاً
+            if (processedPayments.has(payment.id)) {
+              console.log("Payment already processed:", payment.id);
+              return;
+            }
+
+            setProcessedPayments((prev) => {
+              const newSet = new Set(prev);
+              newSet.add(payment.id);
+              return newSet;
+            });
             setIsSubmitting(true);
             setError("");
+
             try {
               const userToken = localStorage.getItem("token");
               if (!userToken) {
@@ -156,6 +171,12 @@ export default function V7Wallet({
     const token = params.get("id");
 
     if ((status === "paid" || message === "APPROVED") && token) {
+      // تحقق من أن هذه الدفعة لم تتم معالجتها مسبقاً
+      if (processedPayments.has(token)) {
+        console.log("Payment already processed via URL:", token);
+        return;
+      }
+
       if (window.opener) {
         window.opener.postMessage(
           { type: "payment_success", token, amount: paymentAmount },
@@ -163,6 +184,11 @@ export default function V7Wallet({
         );
         setTimeout(() => window.close(), 1000);
       } else {
+        setProcessedPayments((prev) => {
+          const newSet = new Set(prev);
+          newSet.add(token);
+          return newSet;
+        });
         setIsSubmitting(true);
         fetch("https://www.marasil.site/api/wallet/rechargeWallet", {
           method: "POST",
@@ -211,15 +237,29 @@ export default function V7Wallet({
           });
       }
     }
-  }, [paymentAmount, balance, onBalanceUpdate, router]);
+  }, [paymentAmount, balance, onBalanceUpdate, router, processedPayments]);
 
   // استماع لرسائل postMessage
   useEffect(() => {
     const onMessage = (event: MessageEvent) => {
       if (event.data.type === "payment_success") {
-        if (isSubmitting) return;
-        setIsSubmitting(true);
         const { token, amount } = event.data;
+
+        // تحقق من أن هذه الدفعة لم تتم معالجتها مسبقاً
+        if (processedPayments.has(token)) {
+          console.log("Payment already processed via postMessage:", token);
+          return;
+        }
+
+        if (isSubmitting) return;
+
+        setProcessedPayments((prev) => {
+          const newSet = new Set(prev);
+          newSet.add(token);
+          return newSet;
+        });
+        setIsSubmitting(true);
+
         fetch("https://www.marasil.site/api/wallet/rechargeWallet", {
           method: "POST",
           headers: {
@@ -262,7 +302,7 @@ export default function V7Wallet({
     };
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
-  }, [balance, onBalanceUpdate, isSubmitting, router]);
+  }, [balance, onBalanceUpdate, isSubmitting, router, processedPayments]);
 
   const handleAmountSelect = (amount: string) => {
     setSelectedAmount(amount);
@@ -340,6 +380,7 @@ export default function V7Wallet({
     setTransferImage(null);
     setTransferImagePreview(null);
     setIsSubmitting(false);
+    setProcessedPayments(new Set());
     onClose();
   };
 
@@ -673,41 +714,30 @@ export default function V7Wallet({
             >
               إلغاء
             </Button>
-            <Button
-              type="submit"
-              className="bg-primary text-white py-2 px-6 rounded w-full sm:w-auto flex items-center justify-center gap-2"
-              disabled={
-                isSubmitting ||
-                paymentAmount <= 0 ||
-                (paymentMethod === "card" && paymentAmount > 0)
-              }
-            >
-              {isSubmitting ? (
-                <>
-                  <span>جاري المعالجة...</span>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                </>
-              ) : paymentMethod === "card" ? (
-                <>
-                  <Image
-                    alt="push"
-                    src={RealWhite}
-                    className="w-[20px] h-[20px]"
-                  />
-                  <span>استخدم نموذج الدفع أدناه</span>
-                </>
-              ) : (
-                <>
-                  <Image
-                    alt="push"
-                    src={RealWhite}
-                    className="w-[20px] h-[20px]"
-                  />
-                  <span>{paymentAmount}</span>
-                  ادفع
-                </>
-              )}
-            </Button>
+            {paymentMethod === "bank" && (
+              <Button
+                type="submit"
+                className="bg-primary text-white py-2 px-6 rounded w-full sm:w-auto flex items-center justify-center gap-2"
+                disabled={isSubmitting || paymentAmount <= 0 || !transferImage}
+              >
+                {isSubmitting ? (
+                  <>
+                    <span>جاري المعالجة...</span>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  </>
+                ) : (
+                  <>
+                    <Image
+                      alt="push"
+                      src={RealWhite}
+                      className="w-[20px] h-[20px]"
+                    />
+                    <span>{paymentAmount}</span>
+                    ادفع
+                  </>
+                )}
+              </Button>
+            )}
           </DialogFooter>
           <p className="mt-2 text-xs text-gray-500 text-right">
             مدعوم بواسطة ميسر للدفع الإلكتروني
