@@ -160,14 +160,14 @@ export default function V7Wallet({ isOpen, onClose, balance, onBalanceUpdate }: 
       if (event.data.type === 'payment_success') {
         if (isSubmitting) return;
         setIsSubmitting(true);
-        const { token, amount } = event.data;
+        const { id, amount } = event.data;
         fetch('https://www.marasil.site/api/wallet/rechargeWallet', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             ...(localStorage.getItem('token') ? { 'Authorization': `Bearer ${localStorage.getItem('token')}` } : {}),
           },
-          body: JSON.stringify({ token, amount }),
+          body: JSON.stringify({ id, amount,description :`recharge the wallet${amount}`}),
         })
           .then((response) => {
             if (!response.ok) {
