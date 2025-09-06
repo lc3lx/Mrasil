@@ -130,7 +130,7 @@ export default function V7Wallet({
         const userToken = localStorage.getItem("token");
         const userData = localStorage.getItem("user");
         const userId = userData ? JSON.parse(userData).id : null;
-        const customerId = userId ? `user_${userId}` : `guest_${Date.now()}`;
+        const customerId = userId ? `${userId}` : `guest_${Date.now()}`;
 
         console.log("🔍 Debug metadata:", {
           userData,
@@ -212,16 +212,33 @@ export default function V7Wallet({
                   result.error || result.message || "فشل في معالجة الدفع"
                 );
               } else {
-                setSuccess(result.message || "تمت عملية الدفع بنجاح!");
+                // إغلاق الفورم مباشرة
+                handleClose();
+
+                // تحديث الرصيد
                 if (result.balance !== undefined) {
                   onBalanceUpdate(result.balance);
                 } else {
                   onBalanceUpdate(balance + paymentAmount);
                 }
-                setTimeout(() => {
-                  handleClose();
-                  router.push("/");
-                }, 2000);
+
+                // عرض رسالة النجاح على الشاشة الرئيسية
+                const successMessage =
+                  result.message ||
+                  `تم شحن المحفظة بمبلغ ${paymentAmount} ريال سعودي بنجاح!`;
+
+                // حفظ رسالة النجاح في localStorage لعرضها على الصفحة الرئيسية
+                localStorage.setItem(
+                  "paymentSuccess",
+                  JSON.stringify({
+                    message: successMessage,
+                    amount: paymentAmount,
+                    timestamp: new Date().toISOString(),
+                  })
+                );
+
+                // الانتقال للصفحة الرئيسية
+                router.push("/");
               }
             } catch (error: any) {
               console.error("خطأ في الدفع:", error);
@@ -381,16 +398,33 @@ export default function V7Wallet({
             return response.json();
           })
           .then((result) => {
-            setSuccess(result.message || "تمت عملية الدفع بنجاح!");
+            // إغلاق الفورم مباشرة
+            handleClose();
+
+            // تحديث الرصيد
             if (result.balance !== undefined) {
               onBalanceUpdate(result.balance);
             } else {
               onBalanceUpdate(balance + paymentAmount);
             }
-            setTimeout(() => {
-              handleClose();
-              router.push("/");
-            }, 2000);
+
+            // عرض رسالة النجاح على الشاشة الرئيسية
+            const successMessage =
+              result.message ||
+              `تم شحن المحفظة بمبلغ ${paymentAmount} ريال سعودي بنجاح!`;
+
+            // حفظ رسالة النجاح في localStorage لعرضها على الصفحة الرئيسية
+            localStorage.setItem(
+              "paymentSuccess",
+              JSON.stringify({
+                message: successMessage,
+                amount: paymentAmount,
+                timestamp: new Date().toISOString(),
+              })
+            );
+
+            // الانتقال للصفحة الرئيسية
+            router.push("/");
           })
           .catch((error) => {
             setError(error.message || "حدث خطأ أثناء معالجة الدفع");
@@ -549,16 +583,33 @@ export default function V7Wallet({
             return response.json();
           })
           .then((result) => {
-            setSuccess(result.message || "تمت عملية الدفع بنجاح!");
+            // إغلاق الفورم مباشرة
+            handleClose();
+
+            // تحديث الرصيد
             if (result.balance !== undefined) {
               onBalanceUpdate(result.balance);
             } else {
               onBalanceUpdate(balance + amount);
             }
-            setTimeout(() => {
-              handleClose();
-              router.push("/");
-            }, 2000);
+
+            // عرض رسالة النجاح على الشاشة الرئيسية
+            const successMessage =
+              result.message ||
+              `تم شحن المحفظة بمبلغ ${amount} ريال سعودي بنجاح!`;
+
+            // حفظ رسالة النجاح في localStorage لعرضها على الصفحة الرئيسية
+            localStorage.setItem(
+              "paymentSuccess",
+              JSON.stringify({
+                message: successMessage,
+                amount: amount,
+                timestamp: new Date().toISOString(),
+              })
+            );
+
+            // الانتقال للصفحة الرئيسية
+            router.push("/");
           })
           .catch((error) => {
             setError(error.message || "حدث خطأ أثناء معالجة الدفع");
