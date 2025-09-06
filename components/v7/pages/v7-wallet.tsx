@@ -128,10 +128,21 @@ export default function V7Wallet({
       try {
         // الحصول على معرف المستخدم من localStorage
         const userToken = localStorage.getItem("token");
-        const userId = localStorage.getItem("user")
-          ? JSON.parse(localStorage.getItem("user")!).id
-          : null;
-        const customerId = userId;
+        const userData = localStorage.getItem("user");
+        const userId = userData ? JSON.parse(userData).id : null;
+        const customerId = userId ? `user_${userId}` : `guest_${Date.now()}`;
+
+        console.log("🔍 Debug metadata:", {
+          userData,
+          userId,
+          customerId,
+          metadata: {
+            customerId: customerId,
+            source: "wallet_recharge",
+            amount: paymentAmount,
+            timestamp: new Date().toISOString(),
+          },
+        });
 
         Moyasar.init({
           element: ".mysr-form",
