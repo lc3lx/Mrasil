@@ -126,8 +126,29 @@ export default function V7Wallet({
       }
 
       try {
+        // الحصول على معرف المستخدم من localStorage
+        const userToken = localStorage.getItem("token");
+        const userId = localStorage.getItem("user")
+          ? JSON.parse(localStorage.getItem("user")!).id
+          : null;
+        const customerId = userId;
+
         Moyasar.init({
           element: ".mysr-form",
+          theme: "light",
+          language: "ar",
+          error: {
+            message: "خطأ في معالجة الدفع",
+          },
+          success: {
+            message: "تمت عملية الدفع بنجاح!",
+          },
+          metadata: {
+            customerId: customerId,
+            source: "wallet_recharge",
+            amount: paymentAmount,
+            timestamp: new Date().toISOString(),
+          },
           amount: paymentAmount * 100, // المبلغ بالهللة (SAR * 100)
           currency: "SAR",
           description: `شحن المحفظة - ${paymentAmount} ريال سعودي`,
@@ -976,9 +997,6 @@ export default function V7Wallet({
               </Button>
             )}
           </DialogFooter>
-          <p className="mt-2 text-xs text-gray-500 text-right">
-            مدعوم بواسطة ميسر للدفع الإلكتروني
-          </p>
 
           {/* معلومات التطوير */}
           {process.env.NODE_ENV === "development" && (
