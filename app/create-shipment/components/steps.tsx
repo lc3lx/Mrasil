@@ -282,12 +282,12 @@ export function CreateShipmentSteps() {
             country: "sa",
             address: data.recipient_address,
             email: data.recipient_email || "",
-            district: data.recipient_district ,
+            district: data.recipient_district,
           },
           total: {
-  amount: data.total,
-  currency: "SAR"
-},
+            amount: data.total,
+            currency: "SAR",
+          },
           description: data.description,
           customerAddress: data.customerAddress,
         },
@@ -506,15 +506,17 @@ function Step1Content({ nextStep }: { nextStep: () => void }) {
       <RecipientAddressSection
         selectedRecipient={selectedRecipient}
         setSelectedRecipient={setSelectedRecipient}
-        setValue={setValue} initialValues={{
+        setValue={setValue}
+        initialValues={{
           name: "",
           location: "",
           phone: "",
           city: "",
           country: "",
           district: "",
-          email: ""
-        }}      />
+          email: "",
+        }}
+      />
       <div className="flex justify-end mt-8">
         <button
           className="ring-offset-background focus-visible:outline-hidden focus-visible:ring-ring inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 text-primary-foreground hover:bg-primary/90 h-10 v7-neu-button-accent bg-gradient-to-r from-[#3498db] to-[#2980b9] px-8 py-6 text-lg relative overflow-hidden group"
@@ -665,7 +667,7 @@ function Step2Content({
                         className={` w-6 h-6 rounded-full v7-neu-inset flex items-center justify-center `}
                       >
                         {selected ? (
-                        <div className="w-3 h-3 rounded-full bg-primary"></div>
+                          <div className="w-3 h-3 rounded-full bg-primary"></div>
                         ) : null}
                       </div>
                       <span
@@ -758,7 +760,7 @@ function Step2Content({
                 </Button>
               </div>
             </div>
-                        <ErrorMessage error={errors.Parcels} />
+            <ErrorMessage error={errors.Parcels} />
           </motion.div>
 
           {/* وصف محتويات الشحنة */}
@@ -771,10 +773,11 @@ function Step2Content({
               وصف محتوى الشحنة
             </Label>
             {watch("paymentMethod") === "COD" && (
-  <div className="text-sm text-red-500 mt-2">
-    ملاحظة مهمة: يجب كتابة المبلغ المراد من الشركة استلامه من العميل.
-    </div>
-)}
+              <div className="text-sm text-red-500 mt-2">
+                ملاحظة مهمة: يجب كتابة المبلغ المراد من الشركة استلامه من
+                العميل.
+              </div>
+            )}
 
             <div className="v7-neu-input-container mt-2">
               <textarea
@@ -1003,10 +1006,31 @@ function Step3Content({
   const [pricesFetched, setPricesFetched] = useState(false);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
 
+  // إضافة متغيرات لتتبع البيانات المهمة فقط
+  const priceKey = `${values.recipient_city}-${values.weight}-${values.total}-${values.paymentMethod}`;
+  const [lastPriceKey, setLastPriceKey] = useState<string>("");
+
   useEffect(() => {
-    if (pricesFetched || !companiesData?.length || !values) return;
+    // تحقق من وجود البيانات المطلوبة
+    if (
+      !companiesData?.length ||
+      !values.recipient_city ||
+      !values.weight ||
+      !values.total ||
+      !values.paymentMethod
+    ) {
+      return;
+    }
+
+    // تحقق إذا كانت البيانات المهمة تغيرت
+    if (pricesFetched && priceKey === lastPriceKey) {
+      return;
+    }
 
     const fetchAllPrices = async () => {
+      console.log("Fetching prices for key:", priceKey);
+      setPricesFetched(false); // إعادة تعيين الحالة
+
       const companiesWithTypes = companiesData.flatMap(
         (c) =>
           c.shippingTypes?.map((type) => ({ ...c, shippingType: type })) || []
@@ -1036,7 +1060,7 @@ function Step3Content({
                 weight: Number(values.weight) || 1,
               },
             };
-            console.log("Sending payload:", payload);
+            console.log("Sending payload for", company.company, ":", payload);
             const res = await createShipmentOrder(payload).unwrap();
             const price = res?.data?.total;
             return {
@@ -1056,6 +1080,7 @@ function Step3Content({
         const results = await Promise.all(fetches);
         setPrices(results);
         setPricesFetched(true);
+        setLastPriceKey(priceKey);
       } catch (error) {
         console.error("Error in fetchAllPrices:", error);
         setPricesFetched(true);
@@ -1063,7 +1088,7 @@ function Step3Content({
     };
 
     fetchAllPrices();
-  }, [companiesData]);
+  }, [companiesData, priceKey]); // dependencies محددة بدقة
   console.log("values", values);
 
   return (

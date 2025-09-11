@@ -1,5 +1,5 @@
-import { createApi } from '@reduxjs/toolkit/query/react'
-import { baseQueryWithTokenErrorHandling } from './customBaseQuery'
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseQueryWithTokenErrorHandling } from "./customBaseQuery";
 
 export interface Dimension {
   high: number;
@@ -42,17 +42,17 @@ export interface Shipment {
 }
 
 export interface Pagination {
-  currentPage: number
-  totalPages: number
-  totalItems: number
-  itemsPerPage: number
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  itemsPerPage: number;
 }
 
 export interface GetMyShipmentsResponse {
-  status: string
-  results: number
-  pagination: Pagination
-  data: Shipment[]
+  status: string;
+  results: number;
+  pagination: Pagination;
+  data: Shipment[];
 }
 
 export interface CreateShipmentOrderPayload {
@@ -82,7 +82,7 @@ export interface CreateShipmentOrderPayload {
 
 export interface ShipmentOrderResponse {
   success: boolean;
-  data: any; 
+  data: any;
   message?: string;
 }
 
@@ -135,47 +135,56 @@ export interface ShipmentCompany {
 }
 
 export const shipmentApi = createApi({
-  reducerPath: 'shipmentApi',
+  reducerPath: "shipmentApi",
   baseQuery: baseQueryWithTokenErrorHandling,
-  tagTypes: ['Shipment', 'ShipmentCompany'],
+  tagTypes: ["Shipment", "ShipmentCompany"],
   endpoints: (builder) => ({
-    getMyShipments: builder.query<GetMyShipmentsResponse, { page?: number; itemsPerPage?: number }>({
+    getMyShipments: builder.query<
+      GetMyShipmentsResponse,
+      { page?: number; itemsPerPage?: number }
+    >({
       query: ({ page = 1, itemsPerPage = 5 } = {}) => ({
         url: `/shipment/my-shipments?page=${page}&itemsPerPage=${itemsPerPage}`,
-        method: 'GET',
-        credentials: 'include',
+        method: "GET",
+        credentials: "include",
       }),
-      providesTags: ['Shipment'],
+      providesTags: ["Shipment"],
     }),
 
-    createShipmentOrder: builder.mutation<ShipmentOrderResponse, CreateShipmentOrderPayload>({
+    createShipmentOrder: builder.mutation<
+      ShipmentOrderResponse,
+      CreateShipmentOrderPayload
+    >({
       query: (payload) => ({
         url: "/shipment/accountingshipmentprice",
         method: "POST",
         body: payload,
         credentials: "include",
       }),
-      invalidatesTags: ['Shipment'],
+      invalidatesTags: ["Shipment"],
     }),
 
     createShipment: builder.mutation<any, any>({
       query: (shipmentData) => ({
-        url: '/shipment/createshipment',
-        method: 'POST',
+        url: "/shipment/createshipment",
+        method: "POST",
         body: shipmentData,
-        credentials: 'include',
+        credentials: "include",
       }),
-      invalidatesTags: ['Shipment'],
+      invalidatesTags: ["Shipment"],
     }),
 
-    cancelShipment: builder.mutation<{ status: string; message: string }, {id:string,company:string}>({
-      query: ({id,company}) => ({
+    cancelShipment: builder.mutation<
+      { status: string; message: string },
+      { id: string; company: string }
+    >({
+      query: ({ id, company }) => ({
         url: `/shipment/cancel/${id}`,
-        method: 'POST',
-        body:{company},
-        credentials: 'include',
+        method: "POST",
+        body: { company },
+        credentials: "include",
       }),
-      invalidatesTags: ['Shipment'],
+      invalidatesTags: ["Shipment"],
     }),
 
     // إضافة endpoint لشركات الشحن
@@ -186,11 +195,15 @@ export const shipmentApi = createApi({
         credentials: "include",
       }),
       providesTags: (result = []) => [
-        ...result.map((company) => ({ type: "ShipmentCompany", id: company._id } as const)),
+        ...result.map(
+          (company) => ({ type: "ShipmentCompany", id: company._id } as const)
+        ),
         { type: "ShipmentCompany", id: "LIST" },
       ],
       transformResponse: (response: any) => {
-        const companies = Array.isArray(response) ? response : response?.data ?? [];
+        const companies = Array.isArray(response)
+          ? response
+          : response?.data ?? [];
         return companies.map((company: any) => ({
           ...company,
           shippingTypes: company.shipmentType ?? [],
@@ -209,13 +222,13 @@ export const shipmentApi = createApi({
       transformResponse: (response: any) => response.data || response,
     }),
   }),
-})
+});
 
-export const { 
-  useGetMyShipmentsQuery, 
-  useCreateShipmentMutation, 
+export const {
+  useGetMyShipmentsQuery,
+  useCreateShipmentMutation,
   useCancelShipmentMutation,
   useCreateShipmentOrderMutation,
   useGetAllShipmentCompaniesQuery,
-  useGetShipmentCompanyInfoQuery
-} = shipmentApi
+  useGetShipmentCompanyInfoQuery,
+} = shipmentApi;
