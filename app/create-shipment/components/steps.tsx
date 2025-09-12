@@ -979,7 +979,7 @@ function Step3Content({
     });
 
   const companyData = companiesData?.find((c) => c.company === selectedCompany);
-  const validTypes = companyData?.shippingTypes?.map((t) => t.type) || [];
+  const validTypes = companyData?.shippingTypes?.map((t: any) => t.type) || [];
   const shipmentTypeToUse = validTypes.includes(values.shipmentType)
     ? values.shipmentType
     : validTypes[0];
@@ -1033,7 +1033,8 @@ function Step3Content({
 
       const companiesWithTypes = companiesData.flatMap(
         (c) =>
-          c.shippingTypes?.map((type) => ({ ...c, shippingType: type })) || []
+          c.shipmentType?.map((type: any) => ({ ...c, shippingType: type })) ||
+          []
       );
 
       try {
