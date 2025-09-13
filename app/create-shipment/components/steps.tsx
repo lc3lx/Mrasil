@@ -1053,10 +1053,30 @@ function Step3Content({
 
       console.log(`سيتم جلب أسعار لـ ${companiesWithTypes.length} خيار شحن`);
 
+      // دالة لإعادة المحاولة مع تأخير
+      const retryWithDelay = async (
+        fn: () => Promise<any>,
+        retries: number = 2,
+        delay: number = 1000
+      ): Promise<any> => {
+        try {
+          return await fn();
+        } catch (error) {
+          if (retries > 0) {
+            console.log(
+              `إعادة المحاولة بعد ${delay}ms... (المحاولات المتبقية: ${retries})`
+            );
+            await new Promise((resolve) => setTimeout(resolve, delay));
+            return retryWithDelay(fn, retries - 1, delay * 1.5);
+          }
+          throw error;
+        }
+      };
+
       try {
         const pricePromises = companiesWithTypes.map(
           async (companyWithType) => {
-            try {
+            const fetchPrice = async () => {
               const payload = {
                 company: companyWithType.company,
                 shapmentingType: companyWithType.shippingType.type,
@@ -1082,7 +1102,11 @@ function Step3Content({
               console.log(
                 `جلب سعر لـ ${companyWithType.company} - ${companyWithType.shippingType.type}`
               );
-              const response = await createShipmentOrder(payload).unwrap();
+              return await createShipmentOrder(payload).unwrap();
+            };
+
+            try {
+              const response = await retryWithDelay(fetchPrice);
 
               return {
                 company: companyWithType.company,
@@ -1095,13 +1119,60 @@ function Step3Content({
                 allowedBoxSizes: companyWithType.allowedBoxSizes || [],
               };
             } catch (err: any) {
-              console.error(`خطأ في جلب سعر ${companyWithType.company}:`, err);
+              console.error(
+                `خطأ في جلب سعر ${companyWithType.company} - ${companyWithType.shippingType.type}:`,
+                {
+                  error: err,
+                  status: err?.status,
+                  data: err?.data,
+                  message: err?.message,
+                  originalError: err?.originalError,
+                  company: companyWithType.company,
+                  type: companyWithType.shippingType.type,
+                }
+              );
+
+              // تحديد رسالة الخطأ بشكل أفضل
+              let errorMessage = "خطأ غير معروف";
+              if (err?.data?.message) {
+                errorMessage = err.data.message;
+              } else if (err?.message) {
+                errorMessage = err.message;
+              } else if (err?.status) {
+                switch (err.status) {
+                  case 400:
+                    errorMessage = "بيانات الطلب غير صحيحة";
+                    break;
+                  case 401:
+                    errorMessage = "غير مصرح بالوصول";
+                    break;
+                  case 403:
+                    errorMessage = "ممنوع الوصول";
+                    break;
+                  case 404:
+                    errorMessage = "الخدمة غير متوفرة";
+                    break;
+                  case 429:
+                    errorMessage = "تم تجاوز حد الطلبات";
+                    break;
+                  case 500:
+                    errorMessage = "خطأ في الخادم";
+                    break;
+                  default:
+                    errorMessage = `خطأ HTTP: ${err.status}`;
+                }
+              } else if (err?.name === "NetworkError") {
+                errorMessage = "خطأ في الشبكة";
+              } else if (err?.name === "TimeoutError") {
+                errorMessage = "انتهت مهلة الطلب";
+              }
+
               return {
                 company: companyWithType.company,
                 companyId: companyWithType._id,
                 type: companyWithType.shippingType.type,
                 typeId: companyWithType.shippingType._id,
-                error: err?.data?.message || err?.message || "خطأ غير معروف",
+                error: errorMessage,
                 success: false,
                 allowedBoxSizes: companyWithType.allowedBoxSizes || [],
               };
@@ -1212,12 +1283,40 @@ function Step3Content({
                 تعذر جلب أسعار بعض الشركات:
               </span>
             </div>
-            <div className="text-sm text-red-600 space-y-1">
+            <div className="text-sm text-red-600 space-y-2">
               {priceErrors.map((error, index) => (
-                <div key={index}>
-                  • {error.company} - {error.type}: {error.error}
+                <div
+                  key={index}
+                  className="flex items-start gap-2 p-2 bg-red-50 rounded-lg border border-red-200"
+                >
+                  <div className="w-2 h-2 rounded-full bg-red-500 mt-2 flex-shrink-0"></div>
+                  <div>
+                    <div className="font-medium text-red-800">
+                      {error.company} - {error.type}
+                    </div>
+                    <div className="text-red-600 text-xs mt-1">
+                      {error.error}
+                    </div>
+                  </div>
                 </div>
               ))}
+              <div className="flex items-center justify-between mt-3 p-2 bg-red-50 rounded border border-red-200">
+                <div className="text-xs text-red-500">
+                  💡 نصيحة: إذا استمر الخطأ، جرب الرجوع للخطوة السابقة والعودة
+                  مرة أخرى
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setPricesFetched(false);
+                    setLastPriceKey("");
+                  }}
+                  className="text-xs border-red-300 text-red-600 hover:bg-red-100"
+                >
+                  إعادة المحاولة
+                </Button>
+              </div>
             </div>
           </div>
         )}
