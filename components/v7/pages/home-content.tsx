@@ -1,17 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent } from "@/components/ui/tabs";
 import Real from "../../../public/real.png";
 import {
   Wallet,
   ShoppingBag,
   CreditCard,
-  TrendingUp,
-  ArrowUpRight,
   Package,
   BarChart3,
   XCircle,
@@ -19,8 +15,6 @@ import {
   CheckCircle,
   Clock,
 } from "lucide-react";
-import { MdOutlinePendingActions } from "react-icons/md";
-import { RiFolderReceivedFill } from "react-icons/ri";
 import { V7StatsCard } from "@/components/v7/v7-stats-card";
 import { V7ShipmentCard } from "@/app/shipments/components/v7-shipment-card";
 import { V7WelcomeBanner } from "@/components/v7/v7-welcome-banner";
@@ -34,151 +28,15 @@ import {
   useGetShipmentStatsQuery,
 } from "@/app/api/homePageApi";
 import { useGetShipmentCompanyInfoQuery } from "@/app/api/shipmentCompanyApi";
-import { FaRoadCircleExclamation } from "react-icons/fa6";
 import { useGetMyTransactionsQuery } from "@/app/api/transicationApi";
 import Image from "next/image";
 import RealBlue from "../../../public/real-blue.png";
 // Remove RiyalIcon import if not used elsewhere
 // import { RiyalIcon } from '@/components/icons';
 
-// بيانات وهمية للإحصائيات
-const statsData = {
-  balance: {
-    available: "76.02 ريال",
-    lastTransaction: "منذ 3 ساعات",
-  },
-  orders: {
-    today: "12 طلب",
-    total: "143 طلب",
-    target: "150 طلب",
-    percentage: 95,
-  },
-  shipping: {
-    averageCost: "22.00 ريال",
-    totalCost: "2,158.00 ريال",
-    lastMonth: "1,876.00 ريال",
-    percentageChange: 15,
-  },
-  monthly: {
-    totalShipments: {
-      value: "77",
-      change: "+12%",
-      positive: true,
-    },
-    deliveryTime: {
-      value: "1.8",
-      change: "-0.3 يوم",
-      positive: true,
-    },
-    customerSatisfaction: {
-      value: "96%",
-      change: "+2%",
-      positive: true,
-    },
-    deliveryLocations: {
-      value: "12 موقع",
-      change: "+3",
-      positive: true,
-    },
-    growthRate: {
-      value: "15%",
-      change: "+3%",
-      positive: true,
-    },
-  },
-};
-
-// بيانات وهمية للشحنات الأخيرة
-const recentShipments = [
-  {
-    id: 1003,
-    from: "الرياض",
-    to: "جدة",
-    status: "processing",
-    date: "2023/04/25",
-    time: "10:30 ص",
-    priority: "عادي",
-    trackingNumber: "SHP1003456",
-    estimatedDelivery: "2023/04/27",
-    customer: "شركة الأفق للتجارة",
-    items: 3,
-    weight: "5.2 كجم",
-    cost: "45.00 ريال",
-  },
-  {
-    id: 1002,
-    from: "الرياض",
-    to: "الدمام",
-    status: "transit",
-    date: "2023/04/24",
-    time: "09:15 ص",
-    priority: "سريع",
-    trackingNumber: "SHP1002456",
-    estimatedDelivery: "2023/04/26",
-    customer: "مؤسسة النور",
-    items: 1,
-    weight: "2.7 كجم",
-    cost: "35.50 ريال",
-  },
-  {
-    id: 1001,
-    from: "الرياض",
-    to: "مكة",
-    status: "delivered",
-    date: "2023/04/23",
-    time: "14:45 م",
-    priority: "فائق السرعة",
-    trackingNumber: "SHP1001456",
-    estimatedDelivery: "2023/04/25",
-    customer: "محمد أحمد",
-    items: 2,
-    weight: "1.5 كجم",
-    cost: "60.00 ريال",
-  },
-  {
-    id: 1000,
-    from: "الرياض",
-    to: "المدينة المنورة",
-    status: "delivered",
-    date: "2023/04/10",
-    time: "11:20 ص",
-    priority: "عادي",
-    trackingNumber: "SHP1000456",
-    estimatedDelivery: "2023/04/12",
-    customer: "خالد العلي",
-    items: 1,
-    weight: "0.8 كجم",
-    cost: "28.50 ريال",
-  },
-  {
-    id: 999,
-    from: "الرياض",
-    to: "الطائف",
-    status: "delivered",
-    date: "2023/03/29",
-    time: "16:45 م",
-    priority: "عادي",
-    trackingNumber: "SHP0999456",
-    estimatedDelivery: "2023/03/31",
-    customer: "سارة محمد",
-    items: 2,
-    weight: "1.2 كجم",
-    cost: "32.75 ريال",
-  },
-];
-
 export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState("weekly");
-  const [userData, setUserData] = useState({
-    name: "أحمد محمد",
-    lastLogin: "اليوم، 09:45 ص",
-    notifications: 3,
-  });
-  const [isLoading, setIsLoading] = useState(true);
-  const [filteredShipments, setFilteredShipments] = useState(
-    recentShipments.slice(0, 3)
-  );
+
   const { data: walletData, isLoading: walletLoading } = useGetMyWalletQuery();
   const { data: ordersData, isLoading: ordersLoading } = useGetAllOrdersQuery();
   const today = new Date();
@@ -211,46 +69,40 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
     ordersData?.data?.filter((order) => order.status?.name === "pending")
       .length ?? 0;
 
-  // محاكاة تحميل البيانات
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-      // عند التحميل الأولي، عرض أحدث 3 شحنات
-      setFilteredShipments(recentShipments.slice(0, 3));
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, []);
+  // تحديد حالة التحميل بناءً على البيانات الأساسية
+  const isMainDataLoading =
+    walletLoading || ordersLoading || myShipmentsLoading || statsLoading;
 
+  const companiesWithTypes = (shipmentCompanyInfo || []).flatMap(
+    (company: any) =>
+      company.shippingTypes.map((shippingType: any) => {
+        let displayName = company.name;
 
+        // إذا سمسا وDry خليها سمسا برو
+        if (company.name === "smsa" && shippingType.type === "Dry") {
+          displayName = "smsa Pro"; // أو أي اسم آخر حسب واجهتك
+        }
 
-  const companiesWithTypes = (shipmentCompanyInfo || []).flatMap((company) =>
-    company.shippingTypes.map((shippingType) => {
-      let displayName = company.name;
-
-      // إذا سمسا وDry خليها سمسا برو
-      if (company.name === "smsa" && shippingType.type === "Dry") {
-        displayName = "smsa Pro"; // أو أي اسم آخر حسب واجهتك
-      }
-
-      return {
-        ...company,
-        companyName: displayName, // استخدم هذا الاسم للعرض
-        shippingType,
-      };
-    })
+        return {
+          ...company,
+          companyName: displayName, // استخدم هذا الاسم للعرض
+          shippingType,
+        };
+      })
   );
-const priorityOrder = ["smsa Pro" ,  "aramex", "smsa" , "redbox",  "omniclama"];
+  const priorityOrder = ["smsa Pro", "aramex", "smsa", "redbox", "omniclama"];
 
-const sortedCompanies = companiesWithTypes.sort((a, b) => {
-  const aIndex = priorityOrder.indexOf(a.companyName);
-  const bIndex = priorityOrder.indexOf(b.companyName);
+  const sortedCompanies = companiesWithTypes.sort((a: any, b: any) => {
+    const aIndex = priorityOrder.indexOf(a.companyName);
+    const bIndex = priorityOrder.indexOf(b.companyName);
 
-  return (aIndex === -1 ? Infinity : aIndex) - (bIndex === -1 ? Infinity : bIndex);
-});
-
+    return (
+      (aIndex === -1 ? Infinity : aIndex) - (bIndex === -1 ? Infinity : bIndex)
+    );
+  });
 
   // عرض حالة التحميل
-  if (isLoading) {
+  if (isMainDataLoading) {
     return (
       <V7Content>
         <div className="flex flex-col items-center justify-center h-[60vh]">
@@ -299,7 +151,6 @@ const sortedCompanies = companiesWithTypes.sort((a, b) => {
                 : lastTransaction?.createdAt
                 ? new Date(lastTransaction.createdAt).toLocaleDateString()
                 : "-",
-              type: "ساعات",
             },
           ]}
           action={{
@@ -326,7 +177,6 @@ const sortedCompanies = companiesWithTypes.sort((a, b) => {
                   طلب
                 </span>
               ),
-              type: "طلب",
             },
             {
               label: "جميع الطلبات",
@@ -338,7 +188,6 @@ const sortedCompanies = companiesWithTypes.sort((a, b) => {
                   طلب
                 </span>
               ),
-              type: "طلب",
             },
             {
               label: "الطلبات المعلقة",
@@ -350,7 +199,6 @@ const sortedCompanies = companiesWithTypes.sort((a, b) => {
                   طلب
                 </span>
               ),
-              type: "طلب",
             },
           ]}
         />
@@ -385,7 +233,6 @@ const sortedCompanies = companiesWithTypes.sort((a, b) => {
             },
             {
               label: "شحنات قيد الانتظار",
-              type: "شحنه",
               value: shipmentStatsLoading ? (
                 "..."
               ) : (
@@ -403,7 +250,6 @@ const sortedCompanies = companiesWithTypes.sort((a, b) => {
             },
             {
               label: "شحنات تم تسليمها",
-              type: "شحنه",
               value: shipmentStatsLoading ? (
                 "..."
               ) : (
@@ -417,7 +263,6 @@ const sortedCompanies = companiesWithTypes.sort((a, b) => {
             },
             {
               label: "شحنات في الطريق",
-              type: "شحنه",
               value: shipmentStatsLoading ? (
                 "..."
               ) : (
@@ -452,7 +297,7 @@ const sortedCompanies = companiesWithTypes.sort((a, b) => {
                 </div>
               ) : companiesWithTypes && Array.isArray(companiesWithTypes) ? (
                 <div className="  grid  grid-cols-1 md:grid-cols-2 gap-4  w-full">
-                  {sortedCompanies.map((company, idx) => {
+                  {sortedCompanies.map((company: any, idx: number) => {
                     const isLast = idx === companiesWithTypes.length - 1;
                     const name = company.name?.toLowerCase() || "";
                     let imgSrc = "/placeholder-logo.png";
@@ -486,7 +331,11 @@ const sortedCompanies = companiesWithTypes.sort((a, b) => {
                         />
                         <div className="font-bold  text-primary text-xl">
                           {company.companyName === "omniclama"
-                            ? "LLAMA BOX" : company.companyName === "redbox" ? "RED BOX" : company.companyName == "aramex" ? "ARAMEX PRO"
+                            ? "LLAMA BOX"
+                            : company.companyName === "redbox"
+                            ? "RED BOX"
+                            : company.companyName == "aramex"
+                            ? "ARAMEX PRO"
                             : company.companyName.toLocaleUpperCase()}
                         </div>
                         <div className="w-full">
@@ -513,40 +362,40 @@ const sortedCompanies = companiesWithTypes.sort((a, b) => {
                               </span>
                             </li>
                           </ul>
-                        <ul className="  mt-2 text-gry space-y-1">
-  {["smsa", "redbox", "omniclama"].includes(company.companyName ?? "") ? (
-    <>
-      <li className="flex items-center justify-center gap-2 text-center">
-        {/* <span className="h-2 w-2 rounded-full bg-[#3498db] inline-block"></span> */}
-     <Clock className="w-4 h-4"/>3 - 2 أيام عمل
-      </li>
-      <li className="flex items-center justify-center gap-2">
-        <span className="h-2 w-2 rounded-full bg-[#3498db] inline-block"></span>
-        أسعار اقتصادية
-      </li>
-      <li className="flex items-center justify-center gap-2">
-        <span className="h-2 w-2 rounded-full bg-[#3498db] inline-block"></span>
-        تتبع مباشر
-      </li>
-    </>
-  ) : 
-    <>
-      <li className="flex items-center justify-center gap-2 text-center">
-          <Clock className="w-4 h-4"/>3 - 2 أيام عمل
-      </li>
-      <li className="flex items-center justify-center gap-2">
-        <span className="h-2 w-2 rounded-full bg-[#3498db] inline-block"></span>
-        توصيل من الباب للباب 
-      </li>
-      <li className="flex items-center justify-center gap-2">
-        <span className="h-2 w-2 rounded-full bg-[#3498db] inline-block"></span>
-        تتبع مباشر
-      </li>
-    </>
-  
-  }
-</ul>
-
+                          <ul className="  mt-2 text-gry space-y-1">
+                            {["smsa", "redbox", "omniclama"].includes(
+                              company.companyName ?? ""
+                            ) ? (
+                              <>
+                                <li className="flex items-center justify-center gap-2 text-center">
+                                  {/* <span className="h-2 w-2 rounded-full bg-[#3498db] inline-block"></span> */}
+                                  <Clock className="w-4 h-4" />3 - 2 أيام عمل
+                                </li>
+                                <li className="flex items-center justify-center gap-2">
+                                  <span className="h-2 w-2 rounded-full bg-[#3498db] inline-block"></span>
+                                  أسعار اقتصادية
+                                </li>
+                                <li className="flex items-center justify-center gap-2">
+                                  <span className="h-2 w-2 rounded-full bg-[#3498db] inline-block"></span>
+                                  تتبع مباشر
+                                </li>
+                              </>
+                            ) : (
+                              <>
+                                <li className="flex items-center justify-center gap-2 text-center">
+                                  <Clock className="w-4 h-4" />3 - 2 أيام عمل
+                                </li>
+                                <li className="flex items-center justify-center gap-2">
+                                  <span className="h-2 w-2 rounded-full bg-[#3498db] inline-block"></span>
+                                  توصيل من الباب للباب
+                                </li>
+                                <li className="flex items-center justify-center gap-2">
+                                  <span className="h-2 w-2 rounded-full bg-[#3498db] inline-block"></span>
+                                  تتبع مباشر
+                                </li>
+                              </>
+                            )}
+                          </ul>
                         </div>
                       </div>
                     );
@@ -638,9 +487,8 @@ const sortedCompanies = companiesWithTypes.sort((a, b) => {
                 <span className="font-bold text-xl">
                   {statsLoading
                     ? "..."
-                    : homeStats?.growthRate !== undefined
-                    && `${homeStats.growthRate}%`
-                    }
+                    : homeStats?.growthRate !== undefined &&
+                      `${homeStats.growthRate}%`}
                 </span>
               </div>
             </div>
@@ -662,7 +510,12 @@ const sortedCompanies = companiesWithTypes.sort((a, b) => {
             <div className="text-center p-4">لا توجد شحنات حديثة</div>
           ) : (
             lastTwoShipments.map((shipment) => (
-              <V7ShipmentCard key={shipment._id} shipment={shipment} />
+              <V7ShipmentCard
+                key={shipment._id}
+                shipment={shipment}
+                allSelected={false}
+                selectedShipmentId={null}
+              />
             ))
           )}
         </div>

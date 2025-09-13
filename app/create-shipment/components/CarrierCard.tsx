@@ -39,11 +39,13 @@ interface CarrierCardProps {
   values: any;
   selectedBoxSize: BoxSize | null;
   prices?: Array<{ company: string; type: string; price: number | string }>;
+  loadingPrices?: boolean;
+  pricesFetched?: boolean;
   boxSizes: BoxSize[];
   setSelectedBoxSize: (box: BoxSize) => void;
   setValue: (name: string, value: any) => void;
   parcelsData: BoxSize[];
-  error:string
+  error: string;
 }
 
 export default function CarrierCard({
@@ -54,11 +56,13 @@ export default function CarrierCard({
   values,
   selectedBoxSize,
   prices = [],
+  loadingPrices = false,
+  pricesFetched = false,
   boxSizes = [],
   setSelectedBoxSize,
   setValue,
   parcelsData = [],
-  error
+  error = "",
 }: CarrierCardProps) {
   const [customModalOpen, setCustomModalOpen] = useState(false);
   const [customParcel, setCustomParcel] = useState({
@@ -103,7 +107,6 @@ export default function CarrierCard({
         ? priceNumber
         : Number(priceNumber).toPrecision(4)
       : 0;
-
 
   return (
     <>
@@ -212,7 +215,7 @@ export default function CarrierCard({
           <h3 className="font-semibold text-lg mb-2">أحجام الصناديق</h3>
 
           <div className="flex items-center gap-4 flex-wrap">
-            {boxSizes.map((card, idx ) => {
+            {boxSizes.map((card, idx) => {
               const selected = selectedBoxSize === card;
               const key = card.key ?? `box-${idx}`;
               return (
@@ -233,7 +236,9 @@ export default function CarrierCard({
                   <div className="flex flex-col items-center text-center gap-2 relative">
                     <div
                       className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                        selected ? "bg-gradient-to-br from-[#3498db] to-[#2980b9] text-white" : "bg-[#3498db]/10 text-[#3498db]"
+                        selected
+                          ? "bg-gradient-to-br from-[#3498db] to-[#2980b9] text-white"
+                          : "bg-[#3498db]/10 text-[#3498db]"
                       }`}
                     >
                       <Package className="h-6 w-6" />
@@ -254,7 +259,7 @@ export default function CarrierCard({
             })}
 
             {["smsa", "aramex"].includes(company.company) &&
-            ["Dry"].includes(company.shippingType.type) && 
+              ["Dry"].includes(company.shippingType.type) &&
               parcelsData?.data?.map((parcel) => {
                 const selected =
                   selectedBoxSize?.length === parcel.dimensions.length &&
@@ -262,13 +267,13 @@ export default function CarrierCard({
                   selectedBoxSize?.height === parcel.dimensions.height;
                 return (
                   <motion.div
-                      key={parcel.id}
+                    key={parcel.id}
                     className={`v7-neu-card-inner p-12 cursor-pointer w-fit  ${
                       selected
                         ? " bg-gradient-to-br from-[#3498db]/5 to-[#3498db]/10"
                         : "hover:bg-gradient-to-br hover:from-[#3498db]/5 hover:to-transparent hover:text-white"
                     }`}
-                      onClick={() => {
+                    onClick={() => {
                       const newBox: BoxSize = {
                         key: parcel.id,
                         label: parcel.title,
@@ -285,15 +290,17 @@ export default function CarrierCard({
                     <div className="flex flex-col items-center text-center gap-2 relative">
                       <div
                         className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                          selected ? "bg-gradient-to-br from-[#3498db] to-[#2980b9] text-white" : "bg-[#3498db]/10 text-[#3498db]"
+                          selected
+                            ? "bg-gradient-to-br from-[#3498db] to-[#2980b9] text-white"
+                            : "bg-[#3498db]/10 text-[#3498db]"
                         }`}
                       >
                         <Package className="h-6 w-6" />
-
                       </div>
 
                       <div className="text-base text-gray-700 mt-1 ">
-                        {parcel.dimensions.length}×{parcel.dimensions.width}×{parcel.dimensions.height} سم
+                        {parcel.dimensions.length}×{parcel.dimensions.width}×
+                        {parcel.dimensions.height} سم
                       </div>
 
                       {selected && (
@@ -316,19 +323,26 @@ export default function CarrierCard({
                 >
                   <span
                     className={`p-4 rounded-full flex items-center justify-center ${
-                      customModalOpen ? "bg-gradient-to-br from-[#3498db] to-[#2980b9] text-white" : "bg-[#3498db]/10 text-[#3498db]"
+                      customModalOpen
+                        ? "bg-gradient-to-br from-[#3498db] to-[#2980b9] text-white"
+                        : "bg-[#3498db]/10 text-[#3498db]"
                     }`}
                   >
-                    <Package className="w-5 h-5" style={{ width: "20px", height: "20px" }} />
+                    <Package
+                      className="w-5 h-5"
+                      style={{ width: "20px", height: "20px" }}
+                    />
                   </span>
 
-                  <h4 className="font-bold text-gray-800 text-lg">إضافة حجم طرد مخصص +</h4>
+                  <h4 className="font-bold text-gray-800 text-lg">
+                    إضافة حجم طرد مخصص +
+                  </h4>
                 </Button>
               )}
           </div>
         </div>
       )}
-{/* <div className="mt-2">
+      {/* <div className="mt-2">
   {error && typeof error === "string" && (
     <p className="text-red-500 text-sm">{error}</p>
   )}
@@ -341,11 +355,12 @@ export default function CarrierCard({
   )}
 </div> */}
 
-
       <Dialog open={customModalOpen} onOpenChange={setCustomModalOpen}>
         <DialogContent className="flex flex-col gap-4 p-10 bg-[#f3f6fa] border-none">
           <DialogHeader>
-            <DialogTitle className="text-start pt-2">إضافة حجم طرد مخصص</DialogTitle>
+            <DialogTitle className="text-start pt-2">
+              إضافة حجم طرد مخصص
+            </DialogTitle>
           </DialogHeader>
 
           <div>
@@ -354,7 +369,9 @@ export default function CarrierCard({
               className="v7-neu-input w-full pr-10 py-2 text-sm"
               type="text"
               value={customParcel.label}
-              onChange={(e) => setCustomParcel({ ...customParcel, label: e.target.value })}
+              onChange={(e) =>
+                setCustomParcel({ ...customParcel, label: e.target.value })
+              }
               required
             />
           </div>
@@ -366,7 +383,9 @@ export default function CarrierCard({
                 className="v7-neu-input w-full pr-10 py-2 text-sm"
                 type="number"
                 value={customParcel.length}
-                onChange={(e) => setCustomParcel({ ...customParcel, length: e.target.value })}
+                onChange={(e) =>
+                  setCustomParcel({ ...customParcel, length: e.target.value })
+                }
                 required
                 min={0}
               />
@@ -378,7 +397,9 @@ export default function CarrierCard({
                 className="v7-neu-input w-full pr-10 py-2 text-sm"
                 type="number"
                 value={customParcel.width}
-                onChange={(e) => setCustomParcel({ ...customParcel, width: e.target.value })}
+                onChange={(e) =>
+                  setCustomParcel({ ...customParcel, width: e.target.value })
+                }
                 required
                 min={0}
               />
@@ -390,7 +411,9 @@ export default function CarrierCard({
                 className="v7-neu-input w-full pr-10 py-2 text-sm"
                 type="number"
                 value={customParcel.height}
-                onChange={(e) => setCustomParcel({ ...customParcel, height: e.target.value })}
+                onChange={(e) =>
+                  setCustomParcel({ ...customParcel, height: e.target.value })
+                }
                 required
                 min={0}
               />
@@ -433,8 +456,14 @@ export default function CarrierCard({
                   const widthNum = Number(customParcel.width);
                   const heightNum = Number(customParcel.height);
 
-                  if ([lengthNum, widthNum, heightNum].some((n) => isNaN(n) || n <= 0)) {
-                    setError("الطول/العرض/الارتفاع يجب أن يكونوا أرقاماً صحيحة أكبر من صفر");
+                  if (
+                    [lengthNum, widthNum, heightNum].some(
+                      (n) => isNaN(n) || n <= 0
+                    )
+                  ) {
+                    setError(
+                      "الطول/العرض/الارتفاع يجب أن يكونوا أرقاماً صحيحة أكبر من صفر"
+                    );
                     return;
                   }
 
@@ -453,7 +482,12 @@ export default function CarrierCard({
 
                     // أغلق المودال ونظف الحقول
                     setCustomModalOpen(false);
-                    setCustomParcel({ label: "", length: "", width: "", height: "" });
+                    setCustomParcel({
+                      label: "",
+                      length: "",
+                      width: "",
+                      height: "",
+                    });
                   } catch (err) {
                     console.error("فشل إنشاء الطرد:", err);
                     setError("فشل إضافة الطرد، حاول مرة أخرى.");

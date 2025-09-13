@@ -961,10 +961,10 @@ function Step3Content({
   };
 
   const companiesWithTypes = (companiesData || [])
-    .flatMap((company) => {
+    .flatMap((company: any) => {
       if (!company.shippingTypes || company.shippingTypes.length === 0)
         return [];
-      return company.shippingTypes.map((shippingType) => ({
+      return company.shippingTypes.map((shippingType: any) => ({
         ...company,
         shippingType,
       }));
@@ -978,14 +978,17 @@ function Step3Content({
       return 0; // الباقي حسب الترتيب الأصلي
     });
 
-  const companyData = companiesData?.find((c) => c.company === selectedCompany);
-  const validTypes = companyData?.shippingTypes?.map((t: any) => t.type) || [];
+  const companyData = companiesData?.find(
+    (c: any) => c.company === selectedCompany
+  );
+  const validTypes =
+    (companyData as any)?.shippingTypes?.map((t: any) => t.type) || [];
   const shipmentTypeToUse = validTypes.includes(values.shipmentType)
     ? values.shipmentType
     : validTypes[0];
 
   const handleCompanySelect = (company: string, shippingType: string) => {
-    const selected = companiesData?.find((c) => c.company === company);
+    const selected = companiesData?.find((c: any) => c.company === company);
     if (selected) {
       setValue("company", company);
       setValue("shipmentType", shippingType);
@@ -1001,10 +1004,11 @@ function Step3Content({
     }
   };
 
-  // NEW
+  // حالة جلب الأسعار
   const [prices, setPrices] = useState<any[]>([]);
   const [pricesFetched, setPricesFetched] = useState(false);
-  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [loadingPrices, setLoadingPrices] = useState(false);
+  const [priceErrors, setPriceErrors] = useState<any[]>([]);
 
   // إضافة متغيرات لتتبع البيانات المهمة فقط
   const priceKey = `${values.recipient_city}-${values.weight}-${values.total}-${values.paymentMethod}`;
@@ -1019,6 +1023,8 @@ function Step3Content({
       !values.total ||
       !values.paymentMethod
     ) {
+      setPrices([]);
+      setPricesFetched(false);
       return;
     }
 
@@ -1028,68 +1034,116 @@ function Step3Content({
     }
 
     const fetchAllPrices = async () => {
-      console.log("Fetching prices for key:", priceKey);
-      setPricesFetched(false); // إعادة تعيين الحالة
+      console.log("بدء جلب الأسعار لـ:", priceKey);
+      setLoadingPrices(true);
+      setPricesFetched(false);
+      setPrices([]);
+      setPriceErrors([]);
 
-      const companiesWithTypes = companiesData.flatMap(
-        (c) =>
-          c.shipmentType?.map((type: any) => ({ ...c, shippingType: type })) ||
-          []
-      );
+      // إنشاء قائمة الشركات مع أنواع الشحن
+      const companiesWithTypes = companiesData.flatMap((company: any) => {
+        if (!company.shippingTypes || company.shippingTypes.length === 0) {
+          return [];
+        }
+        return company.shippingTypes.map((shippingType: any) => ({
+          ...company,
+          shippingType,
+        }));
+      });
+
+      console.log(`سيتم جلب أسعار لـ ${companiesWithTypes.length} خيار شحن`);
 
       try {
-        const fetches = companiesWithTypes.map(async (company) => {
-          try {
-            const payload = {
-              company: company.company,
-              shapmentingType: company.shippingType.type,
-              order: {
-                customer: {
-                  full_name: values.recipient_full_name || "",
-                  mobile: values.recipient_mobile || "",
-                  email: values.recipient_email || "",
-                  address: values.recipient_address || "",
-                  city: values.recipient_city || "",
-                  district: values.recipient_district || "",
-                  country: "sa",
+        const pricePromises = companiesWithTypes.map(
+          async (companyWithType) => {
+            try {
+              const payload = {
+                company: companyWithType.company,
+                shapmentingType: companyWithType.shippingType.type,
+                order: {
+                  customer: {
+                    full_name: values.recipient_full_name || "",
+                    mobile: values.recipient_mobile || "",
+                    email: values.recipient_email || "",
+                    address: values.recipient_address || "",
+                    city: values.recipient_city || "",
+                    district: values.recipient_district || "",
+                    country: "sa",
+                  },
+                  description: values.orderDescription || "",
+                  direction: "straight",
+                  paymentMethod: values.paymentMethod,
+                  source: "salla",
+                  total: { amount: Number(values.total), currency: "SAR" },
+                  weight: Number(values.weight) || 1,
                 },
-                description: values.orderDescription || "",
-                direction: "straight",
-                paymentMethod: values.paymentMethod,
-                source: "salla",
-                total: { amount: Number(values.total), currency: "SAR" },
-                weight: Number(values.weight) || 1,
-              },
-            };
-            console.log("Sending payload for", company.company, ":", payload);
-            const res = await createShipmentOrder(payload).unwrap();
-            const price = res?.data?.total;
-            return {
-              company: company.company,
-              type: company.shippingType.type,
-              price: price,
-            };
-          } catch (err: any) {
-            console.error(`Error fetching price for ${company.company}:`, err);
-            return {
-              company: company.company,
-              type: company.shippingType.type,
-              error: err.data?.message || err.message,
-            };
+              };
+
+              console.log(
+                `جلب سعر لـ ${companyWithType.company} - ${companyWithType.shippingType.type}`
+              );
+              const response = await createShipmentOrder(payload).unwrap();
+
+              return {
+                company: companyWithType.company,
+                companyId: companyWithType._id,
+                type: companyWithType.shippingType.type,
+                typeId: companyWithType.shippingType._id,
+                price: response?.data?.total || null,
+                currency: "SAR",
+                success: true,
+                allowedBoxSizes: companyWithType.allowedBoxSizes || [],
+              };
+            } catch (err: any) {
+              console.error(`خطأ في جلب سعر ${companyWithType.company}:`, err);
+              return {
+                company: companyWithType.company,
+                companyId: companyWithType._id,
+                type: companyWithType.shippingType.type,
+                typeId: companyWithType.shippingType._id,
+                error: err?.data?.message || err?.message || "خطأ غير معروف",
+                success: false,
+                allowedBoxSizes: companyWithType.allowedBoxSizes || [],
+              };
+            }
           }
-        });
-        const results = await Promise.all(fetches);
-        setPrices(results);
+        );
+
+        const results = await Promise.all(pricePromises);
+
+        // فصل النتائج الناجحة عن الأخطاء
+        const successfulPrices = results.filter((result) => result.success);
+        const failedPrices = results.filter((result) => !result.success);
+
+        setPrices(successfulPrices);
+        setPriceErrors(failedPrices);
         setPricesFetched(true);
         setLastPriceKey(priceKey);
+
+        console.log(
+          `تم جلب ${successfulPrices.length} سعر بنجاح، فشل في ${failedPrices.length}`
+        );
+
+        // إظهار ملخص الأسعار في الكونسول
+        if (successfulPrices.length > 0) {
+          console.log("الأسعار المتاحة:");
+          successfulPrices.forEach((price) => {
+            console.log(
+              `${price.company} (${price.type}): ${price.price} ${price.currency}`
+            );
+          });
+        }
       } catch (error) {
-        console.error("Error in fetchAllPrices:", error);
+        console.error("خطأ عام في جلب الأسعار:", error);
+        setPriceErrors([{ error: "فشل في جلب الأسعار" }]);
         setPricesFetched(true);
+      } finally {
+        setLoadingPrices(false);
       }
     };
 
     fetchAllPrices();
-  }, [companiesData, priceKey]); // dependencies محددة بدقة
+  }, [companiesData, priceKey, createShipmentOrder]);
   console.log("values", values);
 
   return (
@@ -1118,9 +1172,64 @@ function Step3Content({
           </div>
           <h2 className="text-2xl font-semibold text-[#1a365d]">إختر الناقل</h2>
         </div>
+        {/* عرض حالة جلب الأسعار */}
+        {loadingPrices && (
+          <div className="v7-neu-card p-6 rounded-2xl bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200">
+            <div className="flex items-center justify-center gap-3">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#3498db]"></div>
+              <span className="text-[#1a365d] font-medium">
+                جاري جلب أسعار الشحن من جميع الشركات...
+              </span>
+            </div>
+            <div className="mt-3 text-center text-sm text-gray-600">
+              هذا قد يستغرق بضع ثوان
+            </div>
+          </div>
+        )}
+
+        {/* عرض رسالة نجاح جلب الأسعار */}
+        {pricesFetched && prices.length > 0 && !loadingPrices && (
+          <div className="v7-neu-card p-4 rounded-xl bg-green-50 border border-green-200">
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center">
+                <Check className="w-3 h-3 text-white" />
+              </div>
+              <span className="text-green-700 font-medium">
+                تم جلب أسعار {prices.length} خيار شحن بنجاح! اختر الأنسب لك.
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* عرض الأخطاء إن وجدت */}
+        {priceErrors.length > 0 && !loadingPrices && (
+          <div className="v7-neu-card p-4 rounded-xl bg-red-50 border border-red-200">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-5 h-5 rounded-full bg-red-500 flex items-center justify-center">
+                <span className="text-white text-xs">!</span>
+              </div>
+              <span className="text-red-700 font-medium">
+                تعذر جلب أسعار بعض الشركات:
+              </span>
+            </div>
+            <div className="text-sm text-red-600 space-y-1">
+              {priceErrors.map((error, index) => (
+                <div key={index}>
+                  • {error.company} - {error.type}: {error.error}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="flex flex-col gap-4">
           {isLoadingCompanies ? (
-            <div>جاري التحميل...</div>
+            <div className="v7-neu-card p-6 rounded-2xl">
+              <div className="flex items-center justify-center gap-3">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#3498db]"></div>
+                <span>جاري تحميل شركات الشحن...</span>
+              </div>
+            </div>
           ) : (
             companiesWithTypes?.map((company) => {
               const { shippingType } = company;
@@ -1157,19 +1266,35 @@ function Step3Content({
                   firstType={company.shippingType}
                   values={values}
                   prices={prices}
+                  loadingPrices={loadingPrices}
+                  pricesFetched={pricesFetched}
                   boxSizes={boxSizes}
                   selectedBoxSize={selectedBoxSize}
                   setValue={setValue}
                   setSelectedBoxSize={setSelectedBoxSize}
-                  parcelsData={parcelsData}
-                  error={error}
+                  parcelsData={
+                    Array.isArray(parcelsData)
+                      ? parcelsData
+                      : (parcelsData as any)?.data || []
+                  }
+                  error={
+                    typeof error === "string"
+                      ? error
+                      : (error as any)?.message || ""
+                  }
                 />
               );
             })
           )}
         </div>
       </div>
-      <OrderSummaryAndFragileTips values={values} prices={prices} />
+      <OrderSummaryAndFragileTips
+        values={values}
+        prices={prices}
+        loadingPrices={loadingPrices}
+        pricesFetched={pricesFetched}
+        selectedCompany={selectedCompany}
+      />
 
       <div className="flex justify-between mt-8">
         <Button

@@ -10,7 +10,9 @@ import { motion } from "framer-motion";
 interface OrderSummaryAndFragileTipsProps {
   values: any;
   prices: any;
-
+  loadingPrices?: boolean;
+  pricesFetched?: boolean;
+  selectedCompany?: string;
 }
 interface SizeCard {
   key: string;
@@ -27,7 +29,9 @@ interface SizeCard {
 export function OrderSummaryAndFragileTips({
   values,
   prices,
-
+  loadingPrices = false,
+  pricesFetched = false,
+  selectedCompany,
 }: OrderSummaryAndFragileTipsProps) {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const { watch } = useFormContext();
@@ -47,8 +51,6 @@ export function OrderSummaryAndFragileTips({
       : values.company.toUpperCase();
   return (
     <>
-
-
       {/* نصائح للشحنات القابلة للكسر */}
       <div className="flex items-center gap-3">
         <div className="v7-neu-icon-sm bg-amber-100">
