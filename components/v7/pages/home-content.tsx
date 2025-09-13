@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,6 +15,7 @@ import {
   Eye,
   CheckCircle,
   Clock,
+  RefreshCw,
 } from "lucide-react";
 import { V7StatsCard } from "@/components/v7/v7-stats-card";
 import { V7ShipmentCard } from "@/app/shipments/components/v7-shipment-card";
@@ -37,8 +39,24 @@ import RealBlue from "../../../public/real-blue.png";
 export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
   const router = useRouter();
 
-  const { data: walletData, isLoading: walletLoading } = useGetMyWalletQuery();
-  const { data: ordersData, isLoading: ordersLoading } = useGetAllOrdersQuery();
+  // حالات إعادة المحاولة
+  const [retryCount, setRetryCount] = useState(0);
+  const [lastRetryTime, setLastRetryTime] = useState(0);
+  const MAX_RETRIES = 3;
+  const RETRY_DELAY = 2000; // 2 ثانية
+
+  const {
+    data: walletData,
+    isLoading: walletLoading,
+    error: walletError,
+    refetch: refetchWallet,
+  } = useGetMyWalletQuery();
+  const {
+    data: ordersData,
+    isLoading: ordersLoading,
+    error: ordersError,
+    refetch: refetchOrders,
+  } = useGetAllOrdersQuery();
   const today = new Date();
   const todayOrders =
     ordersData?.data.filter((order) => {
@@ -49,17 +67,37 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
         createdAt.getDate() === today.getDate()
       );
     }) ?? [];
-  const { data: myShipmentsData, isLoading: myShipmentsLoading } =
-    useGetMyShipmentsQuery({ page: 1, itemsPerPage: 2 });
+  const {
+    data: myShipmentsData,
+    isLoading: myShipmentsLoading,
+    error: shipmentsError,
+    refetch: refetchShipments,
+  } = useGetMyShipmentsQuery({ page: 1, itemsPerPage: 2 });
   const lastTwoShipments = myShipmentsData?.data?.slice(-2) ?? [];
-  const { data: homeStats, isLoading: statsLoading } =
-    useGetHomePageStatisticsQuery();
-  const { data: shipmentStats, isLoading: shipmentStatsLoading } =
-    useGetShipmentStatsQuery();
-  const { data: shipmentCompanyInfo, isLoading: shipmentCompanyInfoLoading } =
-    useGetShipmentCompanyInfoQuery();
-  const { data: transactionsData, isLoading: transactionsLoading } =
-    useGetMyTransactionsQuery();
+  const {
+    data: homeStats,
+    isLoading: statsLoading,
+    error: statsError,
+    refetch: refetchStats,
+  } = useGetHomePageStatisticsQuery();
+  const {
+    data: shipmentStats,
+    isLoading: shipmentStatsLoading,
+    error: shipmentStatsError,
+    refetch: refetchShipmentStats,
+  } = useGetShipmentStatsQuery();
+  const {
+    data: shipmentCompanyInfo,
+    isLoading: shipmentCompanyInfoLoading,
+    error: companyInfoError,
+    refetch: refetchCompanyInfo,
+  } = useGetShipmentCompanyInfoQuery();
+  const {
+    data: transactionsData,
+    isLoading: transactionsLoading,
+    error: transactionsError,
+    refetch: refetchTransactions,
+  } = useGetMyTransactionsQuery();
   const lastTransaction =
     transactionsData?.data && transactionsData.data.length > 0
       ? transactionsData.data[transactionsData.data.length - 1]
@@ -72,6 +110,88 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
   // تحديد حالة التحميل بناءً على البيانات الأساسية
   const isMainDataLoading =
     walletLoading || ordersLoading || myShipmentsLoading || statsLoading;
+
+  // تحديد الأخطاء
+  const hasErrors =
+    walletError ||
+    ordersError ||
+    shipmentsError ||
+    statsError ||
+    shipmentStatsError ||
+    companyInfoError ||
+    transactionsError;
+
+  // آلية إعادة المحاولة التلقائية
+  const retryFailedRequests = useCallback(async () => {
+    if (retryCount >= MAX_RETRIES) {
+      console.log("تم الوصول للحد الأقصى من المحاولات");
+      return;
+    }
+
+    const currentTime = Date.now();
+    if (currentTime - lastRetryTime < RETRY_DELAY) {
+      return; // تجنب المحاولات المتكررة بسرعة
+    }
+
+    console.log(`إعادة المحاولة ${retryCount + 1} من ${MAX_RETRIES}`);
+    setRetryCount((prev) => prev + 1);
+    setLastRetryTime(currentTime);
+
+    // إعادة جلب البيانات الفاشلة فقط
+    const retryPromises = [];
+
+    if (walletError) retryPromises.push(refetchWallet());
+    if (ordersError) retryPromises.push(refetchOrders());
+    if (shipmentsError) retryPromises.push(refetchShipments());
+    if (statsError) retryPromises.push(refetchStats());
+    if (shipmentStatsError) retryPromises.push(refetchShipmentStats());
+    if (companyInfoError) retryPromises.push(refetchCompanyInfo());
+    if (transactionsError) retryPromises.push(refetchTransactions());
+
+    try {
+      await Promise.allSettled(retryPromises);
+      console.log("تمت إعادة المحاولة بنجاح");
+    } catch (error) {
+      console.error("فشل في إعادة المحاولة:", error);
+    }
+  }, [
+    retryCount,
+    lastRetryTime,
+    walletError,
+    ordersError,
+    shipmentsError,
+    statsError,
+    shipmentStatsError,
+    companyInfoError,
+    transactionsError,
+    refetchWallet,
+    refetchOrders,
+    refetchShipments,
+    refetchStats,
+    refetchShipmentStats,
+    refetchCompanyInfo,
+    refetchTransactions,
+  ]);
+
+  // تشغيل إعادة المحاولة عند وجود أخطاء
+  useEffect(() => {
+    if (hasErrors && !isMainDataLoading && retryCount < MAX_RETRIES) {
+      const timeoutId = setTimeout(() => {
+        retryFailedRequests();
+      }, RETRY_DELAY);
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [hasErrors, isMainDataLoading, retryFailedRequests, retryCount]);
+
+  // إعادة تعيين عداد المحاولات عند نجاح التحميل
+  useEffect(() => {
+    if (!hasErrors && !isMainDataLoading && retryCount > 0) {
+      console.log("تم تحميل البيانات بنجاح، إعادة تعيين عداد المحاولات");
+      setRetryCount(0);
+      setLastRetryTime(0);
+    }
+  }, [hasErrors, isMainDataLoading, retryCount]);
 
   const companiesWithTypes = (shipmentCompanyInfo || []).flatMap(
     (company: any) =>
@@ -107,7 +227,16 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
       <V7Content>
         <div className="flex flex-col items-center justify-center h-[60vh]">
           <div className="v7-loading-spinner mb-4"></div>
-          <p className="text-[#3498db] text-lg">جاري تحميل لوحة التحكم...</p>
+          <p className="text-[#3498db] text-lg">
+            {retryCount > 0
+              ? `جاري إعادة تحميل البيانات... (المحاولة ${retryCount + 1})`
+              : "جاري تحميل لوحة التحكم..."}
+          </p>
+          {retryCount > 0 && (
+            <p className="text-gray-500 text-sm mt-2">
+              يتم إعادة المحاولة تلقائياً عند فشل التحميل
+            </p>
+          )}
         </div>
       </V7Content>
     );
@@ -130,6 +259,10 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
               label: "الرصيد الحالي",
               value: walletLoading ? (
                 "..."
+              ) : walletError ? (
+                <div className="flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#3498db]"></div>
+                </div>
               ) : walletData?.wallet.balance !== undefined ? (
                 <span className="flex items-center text-[#0d904f] justify-end gap-1">
                   <span>{walletData.wallet.balance.toString() ?? "-"}</span>
@@ -146,11 +279,17 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
             },
             {
               label: "آخر معاملة",
-              value: transactionsLoading
-                ? "..."
-                : lastTransaction?.createdAt
-                ? new Date(lastTransaction.createdAt).toLocaleDateString()
-                : "-",
+              value: transactionsLoading ? (
+                "..."
+              ) : transactionsError ? (
+                <div className="flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#3498db]"></div>
+                </div>
+              ) : lastTransaction?.createdAt ? (
+                new Date(lastTransaction.createdAt).toLocaleDateString()
+              ) : (
+                "-"
+              ),
             },
           ]}
           action={{
@@ -171,6 +310,10 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
 
               value: ordersLoading ? (
                 "..."
+              ) : ordersError ? (
+                <div className="flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#3498db]"></div>
+                </div>
               ) : (
                 <span className=" flex items-center gap-2">
                   <span>{todayOrders.length.toString()}</span>
@@ -182,6 +325,10 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
               label: "جميع الطلبات",
               value: ordersLoading ? (
                 "..."
+              ) : ordersError ? (
+                <div className="flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#3498db]"></div>
+                </div>
               ) : (
                 <span className=" flex items-center gap-2">
                   <span>{ordersData?.data.length?.toString() ?? "-"}</span>
@@ -193,6 +340,10 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
               label: "الطلبات المعلقة",
               value: ordersLoading ? (
                 "..."
+              ) : ordersError ? (
+                <div className="flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#3498db]"></div>
+                </div>
               ) : (
                 <span className=" flex items-center gap-2">
                   <span>{pendingOrdersCount.toString()}</span>
