@@ -493,7 +493,7 @@ function Step1Content({ nextStep }: { nextStep: () => void }) {
     )
       nextStep();
   };
-const isDisabled = !selectedSender || !selectedRecipient
+  const isDisabled = !selectedSender || !selectedRecipient;
   return (
     <form onSubmit={handleSubmit} className="space-y-8 ">
       {/* Sender Section */}
@@ -608,12 +608,12 @@ function Step2Content({
   const [openPrivacyModal, setOpenPrivacyModal] = useState(false);
   const watchAll = watch();
 
-const isDisabled =
-  !watchAll.weight ||
-  !watchAll.Parcels ||
-  !watchAll.paymentMethod ||
-  !watchAll.total ||
-  !watchAll.orderDescription;
+  const isDisabled =
+    !watchAll.weight ||
+    !watchAll.Parcels ||
+    !watchAll.paymentMethod ||
+    !watchAll.total ||
+    !watchAll.orderDescription;
   return (
     <>
       <form onSubmit={handleSubmit} className="space-y-8">
@@ -644,12 +644,12 @@ const isDisabled =
                   desc: "مناسب للدفع قبل الشحن",
                   sendValue: "Prepaid",
                 },
-                // {
-                //   value: "الدفع عند الاستلام",
-                //   label: "الدفع عند الاستلام",
-                //   desc: "مناسب للدفع عند استلام الشحنة",
-                //   sendValue: "COD",
-                // },
+                {
+                  value: "الدفع عند الاستلام",
+                  label: "الدفع عند الاستلام",
+                  desc: "مناسب للدفع عند استلام الشحنة",
+                  sendValue: "COD",
+                },
               ].map((option) => {
                 const selected = paymentMethod === option.sendValue;
                 return (
@@ -707,12 +707,12 @@ const isDisabled =
               الوزن (كجم)
             </Label>
             <div className="v7-neu-card-inner px-6 py-6 w-full min-w-[180px] flex items-center">
-                <input
+              <input
                 type="number"
-                  min={1}
-                  {...register("weight", { required: true, valueAsNumber: true })}
-                  placeholder="أدخل الوزن بالـ KG"
-                  onFocus={() => setWeightFocused(true)}
+                min={1}
+                {...register("weight", { required: true, valueAsNumber: true })}
+                placeholder="أدخل الوزن بالـ KG"
+                onFocus={() => setWeightFocused(true)}
                 onBlur={() => setWeightFocused(false)}
                 className="bg-transparent border-none shadow-none outline-none text-base w-full"
                 style={weightFocused ? { boxShadow: "0 2px 0 0 #3498db" } : {}}
@@ -777,7 +777,6 @@ const isDisabled =
               وصف محتوى الشحنة
             </Label>
 
-
             <div className="v7-neu-input-container mt-2">
               <textarea
                 placeholder="أدخل وصفاً لمحتويات الشحنة"
@@ -792,31 +791,30 @@ const isDisabled =
           </motion.div>
         </div>
         {/* الإجمالى والوصف في نفس الصف */}
-          <motion.div variants={fadeIn}  >
-            <Label
-              htmlFor="total"
-              className="text-base font-medium flex items-center gap-2 mb-2"
-            >
-              <CreditCard className="text-xl font-bold text-[#3498db] m-0" />
-              إجمالي قيمة الطلب
-            </Label>
-                        {watch("paymentMethod") === "COD" && (
-              <div className="text-sm text-red-500 my-2">
-                ملاحظة مهمة: يجب كتابة المبلغ المراد من الشركة استلامه من
-                العميل.
-              </div>
-            )}
-            <div className="v7-neu-input-container relative overflow-hidden group sm:w-1/2 lg:w-1/3">
-              <input
-                // type="number"
-                min="0"
-                {...register("total", { required: "الحقل مطلوب" })}
-                placeholder="أدخل الإجمالى"
-                className="v7-neu-input text-base"
-              />
+        <motion.div variants={fadeIn}>
+          <Label
+            htmlFor="total"
+            className="text-base font-medium flex items-center gap-2 mb-2"
+          >
+            <CreditCard className="text-xl font-bold text-[#3498db] m-0" />
+            إجمالي قيمة الطلب
+          </Label>
+          {watch("paymentMethod") === "COD" && (
+            <div className="text-sm text-red-500 my-2">
+              ملاحظة مهمة: يجب كتابة المبلغ المراد من الشركة استلامه من العميل.
             </div>
-            <ErrorMessage error={errors.total} />
-          </motion.div>
+          )}
+          <div className="v7-neu-input-container relative overflow-hidden group sm:w-1/2 lg:w-1/3">
+            <input
+              // type="number"
+              min="0"
+              {...register("total", { required: "الحقل مطلوب" })}
+              placeholder="أدخل الإجمالى"
+              className="v7-neu-input text-base"
+            />
+          </div>
+          <ErrorMessage error={errors.total} />
+        </motion.div>
         {/* عنوان العميل (hidden but included in form) */}
         <Label htmlFor="customerAddress" className="hidden">
           عنوان العميل
