@@ -537,8 +537,8 @@ const handleSearch = (e: React.FormEvent) => {
                   : profileData?.data?.firstName && profileData?.data?.lastName
                   ? `${profileData.data.firstName} ${profileData.data.lastName}`
                   : language === "ar"
-                  ? "أحمد محمد"
-                  : "Ahmed Mohamed"}
+                  ? "..."
+                  : "..."}
               </span>
             </div>
             <ChevronDown className="h-3 sm:h-4 w-3 sm:w-4" />

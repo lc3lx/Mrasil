@@ -5,8 +5,6 @@ import { useRouter } from "next/navigation";
 import { useSignupMutation } from "../api/authApi";
 import Link from "next/link";
 import { toast } from "react-hot-toast";
-import { V7LoginHeader } from "@/components/v7/v7-login-header";
-import { V7LoginFooter } from "@/components/v7/v7-login-footer";
 import ResponseModal from "../components/ResponseModal";
 import { Eye, EyeOff } from "lucide-react";
 
@@ -41,7 +39,7 @@ export default function SignupPage() {
       setModalOpen(true);
       return;
     }
-
+    
     try {
       // Debug: Log the form data being sent
       console.log("Signup form data being sent:", formData);

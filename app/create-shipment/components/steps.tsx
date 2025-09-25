@@ -189,7 +189,7 @@ export function CreateShipmentSteps() {
       recipient_address: "",
       recipient_email: "",
       recipient_district: "",
-      weight: 0,
+      weight: undefined,
       Parcels: 1,
       dimension_high: 0,
       dimension_width: 0,
@@ -198,7 +198,7 @@ export function CreateShipmentSteps() {
       company: providerOptions[0].label,
       shipmentType: "",
       orderDescription: "",
-      total: 0,
+      total: undefined,
       description: "",
       customerAddress: "",
     },
@@ -493,7 +493,7 @@ function Step1Content({ nextStep }: { nextStep: () => void }) {
     )
       nextStep();
   };
-
+const isDisabled = !selectedSender || !selectedRecipient
   return (
     <form onSubmit={handleSubmit} className="space-y-8 ">
       {/* Sender Section */}
@@ -521,6 +521,7 @@ function Step1Content({ nextStep }: { nextStep: () => void }) {
         <button
           className="ring-offset-background focus-visible:outline-hidden focus-visible:ring-ring inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 text-primary-foreground hover:bg-primary/90 h-10 v7-neu-button-accent bg-gradient-to-r from-[#3498db] to-[#2980b9] px-8 py-6 text-lg relative overflow-hidden group"
           type="submit"
+          disabled={isDisabled}
         >
           <span className="relative z-10 flex items-center">
             التالي
@@ -567,11 +568,6 @@ function Step2Content({
   const paymentMethod = watch("paymentMethod");
   const { data: customerMeData } = useGetCustomerMeQuery();
 
-  // Watch for dimension values
-  const dimension_length = watch("dimension_length");
-  const dimension_width = watch("dimension_width");
-  const dimension_high = watch("dimension_high");
-
   // At the top of Step2Content, add:
   const [weightFocused, setWeightFocused] = useState(false);
   const [descFocused, setDescFocused] = useState(false);
@@ -610,6 +606,14 @@ function Step2Content({
     ) : null;
   };
   const [openPrivacyModal, setOpenPrivacyModal] = useState(false);
+  const watchAll = watch();
+
+const isDisabled =
+  !watchAll.weight ||
+  !watchAll.Parcels ||
+  !watchAll.paymentMethod ||
+  !watchAll.total ||
+  !watchAll.orderDescription;
   return (
     <>
       <form onSubmit={handleSubmit} className="space-y-8">
@@ -640,12 +644,12 @@ function Step2Content({
                   desc: "مناسب للدفع قبل الشحن",
                   sendValue: "Prepaid",
                 },
-                {
-                  value: "الدفع عند الاستلام",
-                  label: "الدفع عند الاستلام",
-                  desc: "مناسب للدفع عند استلام الشحنة",
-                  sendValue: "COD",
-                },
+                // {
+                //   value: "الدفع عند الاستلام",
+                //   label: "الدفع عند الاستلام",
+                //   desc: "مناسب للدفع عند استلام الشحنة",
+                //   sendValue: "COD",
+                // },
               ].map((option) => {
                 const selected = paymentMethod === option.sendValue;
                 return (
@@ -703,12 +707,12 @@ function Step2Content({
               الوزن (كجم)
             </Label>
             <div className="v7-neu-card-inner px-6 py-6 w-full min-w-[180px] flex items-center">
-              <input
+                <input
                 type="number"
-                min="0"
-                {...register("weight", { required: "الوزن مطلوب" })}
-                placeholder="أدخل وزن الشحنة"
-                onFocus={() => setWeightFocused(true)}
+                  min={1}
+                  {...register("weight", { required: true, valueAsNumber: true })}
+                  placeholder="أدخل الوزن بالـ KG"
+                  onFocus={() => setWeightFocused(true)}
                 onBlur={() => setWeightFocused(false)}
                 className="bg-transparent border-none shadow-none outline-none text-base w-full"
                 style={weightFocused ? { boxShadow: "0 2px 0 0 #3498db" } : {}}
@@ -772,12 +776,7 @@ function Step2Content({
               <FileText className="h-5 w-5 text-[#3498db]" />
               وصف محتوى الشحنة
             </Label>
-            {watch("paymentMethod") === "COD" && (
-              <div className="text-sm text-red-500 mt-2">
-                ملاحظة مهمة: يجب كتابة المبلغ المراد من الشركة استلامه من
-                العميل.
-              </div>
-            )}
+
 
             <div className="v7-neu-input-container mt-2">
               <textarea
@@ -793,8 +792,7 @@ function Step2Content({
           </motion.div>
         </div>
         {/* الإجمالى والوصف في نفس الصف */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <motion.div variants={fadeIn}>
+          <motion.div variants={fadeIn}  >
             <Label
               htmlFor="total"
               className="text-base font-medium flex items-center gap-2 mb-2"
@@ -802,9 +800,15 @@ function Step2Content({
               <CreditCard className="text-xl font-bold text-[#3498db] m-0" />
               إجمالي قيمة الطلب
             </Label>
-            <div className="v7-neu-input-container relative overflow-hidden group">
+                        {watch("paymentMethod") === "COD" && (
+              <div className="text-sm text-red-500 my-2">
+                ملاحظة مهمة: يجب كتابة المبلغ المراد من الشركة استلامه من
+                العميل.
+              </div>
+            )}
+            <div className="v7-neu-input-container relative overflow-hidden group sm:w-1/2 lg:w-1/3">
               <input
-                type="number"
+                // type="number"
                 min="0"
                 {...register("total", { required: "الحقل مطلوب" })}
                 placeholder="أدخل الإجمالى"
@@ -813,7 +817,6 @@ function Step2Content({
             </div>
             <ErrorMessage error={errors.total} />
           </motion.div>
-        </div>
         {/* عنوان العميل (hidden but included in form) */}
         <Label htmlFor="customerAddress" className="hidden">
           عنوان العميل
@@ -878,6 +881,7 @@ function Step2Content({
           <button
             className="ring-offset-background focus-visible:outline-hidden focus-visible:ring-ring inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 text-primary-foreground hover:bg-primary/90 h-10 v7-neu-button-accent bg-gradient-to-r from-[#3498db] to-[#2980b9] px-8 py-6 text-lg relative overflow-hidden group"
             type="submit"
+            disabled={isDisabled}
           >
             <span className="relative z-10 flex items-center">
               التالي

@@ -185,7 +185,6 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
             className="space-y-2  flex flex-col sm:gap-2 gap-1"
             dir="rtl"
           >
-            {/* <Input name="clientName" placeholder="الاسم" value={form.clientName} onChange={handleChange} required /> */}
             <div className="space-y-1">
               <Label
                 htmlFor="clientName"
@@ -320,16 +319,17 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
             <div className="flex-1 space-y-2">
               <Label
                 htmlFor="clientAddress"
-                className="sm:text-lg text-base font-medium flex items-center gap-2  text-[#1A5889]"
+                className="sm:text-lg text-base font-medium flex items-center gap-2 text-[#1A5889]"
               >
                 <MapPin className="h-4 w-4 text-[#1A5889]" />
                 معلومات العنوان
+                <span className=" text-red-500">*</span>
               </Label>
-
               <input
                 name="clientAddress"
                 value={form.clientAddress}
                 type="text"
+                required
                 onChange={handleChange}
                 placeholder="الحي, الشارع, رقم المبنى"
                 className={cn(

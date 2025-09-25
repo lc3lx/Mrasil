@@ -117,13 +117,21 @@ export function V7ShipmentCard({
   }
   
   // Helper functions for status, etc.
-  const getStatusIcon = () => <Package className="h-5 w-5 text-violet-500" />;
+  const getStatusIcon = () => {
+
+    switch (shipment.shipmentstates) {
+      case "READY_FOR_PICKUP": return <Package className="h-5 w-5 text-violet-500" /> ;
+      case "IN_TRANSIT": return <Truck className="h-5 w-5 text-violet-500" /> ;
+      case "DELIVERED": return <CheckCircle className="h-5 w-5 text-violet-500" />;
+      case "CANCELLED": return <X className="h-5 w-5 text-violet-500" />;
+    }
+  }
 const getStatusText = () => {
   switch (shipment.shipmentstates) {
-    case "Delivered": return "تم التسليم";
-    case "Cancelled": return "ملغاة";
-    case "Pending": return "قيد الانتظار";
-    default: return "جاهز للشحن";
+    case "READY_FOR_PICKUP": return "جاهز للشحن" ;
+    case "IN_TRANSIT": return "جاري التوصيل";
+    case "DELIVERED": return "تم التوصيل";
+    case "CANCELLED": return "ملغاة";
   }
 };
   const getStatusColor = () => "bg-violet-50 text-violet-700 border-violet-200";

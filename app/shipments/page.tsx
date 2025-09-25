@@ -16,6 +16,7 @@
     XCircle,
     Store,
     ShoppingCart,
+    X,
   } from "lucide-react"
   import { Button } from "@/components/ui/button"
   import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -42,7 +43,7 @@
 import { useSearchParams } from "next/navigation"
 
 
-  type ShipmentStatus = "delivered" | "transit" | "processing" | "ready"
+  type ShipmentStatus = "delivered" | "transit" | "processing" | "ready" | "cancel"
   type ShipmentPriority = "فائق السرعة" | "سريع" | "عادي"
 
   interface Shipment {
@@ -132,6 +133,8 @@ const [searchQuery, setSearchQuery] = useState(trackingParam || phoneParam || ""
           return "قيد المعالجة"
         case "ready":
           return "جاهز للشحن"
+        case "cancel":
+          return "ملغاة"
         default:
           return "غير معروف"
       }
@@ -142,16 +145,10 @@ const [searchQuery, setSearchQuery] = useState(trackingParam || phoneParam || ""
       switch (carrier) {
         case "aramex":
           return "أرامكس"
-        case "dhl":
-          return "دي إتش إل"
         case "fedex":
           return "فيديكس"
-        case "ups":
-          return "يو بي إس"
         case "smsa":
           return "سمسا"
-        case "imile":
-          return "آي مايل"
         default:
           return carrier
       }
@@ -166,8 +163,10 @@ const [searchQuery, setSearchQuery] = useState(trackingParam || phoneParam || ""
           return "transit"
         case "PROCESSING":
           return "processing"
-        case "READY":
+        case "READY_FOR_PICKUP":
           return "ready"
+        case "CANCELLED":
+          return "cancel"
         default:
           return "processing"
       }
@@ -216,11 +215,8 @@ const [searchQuery, setSearchQuery] = useState(trackingParam || phoneParam || ""
     const availableCarriers = [
       { id: "all", name: "جميع الناقلين" },
       { id: "aramex", name: "أرامكس" },
-      { id: "dhl", name: "دي إتش إل" },
       { id: "fedex", name: "فيديكس" },
-      { id: "ups", name: "يو بي إس" },
       { id: "smsa", name: "سمسا" },
-      { id: "imile", name: "آي مايل" },
     ]
     function downloadBase64File(base64: string, fileName: string) {
       const arr = base64.split(",");
@@ -358,12 +354,12 @@ const filteredShipments = shipments.filter((shipment) => {
       }
       return 0
     })
-
+    
     // Count shipments by status
     const deliveredCount = shipments.filter((s) => mapApiStatusToComponentStatus(s.shipmentstates) === "delivered").length
     const transitCount = shipments.filter((s) => mapApiStatusToComponentStatus(s.shipmentstates) === "transit").length
     const readyCount = shipments.filter((s) => mapApiStatusToComponentStatus(s.shipmentstates) === "ready").length
-    const processingCount = shipments.filter((s) => mapApiStatusToComponentStatus(s.shipmentstates) === "processing").length
+    const cancelCount = shipments.filter((s) => mapApiStatusToComponentStatus(s.shipmentstates) === "cancel").length
 
     // Count shipments by source
     const sourceCount = availableSources.reduce(
@@ -425,8 +421,7 @@ const filteredShipments = shipments.filter((shipment) => {
           </V7Content>
         </V7Layout>
       )
-    }
-
+    }      
     // Show error state
     if (error) {
       return (
@@ -481,9 +476,9 @@ const filteredShipments = shipments.filter((shipment) => {
               <V7ShipmentStatus title="جاري التوصيل" count={transitCount} icon={Truck} color="warning" theme="light"  />
               <V7ShipmentStatus title="جاهز للشحن" count={readyCount} icon={Package} color="info" theme="light" />
               <V7ShipmentStatus
-                title="قيد المعالجة"
-                count={processingCount}
-                icon={Clock}
+                title="الملغية"
+                count={cancelCount}
+                icon={X}
                 color="secondary"
                 theme="light"
               />

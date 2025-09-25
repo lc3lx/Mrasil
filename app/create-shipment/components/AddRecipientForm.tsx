@@ -322,12 +322,14 @@ await onSubmit({
               >
                 <MapPin className="h-4 w-4 text-[#1A5889]" />
                 معلومات العنوان
+                                <span className=" text-red-500">*</span>
               </Label>
 
               <input
                 name="clientAddress"
                 value={form.clientAddress}
                 type="text"
+                required
                 onChange={handleChange}
                 placeholder="الحي, الشارع, رقم المبنى"
                 className={cn(

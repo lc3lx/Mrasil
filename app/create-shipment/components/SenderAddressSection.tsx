@@ -70,8 +70,11 @@ const senderCards = (customerMeData?.data.addresses || []).map(
     name: address.alias || "-",
     mobile: address.phone || "-",
     city: address.city || "-",
+    country: address.country || "-",
     address: address.location || "-",
     email: customerMeData?.data.email || "-",
+
+    
   })
 );
 
@@ -80,7 +83,6 @@ const normalize = (str: string) =>
     .toLowerCase()
     .trim()
     .replace(/[\u0621-\u064A]/g, (char) => {
-      // تحويل الحروف العربية لمكافئات قريبة لتسهيل البحث
       const map: Record<string, string> = {
         أ: "ا",
         إ: "ا",
@@ -107,16 +109,17 @@ const normalize = (str: string) =>
       setValue("shipper_address", card.address);
     }
   };
-const search = searchSender.trim().toLowerCase();
-  const filteredSenderCards = senderCards.filter((card) => {
+const search = normalize(searchSender.trim());
+const filteredSenderCards = senderCards.filter((card) => {
   return (
-    card.name.toLowerCase().includes(search) ||
-    card.mobile.toLowerCase().includes(search) ||
-    card.city.toLowerCase().includes(search) ||
-    card.address.toLowerCase().includes(search) ||
-    card.email.toLowerCase().includes(search)
+    normalize(card.name).includes(search) ||
+    normalize(card.mobile).includes(search) ||
+    normalize(card.city).includes(search) ||
+    normalize(card.address).includes(search) ||
+    normalize(card.email).includes(search)
   );
 });
+
   const displayedSenderCards = showAllSenders
     ? filteredSenderCards
     : filteredSenderCards.slice(0, 6);
@@ -130,6 +133,7 @@ const handleAddSenderAddress = async (data: any) => {
       city: data.city,
       country: data.country,
     }).unwrap();
+    
     refetch()
 
     setOpenAddSenderModal(false);
@@ -137,6 +141,8 @@ const handleAddSenderAddress = async (data: any) => {
     console.error("Error creating address:", error);
   }
 };
+
+
   return (
     <motion.div variants={staggerChildren}>
       <div className="flex items-center gap-3  pb-4 " >
@@ -177,7 +183,7 @@ const handleAddSenderAddress = async (data: any) => {
         <button
           type="button"
           onClick={() => setOpenAddSenderModal(true)}
-          className="v7-neu-button-accent w-full sm:w-fit  bg-gradient-to-r from-[#3498db] to-[#2980b9] hover:from-[#2980b9] hover:to-[#3498db] transition-all duration-300 px-8 py-2 rounded-lg text-white font-bold flex items-center  text-center justify-center gap-2"
+          className="v7-neu-button-accent text-primary w-full sm:w-fit  bg-gradient-to-r from-[#3498db] to-[#2980b9] hover:from-[#2980b9] hover:to-[#3498db] transition-all duration-300 px-8 py-2 rounded-lg  font-bold flex items-center  text-center justify-center gap-2"
         >
           + مرسل جديد
         </button>
@@ -240,9 +246,14 @@ const handleAddSenderAddress = async (data: any) => {
               </div>
               <div className="flex items-center gap-2 text-lg text-gray-700">
                 <MapPin className="h-4 w-4 text-[#3498db]" />
-                <span>{card.city}</span>
+                <span>{card.city}</span>,<span>{card.country}</span>
               </div>
-                <div className="text-lg text-gray-700">{card?.address}</div>
+                {card?.address && (
+                <div className="flex items-center gap-2 text-lg text-gray-700">
+                  <span className="font-bold">الحي/المنطقة:</span>
+                  <span>{card.address}</span>
+                </div>
+              )}
               <div className="flex items-center gap-2 text-base text-gray-500">
                 <Mail className="h-4 w-4 text-[#3498db]" />
                 <span>{card.email}</span>
