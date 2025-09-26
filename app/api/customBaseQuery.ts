@@ -12,7 +12,8 @@ export const customBaseQuery = fetchBaseQuery({
 
     // لا نضيف Content-Type للـ FormData
     // فقط للـ JSON requests
-    if (!headers.get("Content-Type")) {
+    // التحقق من أن الـ body ليس FormData
+    if (!headers.get("Content-Type") && !headers.get("content-type")) {
       headers.set("Content-Type", "application/json");
     }
 

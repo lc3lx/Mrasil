@@ -1,5 +1,5 @@
 import { Camera } from "lucide-react";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 type Props = {
   initialImage?: string;
@@ -10,6 +10,13 @@ export default function ProfileUpLoad({ initialImage, onFileSelect }: Props) {
   const [image, setImage] = useState<string>(
     initialImage || "/homePageImages/user.jpg"
   );
+
+  // تحديث الصورة عند تغيير initialImage
+  useEffect(() => {
+    if (initialImage) {
+      setImage(initialImage);
+    }
+  }, [initialImage]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

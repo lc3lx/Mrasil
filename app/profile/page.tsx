@@ -117,7 +117,7 @@ export default function ProfilePage() {
     formData.append("brand_website", brandWebsite);
     try {
       const res = await updateCustomerMe(formData).unwrap();
-      setAlertMsg(res?.message || "تم تحديث البيانات بنجاح");
+      setAlertMsg("تم تحديث البيانات بنجاح");
       setAlertStatus("success");
       setAlertOpen(true);
     } catch (err: any) {
@@ -133,64 +133,64 @@ export default function ProfilePage() {
   const handelImageUpload = async (file: File) => {
     try {
       const formData = new FormData();
-      formData.append("brand_logo", file);
+      formData.append("profileImage", file);
 
       const res = await updateCustomerMe(formData).unwrap();
-      setAlertMsg(res?.message || "تم رفع الشعار بنجاح");
+      setAlertMsg("تم رفع صورة البروفيل بنجاح");
       setAlertStatus("success");
       setAlertOpen(true);
     } catch (err: any) {
-      setAlertMsg(err?.data?.message || "فشل رفع الشعار");
+      setAlertMsg(err?.data?.message || "فشل رفع صورة البروفيل");
       setAlertStatus("error");
       setAlertOpen(true);
     }
   };
-const handelSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+  const handelSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  try {
-    let res;
+    try {
+      let res;
 
-    if (brandLogo) {
-      const formData = new FormData();
-      formData.append("brand_logo", brandLogo);
-      formData.append("brand_color", brandColor);
-      formData.append("company_name_ar", companyNameAr);
-      formData.append("company_name_en", companyNameEn);
-      formData.append("brand_email", brandEmail);
-      formData.append("additional_info", additionalInfo);
-      formData.append("tax_number", taxNumber);
-      formData.append(
-        "commercial_registration_number",
-        commercialRegistrationNumber
-      );
-      formData.append("brand_website", brandWebsite);
+      if (brandLogo) {
+        const formData = new FormData();
+        formData.append("brand_logo", brandLogo);
+        formData.append("brand_color", brandColor);
+        formData.append("company_name_ar", companyNameAr);
+        formData.append("company_name_en", companyNameEn);
+        formData.append("brand_email", brandEmail);
+        formData.append("additional_info", additionalInfo);
+        formData.append("tax_number", taxNumber);
+        formData.append(
+          "commercial_registration_number",
+          commercialRegistrationNumber
+        );
+        formData.append("brand_website", brandWebsite);
 
-      res = await updateCustomerMe(formData).unwrap();
-    } else {
-      const payload = {
-        brand_color: brandColor,
-        company_name_ar: companyNameAr,
-        company_name_en: companyNameEn,
-        brand_email: brandEmail,
-        additional_info: additionalInfo,
-        tax_number: taxNumber,
-        commercial_registration_number: commercialRegistrationNumber,
-        brand_website: brandWebsite,
-      };
+        res = await updateCustomerMe(formData).unwrap();
+      } else {
+        const payload = {
+          brand_color: brandColor,
+          company_name_ar: companyNameAr,
+          company_name_en: companyNameEn,
+          brand_email: brandEmail,
+          additional_info: additionalInfo,
+          tax_number: taxNumber,
+          commercial_registration_number: commercialRegistrationNumber,
+          brand_website: brandWebsite,
+        };
 
-      res = await updateCustomerMe(payload).unwrap();
+        res = await updateCustomerMe(payload).unwrap();
+      }
+
+      setAlertMsg("تم تحديث البيانات بنجاح");
+      setAlertStatus("success");
+      setAlertOpen(true);
+    } catch (err: any) {
+      setAlertMsg(err?.data?.message || "حدث خطأ أثناء التحديث");
+      setAlertStatus("error");
+      setAlertOpen(true);
     }
-
-    setAlertMsg(res?.message || "تم تحديث البيانات بنجاح");
-    setAlertStatus("success");
-    setAlertOpen(true);
-  } catch (err: any) {
-    setAlertMsg(err?.data?.message || "حدث خطأ أثناء التحديث");
-    setAlertStatus("error");
-    setAlertOpen(true);
-  }
-};
+  };
 
   if (isLoading) {
     return (
@@ -208,21 +208,18 @@ const handelSubmit = async (e: React.FormEvent) => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16">
           {/* تبويبات المعلومات والإعدادات */}
           <div className="md:col-span-2">
-            <Tabs
-              defaultValue="personal"
-              className="v7-neu-card p-6"
-              dir="rtl"
-              
-            >
-              <TabsList className="v7-neu-tabs mb-6  " >
-                <TabsTrigger value="personal"
-    className="v7-neu-tab   transition-all duration-500 ease-in-out flex items-center gap-2 border-b border-transparent data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:font-semibold"
-                 >
+            <Tabs defaultValue="personal" className="v7-neu-card p-6" dir="rtl">
+              <TabsList className="v7-neu-tabs mb-6  ">
+                <TabsTrigger
+                  value="personal"
+                  className="v7-neu-tab   transition-all duration-500 ease-in-out flex items-center gap-2 border-b border-transparent data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:font-semibold"
+                >
                   <User className="h-4 w-4 " />
                   المعلومات الشخصية
                 </TabsTrigger>
-                <TabsTrigger value="company" 
-    className="v7-neu-tab   transition-all duration-500 ease-in-out flex  items-center gap-2 border-b border-transparent data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:font-semibold"
+                <TabsTrigger
+                  value="company"
+                  className="v7-neu-tab   transition-all duration-500 ease-in-out flex  items-center gap-2 border-b border-transparent data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:font-semibold"
                 >
                   <Briefcase className="h-4 w-4" />
                   معلومات الشركة
@@ -238,7 +235,9 @@ const handelSubmit = async (e: React.FormEvent) => {
                         <Input
                           id="fullName"
                           className="v7-neu-input-hollo text-gry border-none "
-  defaultValue={`${customerData?.data?.firstName ?? ""} ${customerData?.data?.lastName ?? ""}`.trim()}
+                          defaultValue={`${
+                            customerData?.data?.firstName ?? ""
+                          } ${customerData?.data?.lastName ?? ""}`.trim()}
                         />
                       </div>
                     </div>
@@ -257,18 +256,20 @@ const handelSubmit = async (e: React.FormEvent) => {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="phone">رقم الهاتف</Label>
-                                        <div className="v7-neu-input-container">
-                                          <Input id="phone" className=" v7-neu-input-hello text-gry"
-                                          // value={customerData?.data?.phone}
-                                          />
-                                        </div>
+                    <div className="v7-neu-input-container">
+                      <Input
+                        id="phone"
+                        className=" v7-neu-input-hello text-gry"
+                        // value={customerData?.data?.phone}
+                      />
+                    </div>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="createdAt">تاريخ الإنشاء</Label>
                     <div className="v7-neu-input-container">
                       <Input
                         id="createdAt"
-                          className="v7-neu-input-hollo text-gry"
+                        className="v7-neu-input-hollo text-gry"
                         value={
                           customerData?.data.createdAt
                             ? new Date(
@@ -288,7 +289,7 @@ const handelSubmit = async (e: React.FormEvent) => {
                     <div className="v7-neu-input-container">
                       <Input
                         id="passwordChangedAt"
-                          className="v7-neu-input-hollo text-gry  cursor-not-allowed"
+                        className="v7-neu-input-hollo text-gry  cursor-not-allowed"
                         value={
                           customerData?.data.passwordChangedAt
                             ? new Date(
@@ -306,7 +307,7 @@ const handelSubmit = async (e: React.FormEvent) => {
                     <div className="v7-neu-input-container">
                       <Input
                         id="addresses"
-                          className="v7-neu-input-hollo  text-gry cursor-not-allowed"
+                        className="v7-neu-input-hollo  text-gry cursor-not-allowed"
                         value={
                           Array.isArray(customerData?.data.addresses)
                             ? customerData.data.addresses.length
@@ -321,9 +322,9 @@ const handelSubmit = async (e: React.FormEvent) => {
                     <Save className="h-4 w-4 ml-2" />
                     حفظ التغييرات
                   </Button>
-                  {
-                    alertMsg && <p className=" text-red-400 text-sm">{alertMsg}</p>
-                  }
+                  {alertMsg && (
+                    <p className=" text-red-400 text-sm">{alertMsg}</p>
+                  )}
                 </form>
               </TabsContent>
 
@@ -414,7 +415,7 @@ const handelSubmit = async (e: React.FormEvent) => {
                         <div className="v7-neu-input-container">
                           <Input
                             id="companyName"
-                          className="v7-neu-input-hollo text-gry"
+                            className="v7-neu-input-hollo text-gry"
                             placeholder="أدخل اسم الشركة"
                             value={companyNameAr}
                             onChange={(e) => setCompanyNameAr(e.target.value)}
@@ -433,7 +434,7 @@ const handelSubmit = async (e: React.FormEvent) => {
                         <div className="v7-neu-input-container">
                           <Input
                             id="companyNameEn"
-                          className="v7-neu-input-hollo text-gry"
+                            className="v7-neu-input-hollo text-gry"
                             placeholder="Enter Company Name in English"
                             value={companyNameEn}
                             onChange={(e) => setCompanyNameEn(e.target.value)}
@@ -452,7 +453,7 @@ const handelSubmit = async (e: React.FormEvent) => {
                         <div className="v7-neu-input-container">
                           <Input
                             id="companyEmail"
-                          className="v7-neu-input-hollo text-gry"
+                            className="v7-neu-input-hollo text-gry"
                             type="email"
                             placeholder="example@company.com"
                             value={brandEmail}
@@ -471,7 +472,7 @@ const handelSubmit = async (e: React.FormEvent) => {
                         <div className="v7-neu-input-container">
                           <Input
                             id="companyWebsite"
-                          className="v7-neu-input-hollo text-gry"
+                            className="v7-neu-input-hollo text-gry"
                             placeholder="https://www.example.com"
                             value={brandWebsite}
                             onChange={(e) => setBrandWebsite(e.target.value)}
@@ -489,7 +490,7 @@ const handelSubmit = async (e: React.FormEvent) => {
                         <div className="v7-neu-input-container">
                           <Input
                             id="commercialRegister"
-                          className="v7-neu-input-hollo text-gry"
+                            className="v7-neu-input-hollo text-gry"
                             placeholder="أدخل رقم السجل التجاري"
                             value={commercialRegistrationNumber}
                             onChange={(e) =>
@@ -510,7 +511,7 @@ const handelSubmit = async (e: React.FormEvent) => {
                         <div className="v7-neu-input-container">
                           <Input
                             id="taxNumber"
-                          className="v7-neu-input-hollo text-gry"
+                            className="v7-neu-input-hollo text-gry"
                             placeholder="أدخل الرقم الضريبي"
                             value={taxNumber}
                             onChange={(e) => setTaxNumber(e.target.value)}
@@ -529,7 +530,7 @@ const handelSubmit = async (e: React.FormEvent) => {
                         <div className="v7-neu-input-container">
                           <Textarea
                             id="additionalInfo"
-                          className="v7-neu-input-hollo text-gry min-h-[80px]"
+                            className="v7-neu-input-hollo text-gry min-h-[80px]"
                             placeholder="أي معلومات إضافية تساعد في الوصول للعنوان"
                             value={additionalInfo}
                             onChange={(e) => setAdditionalInfo(e.target.value)}
@@ -592,13 +593,17 @@ const handelSubmit = async (e: React.FormEvent) => {
               <ProfileUpLoad
                 onFileSelect={handelImageUpload}
                 initialImage={
-                  customerData?.data.brand_logo || "/homePageImages/user.jpg"
+                  customerData?.data.profileImage || "/homePageImages/user.jpg"
                 }
               />
               <h2 className="text-xl font-bold">
                 {profileData?.data.firstName} {profileData?.data.lastName}
               </h2>
-                  <p className="v7-neu-badge px-3 py-1 rounded-full text-xs w-fit">{customerData?.data.role == "user" ? null : customerData?.data?.role || ""}</p>
+              <p className="v7-neu-badge px-3 py-1 rounded-full text-xs w-fit">
+                {customerData?.data.role == "user"
+                  ? null
+                  : customerData?.data?.role || ""}
+              </p>
               <div className="flex justify-center gap-2">
                 <div className="v7-neu-badge px-3 py-1 rounded-full text-xs text-gry">
                   منذ {getMemberSince(profileData?.data.createdAt || "")}
