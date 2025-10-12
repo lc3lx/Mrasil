@@ -28,6 +28,7 @@ import { homePageApi } from "../api/homePageApi";
 import { shopifyApi } from "../api/shopifyApi";
 import { cityApi } from "../api/cityApi";
 import { trackingApi } from "../api/trakingApi";
+import { adminApi } from "../api/adminApi";
 
 export const store = configureStore({
   reducer: {
@@ -62,6 +63,7 @@ export const store = configureStore({
     [homePageApi.reducerPath]: homePageApi.reducer,
     [shopifyApi.reducerPath]: shopifyApi.reducer,
     [cityApi.reducerPath]: cityApi.reducer,
+    [adminApi.reducerPath]: adminApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
@@ -92,7 +94,8 @@ export const store = configureStore({
       .concat(salaryApi.middleware)
       .concat(homePageApi.middleware)
       .concat(shopifyApi.middleware)
-      .concat(cityApi.middleware),
+      .concat(cityApi.middleware)
+      .concat(adminApi.middleware),
   devTools: process.env.NODE_ENV !== "production",
 });
 

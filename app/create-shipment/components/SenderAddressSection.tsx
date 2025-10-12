@@ -50,7 +50,8 @@ export function SenderAddressSection({
     refetch,
   } = useGetCustomerMeQuery();
   // Mutation for creating a new sender address
-  const [createAddress, { isLoading: isCreatingAddress }] =useCreateAddressMutation();
+  const [createAddress, { isLoading: isCreatingAddress }] =
+    useCreateAddressMutation();
   const [deleteAddress, { isLoading: isDeleting }] = useDeleteAddressMutation();
   const [updateAddress, { isLoading: isUpdating }] = useUpdateAddressMutation();
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
@@ -63,37 +64,35 @@ export function SenderAddressSection({
   const [localAddresses, setLocalAddresses] = useState<any[]>([]);
 
   // Use API data for sender cards (customer addresses)
-const senderCards = (customerMeData?.data.addresses || []).map(
-  (address, idx) => ({
-    id: address._id || idx,
-    _id: address._id,
-    name: address.alias || "-",
-    mobile: address.phone || "-",
-    city: address.city || "-",
-    country: address.country || "-",
-    address: address.location || "-",
-    email: customerMeData?.data.email || "-",
+  const senderCards = (customerMeData?.data.addresses || []).map(
+    (address, idx) => ({
+      id: address._id || idx,
+      _id: address._id,
+      name: address.alias || "-",
+      mobile: address.phone || "-",
+      city: address.city || "-",
+      country: address.country || "-",
+      address: address.location || "-",
+      email: address.email || customerMeData?.data.email || "-",
+    })
+  );
 
-    
-  })
-);
-
-const normalize = (str: string) =>
-  str
-    .toLowerCase()
-    .trim()
-    .replace(/[\u0621-\u064A]/g, (char) => {
-      const map: Record<string, string> = {
-        أ: "ا",
-        إ: "ا",
-        آ: "ا",
-        ه: "ه",
-        ة: "ه",
-        ي: "ي",
-        ى: "ي",
-      };
-      return map[char] || char;
-    });
+  const normalize = (str: string) =>
+    str
+      .toLowerCase()
+      .trim()
+      .replace(/[\u0621-\u064A]/g, (char) => {
+        const map: Record<string, string> = {
+          أ: "ا",
+          إ: "ا",
+          آ: "ا",
+          ه: "ه",
+          ة: "ه",
+          ي: "ي",
+          ى: "ي",
+        };
+        return map[char] || char;
+      });
   const handleSelectSender = (card: any) => {
     if (selectedSender === card.id) {
       setSelectedSender(null);
@@ -109,43 +108,43 @@ const normalize = (str: string) =>
       setValue("shipper_address", card.address);
     }
   };
-const search = normalize(searchSender.trim());
-const filteredSenderCards = senderCards.filter((card) => {
-  return (
-    normalize(card.name).includes(search) ||
-    normalize(card.mobile).includes(search) ||
-    normalize(card.city).includes(search) ||
-    normalize(card.address).includes(search) ||
-    normalize(card.email).includes(search)
-  );
-});
+  const search = normalize(searchSender.trim());
+  const filteredSenderCards = senderCards.filter((card) => {
+    return (
+      normalize(card.name).includes(search) ||
+      normalize(card.mobile).includes(search) ||
+      normalize(card.city).includes(search) ||
+      normalize(card.address).includes(search) ||
+      normalize(card.email).includes(search)
+    );
+  });
 
   const displayedSenderCards = showAllSenders
     ? filteredSenderCards
     : filteredSenderCards.slice(0, 6);
 
-const handleAddSenderAddress = async (data: any) => {
-  try {
-    await createAddress({
-      alias: data.clientName,
-      location: data.clientAddress,
-      phone: data.clientPhone,
-      city: data.city,
-      country: data.country,
-    }).unwrap();
-    
-    refetch()
+  const handleAddSenderAddress = async (data: any) => {
+    try {
+      await createAddress({
+        alias: data.clientName,
+        location: data.clientAddress,
+        phone: data.clientPhone,
+        city: data.city,
+        country: data.country,
+        email: data.clientEmail,
+      }).unwrap();
 
-    setOpenAddSenderModal(false);
-  } catch (error) {
-    console.error("Error creating address:", error);
-  }
-};
+      refetch();
 
+      setOpenAddSenderModal(false);
+    } catch (error) {
+      console.error("Error creating address:", error);
+    }
+  };
 
   return (
     <motion.div variants={staggerChildren}>
-      <div className="flex items-center gap-3  pb-4 " >
+      <div className="flex items-center gap-3  pb-4 ">
         <div className="v7-neu-icon-sm">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -166,10 +165,9 @@ const handleAddSenderAddress = async (data: any) => {
         <h3 className="text-2xl font-bold text-gray-800"> بيانات المرسل</h3>
       </div>
       <div className="flex  flex-col sm:flex-row  gap-3 mb-4">
-        
-          <div className="relative v7-neu-input-container flex-1 min-w-[240px]">
-            <Search className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6d6a67]" />
-                 
+        <div className="relative v7-neu-input-container flex-1 min-w-[240px]">
+          <Search className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6d6a67]" />
+
           <Input
             className="v7-neu-input w-full pr-12 pe-4 text-gry  text-base"
             placeholder="ابحث ضمن عناوين الالتقاط الخاصة بك"
@@ -177,8 +175,7 @@ const handleAddSenderAddress = async (data: any) => {
             value={searchSender}
             onChange={(e) => setSearchSender(e.target.value)}
             style={{ direction: "rtl", fontFamily: "inherit" }}
-            />
-        
+          />
         </div>
         <button
           type="button"
@@ -248,7 +245,7 @@ const handleAddSenderAddress = async (data: any) => {
                 <MapPin className="h-4 w-4 text-[#3498db]" />
                 <span>{card.city}</span>,<span>{card.country}</span>
               </div>
-                {card?.address && (
+              {card?.address && (
                 <div className="flex items-center gap-2 text-lg text-gray-700">
                   <span className="font-bold">الحي/المنطقة:</span>
                   <span>{card.address}</span>
@@ -296,6 +293,8 @@ const handleAddSenderAddress = async (data: any) => {
             phone: addressToEdit.mobile,
             city: addressToEdit.city,
             country: addressToEdit.country || "السعودية",
+            email: addressToEdit.email || "",
+            district: "",
           }}
           isLoading={isUpdating}
           onSubmit={async (data) => {

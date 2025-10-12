@@ -29,6 +29,7 @@ import ChangePasswordForm from "./ChangePasswordForm";
 import {
   useGetCustomerMeQuery,
   useUpdateCustomerMeMutation,
+  customerApi,
 } from "../api/customerApi";
 import { useState, useEffect } from "react";
 import {
@@ -52,6 +53,11 @@ export default function ProfilePage() {
   ] = useUpdateCustomerMeMutation();
   const { data: shipmentStats } = useGetShipmentStatsQuery();
   const [image, setImage] = useState<string | null>(null);
+  const [firstName, setFirstName] = useState(
+    customerData?.data.firstName || ""
+  );
+  const [lastName, setLastName] = useState(customerData?.data.lastName || "");
+  const [phone, setPhone] = useState(customerData?.data.phone || "");
   const [brandColor, setBrandColor] = useState(
     customerData?.data.brand_color || ""
   );
@@ -83,6 +89,15 @@ export default function ProfilePage() {
   );
   useEffect(() => {
     if (customerData) {
+      setFirstName(customerData.data.firstName || "");
+      setLastName(customerData.data.lastName || "");
+      setPhone(customerData.data.phone || "");
+      if (customerData.data.profileImage) {
+        const imageUrl = customerData.data.profileImage;
+        setImage(imageUrl);
+      } else {
+        setImage(null);
+      }
       setBrandColor(customerData.data.brand_color || "");
       setCompanyNameAr(customerData.data.company_name_ar || "");
       setCompanyNameEn(customerData.data.company_name_en || "");
@@ -102,56 +117,12 @@ export default function ProfilePage() {
   };
   const handleCompanySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const formData = new FormData();
-    if (brandLogo) formData.append("brand_logo", brandLogo);
-    formData.append("brand_color", brandColor);
-    formData.append("company_name_ar", companyNameAr);
-    formData.append("company_name_en", companyNameEn);
-    formData.append("brand_email", brandEmail);
-    formData.append("additional_info", additionalInfo);
-    formData.append("tax_number", taxNumber);
-    formData.append(
-      "commercial_registration_number",
-      commercialRegistrationNumber
-    );
-    formData.append("brand_website", brandWebsite);
-    try {
-      const res = await updateCustomerMe(formData).unwrap();
-      setAlertMsg("تم تحديث البيانات بنجاح");
-      setAlertStatus("success");
-      setAlertOpen(true);
-    } catch (err: any) {
-      setAlertMsg(err?.data?.message || "حدث خطأ أثناء التحديث");
-      setAlertStatus("error");
-      setAlertOpen(true);
-    }
-  };
-  const getMemberSince = (createdAt: string) => {
-    return new Date(createdAt).getFullYear();
-  };
-
-  const handelImageUpload = async (file: File) => {
-    try {
-      const formData = new FormData();
-      formData.append("profileImage", file);
-
-      const res = await updateCustomerMe(formData).unwrap();
-      setAlertMsg("تم رفع صورة البروفيل بنجاح");
-      setAlertStatus("success");
-      setAlertOpen(true);
-    } catch (err: any) {
-      setAlertMsg(err?.data?.message || "فشل رفع صورة البروفيل");
-      setAlertStatus("error");
-      setAlertOpen(true);
-    }
-  };
-  const handelSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
 
     try {
       let res;
 
       if (brandLogo) {
+        // إذا كان هناك شعار جديد، استخدم FormData
         const formData = new FormData();
         formData.append("brand_logo", brandLogo);
         formData.append("brand_color", brandColor);
@@ -168,6 +139,7 @@ export default function ProfilePage() {
 
         res = await updateCustomerMe(formData).unwrap();
       } else {
+        // إذا لم يكن هناك شعار جديد، استخدم JSON
         const payload = {
           brand_color: brandColor,
           company_name_ar: companyNameAr,
@@ -182,7 +154,148 @@ export default function ProfilePage() {
         res = await updateCustomerMe(payload).unwrap();
       }
 
-      setAlertMsg("تم تحديث البيانات بنجاح");
+      setAlertMsg("تم تحديث بيانات الشركة بنجاح");
+      setAlertStatus("success");
+      setAlertOpen(true);
+    } catch (err: any) {
+      setAlertMsg(err?.data?.message || "حدث خطأ أثناء التحديث");
+      setAlertStatus("error");
+      setAlertOpen(true);
+    }
+  };
+  const getMemberSince = (createdAt: string) => {
+    return new Date(createdAt).getFullYear();
+  };
+
+  const handelImageUpload = async (file: File) => {
+    try {
+      console.log("🔧 رفع صورة البروفيل:", file.name, file.size);
+
+      // التحقق من نوع الملف
+      if (!file.type.startsWith("image/")) {
+        setAlertMsg("يرجى اختيار ملف صورة صالح");
+        setAlertStatus("error");
+        setAlertOpen(true);
+        return;
+      }
+
+      // التحقق من حجم الملف (5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setAlertMsg("حجم الصورة كبير جداً. يرجى اختيار صورة أصغر من 5MB");
+        setAlertStatus("error");
+        setAlertOpen(true);
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("profileImage", file);
+
+      console.log("🔧 FormData created:", formData.has("profileImage"));
+      console.log(
+        "🔧 FormData instanceof FormData:",
+        formData instanceof FormData
+      );
+      console.log("🔧 File details:", {
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        lastModified: file.lastModified,
+      });
+
+      // التحقق من محتوى FormData
+      console.log(
+        "🔧 FormData entries count:",
+        Array.from(formData.entries()).length
+      );
+      Array.from(formData.entries()).forEach(([key, value]) => {
+        console.log("🔧 FormData entry:", key, value);
+      });
+
+      console.log("🔧 إرسال الطلب إلى الـ backend...");
+      const res = await updateCustomerMe(formData).unwrap();
+      console.log("✅ نجح رفع صورة البروفيل:", res);
+      console.log("🔍 رابط الصورة من الـ response:", res.data?.profileImage);
+      console.log("🔍 المسار الكامل للصورة:", res.data?.profileImage);
+
+      // تحديث رابط الصورة في الواجهة فوراً
+      if (res.data?.profileImage) {
+        // إضافة base URL إذا لم يكن موجوداً
+        const imageUrl = res.data.profileImage
+
+        setImage(imageUrl);
+        console.log("🔄 تم تحديث رابط الصورة في الـ state:", imageUrl);
+      } else {
+        console.log("⚠️ لا يوجد رابط صورة في الـ response");
+      }
+
+      // تحديث cache في RTK Query - مؤقتاً معطل
+      // customerApi.util.updateQueryData("getCustomerMe" as any, undefined, (draft: any) => {
+      //   if (draft?.data && res.data?.profileImage) {
+      //     const imageUrl = res.data.profileImage.startsWith("https")
+      //       ? res.data.profileImage
+      //       : `${
+      //           process.env.NEXT_PUBLIC_API_URL || "https://www.marasil.site"
+      //         }${res.data.profileImage}`;
+      //     draft.data.profileImage = imageUrl;
+      //   }
+      // });
+      setAlertMsg("تم رفع صورة البروفيل بنجاح");
+      setAlertStatus("success");
+      setAlertOpen(true);
+    } catch (err: any) {
+      console.error("❌ فشل رفع صورة البروفيل:", err);
+      console.error("❌ تفاصيل الخطأ:", {
+        status: err?.status,
+        data: err?.data,
+        message: err?.message,
+        originalStatus: err?.originalStatus,
+      });
+      console.error("❌ تفاصيل data object:", err?.data);
+      console.error(
+        "❌ محتوى data object:",
+        JSON.stringify(err?.data, null, 2)
+      );
+
+      // معالجة أفضل للأخطاء
+      let errorMessage = "فشل رفع صورة البروفيل";
+
+      if (err?.data?.message) {
+        errorMessage = err.data.message;
+        console.log("🔧 Error message from backend:", err.data.message);
+        if (err.data.details) {
+          console.log("🔧 Error details:", err.data.details);
+        }
+      } else if (err?.message) {
+        errorMessage = err.message;
+      } else if (err?.status === 400) {
+        errorMessage = "الملف غير صالح أو كبير جداً";
+      } else if (err?.status === 413) {
+        errorMessage = "حجم الملف كبير جداً";
+      } else if (err?.status === 415) {
+        errorMessage = "نوع الملف غير مدعوم";
+      } else if (err?.status === 500) {
+        errorMessage = "خطأ في الخادم. يرجى المحاولة لاحقاً";
+      } else if (err?.status === "PARSING_ERROR") {
+        errorMessage = "خطأ في تحليل الاستجابة من الخادم";
+      }
+
+      setAlertMsg(errorMessage);
+      setAlertStatus("error");
+      setAlertOpen(true);
+    }
+  };
+  const handelSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const payload = {
+        firstName: firstName,
+        lastName: lastName,
+        phone: phone,
+      };
+
+      const res = await updateCustomerMe(payload).unwrap();
+      setAlertMsg("تم تحديث البيانات الشخصية بنجاح");
       setAlertStatus("success");
       setAlertOpen(true);
     } catch (err: any) {
@@ -230,14 +343,27 @@ export default function ProfilePage() {
                 <form onSubmit={handelSubmit} className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="fullName">الاسم الكامل</Label>
+                      <Label htmlFor="firstName">الاسم الأول</Label>
                       <div className="v7-neu-input-container">
                         <Input
-                          id="fullName"
+                          id="firstName"
+                          name="firstName"
                           className="v7-neu-input-hollo text-gry border-none "
-                          defaultValue={`${
-                            customerData?.data?.firstName ?? ""
-                          } ${customerData?.data?.lastName ?? ""}`.trim()}
+                          value={firstName}
+                          onChange={(e) => setFirstName(e.target.value)}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="lastName">الاسم الأخير</Label>
+                      <div className="v7-neu-input-container">
+                        <Input
+                          id="lastName"
+                          name="lastName"
+                          className="v7-neu-input-hollo text-gry border-none "
+                          value={lastName}
+                          onChange={(e) => setLastName(e.target.value)}
                         />
                       </div>
                     </div>
@@ -259,8 +385,11 @@ export default function ProfilePage() {
                     <div className="v7-neu-input-container">
                       <Input
                         id="phone"
+                        name="phone"
                         className=" v7-neu-input-hello text-gry"
-                        // value={customerData?.data?.phone}
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        placeholder="05xxxxxxxx"
                       />
                     </div>
                   </div>
@@ -371,12 +500,22 @@ export default function ProfilePage() {
                             alt="شعار الشركة"
                             className="max-w-full max-h-full object-contain"
                           />
-                        ) : (
+                        ) : customerData?.data.brand_logo ? (
                           <img
                             src={
-                              customerData?.data.brand_logo ||
-                              "/placeholder.svg"
+                              customerData.data.brand_logo.startsWith("http")
+                                ? customerData.data.brand_logo
+                                : `${
+                                    process.env.NEXT_PUBLIC_API_URL ||
+                                    "https://www.marasil.site"
+                                  }${customerData.data.brand_logo}`
                             }
+                            alt="شعار الشركة"
+                            className="max-w-full max-h-full object-contain"
+                          />
+                        ) : (
+                          <img
+                            src="/placeholder.svg"
                             alt="شعار الشركة"
                             className="max-w-full max-h-full object-contain"
                           />
@@ -593,7 +732,18 @@ export default function ProfilePage() {
               <ProfileUpLoad
                 onFileSelect={handelImageUpload}
                 initialImage={
-                  customerData?.data.profileImage || "/homePageImages/user.jpg"
+                  image
+                    ? image.startsWith("http") 
+                      ? `${image}?t=${Date.now()}`
+                      : `${process.env.NEXT_PUBLIC_API_URL || "https://www.marasil.site"}${image}?t=${Date.now()}`
+                    : customerData?.data.profileImage
+                    ? customerData.data.profileImage.startsWith("http")
+                      ? `${customerData.data.profileImage}?t=${Date.now()}`
+                      : `${
+                          process.env.NEXT_PUBLIC_API_URL ||
+                          "https://www.marasil.site"
+                        }${customerData.data.profileImage}?t=${Date.now()}`
+                    : "/homePageImages/user.jpg"
                 }
               />
               <h2 className="text-xl font-bold">

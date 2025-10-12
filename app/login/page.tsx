@@ -12,7 +12,7 @@ import Image from 'next/image';
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, isAuthenticated } = useAuth();
+  const { login, isAuthenticated, user } = useAuth();
   const [loginMutation, { isLoading }] = useLoginMutation();
   const [formData, setFormData] = useState({
     email: '',
@@ -22,12 +22,19 @@ export default function LoginPage() {
   const [modalMessage, setModalMessage] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  // Redirect to dashboard if already authenticated
+  // Redirect based on user role if already authenticated
   useEffect(() => {
-    if (isAuthenticated) {
-      router.push('/');
+    if (isAuthenticated && user) {
+      if (user.role === 'admin') {
+        router.push('/dashboard');
+      } else if (user.email && user.email.includes('admin')) {
+        // Fallback: إذا كان الإيميل يحتوي على admin
+        router.push('/dashboard');
+      } else {
+        router.push('/');
+      }
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, user, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -39,10 +46,17 @@ export default function LoginPage() {
     e.preventDefault();
     try {
       const result = await loginMutation(formData).unwrap();
+      console.log('Login - API Result:', result);
+      console.log('Login - Token:', result.token);
+      console.log('Login - User Data:', result.data);
+      console.log('Login - User Role:', result.data?.role);
+      
       login(result.token, result.data);
       toast.success('تم تسجيل الدخول بنجاح!');
+      // الـ AuthProvider سيتولى التوجيه حسب الـ role
 
     } catch (error: any) {
+      console.error('Login Error:', error);
       setModalMessage(error.data?.message || 'فشل في تسجيل الدخول');
       setModalOpen(true);
     }

@@ -535,18 +535,15 @@ export function V7FloatingAssistant({style, styleBoot, size}:{style?:string, sty
             border: `1px solid rgba(75, 174, 209, 0.3)`,
           }}
         >
-          <div className="font-bold mb-1">... Coming Soon</div>
-          <div className="text-xs opacity-80 text-center">قريباً الإطلاق </div>
+          <div className="font-bold mb-1">مساعدك الذكي 🤖</div>
+          <div className="text-xs opacity-80 text-center">اضغط للمحادثة</div>
         </div>
       )}
 
       {/* تعليمات تغيير الموضع */}
 
 
-      {/* <V7AIChat isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} /> */}
-
-
-     
+      <V7AIChat isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
     </div>
   )
 }

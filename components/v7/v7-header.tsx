@@ -26,15 +26,16 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/providers/AuthProvider";
 import {
   useGetMyNotificationsQuery,
   useGetUnreadNotificationsCountQuery,
   useMarkNotificationAsReadMutation,
 } from "@/app/api/notificationsApi";
 import { useGetProfileQuery } from "@/app/api/profileApi";
-import { useAuth } from "@/app/providers/AuthProvider";
 import { V7FloatingAssistant } from "./v7-floating-assistant";
 import Image from "next/image";
+import ProfileUpLoad from "@/app/parcels/components/ProfileUpLoad";
 
 interface V7HeaderProps {
   onMenuClick: () => void;
@@ -520,12 +521,17 @@ const handleSearch = (e: React.FormEvent) => {
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="flex items-center gap-2">
             <div className="v7-neu-avatar overflow-hidden rounded-full w-8 h-8 border border-[#e5e7eb]">
-              <Image
-                src="/homePageImages/user.jpg"
-                alt="صورة المستخدم"
-                className="h-full w-full object-cover rounded-full"
-              width={50}
-              height={50}
+              <ProfileUpLoad
+                initialImage={
+                  profileData?.data.profileImage
+                    ? profileData.data.profileImage.startsWith("http")
+                      ? `${profileData.data.profileImage}?t=${Date.now()}`
+                      : `${
+                          process.env.NEXT_PUBLIC_API_URL ||
+                          "https://www.marasil.site"
+                        }${profileData.data.profileImage}?t=${Date.now()}`
+                    : "/homePageImages/user.jpg"
+                }
               />
             </div>
             <div className="hidden flex-col items-start md:flex">

@@ -1,9 +1,10 @@
 "use client";
-import { useCancelShipmentMutation } from "@/app/api/shipmentApi"
+import { useCancelShipmentMutation } from "@/app/api/shipmentApi";
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import {
   Package,
   Truck,
@@ -111,29 +112,37 @@ export function V7ShipmentCard({
 }) {
   const [isHovered, setIsHovered] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-  
+  const [isCancelling, setIsCancelling] = useState(false);
+
   if (!shipment || !shipment._id) {
     return null;
   }
-  
+
   // Helper functions for status, etc.
   const getStatusIcon = () => {
-
     switch (shipment.shipmentstates) {
-      case "READY_FOR_PICKUP": return <Package className="h-5 w-5 text-violet-500" /> ;
-      case "IN_TRANSIT": return <Truck className="h-5 w-5 text-violet-500" /> ;
-      case "DELIVERED": return <CheckCircle className="h-5 w-5 text-violet-500" />;
-      case "CANCELLED": return <X className="h-5 w-5 text-violet-500" />;
+      case "READY_FOR_PICKUP":
+        return <Package className="h-5 w-5 text-violet-500" />;
+      case "IN_TRANSIT":
+        return <Truck className="h-5 w-5 text-violet-500" />;
+      case "DELIVERED":
+        return <CheckCircle className="h-5 w-5 text-violet-500" />;
+      case "CANCELLED":
+        return <X className="h-5 w-5 text-violet-500" />;
     }
-  }
-const getStatusText = () => {
-  switch (shipment.shipmentstates) {
-    case "READY_FOR_PICKUP": return "جاهز للشحن" ;
-    case "IN_TRANSIT": return "جاري التوصيل";
-    case "DELIVERED": return "تم التوصيل";
-    case "CANCELLED": return "ملغاة";
-  }
-};
+  };
+  const getStatusText = () => {
+    switch (shipment.shipmentstates) {
+      case "READY_FOR_PICKUP":
+        return "جاهز للشحن";
+      case "IN_TRANSIT":
+        return "جاري التوصيل";
+      case "DELIVERED":
+        return "تم التوصيل";
+      case "CANCELLED":
+        return "ملغاة";
+    }
+  };
   const getStatusColor = () => "bg-violet-50 text-violet-700 border-violet-200";
 
   // Carrier details
@@ -148,7 +157,7 @@ const getStatusText = () => {
     color: "text-gray-600",
   };
   console.log(shipment);
-  
+
   // Helper: Get label URL for printing
   const getLabelUrl = () => {
     const company = (shipment?.shapmentCompany || "").toLowerCase();
@@ -206,29 +215,62 @@ const getStatusText = () => {
   };
   const trackingNumber = getTrackingNumber();
 
-const displayName =
-  carrierInfo.name === "omniclama" ? "LLAMA BOX" :
-  carrierInfo.name === "smsa" ? (shipment?.shapmentingType === "Dry" ? "SMSA PRO" : "SMSA") :
-  carrierInfo.name === "aramex" ? "ARAMEX PRO" :
-  carrierInfo.name.toUpperCase();
+  const displayName =
+    carrierInfo.name === "omniclama"
+      ? "LLAMA BOX"
+      : carrierInfo.name === "smsa"
+      ? shipment?.shapmentingType === "Dry"
+        ? "SMSA PRO"
+        : "SMSA"
+      : carrierInfo.name === "aramex"
+      ? "ARAMEX PRO"
+      : carrierInfo.name.toUpperCase();
 
+  // Inside the V7ShipmentCard component, add this:
+  const [cancelShipment] = useCancelShipmentMutation();
 
-// Inside the V7ShipmentCard component, add this:
-const [cancelShipment] = useCancelShipmentMutation()
+  const handleCancelShipment = async () => {
+    if (isCancelling) return; // منع النقر المتعدد
 
-const handleCancelShipment = async () => {
-  try {
-    await cancelShipment({
-      id: trackingNumber,  // This will be used in the URL
-      company: shipment.shapmentCompany  // This will be sent in the request body
-    })
-    // You might want to show a success toast here
-  } catch (error) {
-    console.error('Failed to cancel shipment:', error)
-    // Handle error (show error toast, etc.)
-  }
-}
-  return (  
+    setIsCancelling(true);
+
+    try {
+      const result = await cancelShipment({
+        id: trackingNumber, // This will be used in the URL
+        company: shipment.shapmentCompany, // This will be sent in the request body
+      }).unwrap();
+
+      // رسالة نجاح
+      toast.success("✅ تم إلغاء الشحنة بنجاح", {
+        description: `تم إلغاء الشحنة رقم ${trackingNumber} بنجاح. يمكنك الآن إنشاء شحنة جديدة.`,
+        duration: 6000,
+        action: {
+          label: "متابعة",
+          onClick: () => console.log("تم متابعة العملية"),
+        },
+      });
+
+      console.log("Shipment cancelled successfully:", result);
+    } catch (error: any) {
+      console.error("Failed to cancel shipment:", error);
+
+      // رسالة فشل مع تفاصيل الخطأ
+      const errorMessage =
+        error?.data?.message || error?.message || "حدث خطأ أثناء إلغاء الشحنة";
+
+      toast.error("❌ فشل في إلغاء الشحنة", {
+        description: `${errorMessage}. يرجى المحاولة مرة أخرى أو التواصل مع الدعم الفني.`,
+        duration: 8000,
+        action: {
+          label: "إعادة المحاولة",
+          onClick: () => handleCancelShipment(),
+        },
+      });
+    } finally {
+      setIsCancelling(false);
+    }
+  };
+  return (
     <div
       className={`v7-neu-card-inner rounded-xl border border-gray-100 w-full bg-white`}
       dir="rtl"
@@ -257,19 +299,22 @@ const handleCancelShipment = async () => {
                       className="object-contain"
                     />
                   </div>
-                  <span className="sm:ml-6  text-[#294D8B] text-base sm:text-lg"> {displayName}</span>
-
-                 
+                  <span className="sm:ml-6  text-[#294D8B] text-base sm:text-lg">
+                    {" "}
+                    {displayName}
+                  </span>
                 </span>
               </div>
-            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3">
                 <span className="font-bold text-sm sm:text-2xl text-[#294D8B] whitespace-nowrap">
                   رقم التتبع : {trackingNumber || "غير متوفر"}
                 </span>
               </div>
               {/* Order ID */}
               <div className="flex items-center gap-1 text-gry">
-                <span className="text-sm sm:text-base flex items-center ">رقم الطلب: </span>
+                <span className="text-sm sm:text-base flex items-center ">
+                  رقم الطلب:{" "}
+                </span>
                 <span className="ml-2  sm:text-base text-sm text-[#444]">
                   {shipment?._id || "غير متوفر"}
                 </span>
@@ -300,16 +345,18 @@ const handleCancelShipment = async () => {
                 <div
                   className={`w-full flex items-center  gap-x-2 px-4 sm:px-6 py-2 rounded-full border ${getStatusColor()} justify-center`}
                 >
-                  <span className="ml-2 w-4 h-4 sm:w-5 sm:h-5">{getStatusIcon()}</span>
-                  <span className="text-[#294D8B]  text-sm sm:text-base ">{getStatusText()}</span>
+                  <span className="ml-2 w-4 h-4 sm:w-5 sm:h-5">
+                    {getStatusIcon()}
+                  </span>
+                  <span className="text-[#294D8B]  text-sm sm:text-base ">
+                    {getStatusText()}
+                  </span>
                 </div>
               </div>
             </div>
           </div>
         </div>
         <div className="   flex flex-col items-center justify-end   ms-auto  w-full  ">
-          
-        
           {/* Right: Actions and More/Less */}
           <div className="flex flex-col max-sm:max-w-10 items-center  ms-auto    gap-4 ">
             <Link
@@ -328,25 +375,26 @@ const handleCancelShipment = async () => {
               </Button>
             </Link>
 
-{labelUrl ? (
-carrierInfo.name.toLowerCase() === "smsa" ?
-                    shipment?.smsaResponse?.label  &&(
-                      <Button
+            {labelUrl ? (
+              carrierInfo.name.toLowerCase() === "smsa" ? (
+                shipment?.smsaResponse?.label && (
+                  <Button
                     variant="outline"
                     size="sm"
                     className="w-full v7-neu-button-sm group h-8 text-xs flex items-center justify-center gap-x-2"
-                        onClick={() =>
-                          downloadBase64File(
-                            shipment.smsaResponse.label,
-                            `smsa-label-${shipment._id || "label"}.pdf`
-                          )
-                        }
-                      >
+                    onClick={() =>
+                      downloadBase64File(
+                        shipment.smsaResponse.label,
+                        `smsa-label-${shipment._id || "label"}.pdf`
+                      )
+                    }
+                  >
                     <Printer className="h-4 w-4 group-hover:text-[#3498db] transition-colors" />
                     <span className="sr-only sm:not-sr-only">
                       تحميل البوليصة
                     </span>
-                      </Button>
+                  </Button>
+                )
               ) : (
                 // إذا كانت رابط مباشر
                 <a
@@ -380,35 +428,39 @@ carrierInfo.name.toLowerCase() === "smsa" ?
               </Button>
             )}
 
-
-            {
-            shipment.shipmentstates === "Delivered" ? (
-                      <Button
-                    variant="outline"
-                    size="sm"
-                    className="sm:w-full v7-neu-button-sm group sm:h-8 size-3 text-xs flex items-center justify-center gap-x-2"                                  >
-                           <Redo className="h-4 w-4"/>
-                              <span className="sr-only sm:not-sr-only">
-
-                            طلب شحنة عكسية
-                              </span>
-                            </Button>
-                          ) :  <Button
-                          onClick={handleCancelShipment }
-                           variant="outline"
-                    size="sm"
-                    className="sm:w-full v7-neu-button-sm group sm:h-8 size-3 text-xs flex items-center justify-center gap-x-2"
-                                  >
-                        
-                        <X className="h-4 w-4 text-[#e74c3c]" />
-                           <span className="sr-only sm:not-sr-only text-[#e74c3c]">إلغاء البوليصة</span>
-                            </Button>}
+            {shipment.shipmentstates === "Delivered" ? (
+              <Button
+                variant="outline"
+                size="sm"
+                className="sm:w-full v7-neu-button-sm group sm:h-8 size-3 text-xs flex items-center justify-center gap-x-2"
+              >
+                <Redo className="h-4 w-4" />
+                <span className="sr-only sm:not-sr-only">طلب شحنة عكسية</span>
+              </Button>
+            ) : (
+              <Button
+                onClick={handleCancelShipment}
+                disabled={isCancelling}
+                variant="outline"
+                size="sm"
+                className="sm:w-full v7-neu-button-sm group sm:h-8 size-3 text-xs flex items-center justify-center gap-x-2"
+              >
+                {isCancelling ? (
+                  <div className="h-4 w-4 border-2 border-[#e74c3c] border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <X className="h-4 w-4 text-[#e74c3c]" />
+                )}
+                <span className="sr-only sm:not-sr-only text-[#e74c3c]">
+                  {isCancelling ? "جاري الإلغاء..." : "إلغاء البوليصة"}
+                </span>
+              </Button>
+            )}
 
             <span className=" text-gry sm:text-base text-sm">
               {moment(shipment?.createdAt).locale("en-sa").format("DD/MM/YYYY")}
             </span>
           </div>
-            <Button
+          <Button
             variant="ghost"
             size="sm"
             className="text-xs text-gry hover:text-[#3498db]  bottom-0   flex justify-center items-center text-center   mt-auto  mx-auto   sm:ms-0 -ms-6 "

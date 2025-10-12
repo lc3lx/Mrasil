@@ -3,19 +3,26 @@
 import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { X, Send, Loader2, Minimize2, Maximize2, MessageSquare } from "lucide-react"
+import { X, Send, Loader2, Minimize2, Maximize2, MessageSquare, CheckCircle, XCircle, AlertCircle } from "lucide-react"
 import { useTheme } from "next-themes"
 import { TutorialImage } from "./v7-tutorial-image"
 import { MarasilAtomLogo } from "@/app/invoices/components/MarasilAtomLogo"
 import { motion } from "framer-motion"
+import { AIEngine, AIMessage as AIEngineMessage, AIContext } from "@/lib/ai-assistant/ai-engine"
 
 interface Message {
   id: string
   content: string
   role: "user" | "assistant"
   timestamp: Date
-  image?: string // URL de la imagen para explicaciones visuales
-  imageCaption?: string // Leyenda opcional للتعليق على الصورة
+  image?: string
+  imageCaption?: string
+  action?: {
+    type: string
+    status: "pending" | "processing" | "success" | "error"
+    result?: any
+    error?: string
+  }
 }
 
 interface V7AIChatProps {
@@ -27,27 +34,52 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
-      content: "مرحباً انا مراسيل",
+      content: `مرحباً! أنا مساعدك الذكي في مراسل 🤖
+
+يمكنني مساعدتك في:
+✅ إنشاء شحنة جديدة
+✅ تتبع الشحنات
+✅ إلغاء الشحنات
+✅ عرض شحناتك وطلباتك
+✅ البحث عن معلومات
+✅ معلومات حسابك
+
+كيف يمكنني مساعدتك اليوم؟ 😊`,
       role: "assistant",
       timestamp: new Date(),
-      image: "https://placehold.co/600x400/e6f7ff/3498db?text=لوحة+التحكم+الرئيسية",
-      imageCaption: "لوحة التحكم الرئيسية لمنصة شيب إكسبرس",
     },
   ])
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [isMinimized, setIsMinimized] = useState(false)
   const [unreadCount, setUnreadCount] = useState(0)
+  const [aiEngine, setAiEngine] = useState<AIEngine | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const { resolvedTheme } = useTheme()
   const currentTheme = resolvedTheme || "light"
   const isDark = currentTheme === "dark"
   const [suggestions, setSuggestions] = useState<string[]>([
-    "/مساعدة",
-    "كيف أنشئ شحنة جديدة؟",
-    "أرني تطبيق الجوال",
-    "تقارير الأداء",
+    "عرض شحناتي",
+    "تتبع شحنة",
+    "إنشاء شحنة جديدة",
+    "عرض طلباتي",
   ])
+
+  // تهيئة محرك AI
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      const cleanToken = token.replace(/^Bearer\s+/i, "");
+      const context: AIContext = {
+        token: cleanToken,
+        conversationHistory: [],
+      };
+      
+      // استخدام Backend AI (true) أو النموذج المحلي (false)
+      const useBackend = process.env.NEXT_PUBLIC_USE_BACKEND_AI === "true";
+      setAiEngine(new AIEngine(context, useBackend));
+    }
+  }, []);
 
   // تمرير إلى آخر رسالة عند إضافة رسالة جديدة
   useEffect(() => {
@@ -75,13 +107,15 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }
 
-  const handleSendMessage = () => {
-    if (!input.trim()) return
+  const handleSendMessage = async () => {
+    if (!input.trim() || !aiEngine) return
+
+    const userInput = input.trim();
 
     // إضافة رسالة المستخدم
     const userMessage: Message = {
       id: `user-${Date.now()}`,
-      content: input,
+      content: userInput,
       role: "user",
       timestamp: new Date(),
     }
@@ -89,23 +123,54 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
     setInput("")
     setIsLoading(true)
 
-    // محاكاة استجابة المساعد الذكي
-    setTimeout(() => {
-      const botResponse = getBotResponse(input)
+    try {
+      // معالجة الرسالة عبر محرك AI
+      const aiResponse = await aiEngine.processMessage(userInput);
 
-      // التعامل مع الاستجابات التي تحتوي على نص وصورة
+      // تحويل رسالة AI إلى Message
       const assistantMessage: Message = {
-        id: `assistant-${Date.now()}`,
-        content: typeof botResponse === "string" ? botResponse : botResponse.text,
-        role: "assistant",
-        timestamp: new Date(),
-        image: typeof botResponse === "object" ? botResponse.image : undefined,
-        imageCaption: typeof botResponse === "object" ? botResponse.imageCaption : undefined,
+        id: aiResponse.id,
+        content: aiResponse.content,
+        role: aiResponse.role,
+        timestamp: aiResponse.timestamp,
+        action: aiResponse.action,
       }
 
       setMessages((prev) => [...prev, assistantMessage])
+      
+      // تحديث الاقتراحات بناءً على السياق
+      updateSuggestions(aiResponse.action?.type);
+    } catch (error) {
+      console.error("AI Error:", error);
+      const errorMessage: Message = {
+        id: `error-${Date.now()}`,
+        content: "عذراً، حدث خطأ أثناء معالجة طلبك. يرجى المحاولة مرة أخرى.",
+        role: "assistant",
+        timestamp: new Date(),
+      }
+      setMessages((prev) => [...prev, errorMessage])
+    } finally {
       setIsLoading(false)
-    }, 1000)
+    }
+  }
+
+  const updateSuggestions = (actionType?: string) => {
+    switch (actionType) {
+      case "get_shipments":
+        setSuggestions(["تتبع شحنة", "إنشاء شحنة جديدة", "إلغاء شحنة"]);
+        break;
+      case "track_shipment":
+        setSuggestions(["عرض شحناتي", "إلغاء شحنة", "إنشاء شحنة جديدة"]);
+        break;
+      case "create_shipment":
+        setSuggestions(["تتبع الشحنة", "عرض شحناتي", "معلومات حسابي"]);
+        break;
+      case "get_orders":
+        setSuggestions(["إنشاء شحنة", "عرض شحناتي", "معلومات حسابي"]);
+        break;
+      default:
+        setSuggestions(["عرض شحناتي", "تتبع شحنة", "إنشاء شحنة جديدة", "عرض طلباتي"]);
+    }
   }
 
   // وظيفة بسيطة لمحاكاة استجابات المساعد الذكي
@@ -816,6 +881,30 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
                 </div>
               )} */}
               <p className="text-base leading-relaxed whitespace-pre-line">{message.content}</p>
+
+              {/* عرض حالة الإجراء */}
+              {message.action && message.role === "assistant" && (
+                <div className="mt-3 flex items-center gap-2 text-sm">
+                  {message.action.status === "success" && (
+                    <>
+                      <CheckCircle className="w-4 h-4 text-green-500" />
+                      <span className="text-green-600 dark:text-green-400">تم بنجاح</span>
+                    </>
+                  )}
+                  {message.action.status === "error" && (
+                    <>
+                      <XCircle className="w-4 h-4 text-red-500" />
+                      <span className="text-red-600 dark:text-red-400">فشل</span>
+                    </>
+                  )}
+                  {message.action.status === "processing" && (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin text-blue-500" />
+                      <span className="text-blue-600 dark:text-blue-400">جاري المعالجة...</span>
+                    </>
+                  )}
+                </div>
+              )}
 
               {/* عرض الصورة إذا كانت متاحة */}
               {message.image && (

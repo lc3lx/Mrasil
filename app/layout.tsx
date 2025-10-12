@@ -13,8 +13,51 @@ const cairo = Cairo({
 });
 
 export const metadata: Metadata = {
-  title: "Shipping App",
-  description: "Modern shipping and logistics management",
+  title: "Marasil",
+  description: "منصة مراسل ججد للشحن واللوجستيات - حلول شحن متقدمة وخدمات لوجستية شاملة للشركات والأفراد",
+  keywords: ["شحن", "لوجستيات", "توصيل", "مراسل ججد", "شحن سريع", "خدمات الشحن"],
+  authors: [{ name: "Marasil Jogd Team" }],
+  creator: "Marasil ",
+  publisher: "Marasil ",
+  openGraph: {
+    title: "Marasil  - خدمات الشحن المتطورة",
+    description: "منصة مراسل ججد للشحن واللوجستيات - حلول شحن متقدمة وخدمات لوجستية شاملة للشركات والأفراد",
+    url: "https://www.marasil.site",
+    siteName: "Marasil ",
+    images: [
+      {
+        url: "/logo.png",
+        width: 1200,
+        height: 630,
+        alt: "Marasil  - خدمات الشحن المتطورة",
+      },
+    ],
+    locale: "ar_SA",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Marasil Jogd - خدمات الشحن المتطورة",
+    description: "منصة مراسل ججد للشحن واللوجستيات - حلول شحن متقدمة وخدمات لوجستية شاملة للشركات والأفراد",
+    images: ["/logo.png"],
+    creator: "@MarasilJogd",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
 }
 
 export default function RootLayout({

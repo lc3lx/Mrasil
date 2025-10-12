@@ -51,16 +51,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [token]);
 
   const login = (newToken: string, userData: any) => {
+    console.log('AuthProvider - Login called with userData:', userData);
+    console.log('AuthProvider - User role:', userData.role);
+    
     localStorage.setItem('token', newToken);
     localStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem('userData', JSON.stringify(userData)); // للـ AI أيضاً
     setToken(newToken);
     setUser(userData);
     setIsAuthenticated(true);
+    
+    // توجيه الأدمن للداشبورد
+    if (userData.role === 'admin') {
+      console.log('AuthProvider - Redirecting admin to dashboard');
+      router.push('/dashboard');
+    } else {
+      console.log('AuthProvider - Redirecting regular user to home');
+      // إذا كان الإيميل يحتوي على admin، وجهه للداشبورد كـ fallback
+      if (userData.email && userData.email.includes('admin')) {
+        console.log('AuthProvider - Email contains admin, redirecting to dashboard');
+        router.push('/dashboard');
+      } else {
+        router.push('/');
+      }
+    }
   };
 
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    localStorage.removeItem('userData'); // للـ AI أيضاً
     setToken(null);
     setUser(null);
     setIsAuthenticated(false);

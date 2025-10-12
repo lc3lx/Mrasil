@@ -23,7 +23,10 @@ const schema = yup
     alias: yup.string().required("اسم العنوان مطلوب"),
     email: yup.string(),
     location: yup.string(),
-    phone: yup.string().required("رقم الجوال مطلوب"),
+    phone: yup
+      .string()
+      .required("رقم الجوال مطلوب")
+      .length(10, "رقم الجوال يجب أن يكون 10 أرقام"),
     city: yup.string().required("المدينة مطلوبة"),
     country: yup.string().required("الدولة مطلوبة"),
     district: yup.string(),
@@ -93,7 +96,6 @@ export function EditSenderAddressForm({
       setAlertMessage(error?.data?.message || "حدث خطأ أثناء تعديل العنوان");
       setAlertOpen(true);
     }
-    
   };
 
   const handleClose = () => {
@@ -157,8 +159,18 @@ export function EditSenderAddressForm({
               </Label>
               <Input
                 id="phone"
-                {...register("phone")}
+                {...register("phone", {
+                  onChange: (e) => {
+                    const value = e.target.value
+                      .replace(/\D/g, "")
+                      .slice(0, 10);
+                    setValue("phone", value, { shouldValidate: true });
+                  },
+                })}
                 placeholder="05xxxxxxxx"
+                maxLength={10}
+                inputMode="numeric"
+                pattern="[0-9]*"
                 className={
                   errors.phone
                     ? "v7-neu-input border-red-500 focus:border-red-500"

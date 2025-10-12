@@ -64,7 +64,7 @@ const staggerChildren = {
 };
 const schema = yup
   .object({
-    alias: yup.string().required("اسم العنوان مطلوب"),
+    name: yup.string().required("اسم العنوان مطلوب"),
     email: yup.string(),
     location: yup.string(),
     phone: yup.string().required("رقم الجوال مطلوب"),
@@ -172,7 +172,16 @@ export function RecipientAddressSection({
   const handleEditRecipientChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setEditRecipient({ ...editRecipient, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    // Phone number validation
+    if (name === "clientPhone") {
+      // Only allow digits and limit to 10 characters
+      const phoneValue = value.replace(/\D/g, "").slice(0, 10);
+      setEditRecipient({ ...editRecipient, [name]: phoneValue });
+    } else {
+      setEditRecipient({ ...editRecipient, [name]: value });
+    }
   };
 
   const handleEditRecipientSubmit = async (e: React.FormEvent) => {
@@ -181,7 +190,10 @@ export function RecipientAddressSection({
     try {
       await updateClientAddress({
         id: recipientToEdit._id,
-        data: { ...editRecipient, customer: editRecipient.customer || "" },
+        data: {
+          ...editRecipient,
+          clientAddress: editRecipient.clientAddress || "",
+        },
       }).unwrap();
       setEditRecipientModalOpen(false);
       setRecipientToEdit(null);
@@ -471,7 +483,6 @@ export function RecipientAddressSection({
             <div className="space-y-2">
               <Label
                 htmlFor="clientName"
-                
                 className="sm:text-lg text-base font-medium flex items-center gap-2 text-[#1A5889]"
               >
                 <User className="h-4 w-4 text-[#1A5889]" />
@@ -500,6 +511,9 @@ export function RecipientAddressSection({
                 value={editRecipient.clientPhone}
                 onChange={handleEditRecipientChange}
                 required
+                maxLength={10}
+                inputMode="numeric"
+                pattern="[0-9]*"
                 className={"v7-neu-input"}
                 style={{ direction: "rtl", fontFamily: "inherit" }}
               />
@@ -560,7 +574,7 @@ export function RecipientAddressSection({
                   }}
                   required
                   placeholder="المدينة"
-                  className={ "v7-neu-input"}
+                  className={"v7-neu-input"}
                   onFocus={() => setDescFocused(true)}
                   onBlur={() => setTimeout(() => setDescFocused(false), 200)}
                 />
@@ -613,9 +627,11 @@ export function RecipientAddressSection({
               <Input
                 id="clientAddress"
                 name="clientAddress"
-                placeholder="البريدي الرمز"
-                value={editRecipient.customer}
+                placeholder="الرمز البريدي"
+                value={editRecipient.clientAddress}
                 onChange={handleEditRecipientChange}
+                className={"v7-neu-input"}
+                style={{ direction: "rtl", fontFamily: "inherit" }}
               />
             </div>
 

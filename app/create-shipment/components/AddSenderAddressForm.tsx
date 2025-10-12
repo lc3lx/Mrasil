@@ -155,7 +155,16 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
     onClose();
   };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    
+    // Phone number validation
+    if (name === 'clientPhone') {
+      // Only allow digits and limit to 10 characters
+      const phoneValue = value.replace(/\D/g, '').slice(0, 10);
+      setForm({ ...form, [name]: phoneValue });
+    } else {
+      setForm({ ...form, [name]: value });
+    }
   };
 
   const handleCityChange = (value: string) => {
@@ -227,12 +236,14 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
                   onChange={handleChange}
                   required
                   placeholder="05xxxxxxxx"
+                  maxLength={10}
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   className={cn(
                     "v7-neu-input bg-transparent border-none shadow-none outline-none text-base w-full"
                   )}
                   onFocus={() => setWeightFocusedA(true)}
                   onBlur={() => setWeightFocusedA(false)}
-                  maxLength={10}
                 />
               </div>
             </div>

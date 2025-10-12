@@ -105,8 +105,8 @@ export function AddRecipientForm({
   const [alertMessage, setAlertMessage] = useState("");
   const [search, setSearch] = useState("");
   const { data: customerMeData } = useGetCustomerMeQuery();
-const [countrySearch, setCountrySearch] = useState("");
-const [focused, setFocused] = useState<"" | "country" | "city">("");
+  const [countrySearch, setCountrySearch] = useState("");
+  const [focused, setFocused] = useState<"" | "country" | "city">("");
 
   const methods = useForm({
     defaultValues: {
@@ -115,7 +115,7 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
       country: "السعودية",
       city: "",
       clientEmail: "",
-      district: ""
+      district: "",
     },
   });
 
@@ -125,17 +125,16 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
     try {
       const clientAddress = `${data.country}, ${data.city}`;
       const clientEmail = customerMeData?.data?.email || "";
-await onSubmit({
-  clientName: form.clientName,
-  clientPhone: form.clientPhone,
-  city: form.city,
-  // country: form.country || countrySearch,
-  country:"السعودية",
-  clientEmail,
-  clientAddress,
-  district: form.district,
-});
-
+      await onSubmit({
+        clientName: form.clientName,
+        clientPhone: form.clientPhone,
+        city: form.city,
+        // country: form.country || countrySearch,
+        country: "السعودية",
+        clientEmail,
+        clientAddress,
+        district: form.district,
+      });
 
       setAlertStatus("success");
       setAlertMessage("تمت إضافة العنوان بنجاح");
@@ -156,7 +155,16 @@ await onSubmit({
     onClose();
   };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    // Phone number validation
+    if (name === "clientPhone") {
+      // Only allow digits and limit to 10 characters
+      const phoneValue = value.replace(/\D/g, "").slice(0, 10);
+      setForm({ ...form, [name]: phoneValue });
+    } else {
+      setForm({ ...form, [name]: value });
+    }
   };
 
   const handleCityChange = (value: string) => {
@@ -170,13 +178,19 @@ await onSubmit({
   const [weightFocusedAA, setWeightFocusedAA] = useState(false);
   const [descFocusedAA, setDescFocusedAA] = useState(false);
   const [descFocusedMA, setDescFocusedMA] = useState(false);
-  
+
   return (
     <>
       <Dialog open={isOpen} onOpenChange={handleClose}>
-        <DialogContent className=" border-none overflow-y-auto  max-h-screen  scroll   " dir="ltr">
+        <DialogContent
+          className=" border-none overflow-y-auto  max-h-screen  scroll   "
+          dir="ltr"
+        >
           <DialogHeader>
-            <DialogTitle className=" text-black/90 w-full sm:mt-6 mt-0 text-right sm:text-2xl text-lg flex items-center gap-4  " dir="rtl">
+            <DialogTitle
+              className=" text-black/90 w-full sm:mt-6 mt-0 text-right sm:text-2xl text-lg flex items-center gap-4  "
+              dir="rtl"
+            >
               <User className="h-[1.5rem] w-[1.5rem] text-[#1A5889] bg-[#3498db]/20  rounded-full  " />
               إضافة مستلم
             </DialogTitle>
@@ -207,7 +221,6 @@ await onSubmit({
                 )}
                 onFocus={() => setWeightFocused(true)}
                 onBlur={() => setWeightFocused(false)}
-
               />
             </div>
             {/* رقم الجوال */}
@@ -228,6 +241,9 @@ await onSubmit({
                   onChange={handleChange}
                   required
                   placeholder="05xxxxxxxx"
+                  maxLength={10}
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   className={cn(
                     "v7-neu-input bg-transparent border-none shadow-none outline-none text-base w-full"
                   )}
@@ -290,7 +306,7 @@ await onSubmit({
                   name="city"
                   autoComplete="off"
                   value={search || form.city}
-                  onChange={e => {
+                  onChange={(e) => {
                     setSearch(e.target.value);
                     setForm({ ...form, city: "" });
                   }}
@@ -306,7 +322,7 @@ await onSubmit({
                 {descFocused && search && (
                   <CityAutocompleteDropdown
                     search={search}
-                    onSelect={cityObj => {
+                    onSelect={(cityObj) => {
                       setForm({ ...form, city: cityObj.name_ar });
                       setSearch("");
                       setDescFocused(false);
@@ -322,7 +338,7 @@ await onSubmit({
               >
                 <MapPin className="h-4 w-4 text-[#1A5889]" />
                 معلومات العنوان
-                                <span className=" text-red-500">*</span>
+                <span className=" text-red-500">*</span>
               </Label>
 
               <input
@@ -365,23 +381,22 @@ await onSubmit({
             {/* removed district and customer inputs */}
             <DialogFooter className="gap-2">
               <div className=" flex items-center gap-4">
-
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleClose}
-                className="border-2 text-sm sm:text-base"
-              >
-                إلغاء
-              </Button>
-              <Button
-                type="submit"
-                className="bg-gradient-to-r from-[#3498db] to-[#2980b9] text-white hover:from-[#2980b9] hover:to-[#3498db] sm:text-base text-sm"
-                disabled={isLoading}
-              >
-                {isLoading ? "جاري الإضافة..." : "إضافة العنوان"}
-              </Button>
-                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleClose}
+                  className="border-2 text-sm sm:text-base"
+                >
+                  إلغاء
+                </Button>
+                <Button
+                  type="submit"
+                  className="bg-gradient-to-r from-[#3498db] to-[#2980b9] text-white hover:from-[#2980b9] hover:to-[#3498db] sm:text-base text-sm"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "جاري الإضافة..." : "إضافة العنوان"}
+                </Button>
+              </div>
             </DialogFooter>
           </form>
         </DialogContent>

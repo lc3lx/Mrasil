@@ -9,7 +9,7 @@ import { useAuth } from "./providers/AuthProvider";
 
 export default function Home() {
   const router = useRouter();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -40,6 +40,17 @@ export default function Home() {
     return (
       <V7Layout>
         <V7Content>
+          {/* زر مؤقت للانتقال للداشبورد */}
+          {user && (user.role === 'admin' || user.email?.includes('admin')) && (
+            <div className="fixed top-4 right-4 z-50">
+              <button
+                onClick={() => router.push('/dashboard')}
+                className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-blue-600 transition-colors"
+              >
+                الانتقال للداشبورد
+              </button>
+            </div>
+          )}
           <HomeContent />
         </V7Content>
       </V7Layout>

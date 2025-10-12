@@ -1,5 +1,5 @@
-import { createApi } from '@reduxjs/toolkit/query/react';
-import { baseQueryWithTokenErrorHandling } from './customBaseQuery';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { API_BASE_URL } from "@/lib/constants";
 
 // Define types for all requests and responses
 export interface SignupRequest {
@@ -36,37 +36,52 @@ export interface AuthResponse {
     email: string;
     firstName: string;
     lastName: string;
+    role?: string; // إضافة الـ role للأدمن
   };
 }
 
 // Create the auth API slice
 export const authApi = createApi({
   reducerPath: 'authApi',
-  baseQuery: baseQueryWithTokenErrorHandling,
+  baseQuery: fetchBaseQuery({
+    baseUrl: API_BASE_URL,
+    prepareHeaders: (headers) => {
+      // إضافة Content-Type للطلبات
+      headers.set('Content-Type', 'application/json');
+      
+      // إضافة التوكين إذا كان موجود
+      const token = localStorage.getItem("token");
+      if (token) {
+        const cleanToken = token.replace(/^Bearer\s+/i, "");
+        headers.set("Authorization", `Bearer ${cleanToken}`);
+      }
+      return headers;
+    },
+  }),
   endpoints: (builder) => ({
     signup: builder.mutation<AuthResponse, SignupRequest>({
-      query: (userData) => ({
+      query: (userData: SignupRequest) => ({
         url: '/auth/signup',
         method: 'POST',
         body: userData,
       }),
     }),
     login: builder.mutation<AuthResponse, LoginRequest>({
-      query: (credentials) => ({
+      query: (credentials: LoginRequest) => ({
         url: '/auth/login',
         method: 'POST',
         body: credentials,
       }),
     }),
     forgotPassword: builder.mutation<{ message: string }, ForgotPasswordRequest>({
-      query: (data) => ({
+      query: (data: ForgotPasswordRequest) => ({
         url: '/auth/forgotpassword',
         method: 'POST',
         body: data,
       }),
     }),
     verifyResetCode: builder.mutation<{ message: string }, VerifyResetCodeRequest>({
-      query: (data) => ({
+      query: (data: VerifyResetCodeRequest) => ({
         url: '/auth/verfiypassword',
         method: 'POST',
         body: { resetCode: data.resetCode },
@@ -78,7 +93,7 @@ export const authApi = createApi({
       }),
     }),
     resetPassword: builder.mutation<{ message: string }, ResetPasswordRequest>({
-      query: (data) => ({
+      query: (data: ResetPasswordRequest) => ({
         url: '/auth/resetpassword',
         method: 'PUT',
         body: data,
@@ -94,4 +109,7 @@ export const {
   useForgotPasswordMutation,
   useVerifyResetCodeMutation,
   useResetPasswordMutation,
-} = authApi; 
+} = authApi;
+
+// Export default for store configuration
+export default authApi; 

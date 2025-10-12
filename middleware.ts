@@ -35,7 +35,8 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      * - invoices (the landing page)
+     * - dashboard (admin dashboard - handled client-side)
      */
-    '/((?!api|_next/static|_next/image|favicon.ico|invoices).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|invoices|dashboard).*)',
   ],
 } 

@@ -8,6 +8,7 @@ export interface Address {
   city: string;
   phone: string;
   country: string;
+  email?: string;
   _id: string;
 }
 
@@ -34,7 +35,9 @@ export const adressesApi = createApi({
         credentials: "include",
       }),
       providesTags: (result) => [
-        ...(result?.data?.map((address) => ({ type: "Addresses", id: address._id } as const)) || []),
+        ...(result?.data?.map(
+          (address) => ({ type: "Addresses", id: address._id } as const)
+        ) || []),
         { type: "Addresses", id: "LIST" },
       ],
       transformErrorResponse: (response: {
@@ -62,7 +65,10 @@ export const adressesApi = createApi({
       }),
       invalidatesTags: [{ type: "Addresses", id: "LIST" }],
     }),
-    updateAddress: builder.mutation<Address, Partial<Address> & { _id: string }>({
+    updateAddress: builder.mutation<
+      Address,
+      Partial<Address> & { _id: string }
+    >({
       query: ({ _id, ...patch }) => ({
         url: `/addresses/${_id}`,
         method: "PATCH",
@@ -91,4 +97,4 @@ export const {
   useDeleteAddressMutation,
   useUpdateAddressMutation,
   useCreateAddressMutation,
-} = adressesApi; 
+} = adressesApi;
