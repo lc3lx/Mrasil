@@ -135,7 +135,7 @@ export function RecipientAddressSection({
       setValue("recipient_full_name", card.clientName || "");
       setValue("recipient_mobile", card.clientPhone);
       setValue("recipient_city", card.city);
-      setValue("recipient_address", card.clientAddress);
+      setValue("recipient_address", card.district || "");
       setValue("recipient_email", card.clientEmail || "");
       setValue("recipient_district", card.district || "");
     }
@@ -203,7 +203,7 @@ export function RecipientAddressSection({
   };
 
   const filteredRecipientCards = (recipientCards || []).filter(
-    (card) =>
+    (card: any) =>
       (card.clientName || "")
         .toLowerCase()
         .includes(searchRecipient.toLowerCase()) ||
@@ -264,7 +264,7 @@ export function RecipientAddressSection({
         </button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {displayedRecipientCards.map((card) => (
+        {displayedRecipientCards.map((card: any) => (
           <motion.div
             key={card._id}
             className={`v7-neu-card-inner p-5 cursor-pointer relative transition-all duration-300 hover:shadow-lg ${
