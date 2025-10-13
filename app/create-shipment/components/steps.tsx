@@ -229,6 +229,7 @@ export function CreateShipmentSteps() {
           recipient_mobile: order.clientAddress?.clientPhone || "",
           recipient_city: order.clientAddress?.city || "",
           recipient_address: order.clientAddress?.clientAddress || "",
+          recipient_district: order.clientAddress?.clientAddress || "",
           // Step 2
           Parcels: order.number_of_boxes || 1,
           weight: order.weight || 1,
@@ -280,9 +281,9 @@ export function CreateShipmentSteps() {
             mobile: data.recipient_mobile, // send as entered
             city: data.recipient_city,
             country: "sa",
-            address: data.recipient_address,
+            address: data.recipient_address || data.recipient_district || "",
             email: data.recipient_email || "",
-            district: data.recipient_district,
+            district: data.recipient_district || data.recipient_address || "",
           },
           total: {
             amount: data.total,
@@ -295,7 +296,7 @@ export function CreateShipmentSteps() {
           full_name: data.shipper_full_name,
           mobile: data.shipper_mobile, // send as entered
           city: data.shipper_city,
-          country: "sa",
+          country: "السعودية",
           address: data.shipper_address,
         },
         weight: Number(data.weight),
@@ -513,7 +514,7 @@ function Step1Content({ nextStep }: { nextStep: () => void }) {
           phone: "",
           city: "",
           country: "",
-          district: "",
+          address: "",
           email: "",
         }}
       />
@@ -971,7 +972,7 @@ function Step3Content({
         shippingType,
       }));
     })
-    .sort((a, b) => {
+    .sort((a: any, b: any) => {
       // نحط "Dry" أول شي
       if (a.shippingType.type === "Dry" && b.shippingType.type !== "Dry")
         return -1;
@@ -1077,7 +1078,7 @@ function Step3Content({
 
       try {
         const pricePromises = companiesWithTypes.map(
-          async (companyWithType) => {
+          async (companyWithType: any) => {
             const fetchPrice = async () => {
               const payload = {
                 company: companyWithType.company,
@@ -1087,10 +1088,12 @@ function Step3Content({
                     full_name: values.recipient_full_name || "",
                     mobile: values.recipient_mobile || "",
                     email: values.recipient_email || "",
-                    address: values.recipient_address || "",
+                    address:
+                     values.recipient_district ,
                     city: values.recipient_city || "",
-                    district: values.recipient_district || "",
-                    country: "sa",
+                    district:
+                      values.recipient_district ,
+                    country: "السعودية",
                   },
                   description: values.orderDescription || "",
                   direction: "straight",
@@ -1185,8 +1188,8 @@ function Step3Content({
         const results = await Promise.all(pricePromises);
 
         // فصل النتائج الناجحة عن الأخطاء
-        const successfulPrices = results.filter((result) => result.success);
-        const failedPrices = results.filter((result) => !result.success);
+        const successfulPrices = results.filter((result: any) => result.success);
+        const failedPrices = results.filter((result: any) => !result.success);
 
         setPrices(successfulPrices);
         setPriceErrors(failedPrices);
@@ -1200,7 +1203,7 @@ function Step3Content({
         // إظهار ملخص الأسعار في الكونسول
         if (successfulPrices.length > 0) {
           console.log("الأسعار المتاحة:");
-          successfulPrices.forEach((price) => {
+          successfulPrices.forEach((price: any) => {
             console.log(
               `${price.company} (${price.type}): ${price.price} ${price.currency}`
             );
@@ -1332,7 +1335,7 @@ function Step3Content({
               </div>
             </div>
           ) : (
-            companiesWithTypes?.map((company) => {
+            companiesWithTypes?.map((company: any) => {
               const { shippingType } = company;
               const logoSrc = (function getCompanyLogo(
                 companyName: string

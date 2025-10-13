@@ -48,7 +48,7 @@ interface RecipientAddressSectionProps {
     phone: string;
     city: string;
     country: string;
-    district: string;
+    address: string;
     email: string;
   };
 }
@@ -70,7 +70,7 @@ const schema = yup
     phone: yup.string().required("رقم الجوال مطلوب"),
     city: yup.string().required("المدينة مطلوبة"),
     country: yup.string().required("الدولة مطلوبة"),
-    district: yup.string(),
+    address: yup.string(),
   })
   .required();
 export function RecipientAddressSection({
@@ -94,7 +94,7 @@ export function RecipientAddressSection({
   const [editRecipient, setEditRecipient] = useState({
     clientName: "",
     clientAddress: "",
-    district: "",
+    address: "",
     city: "",
     country: "",
     clientEmail: "",
@@ -135,9 +135,10 @@ export function RecipientAddressSection({
       setValue("recipient_full_name", card.clientName || "");
       setValue("recipient_mobile", card.clientPhone);
       setValue("recipient_city", card.city);
-      setValue("recipient_address", card.district || "");
+      const area = (card.address ?? card.district) || "";
+      setValue("recipient_address", area);
       setValue("recipient_email", card.clientEmail || "");
-      setValue("recipient_district", card.district || "");
+      setValue("recipient_district", area);
     }
   };
 
@@ -159,7 +160,7 @@ export function RecipientAddressSection({
     setEditRecipient({
       clientName: card.clientName || "",
       clientAddress: card.clientAddress || "",
-      district: card.district || "",
+      address: card.address || "",
       city: card.city || "",
       country: card.country || "",
       clientEmail: card.clientEmail || "",
@@ -320,10 +321,10 @@ export function RecipientAddressSection({
                   {card.clientAddress ? `، ${card.clientAddress}` : ""}
                 </span>
               </div>
-              {card.district && (
+              {(card.address || card.district) && (
                 <div className="flex items-center gap-2 text-lg text-gray-700">
                   <span className="font-bold">الحي/المنطقة:</span>
-                  <span>{card.district}</span>
+                  <span>{card.address || card.district}</span>
                 </div>
               )}
               <div className="flex items-center gap-2 text-lg text-gray-500">
@@ -427,7 +428,7 @@ export function RecipientAddressSection({
                 initialValues={{
                   clientName: "",
                   clientAddress: "",
-                  district: "",
+                  address: "",
                   city: "",
                   country: "",
                   clientEmail: "",
@@ -600,16 +601,16 @@ export function RecipientAddressSection({
             {/* العنوان*/}
             <div className="space-y-2">
               <Label
-                htmlFor="district"
+                htmlFor="address"
                 className="sm:text-lg text-base font-medium flex items-center gap-2 text-[#1A5889]"
               >
                 <User className="h-4 w-4 text-[#1A5889]" />
                 العنوان التفصيلي
               </Label>
               <Input
-                name="district"
+                name="address"
                 placeholder="الحي/المنطقة"
-                value={editRecipient.district}
+                value={editRecipient.address}
                 onChange={handleEditRecipientChange}
                 className={"v7-neu-input"}
                 style={{ direction: "rtl", fontFamily: "inherit" }}
