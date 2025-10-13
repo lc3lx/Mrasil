@@ -296,7 +296,7 @@ export function CreateShipmentSteps() {
           full_name: data.shipper_full_name,
           mobile: data.shipper_mobile, // send as entered
           city: data.shipper_city,
-          country: "السعودية",
+          country: "sa",
           address: data.shipper_address,
         },
         weight: Number(data.weight),
@@ -1093,7 +1093,7 @@ function Step3Content({
                     city: values.recipient_city || "",
                     district:
                       values.recipient_district ,
-                    country: "السعودية",
+                    country: "sa",
                   },
                   description: values.orderDescription || "",
                   direction: "straight",
