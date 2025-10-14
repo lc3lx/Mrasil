@@ -32,13 +32,15 @@ export const useNotifications = () => {
         },
         credentials: 'include',
       });
-      const data = await response.json();
-      
-      if (data.status === 'success' || data.success) {
-        setNotifications(data.data || []);
-        const unread = (data.data || []).filter((n: Notification) => !n.readStatus).length;
-        setUnreadCount(unread);
-      }
+      const raw = await response.text();
+      let parsed: any = {};
+      try { parsed = raw ? JSON.parse(raw) : {}; } catch {}
+      const list: Notification[] = Array.isArray(parsed)
+        ? parsed
+        : (parsed.data || parsed.notifications || []);
+      setNotifications(Array.isArray(list) ? list : []);
+      const unread = (Array.isArray(list) ? list : []).filter((n: Notification) => !n.readStatus).length;
+      setUnreadCount(unread);
     } catch (error) {
       console.error('Error fetching notifications:', error);
     } finally {

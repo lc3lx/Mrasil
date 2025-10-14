@@ -155,7 +155,7 @@ export default function NotificationsManagement() {
   };
 
   // Delete notification (direct backend)
-  const handleDeleteNotification = async (id: number) => {
+  const handleDeleteNotification = async (id: string) => {
     if (!confirm('هل أنت متأكد من حذف هذا الإشعار؟')) return;
 
     try {
@@ -577,56 +577,52 @@ export default function NotificationsManagement() {
                       </div>
                     ))
                   ) : notifications.length > 0 ? (
-                    notifications.map((notification: any) => (
-                    <motion.div
-                      key={notification.id}
-                      className="bg-white/70 rounded-xl p-6 border border-gray-200 hover:bg-white transition-colors"
-                      whileHover={{ scale: 1.01 }}
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-start gap-4">
-                          <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                            notification.status === 'sent' ? 'bg-blue-100 text-blue-600' :
-                            notification.status === 'delivered' ? 'bg-green-100 text-green-600' :
-                            'bg-red-100 text-red-600'
-                          }`}>
-                            {notification.status === 'sent' ? <Send className="w-6 h-6" /> :
-                             notification.status === 'delivered' ? <CheckCircle className="w-6 h-6" /> :
-                             <AlertCircle className="w-6 h-6" />}
-                          </div>
-                          <div className="flex-1">
-                            <h4 className="font-semibold text-gray-900 mb-1">{notification.title}</h4>
-                            <p className="text-gray-600 mb-2">{notification.message}</p>
-                            <div className="flex items-center gap-4 text-sm text-gray-500">
-                              <span>إلى: {notification.recipient}</span>
-                              <span>•</span>
-                              <span>{new Date(notification.sentAt).toLocaleString('ar-SA')}</span>
-                              <span>•</span>
-                              <span>قراءة: {notification.readCount}</span>
+                    notifications.map((notification: any, idx: number) => (
+                      <motion.div
+                        key={notification._id || idx}
+                        className="bg-white/70 rounded-xl p-6 border border-gray-200 hover:bg-white transition-colors"
+                        whileHover={{ scale: 1.01 }}
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-start gap-4">
+                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                              notification.readStatus ? 'bg-green-100 text-green-600' : 'bg-blue-100 text-blue-600'
+                            }`}>
+                              {notification.readStatus ? <CheckCircle className="w-6 h-6" /> : <Send className="w-6 h-6" />}
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="font-semibold text-gray-900 mb-1">{notification.title || notification.type || 'إشعار'}</h4>
+                              <p className="text-gray-600 mb-2">{notification.message}</p>
+                              <div className="flex items-center gap-4 text-sm text-gray-500">
+                                <span>إلى: {(notification.customerId || notification.userId) ? 'مستخدم محدد' : 'جميع المستخدمين'}</span>
+                                <span>•</span>
+                                <span>{new Date(notification.timestamp || notification.sentAt || notification.createdAt).toLocaleString('ar-SA')}</span>
+                                <span>•</span>
+                                <span>قراءة: {notification.readStatus ? 1 : 0}</span>
+                              </div>
                             </div>
                           </div>
+                          
+                          <div className="flex items-center gap-2">
+                            <motion.button
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </motion.button>
+                            <motion.button
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={() => handleDeleteNotification(notification._id)}
+                              className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </motion.button>
+                          </div>
                         </div>
-                        
-                        <div className="flex items-center gap-2">
-                          <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
-                          >
-                            <Eye className="w-4 h-4" />
-                          </motion.button>
-                          <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => handleDeleteNotification(notification.id)}
-                            className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </motion.button>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))
+                      </motion.div>
+                    ))
                   ) : (
                     <div className="text-center py-12">
                       <div className="w-24 h-24 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
