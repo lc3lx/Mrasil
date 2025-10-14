@@ -84,6 +84,14 @@ const menuItems = [
     bgColor: 'bg-orange-50',
     textColor: 'text-orange-600',
   },
+  {
+    title: 'إحصائيات شركات الشحن',
+    href: '/dashboard/carriers',
+    icon: Truck,
+    gradient: 'from-teal-500 to-cyan-600',
+    bgColor: 'bg-teal-50',
+    textColor: 'text-teal-600',
+  },
 ];
 
 export default function DashboardSidebar() {

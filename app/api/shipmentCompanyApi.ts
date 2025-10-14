@@ -69,15 +69,12 @@ export const shipmentCompanyApi = createApi({
         method: "GET",
         credentials: "include",
       }),
-      providesTags: (result = []) => [
-        ...result.map((company) => ({ type: "ShipmentCompany", id: company._id } as const)),
-        { type: "ShipmentCompany", id: "LIST" },
-      ],
+      providesTags: ["ShipmentCompany"],
       transformResponse: (response: any) => {
         const companies = Array.isArray(response) ? response : response?.data ?? [];
         return companies.map((company: any) => ({
           ...company,
-          shipmentType: company.shipmentType ?? [],
+          shipmentType: company.shipmentType ?? company.shippingTypes ?? [],
           allowedBoxSizes: company.allowedBoxSizes ?? [],
         }));
       },
@@ -100,8 +97,40 @@ export const shipmentCompanyApi = createApi({
       }),
       transformResponse: (response: any) => response.data || response,
     }),
+    createShipmentCompany: builder.mutation<ShipmentCompany, Partial<ShipmentCompany>>({
+      query: (data) => ({
+        url: "/shipmentcompany",
+        method: "POST",
+        credentials: "include",
+        body: data,
+      }),
+      invalidatesTags: ["ShipmentCompany"],
+    }),
+    updateShipmentCompany: builder.mutation<ShipmentCompany, { id: string; data: any }>({
+      query: ({ id, data }) => ({
+        url: `/shipmentcompany/${id}`,
+        method: "PUT",
+        credentials: "include",
+        body: data,
+      }),
+      invalidatesTags: ["ShipmentCompany"],
+    }),
+    deleteShipmentCompany: builder.mutation<{ message: string }, string>({
+      query: (id) => ({
+        url: `/shipmentcompany/${id}`,
+        method: "DELETE",
+        credentials: "include",
+      }),
+      invalidatesTags: ["ShipmentCompany"],
+    }),
   }),
 });
 
 // ---------------- Export hooks ----------------
-export const { useGetAllShipmentCompaniesQuery, useGetShipmentCompanyInfoQuery } = shipmentCompanyApi;
+export const { 
+  useGetAllShipmentCompaniesQuery, 
+  useGetShipmentCompanyInfoQuery,
+  useCreateShipmentCompanyMutation,
+  useUpdateShipmentCompanyMutation,
+  useDeleteShipmentCompanyMutation,
+} = shipmentCompanyApi;

@@ -64,18 +64,33 @@ export function SenderAddressSection({
   const [localAddresses, setLocalAddresses] = useState<any[]>([]);
 
   // Use API data for sender cards (customer addresses)
-  const senderCards = (customerMeData?.data.addresses || []).map(
-    (address, idx) => ({
-      id: address._id || idx,
-      _id: address._id,
-      name: address.alias || "-",
-      mobile: address.phone || "-",
-      city: address.city || "-",
-      country: address.country || "-",
-      address: address.location || "-",
-      email: address.email || customerMeData?.data.email || "-",
-    })
+  const rawSenderAddresses = customerMeData?.data.addresses || [];
+  const getTime = (obj: any) => {
+    const c = obj?.createdAt || obj?.updatedAt;
+    if (c) {
+      const t = new Date(c as string).getTime();
+      return isNaN(t) ? 0 : t;
+    }
+    const id: string | undefined = obj?._id;
+    if (typeof id === "string" && id.length >= 8) {
+      const ts = parseInt(id.substring(0, 8), 16);
+      return (isNaN(ts) ? 0 : ts * 1000);
+    }
+    return 0;
+  };
+  const sortedSenderAddresses = [...rawSenderAddresses].sort(
+    (a, b) => getTime(b) - getTime(a)
   );
+  const senderCards = sortedSenderAddresses.map((address: any, idx: number) => ({
+    id: address._id || idx,
+    _id: address._id,
+    name: address.alias || "-",
+    mobile: address.phone || "-",
+    city: address.city || "-",
+    country: address.country || "-",
+    address: address.location || "-",
+    email: address.email || customerMeData?.data.email || "-",
+  }));
 
   const normalize = (str: string) =>
     str
@@ -186,7 +201,7 @@ export function SenderAddressSection({
         </button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {displayedSenderCards.map((card) => (
+        {displayedSenderCards.map((card: any) => (
           <motion.div
             key={card.id}
             className={`v7-neu-card-inner p-5 cursor-pointer relative transition-all duration-300 hover:shadow-lg ${

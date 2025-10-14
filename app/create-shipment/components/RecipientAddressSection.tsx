@@ -87,7 +87,21 @@ export function RecipientAddressSection({
   const [updateClientAddress, { isLoading: isUpdating, error: updateError }] =
     useUpdateClientAddressMutation();
 
-  const recipientCards = clientAddressesData?.data || [];
+  const rawRecipientCards = clientAddressesData?.data || [];
+  const getTime = (obj: any) => {
+    const c = (obj as any)?.createdAt || (obj as any)?.updatedAt;
+    if (c) {
+      const t = new Date(c as string).getTime();
+      return isNaN(t) ? 0 : t;
+    }
+    const id: string | undefined = (obj as any)?._id;
+    if (typeof id === "string" && id.length >= 8) {
+      const ts = parseInt(id.substring(0, 8), 16);
+      return isNaN(ts) ? 0 : ts * 1000;
+    }
+    return 0;
+  };
+  const recipientCards = [...rawRecipientCards].sort((a, b) => getTime(b) - getTime(a));
   const [openRecipientModal, setOpenRecipientModal] = useState(false);
   const [editRecipientModalOpen, setEditRecipientModalOpen] = useState(false);
   const [recipientToEdit, setRecipientToEdit] = useState<any | null>(null);
@@ -428,12 +442,12 @@ export function RecipientAddressSection({
                 initialValues={{
                   clientName: "",
                   clientAddress: "",
-                  address: "",
                   city: "",
                   country: "",
                   clientEmail: "",
                   clientPhone: "",
                   customer: "",
+                  district: "",
                 }}
               />
             </div>
