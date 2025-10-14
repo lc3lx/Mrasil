@@ -5,6 +5,7 @@ import { store } from "../store/store";
 import { AuthProvider } from "./AuthProvider";
 import { TokenErrorProvider } from "./TokenErrorProvider";
 import { ToastProvider } from "@/components/ui/ToastProvider";
+import { NotificationProvider } from "./NotificationProvider";
 import { useEffect } from "react";
 import { useTokenError } from "./TokenErrorProvider";
 import { Toaster } from "@/components/ui/sonner";
@@ -34,10 +35,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <Provider store={store}>
       <TokenErrorProvider>
         <AuthProvider>
-          <ToastProvider>
-            <TokenErrorListener />
-            {children}
-          </ToastProvider>
+          <NotificationProvider>
+            <ToastProvider>
+              <TokenErrorListener />
+              {children}
+            </ToastProvider>
+          </NotificationProvider>
           <Toaster
             position="top-center"
             richColors
@@ -61,28 +64,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
                 marginTop: "20px",
               },
               className: "rtl",
-              success: {
-                style: {
-                  background: "#f0fdf4",
-                  border: "2px solid #22c55e",
-                  color: "#166534",
-                },
-                iconTheme: {
-                  primary: "#22c55e",
-                  secondary: "#f0fdf4",
-                },
-              },
-              error: {
-                style: {
-                  background: "#fef2f2",
-                  border: "2px solid #ef4444",
-                  color: "#dc2626",
-                },
-                iconTheme: {
-                  primary: "#ef4444",
-                  secondary: "#fef2f2",
-                },
-              },
             }}
           />
         </AuthProvider>

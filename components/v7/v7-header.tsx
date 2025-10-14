@@ -27,11 +27,7 @@ import {
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/providers/AuthProvider";
-import {
-  useGetMyNotificationsQuery,
-  useGetUnreadNotificationsCountQuery,
-  useMarkNotificationAsReadMutation,
-} from "@/app/api/notificationsApi";
+import { useNotifications } from "@/hooks/useNotifications";
 import { useGetProfileQuery } from "@/app/api/profileApi";
 import { V7FloatingAssistant } from "./v7-floating-assistant";
 import Image from "next/image";
@@ -65,10 +61,14 @@ const [query, setQuery] = useState("");
   });
 
 
-  // Fetch notifications and unread count from API
-  const { data: notificationsData, isLoading: notificationsLoading } = useGetMyNotificationsQuery();
-  const { data: unreadCountData, isLoading: unreadCountLoading } = useGetUnreadNotificationsCountQuery();
-  const [markNotificationAsRead] = useMarkNotificationAsReadMutation();
+  // استخدام النظام الجديد للإشعارات
+  const { 
+    notifications: notificationsData, 
+    unreadCount, 
+    isLoading: notificationsLoading,
+    markAsRead,
+    isConnected 
+  } = useNotifications();
 
   const { data: profileData, isLoading: profileLoading } = useGetProfileQuery();
   const { logout } = useAuth();
@@ -441,7 +441,7 @@ const handleSearch = (e: React.FormEvent) => {
             >
               <Bell className="h-4 sm:min-h-[1.2rem] w-4 sm:min-w-[1.2rem] mx-auto flex items-center justify-center text-[#294D8B]" />
               <span className="absolute -right-1 -top-1 flex h-3 sm:h-4 w-3 sm:w-4 items-center justify-center rounded-full bg-red-600 text-[8px] sm:text-[10px] font-medium text-white animate-pulse">
-                {unreadCountLoading ? "..." : unreadCountData?.unreadCount || 0}
+                {notificationsLoading ? "..." : unreadCount || 0}
               </span>
               <span className="sr-only">الإشعارات</span>
             </Button>
@@ -458,18 +458,18 @@ const handleSearch = (e: React.FormEvent) => {
                 </div>
                 <div className="bg-[#294D8B]/10 px-2 py-1 rounded-full">
                   <span className="text-xs font-medium text-[#294D8B]">
-                    {unreadCountLoading
+                    {notificationsLoading
                       ? "..."
-                      : unreadCountData?.unreadCount || 0}{" "}
+                      : unreadCount || 0}{" "}
                     جديدة
                   </span>
                 </div>
               </div>
               <p className="text-xs text-gry mt-1">
                 {!notificationsLoading &&
-                  notificationsData?.data?.length &&
+                  notificationsData?.length &&
                   `آخر تحديث: ${timeSince(
-                    notificationsData.data[notificationsData.data.length - 1]
+                    notificationsData[notificationsData.length - 1]
                       .timestamp
                   )}`}
               </p>
@@ -477,8 +477,8 @@ const handleSearch = (e: React.FormEvent) => {
             <div className="max-h-[250px] sm:max-h-[300px] overflow-auto">
               {notificationsLoading ? (
                 <div className="p-4 text-center text-gry">جاري التحميل...</div>
-              ) : notificationsData?.data?.length ? (
-                notificationsData.data.map((notification) => (
+              ) : notificationsData?.length ? (
+                notificationsData.map((notification: any) => (
                   <DropdownMenuItem
                     key={notification._id}
                     className={`flex cursor-pointer flex-col items-start p-3 rounded-lg mb-1 ${
@@ -488,12 +488,12 @@ const handleSearch = (e: React.FormEvent) => {
                     }`}
                     onClick={() => {
                       if (!notification.readStatus)
-                        markNotificationAsRead(notification._id);
+                        markAsRead(notification._id);
                     }}
                     disabled={notification.readStatus}
                   >
                     <div className="font-medium text-[#294D8B]">
-                      {notification.type}
+                      {notification.title || notification.type}
                     </div>
                     <div className="text-sm text-gry">
                       {notification.message}

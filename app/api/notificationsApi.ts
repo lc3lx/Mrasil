@@ -1,5 +1,5 @@
-import { createApi } from '@reduxjs/toolkit/query/react';
-import { baseQueryWithTokenErrorHandling } from './customBaseQuery';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { API_BASE_URL } from '@/lib/constants';
 
 // Notification type based on the API response in the image
 export interface Notification {
@@ -17,24 +17,37 @@ export interface GetMyNotificationsResponse {
   data: Notification[];
 }
 
+// Base query hitting backend directly
+const notificationsBaseQuery = fetchBaseQuery({
+  baseUrl: API_BASE_URL,
+  prepareHeaders: (headers) => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    if (token) {
+      const cleanToken = token.replace(/^Bearer\s+/i, '');
+      headers.set('Authorization', `Bearer ${cleanToken}`);
+    }
+    headers.set('Content-Type', 'application/json');
+    return headers;
+  },
+  credentials: 'include',
+});
+
 export const notificationsApi = createApi({
   reducerPath: 'notificationsApi',
-  baseQuery: baseQueryWithTokenErrorHandling,
+  baseQuery: notificationsBaseQuery,
   tagTypes: ['Notifications'],
   endpoints: (builder) => ({
     getMyNotifications: builder.query<GetMyNotificationsResponse, void>({
       query: () => ({
         url: 'notifications/getMynotification',
         method: 'GET',
-        credentials: 'include',
       }),
       providesTags: ['Notifications'],
     }),
     markNotificationAsRead: builder.mutation<Notification, string>({
-      query: (id) => ({
+      query: (id: string) => ({
         url: `notifications/${id}/read`,
         method: 'PUT',
-        credentials: 'include',
       }),
       invalidatesTags: ['Notifications'],
     }),
@@ -42,7 +55,6 @@ export const notificationsApi = createApi({
       query: () => ({
         url: 'notifications/unread-count',
         method: 'GET',
-        credentials: 'include',
       }),
       providesTags: ['Notifications'],
     }),

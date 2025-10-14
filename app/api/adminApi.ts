@@ -69,6 +69,17 @@ export const adminApi = createApi({
       query: () => '/admin/stats',
       providesTags: ['AdminStats'],
     }),
+    getCarrierStats: builder.query<{ data: any }, { startDate?: string; endDate?: string } | void>({
+      query: (args) => {
+        const params = new URLSearchParams();
+        const startDate = (args as any)?.startDate;
+        const endDate = (args as any)?.endDate;
+        if (startDate) params.append('startDate', startDate);
+        if (endDate) params.append('endDate', endDate);
+        const qs = params.toString();
+        return `/admin/carriers/stats${qs ? `?${qs}` : ''}`;
+      },
+    }),
     
     // Get Recent Activity
     getRecentActivity: builder.query({
@@ -221,6 +232,7 @@ export const adminApi = createApi({
 // Export the generated hooks
 export const {
   useGetAdminStatsQuery,
+  useGetCarrierStatsQuery,
   useGetRecentActivityQuery,
   useGetAllUsersQuery,
   useUpdateUserStatusMutation,

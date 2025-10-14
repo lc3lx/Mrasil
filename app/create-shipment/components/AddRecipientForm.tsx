@@ -123,17 +123,15 @@ export function AddRecipientForm({
 
   const handleFormSubmit = async (data: any) => {
     try {
-      const clientAddress = `${data.country}, ${data.city}`;
       const clientEmail = customerMeData?.data?.email || "";
       await onSubmit({
         clientName: form.clientName,
         clientPhone: form.clientPhone,
         city: form.city,
-        // country: form.country || countrySearch,
         country: "السعودية",
-        clientEmail,
-        clientAddress,
+        clientAddress: form.clientAddress,
         district: form.district,
+        clientEmail,
       });
 
       setAlertStatus("success");

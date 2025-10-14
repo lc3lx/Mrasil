@@ -135,10 +135,9 @@ export function RecipientAddressSection({
       setValue("recipient_full_name", card.clientName || "");
       setValue("recipient_mobile", card.clientPhone);
       setValue("recipient_city", card.city);
-      const area = (card.address ?? card.district) || "";
-      setValue("recipient_address", area);
+      setValue("recipient_address", card.clientAddress || "");
       setValue("recipient_email", card.clientEmail || "");
-      setValue("recipient_district", area);
+      setValue("recipient_district", card.district || "");
     }
   };
 
@@ -166,6 +165,7 @@ export function RecipientAddressSection({
       clientEmail: card.clientEmail || "",
       clientPhone: card.clientPhone || "",
       customer: card.customer || "",
+      district: card.district || "",
     });
     setEditRecipientModalOpen(true);
   };
@@ -598,38 +598,39 @@ export function RecipientAddressSection({
               </div>
             </div>
 
-            {/* العنوان*/}
-            <div className="space-y-2">
-              <Label
-                htmlFor="address"
-                className="sm:text-lg text-base font-medium flex items-center gap-2 text-[#1A5889]"
-              >
-                <User className="h-4 w-4 text-[#1A5889]" />
-                العنوان التفصيلي
-              </Label>
-              <Input
-                name="address"
-                placeholder="الحي/المنطقة"
-                value={editRecipient.address}
-                onChange={handleEditRecipientChange}
-                className={"v7-neu-input"}
-                style={{ direction: "rtl", fontFamily: "inherit" }}
-              />
-            </div>
-            {/* العنوان*/}
+            {/* العنوان التفصيلي */}
             <div className="space-y-2">
               <Label
                 htmlFor="clientAddress"
                 className="sm:text-lg text-base font-medium flex items-center gap-2 text-[#1A5889]"
               >
                 <User className="h-4 w-4 text-[#1A5889]" />
-                الرمز البريدي
+                العنوان التفصيلي
               </Label>
               <Input
                 id="clientAddress"
                 name="clientAddress"
-                placeholder="الرمز البريدي"
+                placeholder="الحي/المنطقة، الشارع، رقم المبنى"
                 value={editRecipient.clientAddress}
+                onChange={handleEditRecipientChange}
+                className={"v7-neu-input"}
+                style={{ direction: "rtl", fontFamily: "inherit" }}
+              />
+            </div>
+            {/* الرمز البريدي */}
+            <div className="space-y-2">
+              <Label
+                htmlFor="district"
+                className="sm:text-lg text-base font-medium flex items-center gap-2 text-[#1A5889]"
+              >
+                <User className="h-4 w-4 text-[#1A5889]" />
+                الرمز البريدي
+              </Label>
+              <Input
+                id="district"
+                name="district"
+                placeholder="الرمز البريدي"
+                value={(editRecipient as any).district || ""}
                 onChange={handleEditRecipientChange}
                 className={"v7-neu-input"}
                 style={{ direction: "rtl", fontFamily: "inherit" }}
