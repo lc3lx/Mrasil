@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { useAuth } from "@/app/providers/AuthProvider";
-import { Plus, X, Save, Edit3, Trash2, Percent, Wallet, Calendar, Users, Truck } from "lucide-react";
+import { Plus, X, Save, Edit3, Trash2, Percent, Wallet, Calendar, Users, Truck, TicketPercent } from "lucide-react";
 import {
   useGetCouponsQuery,
   useCreateCouponMutation,
@@ -162,17 +162,29 @@ export default function CouponsPage() {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-100">
         <motion.div className="space-y-8 p-6" variants={containerVariants} initial="hidden" animate="visible">
           {/* Header */}
-          <motion.div className="relative overflow-hidden bg-gradient-to-br from-rose-600 via-pink-700 to-fuchsia-800 rounded-2xl shadow-2xl" variants={itemVariants}>
-            <div className="absolute inset-0 bg-black/20" />
-            <div className="relative p-8">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h1 className="text-4xl font-bold text-white mb-2">إدارة الكوبونات</h1>
-                  <p className="text-pink-100">إنشاء وتخصيص الكوبونات للمستخدمين وشركات الشحن</p>
+          <motion.div className="relative overflow-hidden bg-gradient-to-br from-rose-500 via-pink-600 to-purple-700 rounded-3xl shadow-2xl border border-white/10" variants={itemVariants}>
+            <div className="absolute inset-0 bg-black/10" />
+            <div className="absolute -top-20 -right-20 w-40 h-40 bg-white/10 rounded-full blur-3xl" />
+            <div className="absolute -bottom-20 -left-20 w-32 h-32 bg-white/5 rounded-full blur-2xl" />
+            <div className="relative p-8 lg:p-10">
+              <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+                <div className="flex items-center gap-4">
+                  <div className="p-4 bg-white/20 rounded-2xl backdrop-blur-sm">
+                    <TicketPercent className="w-8 h-8 text-white" />
+                  </div>
+                  <div>
+                    <h1 className="text-4xl lg:text-5xl font-bold text-white mb-2 drop-shadow-lg">إدارة الكوبونات</h1>
+                    <p className="text-pink-100 text-lg drop-shadow-sm">إنشاء وتخصيص الكوبونات للمستخدمين وشركات الشحن</p>
+                  </div>
                 </div>
-                <motion.button onClick={startCreate} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-xl hover:bg-white/30 transition-all duration-300 flex items-center gap-2 border border-white/20">
-                  <Plus className="w-5 h-5" />
-                  كوبون جديد
+                <motion.button 
+                  onClick={startCreate} 
+                  whileHover={{ scale: 1.05, y: -2 }} 
+                  whileTap={{ scale: 0.95 }} 
+                  className="bg-white/20 backdrop-blur-sm text-white px-8 py-4 rounded-2xl hover:bg-white/30 transition-all duration-300 flex items-center gap-3 border border-white/20 shadow-lg hover:shadow-xl group"
+                >
+                  <Plus className="w-6 h-6 group-hover:rotate-90 transition-transform duration-300" />
+                  <span className="font-semibold text-lg">كوبون جديد</span>
                 </motion.button>
               </div>
             </div>
@@ -189,40 +201,70 @@ export default function CouponsPage() {
             ) : list.length === 0 ? (
               <div className="p-6 text-center text-gray-500">لا توجد كوبونات</div>
             ) : (
-              <div className="overflow-hidden rounded-xl border border-gray-200">
-                <div className="grid grid-cols-6 gap-4 p-4 bg-gray-50 text-sm font-semibold text-gray-700">
-                  <div>الكود</div>
+              <div className="overflow-hidden rounded-2xl border border-gray-200 shadow-sm">
+                <div className="grid grid-cols-6 gap-4 p-6 bg-gradient-to-r from-gray-50 to-gray-100 text-sm font-bold text-gray-700 border-b border-gray-200">
+                  <div className="flex items-center gap-2">
+                    <TicketPercent className="w-4 h-4 text-rose-500" />
+                    الكود
+                  </div>
                   <div>النوع</div>
                   <div>القيمة</div>
                   <div>الفترة</div>
                   <div>الحالة</div>
                   <div className="text-right">إجراءات</div>
                 </div>
-                <div className="divide-y divide-gray-200">
-                  {list.map((c) => (
-                    <div key={c._id} className="grid grid-cols-6 gap-4 p-4 items-center">
-                      <div className="font-mono font-semibold">{c.code}</div>
-                      <div className="capitalize">
-                        {c.discountType === "percentage" ? "نسبة" : c.discountType === "fixed" ? "قيمة ثابتة" : "رصيد محفظة"}
+                <div className="divide-y divide-gray-100">
+                  {list.map((c, index) => (
+                    <motion.div 
+                      key={c._id} 
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                      className="grid grid-cols-6 gap-4 p-6 items-center hover:bg-gray-50/50 transition-colors group"
+                    >
+                      <div className="font-mono font-bold text-gray-800 bg-gray-100 px-3 py-1 rounded-lg text-center group-hover:bg-rose-100 group-hover:text-rose-700 transition-colors">
+                        {c.code}
                       </div>
-                      <div>
+                      <div className="capitalize">
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                          c.discountType === "percentage" ? "bg-blue-100 text-blue-700" :
+                          c.discountType === "fixed" ? "bg-green-100 text-green-700" :
+                          "bg-purple-100 text-purple-700"
+                        }`}>
+                          {c.discountType === "percentage" ? "نسبة" : c.discountType === "fixed" ? "قيمة ثابتة" : "رصيد محفظة"}
+                        </span>
+                      </div>
+                      <div className="font-semibold text-gray-700">
                         {c.discountType === "percentage" ? `${c.discountValue}%` : `${c.discountValue} ر.س`}
                       </div>
-                      <div className="text-sm text-gray-600">{c.startDate?.slice(0,10)} → {c.endDate?.slice(0,10)}</div>
+                      <div className="text-sm text-gray-600 font-medium">
+                        {c.startDate?.slice(0,10)} → {c.endDate?.slice(0,10)}
+                      </div>
                       <div>
-                        <span className={`px-2 py-1 text-xs rounded-full font-medium ${c.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                        <span className={`px-3 py-1.5 text-xs rounded-full font-bold ${c.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
                           {c.isActive ? 'مفعل' : 'معطل'}
                         </span>
                       </div>
-                      <div className="flex items-center justify-end gap-2">
-                        <button onClick={() => startEdit(c)} className="inline-flex items-center gap-1 px-3 py-2 rounded-lg border text-sky-600 border-sky-200 hover:bg-sky-50">
+                      <div className="flex items-center justify-end gap-3">
+                        <motion.button 
+                          onClick={() => startEdit(c)} 
+                          whileHover={{ scale: 1.05 }} 
+                          whileTap={{ scale: 0.95 }}
+                          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border-2 text-sky-600 border-sky-200 hover:bg-sky-50 hover:border-sky-300 transition-all font-medium"
+                        >
                           <Edit3 className="w-4 h-4" /> تعديل
-                        </button>
-                        <button onClick={() => handleDelete(c._id)} disabled={deleting} className="inline-flex items-center gap-1 px-3 py-2 rounded-lg border text-red-600 border-red-200 hover:bg-red-50 disabled:opacity-50">
+                        </motion.button>
+                        <motion.button 
+                          onClick={() => handleDelete(c._id)} 
+                          disabled={deleting} 
+                          whileHover={{ scale: 1.05 }} 
+                          whileTap={{ scale: 0.95 }}
+                          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border-2 text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-medium"
+                        >
                           <Trash2 className="w-4 h-4" /> حذف
-                        </button>
+                        </motion.button>
                       </div>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
               </div>
@@ -232,18 +274,30 @@ export default function CouponsPage() {
 
         {/* Form Modal */}
         {openForm && (
-          <motion.div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <motion.div className="bg-white w-full max-w-5xl rounded-2xl border shadow-xl max-h-[95vh] overflow-hidden" initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
+          <motion.div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-md flex items-center justify-center p-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            <motion.div className="bg-white w-full max-w-6xl rounded-3xl border border-gray-200 shadow-2xl max-h-[95vh] overflow-hidden" initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} transition={{ type: "spring", damping: 20 }}>
               {/* Header */}
-              <div className="p-6 border-b flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Percent className="w-5 h-5 text-rose-600" />
-                  <h2 className="text-xl font-bold">{editing ? 'تعديل كوبون' : 'إضافة كوبون جديد'}</h2>
+              <div className="p-8 bg-gradient-to-r from-rose-50 to-pink-50 border-b border-gray-100 flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-gradient-to-br from-rose-500 to-pink-600 rounded-2xl shadow-lg">
+                    <TicketPercent className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-800">{editing ? 'تعديل كوبون' : 'إضافة كوبون جديد'}</h2>
+                    <p className="text-gray-600 text-sm mt-1">قم بملء البيانات المطلوبة لإنشاء الكوبون</p>
+                  </div>
                 </div>
-                <button onClick={() => setOpenForm(false)} className="p-2 rounded-lg hover:bg-gray-100"><X className="w-5 h-5" /></button>
+                <motion.button 
+                  onClick={() => setOpenForm(false)} 
+                  whileHover={{ scale: 1.1, rotate: 90 }} 
+                  whileTap={{ scale: 0.9 }} 
+                  className="p-3 rounded-2xl hover:bg-gray-100 transition-colors group"
+                >
+                  <X className="w-6 h-6 text-gray-500 group-hover:text-gray-700" />
+                </motion.button>
               </div>
 
-              <div className="max-h-[calc(95vh-140px)] overflow-y-auto p-6 space-y-6">
+              <div className="max-h-[calc(95vh-200px)] overflow-y-auto p-8 space-y-8">
                 {/* Basic info */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   <div>
@@ -346,12 +400,35 @@ export default function CouponsPage() {
               </div>
 
               {/* Footer */}
-              <div className="flex items-center justify-end gap-4 p-6 bg-gray-50 border-t">
-                <button onClick={() => setOpenForm(false)} className="px-6 py-3 rounded-xl border">إلغاء</button>
-                <button onClick={handleSave} disabled={creating || updating} className="px-6 py-3 rounded-xl bg-gradient-to-r from-rose-500 to-pink-600 text-white hover:from-rose-600 hover:to-pink-700 transition-all font-medium shadow-lg disabled:opacity-50 flex items-center gap-2">
-                  <Save className="w-4 h-4" />
-                  {creating || updating ? 'جاري الحفظ...' : editing ? 'حفظ التعديلات' : 'إضافة الكوبون'}
-                </button>
+              <div className="flex items-center justify-between p-8 bg-gradient-to-r from-gray-50 to-gray-100 border-t border-gray-200">
+                <div className="text-sm text-gray-500">
+                  {editing ? 'تعديل كوبون موجود' : 'إضافة كوبون جديد للنظام'}
+                </div>
+                <div className="flex items-center gap-4">
+                  <motion.button 
+                    onClick={() => setOpenForm(false)} 
+                    whileHover={{ scale: 1.02 }} 
+                    whileTap={{ scale: 0.98 }}
+                    className="px-8 py-3 rounded-2xl border-2 border-gray-300 text-gray-700 hover:bg-gray-50 transition-all font-medium"
+                  >
+                    إلغاء
+                  </motion.button>
+                  <motion.button 
+                    onClick={handleSave} 
+                    disabled={creating || updating} 
+                    whileHover={{ scale: 1.02, y: -1 }} 
+                    whileTap={{ scale: 0.98 }}
+                    className="px-8 py-3 rounded-2xl bg-gradient-to-r from-rose-500 to-pink-600 text-white hover:from-rose-600 hover:to-pink-700 transition-all font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3"
+                  >
+                    <Save className="w-5 h-5" />
+                    {creating || updating ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        جاري الحفظ...
+                      </>
+                    ) : editing ? 'حفظ التعديلات' : 'إضافة الكوبون'}
+                  </motion.button>
+                </div>
               </div>
             </motion.div>
           </motion.div>

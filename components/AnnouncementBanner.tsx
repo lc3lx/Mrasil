@@ -75,29 +75,31 @@ export default function AnnouncementBanner() {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -100 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="relative overflow-hidden shadow-lg"
+        className="relative overflow-hidden shadow-xl mt-4 mx-4 rounded-2xl backdrop-blur-sm border border-white/20"
         style={{
-          backgroundColor: currentAnnouncement.backgroundColor,
+          background: `linear-gradient(135deg, ${currentAnnouncement.backgroundColor}ee, ${currentAnnouncement.backgroundColor}cc)`,
           color: currentAnnouncement.textColor,
         }}
       >
         {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
-          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/5 to-transparent"></div>
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/10 to-transparent"></div>
+          <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+          <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
         </div>
 
-        <div className="relative px-4 py-3 sm:px-6 sm:py-4">
+        <div className="relative px-6 py-4 sm:px-8 sm:py-5">
           <div className="flex items-center justify-between">
             {/* Content */}
-            <div className="flex items-center space-x-3 space-x-reverse flex-1 min-w-0">
+            <div className="flex items-center space-x-4 space-x-reverse flex-1 min-w-0">
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.2, type: "spring" }}
-                className="flex-shrink-0"
+                className="flex-shrink-0 p-2 bg-white/20 rounded-full backdrop-blur-sm"
               >
-                <Megaphone className="w-5 h-5 sm:w-6 sm:h-6" />
+                <Megaphone className="w-5 h-5 sm:w-6 sm:h-6 drop-shadow-sm" />
               </motion.div>
 
               <motion.div
@@ -108,35 +110,35 @@ export default function AnnouncementBanner() {
                 transition={{ duration: 0.3 }}
                 className={`flex-1 min-w-0 ${currentAnnouncement.fontSize}`}
               >
-                <div className="font-bold mb-1 truncate sm:whitespace-normal">
+                <div className="font-bold mb-1 truncate sm:whitespace-normal drop-shadow-sm">
                   {currentAnnouncement.title}
                 </div>
-                <div className="opacity-90 text-sm sm:text-base truncate sm:whitespace-normal">
+                <div className="opacity-95 text-sm sm:text-base truncate sm:whitespace-normal drop-shadow-sm">
                   {currentAnnouncement.content}
                 </div>
               </motion.div>
             </div>
 
             {/* Controls */}
-            <div className="flex items-center space-x-2 space-x-reverse flex-shrink-0 ml-4">
+            <div className="flex items-center space-x-3 space-x-reverse flex-shrink-0 ml-6">
               {/* Navigation for multiple announcements */}
               {visibleAnnouncements.length > 1 && (
                 <>
                   <button
                     onClick={goToPrevious}
-                    className="p-1 hover:bg-white/20 rounded-full transition-colors"
+                    className="p-2 hover:bg-white/30 rounded-full transition-all duration-200 hover:scale-110 backdrop-blur-sm"
                     aria-label="الإعلان السابق"
                   >
-                    <ChevronRight className="w-4 h-4" />
+                    <ChevronRight className="w-4 h-4 drop-shadow-sm" />
                   </button>
                   
-                  <div className="flex space-x-1 space-x-reverse">
+                  <div className="flex space-x-1.5 space-x-reverse px-2">
                     {visibleAnnouncements.map((_, index) => (
                       <button
                         key={index}
                         onClick={() => setCurrentIndex(index)}
-                        className={`w-2 h-2 rounded-full transition-all ${
-                          index === currentIndex ? 'bg-white' : 'bg-white/50'
+                        className={`w-2.5 h-2.5 rounded-full transition-all duration-200 hover:scale-125 ${
+                          index === currentIndex ? 'bg-white shadow-lg' : 'bg-white/60 hover:bg-white/80'
                         }`}
                         aria-label={`الإعلان ${index + 1}`}
                       />
@@ -145,10 +147,10 @@ export default function AnnouncementBanner() {
                   
                   <button
                     onClick={goToNext}
-                    className="p-1 hover:bg-white/20 rounded-full transition-colors"
+                    className="p-2 hover:bg-white/30 rounded-full transition-all duration-200 hover:scale-110 backdrop-blur-sm"
                     aria-label="الإعلان التالي"
                   >
-                    <ChevronLeft className="w-4 h-4" />
+                    <ChevronLeft className="w-4 h-4 drop-shadow-sm" />
                   </button>
                 </>
               )}
@@ -156,10 +158,10 @@ export default function AnnouncementBanner() {
               {/* Dismiss buttons */}
               <button
                 onClick={() => dismissAnnouncement(currentAnnouncement._id)}
-                className="p-1 hover:bg-white/20 rounded-full transition-colors"
+                className="p-2 hover:bg-red-500/30 rounded-full transition-all duration-200 hover:scale-110 backdrop-blur-sm group"
                 aria-label="إخفاء هذا الإعلان"
               >
-                <X className="w-4 h-4" />
+                <X className="w-4 h-4 drop-shadow-sm group-hover:text-red-100" />
               </button>
             </div>
           </div>
@@ -167,7 +169,7 @@ export default function AnnouncementBanner() {
           {/* Progress bar for auto-rotation */}
           {visibleAnnouncements.length > 1 && (
             <motion.div
-              className="absolute bottom-0 left-0 h-1 bg-white/30"
+              className="absolute bottom-0 left-0 h-1 bg-gradient-to-r from-white/40 to-white/60 rounded-full"
               initial={{ width: "0%" }}
               animate={{ width: "100%" }}
               transition={{ duration: 5, ease: "linear", repeat: Infinity }}

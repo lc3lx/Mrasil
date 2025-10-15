@@ -106,26 +106,40 @@ export default function AnnouncementsPage() {
     }
   };
 
+  const startCreate = () => {
+    setOpenForm(true);
+  };
+
   return (
     <DashboardLayout>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-100">
         <motion.div className="space-y-8 p-6" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
           {/* Header */}
-          <motion.div className="relative overflow-hidden bg-gradient-to-br from-purple-600 via-indigo-700 to-blue-800 rounded-2xl shadow-2xl p-8">
-            <div className="absolute inset-0 bg-black/20"></div>
-            <div className="relative flex items-center justify-between">
-              <div>
-                <h1 className="text-4xl font-bold text-white mb-2">إدارة الإعلانات</h1>
-                <p className="text-purple-100 text-lg">إنشاء وإدارة إعلانات الموقع</p>
+          <motion.div className="relative overflow-hidden bg-gradient-to-br from-violet-500 via-purple-600 to-indigo-700 rounded-3xl shadow-2xl border border-white/10">
+            <div className="absolute inset-0 bg-black/10" />
+            <div className="absolute -top-20 -right-20 w-40 h-40 bg-white/10 rounded-full blur-3xl" />
+            <div className="absolute -bottom-20 -left-20 w-32 h-32 bg-white/5 rounded-full blur-2xl" />
+            <div className="relative p-8 lg:p-10">
+              <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+                <div className="flex items-center gap-4">
+                  <div className="p-4 bg-white/20 rounded-2xl backdrop-blur-sm">
+                    <Megaphone className="w-8 h-8 text-white" />
+                  </div>
+                  <div>
+                    <h1 className="text-4xl lg:text-5xl font-bold text-white mb-2 drop-shadow-lg">إدارة الإعلانات</h1>
+                    <p className="text-purple-100 text-lg drop-shadow-sm">إنشاء وإدارة الإعلانات المعروضة في الموقع</p>
+                  </div>
+                </div>
+                <motion.button 
+                  onClick={startCreate} 
+                  whileHover={{ scale: 1.05, y: -2 }} 
+                  whileTap={{ scale: 0.95 }} 
+                  className="bg-white/20 backdrop-blur-sm text-white px-8 py-4 rounded-2xl hover:bg-white/30 transition-all duration-300 flex items-center gap-3 border border-white/20 shadow-lg hover:shadow-xl group"
+                >
+                  <Plus className="w-6 h-6 group-hover:rotate-90 transition-transform duration-300" />
+                  <span className="font-semibold text-lg">إعلان جديد</span>
+                </motion.button>
               </div>
-              <motion.button
-                onClick={() => setOpenForm(true)}
-                className="bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-xl hover:bg-white/30 transition-all duration-300 flex items-center gap-2"
-                whileHover={{ scale: 1.05 }}
-              >
-                <Plus className="w-5 h-5" />
-                إعلان جديد
-              </motion.button>
             </div>
           </motion.div>
 

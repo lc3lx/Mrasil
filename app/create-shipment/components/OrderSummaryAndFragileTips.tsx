@@ -6,6 +6,7 @@ import { useFormContext } from "react-hook-form";
 import RealBlue from "../../../public/real-blue.png";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { useValidateCouponMutation, useApplyCouponMutation } from "@/app/api/couponApi";
 
 interface OrderSummaryAndFragileTipsProps {
   values: any;
@@ -39,6 +40,13 @@ export function OrderSummaryAndFragileTips({
   const width = watch("dimension_width") || 0;
   const height = watch("dimension_high") || 0;
   const volume = length * width * height;
+  // Coupon state and API hooks
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
+  const [couponMsg, setCouponMsg] = useState("");
+  const [couponErr, setCouponErr] = useState("");
+  const [validateCoupon, { isLoading: validating }] = useValidateCouponMutation();
+  const [applyCoupon, { isLoading: applying }] = useApplyCouponMutation();
   const displayName =
     values.company === "omniclama"
       ? "LLAMA BOX"
@@ -49,6 +57,55 @@ export function OrderSummaryAndFragileTips({
       : values.company === "aramex"
       ? "ARAMEX PRO"
       : values.company.toUpperCase();
+
+  // Selected company/type price item and price calculations
+  const selectedItem = Array.isArray(prices)
+    ? (prices as any[]).find(
+        (p: any) => p.company === values?.company && p.type === values?.shipmentType
+      )
+    : null;
+  const basePrice: number = Number(selectedItem?.price || 0);
+  const discountedPrice: number = (() => {
+    if (!appliedCoupon || appliedCoupon?.discountType === "wallet_credit") return basePrice;
+    const val = Number(appliedCoupon?.discountValue || 0);
+    if (appliedCoupon.discountType === "percentage") {
+      const d = (basePrice * val) / 100;
+      return Math.max(0, basePrice - d);
+    }
+    if (appliedCoupon.discountType === "fixed") {
+      return Math.max(0, basePrice - val);
+    }
+    return basePrice;
+  })();
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode?.trim()) {
+      setCouponErr("يرجى إدخال كود القسيمة");
+      return;
+    }
+    setCouponMsg("");
+    setCouponErr("");
+    const shippingCompanyIds = selectedItem?.companyId ? [String(selectedItem.companyId)] : [];
+    try {
+      // Validate first
+      await validateCoupon({ code: couponCode.trim(), shippingCompanyIds }).unwrap();
+      // Apply to record redemption and possibly credit wallet
+      const applied = await applyCoupon({ code: couponCode.trim(), shippingCompanyIds }).unwrap();
+      const data = applied?.data || null;
+      setAppliedCoupon(data);
+      setCouponMsg(applied?.message || "تم تطبيق القسيمة");
+    } catch (e: any) {
+      setAppliedCoupon(null);
+      setCouponErr(e?.data?.message || "فشل تطبيق القسيمة");
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode("");
+    setCouponMsg("");
+    setCouponErr("");
+  };
   return (
     <>
       {/* نصائح للشحنات القابلة للكسر */}
@@ -220,10 +277,17 @@ export function OrderSummaryAndFragileTips({
             <input
               className="flex h-10 w-full rounded-lg border-[0.5px] border-transparent bg-background/5 px-3 py-2 text-sm shadow-[inset_0_2px_4px_rgba(0,0,0,0.08)] hover:shadow-[inset_0_2px_5px_rgba(0,0,0,0.12)] transition-all duration-300 ease-in-out file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground/60 focus-visible:outline-none focus-visible:border-input/20 focus-visible:bg-gradient-to-b focus-visible:from-background/10 focus-visible:to-background/5 focus-visible:shadow-[inset_0_2px_6px_rgba(0,0,0,0.15)] hover:border-input/20 disabled:cursor-not-allowed disabled:opacity-60 disabled:bg-muted/20 disabled:shadow-none pr-10 v7-neu-input-hollow  text-gry"
               placeholder="أدخل كود الخصم"
-              value=""
+              value={couponCode}
+              onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+              disabled={validating || applying || Boolean(appliedCoupon)}
             />
           </div>
-          <button className="ring-offset-background focus-visible:outline-hidden focus-visible:ring-ring inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 v7-neu-button-accent bg-gradient-to-r from-[#3498db] to-[#2980b9] relative overflow-hidden group">
+          <button
+            type="button"
+            onClick={handleApplyCoupon}
+            disabled={validating || applying || !couponCode || Boolean(appliedCoupon)}
+            className="ring-offset-background focus-visible:outline-hidden focus-visible:ring-ring inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 v7-neu-button-accent bg-gradient-to-r from-[#3498db] to-[#2980b9] relative overflow-hidden group"
+          >
             <span className="relative z-10 flex items-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -239,11 +303,26 @@ export function OrderSummaryAndFragileTips({
               >
                 <path d="M20 6 9 17l-5-5"></path>
               </svg>
-              تطبيق الكوبون
+              {validating || applying ? "جاري التطبيق..." : "تطبيق الكوبون"}
             </span>
             <span className="absolute inset-0 bg-gradient-to-r from-[#2980b9] to-[#3498db] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
           </button>
+          {appliedCoupon && (
+            <button
+              type="button"
+              onClick={handleRemoveCoupon}
+              className="ring-offset-background focus-visible:outline-hidden focus-visible:ring-ring inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 h-10 px-4 py-2 bg-gray-100 text-gray-700 border"
+            >
+              إزالة
+            </button>
+          )}
         </div>
+        {couponMsg && (
+          <div className="text-green-600 text-sm mt-2">{couponMsg}</div>
+        )}
+        {couponErr && (
+          <div className="text-red-600 text-sm mt-2">{couponErr}</div>
+        )}
       </div>
 
       {/* ملخص الطلب */}
@@ -328,28 +407,21 @@ export function OrderSummaryAndFragileTips({
             </div>
             <div className="flex justify-between items-center  py-4 text-xl font-bold">
               <span className="text-[#1a365d]">سعر البوليصة</span>
-              <span className="text-[#3498db] px-3 py-1.5 rounded-lg inline-flex items-center">
-                {/* {values.total  || "غير محدد"} ريال */}
-                {(() => {
-                  const price =
-                    prices?.filter(
-                      (p: any) =>
-                        p.company === values?.company &&
-                        p.type === values?.shipmentType
-                    )[0]?.price || 0;
-
-                  return Number.isInteger(Number(price))
-                    ? Number(price)
-                    : Number(price).toPrecision(4);
-                })()}
-
-                <Image
-                  alt="price"
-                  src={RealBlue}
-                  className=" w-[20px] h-[20px]"
-                />
+              <span className="px-3 py-1.5 rounded-lg inline-flex items-center gap-2">
+                {appliedCoupon && appliedCoupon.discountType !== "wallet_credit" && discountedPrice !== basePrice ? (
+                  <>
+                    <span className="line-through text-gray-400">{basePrice}</span>
+                    <span className="text-[#3498db] font-bold">{Number.isInteger(Number(discountedPrice)) ? Number(discountedPrice) : Number(discountedPrice).toPrecision(4)}</span>
+                  </>
+                ) : (
+                  <span className="text-[#3498db] font-bold">{Number.isInteger(Number(basePrice)) ? Number(basePrice) : Number(basePrice).toPrecision(4)}</span>
+                )}
+                <Image alt="price" src={RealBlue} className=" w-[20px] h-[20px]" />
               </span>
             </div>
+            {appliedCoupon?.discountType === "wallet_credit" && (
+              <div className="text-sm text-green-700 mt-1">تم إضافة رصيد للمحفظة بقيمة {appliedCoupon?.discountValue} ر.س</div>
+            )}
           </div>
         </div>
       </div>
