@@ -184,21 +184,22 @@ export const useNotifications = () => {
       const handleNewNotification = (notification: Notification) => {
         console.log('📢 New notification received:', notification);
         
-        // Add to notifications list
         setNotifications(prev => [notification, ...prev]);
         
-        // Update unread count if not read
         if (!notification.readStatus) {
           setUnreadCount(prev => prev + 1);
         }
 
-        // Show browser notification if permission granted
-        if (Notification.permission === 'granted') {
-          new Notification(notification.title || notification.type, {
-            body: notification.message,
-            icon: '/logo.png',
-            badge: '/logo.png',
-          });
+        if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
+          try {
+            new Notification(notification.title || notification.type, {
+              body: notification.message,
+              icon: '/logo.png',
+              badge: '/logo.png',
+            });
+          } catch (e) {
+            console.warn('Failed to show browser notification:', e);
+          }
         }
       };
 
@@ -222,9 +223,12 @@ export const useNotifications = () => {
       websocketService.onNewNotification(handleNewNotification);
       websocketService.onNotificationRead(handleNotificationRead);
 
-      // Request notification permission
-      if (Notification.permission === 'default') {
-        Notification.requestPermission();
+      if (typeof window !== 'undefined' && 'Notification' in window) {
+        try {
+          if (Notification.permission === 'default') {
+            Notification.requestPermission().catch(() => {});
+          }
+        } catch {}
       }
 
       // Cleanup on unmount
