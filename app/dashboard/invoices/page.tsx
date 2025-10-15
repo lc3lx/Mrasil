@@ -117,6 +117,9 @@ export default function InvoicesPage() {
     const headers = [
       "رقم التتبع",
       "العميل",
+      "إيميل المرسل",
+      "إيميل التاجر",
+      "إيميل المستلم",
       "الشركة",
       "طريقة الدفع",
       "الحالة",
@@ -138,12 +141,15 @@ export default function InvoicesPage() {
       return [
         s.trackingId || s.companyshipmentid || "",
         `${s.customerId?.firstName || ""} ${s.customerId?.lastName || ""}`.trim(),
+        s.senderAddress?.email || s.customerId?.email || "",
+        s.customerId?.email || "",
+        s.receiverAddress?.email || "",
         s.shapmentCompany || "",
         s.paymentMathod || "",
         s.shipmentstates || "",
         s.boxNum ?? "",
         s.weight ?? "",
-        s.createdAt ? new Date(s.createdAt).toLocaleString("ar-SA") : "",
+        s.createdAt ? new Date(s.createdAt).toLocaleString("en-GB") : "",
         p.total,
         p.base,
         p.profit,
@@ -383,17 +389,19 @@ export default function InvoicesPage() {
               </div>
 
               {/* Enhanced Table */}
-              <div className="overflow-hidden rounded-xl border border-gray-200">
-                <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
-                  <div className="grid grid-cols-12 gap-4 text-sm font-semibold text-gray-700">
-                    <div className="col-span-2">رقم التتبع</div>
-                    <div className="col-span-2">العميل</div>
-                    <div className="col-span-2">شركة الشحن</div>
-                    <div className="col-span-2">القيمة</div>
-                    <div className="col-span-2">التاريخ</div>
-                    <div className="col-span-2">الإجراءات</div>
+              <div className="overflow-x-auto">
+                <div className="overflow-hidden rounded-xl border border-gray-200 min-w-[1200px]">
+                  <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                    <div className="grid grid-cols-12 gap-4 text-sm font-semibold text-gray-700">
+                      <div className="col-span-2">رقم التتبع</div>
+                      <div className="col-span-2">العميل</div>
+                      <div className="col-span-2">إيميل المرسل</div>
+                      <div className="col-span-2">إيميل المستلم</div>
+                      <div className="col-span-2">شركة الشحن</div>
+                      <div className="col-span-1">القيمة</div>
+                      <div className="col-span-1">الإجراءات</div>
+                    </div>
                   </div>
-                </div>
                 
                 <div className="divide-y divide-gray-200">
                   {isLoading ? (
@@ -411,23 +419,33 @@ export default function InvoicesPage() {
                         >
                           <div className="col-span-2 font-medium text-gray-900">{s.trackingId || s.companyshipmentid || `#${i+1}`}</div>
                           <div className="col-span-2 text-gray-700">{`${s.customerId?.firstName || ''} ${s.customerId?.lastName || ''}`.trim() || '—'}</div>
+                          <div className="col-span-2 text-gray-600 text-sm">
+                            <div className="truncate" title={s.senderAddress?.email || s.customerId?.email || '—'}>
+                              {s.senderAddress?.email || s.customerId?.email || '—'}
+                            </div>
+                          </div>
+                          <div className="col-span-2 text-gray-600 text-sm">
+                            <div className="truncate" title={s.receiverAddress?.email || '—'}>
+                              {s.receiverAddress?.email || '—'}
+                            </div>
+                          </div>
                           <div className="col-span-2 text-gray-700">{s.shapmentCompany}</div>
-                          <div className="col-span-2 font-semibold text-gray-900">{currency(price.total)}</div>
-                          <div className="col-span-2 text-gray-600">{new Date(s.createdAt).toLocaleDateString('ar-SA')}</div>
-                          <div className="col-span-2 flex justify-end">
+                          <div className="col-span-1 font-semibold text-gray-900">{currency(price.total)}</div>
+                          <div className="col-span-1 flex justify-end">
                             <motion.button 
                               onClick={() => setPreview(s)} 
                               className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border text-fuchsia-600 border-fuchsia-200 hover:bg-fuchsia-50 transition-colors"
                               whileHover={{ scale: 1.05 }}
                               whileTap={{ scale: 0.95 }}
                             >
-                              <Eye className="w-4 h-4" /> عرض الفاتورة
+                              <Eye className="w-4 h-4" /> عرض
                             </motion.button>
                           </div>
                         </motion.div>
                       );
                     })
                   )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -467,7 +485,7 @@ export default function InvoicesPage() {
                 </div>
                 <div>
                   <div className="text-sm text-gray-500 mb-1">تاريخ الإنشاء</div>
-                  <div className="font-semibold text-gray-900">{new Date(preview.createdAt).toLocaleString("ar-SA")}</div>
+                  <div className="font-semibold text-gray-900">{new Date(preview.createdAt).toLocaleString("en-GB")}</div>
                 </div>
                 <div>
                   <div className="text-sm text-gray-500 mb-1">شركة الشحن</div>
@@ -479,13 +497,22 @@ export default function InvoicesPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
-                  <div className="font-semibold text-blue-900 mb-3">بيانات المرسل</div>
+                  <div className="font-semibold text-blue-900 mb-3 flex items-center gap-2">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    بيانات المرسل
+                  </div>
                   <div className="text-sm text-blue-800 space-y-2">
                     <div className="flex items-center gap-2">
                       <span className="font-medium">الاسم:</span>
                       <span>{preview.senderAddress?.full_name || '—'}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">الإيميل:</span>
+                      <span className="bg-blue-100 px-2 py-1 rounded text-xs font-mono break-all">
+                        {preview.senderAddress?.email || preview.customerId?.email || '—'}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="font-medium">الهاتف:</span>
@@ -497,12 +524,51 @@ export default function InvoicesPage() {
                     </div>
                   </div>
                 </div>
+                
+                <div className="bg-gradient-to-br from-purple-50 to-violet-50 rounded-xl p-4 border border-purple-100">
+                  <div className="font-semibold text-purple-900 mb-3 flex items-center gap-2">
+                    <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                    بيانات التاجر/العميل
+                  </div>
+                  <div className="text-sm text-purple-800 space-y-2">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">الاسم:</span>
+                      <span>{`${preview.customerId?.firstName || ''} ${preview.customerId?.lastName || ''}`.trim() || '—'}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">الإيميل:</span>
+                      <span className="bg-purple-100 px-2 py-1 rounded text-xs font-mono break-all">
+                        {preview.customerId?.email || '—'}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">الهاتف:</span>
+                      <span>{preview.customerId?.mobile || '—'}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">الدور:</span>
+                      <span className="bg-purple-100 px-2 py-1 rounded text-xs">
+                        {preview.customerId?.role || 'عميل'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                
                 <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 border border-green-100">
-                  <div className="font-semibold text-green-900 mb-3">بيانات المستلم</div>
+                  <div className="font-semibold text-green-900 mb-3 flex items-center gap-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    بيانات المستلم
+                  </div>
                   <div className="text-sm text-green-800 space-y-2">
                     <div className="flex items-center gap-2">
                       <span className="font-medium">الاسم:</span>
                       <span>{preview.receiverAddress?.clientName || '—'}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">الإيميل:</span>
+                      <span className="bg-green-100 px-2 py-1 rounded text-xs font-mono break-all">
+                        {preview.receiverAddress?.email || '—'}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="font-medium">الهاتف:</span>

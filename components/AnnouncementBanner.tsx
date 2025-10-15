@@ -75,7 +75,7 @@ export default function AnnouncementBanner() {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -100 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="relative overflow-hidden shadow-xl mt-4 mx-4 rounded-2xl backdrop-blur-sm border border-white/20"
+        className="relative overflow-hidden shadow-xl mt-10 mx-4 rounded-2xl backdrop-blur-sm border border-white/20"
         style={{
           background: `linear-gradient(135deg, ${currentAnnouncement.backgroundColor}ee, ${currentAnnouncement.backgroundColor}cc)`,
           color: currentAnnouncement.textColor,
