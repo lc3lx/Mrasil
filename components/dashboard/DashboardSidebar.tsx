@@ -23,7 +23,8 @@ import {
   ChevronRight,
   Home,
   Settings,
-  Bell
+  Bell,
+  Receipt
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -91,6 +92,22 @@ const menuItems = [
     gradient: 'from-teal-500 to-cyan-600',
     bgColor: 'bg-teal-50',
     textColor: 'text-teal-600',
+  },
+  {
+    title: 'إدارة شركات الشحن',
+    href: '/dashboard/shipping-companies',
+    icon: Truck,
+    gradient: 'from-sky-500 to-blue-600',
+    bgColor: 'bg-sky-50',
+    textColor: 'text-sky-600',
+  },
+  {
+    title: 'الفواتير',
+    href: '/dashboard/invoices',
+    icon: Receipt,
+    gradient: 'from-fuchsia-500 to-pink-600',
+    bgColor: 'bg-fuchsia-50',
+    textColor: 'text-fuchsia-600',
   },
 ];
 

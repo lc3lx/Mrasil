@@ -7,7 +7,8 @@ import {
   useUpdateUserStatusMutation, 
   useUpdateUserRoleMutation,
   useDeleteUserMutation,
-  useAddBalanceToUserMutation 
+  useAddBalanceToUserMutation,
+  useSubtractBalanceFromUserMutation 
 } from '../../api/adminApi';
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import StatsCard from '@/components/ui/StatsCard';
@@ -17,7 +18,7 @@ import DataTable from '@/components/ui/DataTable';
 import ModernPagination from '@/components/ui/ModernPagination';
 import { useToast } from '@/components/ui/ToastProvider';
 import Link from 'next/link';
-import { Users, Shield, User, UserCheck, Search, Filter, MoreVertical, Mail, Phone, Calendar, Ban, Check, Trash2, Wallet, Eye, ArrowLeft, TrendingUp, Plus, Edit } from 'lucide-react';
+import { Users, Shield, User, UserCheck, Search, Filter, MoreVertical, Mail, Phone, Calendar, Ban, Check, Trash2, Wallet, Eye, ArrowLeft, TrendingUp, Plus, Edit, MinusCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function UsersManagement() {
@@ -62,13 +63,17 @@ export default function UsersManagement() {
   const [updateUserRole] = useUpdateUserRoleMutation();
   const [deleteUser] = useDeleteUserMutation();
   const [addBalance] = useAddBalanceToUserMutation();
+  const [subtractBalance] = useSubtractBalanceFromUserMutation();
   const { showToast } = useToast();
 
   // Modal states
   const [showAddBalanceModal, setShowAddBalanceModal] = useState(false);
+  const [showSubtractBalanceModal, setShowSubtractBalanceModal] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState('');
   const [balanceAmount, setBalanceAmount] = useState('');
   const [balanceReason, setBalanceReason] = useState('');
+  const [subtractAmount, setSubtractAmount] = useState('');
+  const [subtractReason, setSubtractReason] = useState('');
 
   const handleStatusChange = async (userId: string, newStatus: string) => {
     try {
@@ -123,6 +128,26 @@ export default function UsersManagement() {
     } catch (error) {
       console.error('Error adding balance:', error);
       showToast('error', 'خطأ في إضافة الرصيد');
+    }
+  };
+
+  const handleSubtractBalance = async () => {
+    if (!subtractAmount || !selectedUserId) return;
+    try {
+      await subtractBalance({
+        userId: selectedUserId,
+        amount: parseFloat(subtractAmount),
+        reason: subtractReason,
+      }).unwrap();
+      setShowSubtractBalanceModal(false);
+      setSubtractAmount('');
+      setSubtractReason('');
+      setSelectedUserId('');
+      refetch();
+      showToast('success', 'تم خصم الرصيد بنجاح');
+    } catch (error) {
+      console.error('Error subtracting balance:', error);
+      showToast('error', 'خطأ في خصم الرصيد');
     }
   };
 
@@ -308,6 +333,75 @@ export default function UsersManagement() {
                 </motion.div>
               </>
             )}
+
+      {/* Subtract Balance Modal */}
+      {showSubtractBalanceModal && (
+        <motion.div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <motion.div 
+            className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl w-full max-w-md p-8 border border-white/20"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            style={{
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+            }}
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-rose-600 rounded-xl flex items-center justify-center">
+                <MinusCircle className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900">خصم رصيد من المستخدم</h3>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">المبلغ</label>
+                <input
+                  type="number"
+                  placeholder="أدخل المبلغ بالريال"
+                  value={subtractAmount}
+                  onChange={(e) => setSubtractAmount(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">السبب (اختياري)</label>
+                <input
+                  type="text"
+                  placeholder="سبب خصم الرصيد"
+                  value={subtractReason}
+                  onChange={(e) => setSubtractReason(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all"
+                />
+              </div>
+            </div>
+            
+            <div className="flex items-center justify-end gap-3 mt-8">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => { setShowSubtractBalanceModal(false); setSubtractAmount(''); setSubtractReason(''); setSelectedUserId(''); }}
+                className="px-6 py-3 rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors font-medium"
+              >
+                إلغاء
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={handleSubtractBalance}
+                className="px-6 py-3 rounded-xl bg-gradient-to-r from-red-500 to-rose-600 text-white hover:from-red-600 hover:to-rose-700 transition-all font-medium shadow-lg"
+              >
+                خصم الرصيد
+              </motion.button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
           </motion.div>
 
           {/* Users Table */}
@@ -464,6 +558,17 @@ export default function UsersManagement() {
                               className="p-2 text-emerald-600 hover:bg-emerald-100 rounded-lg transition-colors"
                             >
                               <Wallet className="w-4 h-4" />
+                            </motion.button>
+                            <motion.button
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                              onClick={() => {
+                                setSelectedUserId(user._id);
+                                setShowSubtractBalanceModal(true);
+                              }}
+                              className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
+                            >
+                              <MinusCircle className="w-4 h-4" />
                             </motion.button>
                             <motion.button
                               whileHover={{ scale: 1.1 }}

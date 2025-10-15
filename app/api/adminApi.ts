@@ -150,6 +150,15 @@ export const adminApi = createApi({
       invalidatesTags: ['Wallets', 'AdminStats'],
     }),
 
+    subtractBalanceFromUser: builder.mutation({
+      query: ({ userId, amount, reason }) => ({
+        url: `/admin/wallets/${userId}/subtract-balance`,
+        method: 'POST',
+        body: { amount, reason },
+      }),
+      invalidatesTags: ['Wallets', 'AdminStats'],
+    }),
+
     // Get Pending Bank Transfers
     getPendingBankTransfers: builder.query({
       query: () => '/admin/wallets/pending-transfers',
@@ -241,6 +250,7 @@ export const {
   useGetUserWalletQuery,
   useGetUserActivityQuery,
   useAddBalanceToUserMutation,
+  useSubtractBalanceFromUserMutation,
   useGetPendingBankTransfersQuery,
   useApproveBankTransferMutation,
   useGetAllShipmentsQuery,
