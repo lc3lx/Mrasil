@@ -6,6 +6,7 @@ import V7Layout from "@/components/v7/v7-layout";
 import { V7Content } from "@/components/v7/v7-content";
 import { HomeContent } from "@/components/v7/pages/home-content";
 import { useAuth } from "./providers/AuthProvider";
+import AnnouncementBanner from "@/components/AnnouncementBanner";
 
 export default function Home() {
   const router = useRouter();
@@ -39,6 +40,9 @@ export default function Home() {
   if (isAuthenticated) {
     return (
       <V7Layout>
+        {/* Announcement Banner */}
+        <AnnouncementBanner />
+        
         <V7Content>
           {/* زر مؤقت للانتقال للداشبورد */}
           {user && (user.role === 'admin' || user.email?.includes('admin')) && (

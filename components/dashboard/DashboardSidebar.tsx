@@ -24,7 +24,9 @@ import {
   Home,
   Settings,
   Bell,
-  Receipt
+  Receipt,
+  Megaphone,
+  TicketPercent
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -84,6 +86,22 @@ const menuItems = [
     gradient: 'from-orange-500 to-red-600',
     bgColor: 'bg-orange-50',
     textColor: 'text-orange-600',
+  },
+  {
+    title: 'إدارة الإعلانات',
+    href: '/dashboard/announcements',
+    icon: Megaphone,
+    gradient: 'from-violet-500 to-purple-600',
+    bgColor: 'bg-violet-50',
+    textColor: 'text-violet-600',
+  },
+  {
+    title: 'إدارة الكوبونات',
+    href: '/dashboard/coupons',
+    icon: TicketPercent,
+    gradient: 'from-rose-500 to-pink-600',
+    bgColor: 'bg-rose-50',
+    textColor: 'text-rose-600',
   },
   {
     title: 'إحصائيات شركات الشحن',
