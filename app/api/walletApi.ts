@@ -1,18 +1,18 @@
-import { createApi } from '@reduxjs/toolkit/query/react'
-import { baseQueryWithTokenErrorHandling } from './customBaseQuery'
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseQueryWithTokenErrorHandling } from "./customBaseQuery";
 
 export interface Wallet {
-  _id: string
-  customerId: string
-  balance: number
-  transactions: any[]
-  createdAt: string
-  updatedAt: string
-  __v: number
+  _id: string;
+  customerId: string;
+  balance: number;
+  transactions: any[];
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
 }
 
 interface GetMyWalletResponse {
-  wallet: Wallet
+  wallet: Wallet;
 }
 
 export interface RechargeWalletRequest {
@@ -26,6 +26,34 @@ export interface RechargeWalletResponse {
   customerId: string;
 }
 
+export interface WalletSummary {
+  currentBalance: number;
+  totalDeposits: number;
+  totalPayments: number;
+  depositsByType: {
+    wallet_recharge: number;
+    shipment_cancel_refund: number;
+    return_shipment_refund: number;
+    coupon_credit: number;
+    admin_credit: number;
+    manual_addition: number;
+  };
+  paymentsByType: {
+    shipment_payment: number;
+    return_shipment: number;
+    package_purchase: number;
+    admin_debit: number;
+    manual_removal: number;
+  };
+  totalTransactions: number;
+  recentTransactions: any[];
+}
+
+interface GetWalletSummaryResponse {
+  success: boolean;
+  data: WalletSummary;
+}
+
 export interface GetPaymentStatusResponse {
   success: boolean;
   status: string;
@@ -34,50 +62,65 @@ export interface GetPaymentStatusResponse {
   customerId: string;
 }
 
+// @ts-ignore - RTK Query type issues
 export const walletApi = createApi({
-  reducerPath: 'walletApi',
+  reducerPath: "walletApi",
   baseQuery: baseQueryWithTokenErrorHandling,
+  tagTypes: ["Wallet"],
   endpoints: (builder) => ({
-    getMyWallet: builder.query<GetMyWalletResponse, void>({
+    getMyWallet: builder.query({
       query: () => ({
-        url: '/wallet/myWallet',
-        method: 'GET',
-        credentials: 'include',
+        url: "/wallet/myWallet",
+        method: "GET",
+        credentials: "include",
       }),
     }),
-    rechargeWallet: builder.mutation<RechargeWalletResponse, RechargeWalletRequest>({
+    getWalletSummary: builder.query({
+      query: () => ({
+        url: "/wallet/summary",
+        method: "GET",
+        credentials: "include",
+      }),
+    }),
+    rechargeWallet: builder.mutation({
       query: (body) => ({
-        url: '/wallet/rechargeWallet',
-        method: 'POST',
+        url: "/wallet/rechargeWallet",
+        method: "POST",
         body,
-        credentials: 'include',
+        credentials: "include",
       }),
     }),
-    rechargeWalletByBank: builder.mutation<any, FormData>({
+    rechargeWalletByBank: builder.mutation({
       query: (formData) => ({
-        url: '/wallet/rechargeWalletbyBank',
-        method: 'POST',
+        url: "/wallet/rechargeWalletbyBank",
+        method: "POST",
         body: formData,
-        credentials: 'include',
+        credentials: "include",
       }),
     }),
-    getPaymentStatus: builder.query<GetPaymentStatusResponse, string>({
+    getPaymentStatus: builder.query({
       query: (id) => ({
         url: `/wallet/paymentstatus/${id}`,
-        method: 'GET',
-        credentials: 'include',
+        method: "GET",
+        credentials: "include",
       }),
     }),
-    updateTransactionStatus: builder.mutation<any, { id: string; status: string }>({
+    updateTransactionStatus: builder.mutation({
       query: ({ id, status }) => ({
         url: `/wallet/updatestatus/${id}`,
-        method: 'PUT',
+        method: "PUT",
         body: { status },
-        credentials: 'include',
+        credentials: "include",
       }),
     }),
   }),
-  tagTypes: ['Wallet'],
-})
+});
 
-export const { useGetMyWalletQuery, useRechargeWalletMutation, useGetPaymentStatusQuery, useRechargeWalletByBankMutation, useUpdateTransactionStatusMutation } = walletApi 
+export const {
+  useGetMyWalletQuery,
+  useGetWalletSummaryQuery,
+  useRechargeWalletMutation,
+  useGetPaymentStatusQuery,
+  useRechargeWalletByBankMutation,
+  useUpdateTransactionStatusMutation,
+} = walletApi;
