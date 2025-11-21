@@ -120,19 +120,25 @@ export function V7ShipmentCard({
 
   // Helper functions for status, etc.
   const getStatusIcon = () => {
-    switch (shipment.shipmentstates) {
+    const status = shipment.shipmentstates;
+    switch (status) {
       case "READY_FOR_PICKUP":
-        return <Package className="h-5 w-5 text-violet-500" />;
+        return <Package className="h-5 w-5 text-blue-600" />;
       case "IN_TRANSIT":
-        return <Truck className="h-5 w-5 text-violet-500" />;
+        return <Truck className="h-5 w-5 text-orange-600" />;
       case "DELIVERED":
-        return <CheckCircle className="h-5 w-5 text-violet-500" />;
+        return <CheckCircle className="h-5 w-5 text-green-600" />;
       case "CANCELLED":
-        return <X className="h-5 w-5 text-violet-500" />;
+      case "Canceled":
+      case "CANCELED":
+        return <X className="h-5 w-5 text-red-600" />;
+      default:
+        return <Package className="h-5 w-5 text-gray-500" />;
     }
   };
   const getStatusText = () => {
-    switch (shipment.shipmentstates) {
+    const status = shipment.shipmentstates;
+    switch (status) {
       case "READY_FOR_PICKUP":
         return "جاهز للشحن";
       case "IN_TRANSIT":
@@ -140,10 +146,47 @@ export function V7ShipmentCard({
       case "DELIVERED":
         return "تم التوصيل";
       case "CANCELLED":
+      case "Canceled":
+      case "CANCELED":
         return "ملغاة";
+      default:
+        return "غير محدد";
     }
   };
-  const getStatusColor = () => "bg-violet-50 text-violet-700 border-violet-200";
+  const getStatusColor = () => {
+    const status = shipment.shipmentstates;
+    switch (status) {
+      case "READY_FOR_PICKUP":
+        return "bg-blue-50 text-blue-700 border-blue-200";
+      case "IN_TRANSIT":
+        return "bg-orange-50 text-orange-700 border-orange-200";
+      case "DELIVERED":
+        return "bg-green-50 text-green-700 border-green-200";
+      case "CANCELLED":
+      case "Canceled":
+      case "CANCELED":
+        return "bg-red-50 text-red-700 border-red-200";
+      default:
+        return "bg-gray-50 text-gray-700 border-gray-200";
+    }
+  };
+  const getStatusTextColor = () => {
+    const status = shipment.shipmentstates;
+    switch (status) {
+      case "READY_FOR_PICKUP":
+        return "text-blue-700";
+      case "IN_TRANSIT":
+        return "text-orange-700";
+      case "DELIVERED":
+        return "text-green-700";
+      case "CANCELLED":
+      case "Canceled":
+      case "CANCELED":
+        return "text-red-700";
+      default:
+        return "text-gray-700";
+    }
+  };
 
   // Carrier details
   const getCarrierLogo = (carrier: string) => {
@@ -240,15 +283,29 @@ export function V7ShipmentCard({
         company: shipment.shapmentCompany, // This will be sent in the request body
       }).unwrap();
 
-      // رسالة نجاح
-      toast.success("✅ تم إلغاء الشحنة بنجاح", {
-        description: `تم إلغاء الشحنة رقم ${trackingNumber} بنجاح. يمكنك الآن إنشاء شحنة جديدة.`,
-        duration: 6000,
-        action: {
-          label: "متابعة",
-          onClick: () => console.log("تم متابعة العملية"),
-        },
-      });
+      // رسالة إلغاء - إشعار أحمر كبير يغطي الشاشة
+      toast.custom(
+        (t) => (
+          <div
+            className="bg-red-600 text-white rounded-xl shadow-2xl p-8 w-[95%] max-w-[95vw] mx-auto text-center border-4 border-red-700"
+            style={{
+              fontSize: "24px",
+              fontWeight: "bold",
+              zIndex: 10000,
+              boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
+            }}
+          >
+            <div className="text-3xl mb-3 font-extrabold">⚠️ تم الإلغاء</div>
+            <div className="text-xl opacity-95">
+              تم إلغاء الشحنة رقم {trackingNumber} بنجاح
+            </div>
+          </div>
+        ),
+        {
+          duration: 6000,
+          position: "top-center",
+        }
+      );
 
       console.log("Shipment cancelled successfully:", result);
     } catch (error: any) {
@@ -348,7 +405,9 @@ export function V7ShipmentCard({
                   <span className="ml-2 w-4 h-4 sm:w-5 sm:h-5">
                     {getStatusIcon()}
                   </span>
-                  <span className="text-[#294D8B]  text-sm sm:text-base ">
+                  <span
+                    className={`${getStatusTextColor()}  text-sm sm:text-base font-medium`}
+                  >
                     {getStatusText()}
                   </span>
                 </div>
@@ -482,15 +541,33 @@ export function V7ShipmentCard({
                   تفاصيل الشحنة
                 </div>
                 {[
-                  ["رقم التتبع", trackingNumber],
+                  [
+                    "سعر البوليصة",
+                    `${(shipment.totalprice ?? 0).toLocaleString()} ريال`,
+                  ],
                   ["الوزن", `${shipment.weight} كجم`],
                   [
                     "الأبعاد",
-                    typeof shipment.dimension?.length === "number" &&
-                    typeof shipment.dimension?.width === "number" &&
-                    typeof shipment.dimension?.high === "number"
-                      ? `${shipment.dimension.length} × ${shipment.dimension.width} × ${shipment.dimension.high} سم`
-                      : "-",
+                    (() => {
+                      const dim = shipment.dimension;
+                      if (!dim) return "-";
+
+                      const length = dim.length ?? dim.height;
+                      const width = dim.width;
+                      const height = dim.high ?? dim.height;
+
+                      if (
+                        typeof length === "number" &&
+                        typeof width === "number" &&
+                        typeof height === "number" &&
+                        length > 0 &&
+                        width > 0 &&
+                        height > 0
+                      ) {
+                        return `${length} × ${width} × ${height} سم`;
+                      }
+                      return "-";
+                    })(),
                   ],
                   [
                     "نوع الشحن",
