@@ -67,12 +67,12 @@ export default function LoginPage() {
       <ResponseModal isOpen={modalOpen} onClose={() => setModalOpen(false)} status="fail" message={modalMessage} />
       <main className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="w-full flex justify-center items-center min-h-[80vh]">
-          <div className="w-full max-w-md mx-auto bg-white/20 backdrop-blur-xl border border-white/30 rounded-3xl shadow-xl p-10 flex flex-col items-center">
+          <div className="w-full max-w-md mx-auto bg-white/20 backdrop-blur-xl border border-white/30 rounded-2xl shadow-2xl p-12 flex flex-col items-center">
             {/* Title */}
-            <Link href={"/"}>
-                    <Image src="/logo.png" alt="شعار الشركة" className="h-16 mb-2 w-auto" width={100} height={100} />
+            <Link href={"/"} className="mb-6">
+              <Image src="/logo.png" alt="شعار الشركة" className="h-28 w-auto" width={180} height={180} />
             </Link>
-            <h2 className="text-3xl font-bold text-white mb-8 tracking-wide text-center drop-shadow">تسجيل دخول</h2>
+            <h2 className="text-4xl font-bold text-white mb-10 tracking-wide text-center drop-shadow-lg">تسجيل دخول</h2>
             {/* Form Section */}
             <form onSubmit={handleSubmit} className="w-full flex flex-col gap-6">
               {/* Email Field */}
@@ -88,7 +88,7 @@ export default function LoginPage() {
                     name="email"
                     type="email"
                     required
-                    className="block w-full pl-12 pr-4 py-3 bg-white/10 text-white placeholder-white/70 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-white/60 focus:border-none text-base"
+                    className="block w-full pl-12 pr-4 py-3.5 bg-white/10 text-white placeholder-white/70 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-white/60 focus:border-none text-base border border-white/20"
                       placeholder="البريد الإلكتروني"
                     value={formData.email}
                     onChange={handleChange}
@@ -108,7 +108,7 @@ export default function LoginPage() {
                     name="password"
                     type={showPassword ? "text" : "password"}
                     required
-                    className="block w-full pl-12 pr-10 py-3 bg-white/10 text-white placeholder-white/70 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-white/60 focus:border-none text-base"
+                    className="block w-full pl-12 pr-10 py-3.5 bg-white/10 text-white placeholder-white/70 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-white/60 focus:border-none text-base border border-white/20"
                     placeholder="كلمة المرور"
                     value={formData.password}
                     onChange={handleChange}
@@ -141,7 +141,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3 rounded-full text-white bg-primary font-bold text-lg shadow hover:shadow-2xl transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full py-4 rounded-xl text-white bg-primary font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {isLoading ? (
                   <div className="flex items-center justify-center">

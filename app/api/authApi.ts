@@ -60,11 +60,15 @@ export const authApi = createApi({
   }),
   endpoints: (builder) => ({
     signup: builder.mutation<AuthResponse, SignupRequest>({
-      query: (userData: SignupRequest) => ({
-        url: '/auth/signup',
-        method: 'POST',
-        body: userData,
-      }),
+      query: (userData: SignupRequest) => {
+        // Exclude confirmPassword from the request body
+        const { confirmPassword, ...signupData } = userData;
+        return {
+          url: '/auth/signup',
+          method: 'POST',
+          body: signupData,
+        };
+      },
     }),
     login: builder.mutation<AuthResponse, LoginRequest>({
       query: (credentials: LoginRequest) => ({

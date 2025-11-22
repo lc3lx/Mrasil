@@ -101,7 +101,9 @@ export function RecipientAddressSection({
     }
     return 0;
   };
-  const recipientCards = [...rawRecipientCards].sort((a, b) => getTime(b) - getTime(a));
+  const recipientCards = [...rawRecipientCards].sort(
+    (a, b) => getTime(b) - getTime(a)
+  );
   const [openRecipientModal, setOpenRecipientModal] = useState(false);
   const [editRecipientModalOpen, setEditRecipientModalOpen] = useState(false);
   const [recipientToEdit, setRecipientToEdit] = useState<any | null>(null);
@@ -114,6 +116,7 @@ export function RecipientAddressSection({
     clientEmail: "",
     clientPhone: "",
     customer: "",
+    district: "",
   });
   const [recipientToDelete, setRecipientToDelete] = useState<string | null>(
     null
@@ -125,7 +128,7 @@ export function RecipientAddressSection({
   const [alertStatus, setAlertStatus] = useState<"success" | "fail">("success");
   const [alertMessage, setAlertMessage] = useState("");
   const [descFocused, setDescFocused] = useState(false);
-  const [search, setSearch] = useState("");
+  const [citySearch, setCitySearch] = useState("");
 
   const [form, setForm] = useState({
     city: initialValues?.city || "",
@@ -217,25 +220,46 @@ export function RecipientAddressSection({
     }
   };
 
-  const filteredRecipientCards = (recipientCards || []).filter(
-    (card: any) =>
-      (card.clientName || "")
-        .toLowerCase()
-        .includes(searchRecipient.toLowerCase()) ||
-      (card.clientPhone || "")
-        .toLowerCase()
-        .includes(searchRecipient.toLowerCase()) ||
-      (card.clientEmail || "")
-        .toLowerCase()
-        .includes(searchRecipient.toLowerCase())
-  );
+  const normalize = (str: string) =>
+    str
+      .toLowerCase()
+      .trim()
+      .replace(/[\u0621-\u064A]/g, (char) => {
+        const map: Record<string, string> = {
+          أ: "ا",
+          إ: "ا",
+          آ: "ا",
+          ه: "ه",
+          ة: "ه",
+          ي: "ي",
+          ى: "ي",
+        };
+        return map[char] || char;
+      });
+
+  const search = normalize(searchRecipient.trim());
+  const filteredRecipientCards = (recipientCards || []).filter((card: any) => {
+    const cardName = normalize(card.clientName || "");
+    const cardPhone = normalize(card.clientPhone || "");
+    const cardEmail = normalize(card.clientEmail || "");
+    const cardCity = normalize(card.city || "");
+    const cardAddress = normalize(card.clientAddress || "");
+    return (
+      cardName.includes(search) ||
+      cardPhone.includes(search) ||
+      cardEmail.includes(search) ||
+      cardCity.includes(search) ||
+      cardAddress.includes(search)
+    );
+  });
+
   const displayedRecipientCards = showAllRecipients
     ? filteredRecipientCards
     : filteredRecipientCards.slice(0, 6);
 
   return (
     <motion.div variants={staggerChildren}>
-      <div className="flex items-center gap-3 pb-4">
+      <div className="flex items-center gap-3  pb-4 ">
         <div className="v7-neu-icon-sm">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -253,27 +277,25 @@ export function RecipientAddressSection({
             <circle cx="12" cy="7" r="4" />
           </svg>
         </div>
-        <h2 className="text-2xl font-semibold text-[#1a365d]">
-          بيانات المستلم
-        </h2>
+        <h3 className="text-2xl font-bold text-gray-800"> بيانات المستلم</h3>
       </div>
-      <div className="flex flex-col sm:flex-row items-center gap-3 mb-4">
+      <div className="flex  flex-col sm:flex-row  gap-3 mb-4">
         <div className="relative v7-neu-input-container flex-1 min-w-[240px]">
           <Search className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6d6a67]" />
 
           <Input
-            type="text"
+            className="v7-neu-input w-full pr-12 pe-4 text-gry  text-base"
             placeholder="ابحث ضمن عناوين العملاء"
+            type="text"
             value={searchRecipient}
             onChange={(e) => setSearchRecipient(e.target.value)}
-            className="v7-neu-input w-full pr-12 pe-4 text-gry  text-base"
             style={{ direction: "rtl", fontFamily: "inherit" }}
           />
         </div>
         <button
           type="button"
           onClick={() => setOpenRecipientModal(true)}
-          className="v7-neu-button-accent w-full sm:w-fit  bg-gradient-to-r from-[#3498db] to-[#2980b9] hover:from-[#2980b9] hover:to-[#3498db] transition-all duration-300 px-8 py-2 rounded-lg text-white font-bold flex items-center  text-center justify-center gap-2"
+          className="v7-neu-button-accent text-primary w-full sm:w-fit  bg-gradient-to-r from-[#3498db] to-[#2980b9] hover:from-[#2980b9] hover:to-[#3498db] transition-all duration-300 px-8 py-2 rounded-lg  font-bold flex items-center  text-center justify-center gap-2"
         >
           + مستلم جديد
         </button>
@@ -298,18 +320,8 @@ export function RecipientAddressSection({
                 </div>
               </div>
             )}
-            <div className="absolute top-3 left-3 flex gap-1">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-7 w-7 rounded-full hover:bg-blue-100"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleEditRecipient(card);
-                }}
-              >
-                <Edit className="h-4 w-4 text-[#3498db]" />
-              </Button>
+            {/* Delete icon */}
+            <div className="absolute top-3 left-3">
               <Button
                 variant="ghost"
                 size="icon"
@@ -322,6 +334,20 @@ export function RecipientAddressSection({
                 <Trash2 className="w-4 h-4 text-red-500" />
               </Button>
             </div>
+            {/* Edit icon */}
+            <div className="absolute top-3 left-12">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 rounded-full hover:bg-blue-100"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleEditRecipient(card);
+                }}
+              >
+                <Edit className="w-4 h-4 text-[#3498db]" />
+              </Button>
+            </div>
             <div className="flex flex-col gap-3 pt-2">
               <div className="font-bold text-2xl">{card.clientName}</div>
               <div className="flex items-center gap-2 text-lg text-gray-700">
@@ -330,18 +356,16 @@ export function RecipientAddressSection({
               </div>
               <div className="flex items-center gap-2 text-lg text-gray-700">
                 <MapPin className="h-4 w-4 text-[#3498db]" />
-                <span>
-                  {card.city}
-                  {card.clientAddress ? `، ${card.clientAddress}` : ""}
-                </span>
+                <span>{card.city}</span>
+                {card.country && <span>,{card.country}</span>}
               </div>
-              {(card.address || card.district) && (
+              {card?.clientAddress && (
                 <div className="flex items-center gap-2 text-lg text-gray-700">
                   <span className="font-bold">الحي/المنطقة:</span>
-                  <span>{card.address || card.district}</span>
+                  <span>{card.clientAddress}</span>
                 </div>
               )}
-              <div className="flex items-center gap-2 text-lg text-gray-500">
+              <div className="flex items-center gap-2 text-base text-gray-500">
                 <Mail className="h-4 w-4 text-[#3498db]" />
                 <span>{card.clientEmail}</span>
               </div>
@@ -362,116 +386,86 @@ export function RecipientAddressSection({
           </Button>
         </div>
       )}
-      {/* Recipient Modal */}
-      <Dialog open={openRecipientModal} onOpenChange={setOpenRecipientModal}>
-        <DialogContent className="bg-transparent shadow-none p-0 max-w-lg w-full flex items-center justify-center ">
-          <div
-            className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-2xl max-w-md w-full relative overflow-hidden"
-            style={{ opacity: 1, transform: "none" }}
-          >
-            <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3498db]/5 to-transparent rounded-full transform translate-x-20 -translate-y-20"></div>
-            <div className="absolute bottom-0 left-0 w-40 h-40 bg-gradient-to-br from-[#3498db]/5 to-transparent rounded-full transform -translate-x-20 translate-y-20"></div>
-            <div className="relative">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-[#3498db]/10 flex items-center justify-center">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="lucide lucide-user h-4 w-4 text-[#3498db]"
-                    >
-                      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
-                      <circle cx="12" cy="7" r="4"></circle>
-                    </svg>
-                  </div>
-                  إضافة عميل جديد
-                </h3>
-                <button
-                  className="ring-offset-background focus-visible:outline-hidden focus-visible:ring-ring inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:text-accent-foreground h-8 w-8 rounded-full hover:bg-[#3498db]/10"
-                  onClick={() => setOpenRecipientModal(false)}
-                  type="button"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="lucide lucide-x h-5 w-5"
-                  >
-                    <path d="M18 6 6 18"></path>
-                    <path d="m6 6 12 12"></path>
-                  </svg>
-                </button>
-              </div>
-              <AddRecipientForm
-                isOpen={openRecipientModal}
-                onClose={() => setOpenRecipientModal(false)}
-                onSubmit={async (data) => {
-                  try {
-                    const payload = { ...data };
-                    if ("customer" in payload && !payload.customer) {
-                      delete (payload as any).customer;
-                    }
-                    await createClientAddress(payload).unwrap();
-                    setAlertStatus("success");
-                    setAlertMessage("تمت إضافة العميل بنجاح");
-                    setAlertOpen(true);
-                    setOpenRecipientModal(false);
-                  } catch (err: any) {
-                    setAlertStatus("fail");
-                    setAlertMessage(
-                      err?.data?.message || "حدث خطأ أثناء إضافة العميل"
-                    );
-                    setAlertOpen(true);
-                  }
-                }}
-                isLoading={isCreating}
-                error={createError}
-                initialValues={{
-                  clientName: "",
-                  clientAddress: "",
-                  city: "",
-                  country: "",
-                  clientEmail: "",
-                  clientPhone: "",
-                  customer: "",
-                  district: "",
-                }}
-              />
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* Add Recipient Form */}
+      <AddRecipientForm
+        isOpen={openRecipientModal}
+        onClose={() => setOpenRecipientModal(false)}
+        onSubmit={async (data) => {
+          try {
+            const payload = { ...data };
+            if ("customer" in payload && !payload.customer) {
+              delete (payload as any).customer;
+            }
+            await createClientAddress(payload).unwrap();
+            setAlertStatus("success");
+            setAlertMessage("تمت إضافة المستلم بنجاح");
+            setAlertOpen(true);
+            setOpenRecipientModal(false);
+          } catch (err: any) {
+            setAlertStatus("fail");
+            setAlertMessage(
+              err?.data?.message || "حدث خطأ أثناء إضافة المستلم"
+            );
+            setAlertOpen(true);
+          }
+        }}
+        isLoading={isCreating}
+        error={createError}
+        initialValues={{
+          clientName: "",
+          clientAddress: "",
+          city: "",
+          country: "",
+          clientEmail: "",
+          clientPhone: "",
+          customer: "",
+          district: "",
+        }}
+      />
       <ResponseModal
         isOpen={alertOpen}
         onClose={() => setAlertOpen(false)}
         status={alertStatus}
         message={alertMessage}
       />
-      <ConfirmModal
-        isOpen={deleteConfirmOpen}
-        onClose={() => {
-          setDeleteConfirmOpen(false);
-          setRecipientToDelete(null);
-        }}
-        onConfirm={handleConfirmDelete}
-        title="تأكيد الحذف"
-        description="هل أنت متأكد من حذف هذا العنوان؟ لا يمكن التراجع عن هذا الإجراء."
-        confirmText={isDeleting ? "جاري الحذف..." : "حذف"}
-        cancelText="إلغاء"
-      />
+      {/* Delete Confirm Modal */}
+      {deleteConfirmOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
+          <div className="bg-white rounded-xl p-6 shadow-lg w-full max-w-sm">
+            <div className="mb-4 text-lg font-bold text-[#1a365d]">
+              تأكيد الحذف
+            </div>
+            <div className="mb-6 text-gray-600">
+              هل أنت متأكد من حذف هذا العنوان؟ لا يمكن التراجع عن هذا الإجراء.
+            </div>
+            <div className="flex gap-2 justify-end">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setDeleteConfirmOpen(false);
+                  setRecipientToDelete(null);
+                }}
+                disabled={isDeleting}
+              >
+                إلغاء
+              </Button>
+              <Button
+                className="bg-red-500 text-white"
+                onClick={async () => {
+                  if (recipientToDelete) {
+                    await deleteClientAddress(recipientToDelete);
+                    setDeleteConfirmOpen(false);
+                    setRecipientToDelete(null);
+                  }
+                }}
+                disabled={isDeleting}
+              >
+                {isDeleting ? "جاري الحذف..." : "حذف"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Edit Recipient Modal */}
       <Dialog
         open={editRecipientModalOpen}
@@ -582,9 +576,9 @@ export function RecipientAddressSection({
                 <input
                   id="city"
                   autoComplete="off"
-                  value={search || form.city}
+                  value={citySearch || form.city}
                   onChange={(e) => {
-                    setSearch(e.target.value);
+                    setCitySearch(e.target.value);
                     setForm({ ...form, city: "" });
                   }}
                   required
@@ -594,9 +588,9 @@ export function RecipientAddressSection({
                   onBlur={() => setTimeout(() => setDescFocused(false), 200)}
                 />
                 {/* Dropdown results */}
-                {descFocused && search && (
+                {descFocused && citySearch && (
                   <CityAutocompleteDropdown
-                    search={search}
+                    search={citySearch}
                     onSelect={(cityObj) => {
                       setForm({ ...form, city: cityObj.name_ar });
                       setEditRecipient({
@@ -604,7 +598,7 @@ export function RecipientAddressSection({
                         city: cityObj.name_ar,
                       });
 
-                      setSearch("");
+                      setCitySearch("");
                       setDescFocused(false);
                     }}
                   />

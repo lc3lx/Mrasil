@@ -4,6 +4,10 @@ import React, { useEffect, useState } from "react";
 import realBlue from "../../../public/real-blue.png";
 import { motion } from "framer-motion";
 import { useCreateParcelMutation } from "@/app/api/parcelsApi";
+import {
+  useUpdateShipmentCompanyMutation,
+  useGetAllShipmentCompaniesQuery,
+} from "@/app/api/shipmentCompanyApi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -46,6 +50,8 @@ interface CarrierCardProps {
   setValue: (name: string, value: any) => void;
   parcelsData: BoxSize[];
   error: string;
+  setBoxSizes?: (sizes: BoxSize[]) => void;
+  companiesData?: any[];
 }
 
 export default function CarrierCard({
@@ -63,6 +69,8 @@ export default function CarrierCard({
   setValue,
   parcelsData = [],
   error = "",
+  setBoxSizes,
+  companiesData = [],
 }: CarrierCardProps) {
   const [customModalOpen, setCustomModalOpen] = useState(false);
   const [customParcel, setCustomParcel] = useState({
@@ -73,6 +81,9 @@ export default function CarrierCard({
   });
   const [createParcel, { isLoading: isCreatingParcel }] =
     useCreateParcelMutation();
+  const [updateShipmentCompany] = useUpdateShipmentCompanyMutation();
+  const { refetch: refetchCompanies } = useGetAllShipmentCompaniesQuery();
+  const [localError, setLocalError] = useState<string>("");
 
   const [imgSrc, setImgSrc] = useState<string>(
     (logoSrc as string) || "/carriers/carrier-placeholder.png"
@@ -260,58 +271,60 @@ export default function CarrierCard({
 
             {["smsa", "aramex"].includes(company.company) &&
               ["Dry"].includes(company.shippingType.type) &&
-              parcelsData?.data?.map((parcel) => {
-                const selected =
-                  selectedBoxSize?.length === parcel.dimensions.length &&
-                  selectedBoxSize?.width === parcel.dimensions.width &&
-                  selectedBoxSize?.height === parcel.dimensions.height;
-                return (
-                  <motion.div
-                    key={parcel.id}
-                    className={`v7-neu-card-inner p-12 cursor-pointer w-fit  ${
-                      selected
-                        ? " bg-gradient-to-br from-[#3498db]/5 to-[#3498db]/10"
-                        : "hover:bg-gradient-to-br hover:from-[#3498db]/5 hover:to-transparent hover:text-white"
-                    }`}
-                    onClick={() => {
-                      const newBox: BoxSize = {
-                        key: parcel.id,
-                        label: parcel.title,
-                        length: parcel.dimensions.length,
-                        width: parcel.dimensions.width,
-                        height: parcel.dimensions.height,
-                      };
-                      setSelectedBoxSize(newBox);
-                      setValue("boxSize", newBox);
-                    }}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <div className="flex flex-col items-center text-center gap-2 relative">
-                      <div
-                        className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                          selected
-                            ? "bg-gradient-to-br from-[#3498db] to-[#2980b9] text-white"
-                            : "bg-[#3498db]/10 text-[#3498db]"
-                        }`}
-                      >
-                        <Package className="h-6 w-6" />
-                      </div>
-
-                      <div className="text-base text-gray-700 mt-1 ">
-                        {parcel.dimensions.length}×{parcel.dimensions.width}×
-                        {parcel.dimensions.height} سم
-                      </div>
-
-                      {selected && (
-                        <div className="absolute top-2 right-2 w-5 h-5 bg-[#3498db] rounded-full flex items-center justify-center">
-                          <Check className="h-4 w-4 text-white" />
+              (Array.isArray(parcelsData) ? parcelsData : []).map(
+                (parcel: any) => {
+                  const selected =
+                    selectedBoxSize?.length === parcel.dimensions.length &&
+                    selectedBoxSize?.width === parcel.dimensions.width &&
+                    selectedBoxSize?.height === parcel.dimensions.height;
+                  return (
+                    <motion.div
+                      key={parcel.id}
+                      className={`v7-neu-card-inner p-12 cursor-pointer w-fit  ${
+                        selected
+                          ? " bg-gradient-to-br from-[#3498db]/5 to-[#3498db]/10"
+                          : "hover:bg-gradient-to-br hover:from-[#3498db]/5 hover:to-transparent hover:text-white"
+                      }`}
+                      onClick={() => {
+                        const newBox: BoxSize = {
+                          key: parcel.id,
+                          label: parcel.title,
+                          length: parcel.dimensions.length,
+                          width: parcel.dimensions.width,
+                          height: parcel.dimensions.height,
+                        };
+                        setSelectedBoxSize(newBox);
+                        setValue("boxSize", newBox);
+                      }}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <div className="flex flex-col items-center text-center gap-2 relative">
+                        <div
+                          className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                            selected
+                              ? "bg-gradient-to-br from-[#3498db] to-[#2980b9] text-white"
+                              : "bg-[#3498db]/10 text-[#3498db]"
+                          }`}
+                        >
+                          <Package className="h-6 w-6" />
                         </div>
-                      )}
-                    </div>
-                  </motion.div>
-                );
-              })}
+
+                        <div className="text-base text-gray-700 mt-1 ">
+                          {parcel.dimensions.length}×{parcel.dimensions.width}×
+                          {parcel.dimensions.height} سم
+                        </div>
+
+                        {selected && (
+                          <div className="absolute top-2 right-2 w-5 h-5 bg-[#3498db] rounded-full flex items-center justify-center">
+                            <Check className="h-4 w-4 text-white" />
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  );
+                }
+              )}
 
             {/* زر إضافة حجم مخصص */}
             {["smsa", "aramex"].includes(company.company) &&
@@ -344,7 +357,7 @@ export default function CarrierCard({
       )}
       {/* <div className="mt-2">
   {error && typeof error === "string" && (
-    <p className="text-red-500 text-sm">{error}</p>
+    <p className="text-red-500 text-sm">{error || localError}</p>
   )}
 
   {error && typeof error === "object" && (
@@ -421,7 +434,7 @@ export default function CarrierCard({
           </div>
 
           {/* عرض رسالة الخطأ إن وجدت */}
-          {error && <p className="text-red-600 text-sm">{error}</p>}
+          {localError && <p className="text-red-600 text-sm">{localError}</p>}
 
           <DialogFooter>
             <div className="flex gap-2 w-48">
@@ -429,7 +442,7 @@ export default function CarrierCard({
                 variant="ghost"
                 onClick={() => {
                   setCustomModalOpen(false);
-                  setError("");
+                  setLocalError("");
                 }}
               >
                 إلغاء
@@ -447,7 +460,7 @@ export default function CarrierCard({
                     !String(customParcel.width).trim() ||
                     !String(customParcel.height).trim()
                   ) {
-                    setError("جميع الحقول مطلوبة");
+                    setLocalError("جميع الحقول مطلوبة");
                     return;
                   }
 
@@ -461,13 +474,13 @@ export default function CarrierCard({
                       (n) => isNaN(n) || n <= 0
                     )
                   ) {
-                    setError(
+                    setLocalError(
                       "الطول/العرض/الارتفاع يجب أن يكونوا أرقاماً صحيحة أكبر من صفر"
                     );
                     return;
                   }
 
-                  setError("");
+                  setLocalError("");
 
                   try {
                     await createParcel({
@@ -480,6 +493,67 @@ export default function CarrierCard({
                       isPublic: false,
                     }).unwrap();
 
+                    // إضافة الصندوق إلى allowedBoxSizes لشركة الشحن
+                    if (company.company && companiesData && setBoxSizes) {
+                      const companyData = companiesData.find(
+                        (c: any) => c.company === company.company
+                      );
+                      if (companyData && companyData._id) {
+                        try {
+                          const newBoxSize = {
+                            length: lengthNum,
+                            width: widthNum,
+                            height: heightNum,
+                          };
+
+                          // التحقق من عدم وجود الصندوق مسبقاً
+                          const existingSizes =
+                            companyData.allowedBoxSizes || [];
+                          const isDuplicate = existingSizes.some(
+                            (size: any) =>
+                              size.length === newBoxSize.length &&
+                              size.width === newBoxSize.width &&
+                              size.height === newBoxSize.height
+                          );
+
+                          if (!isDuplicate) {
+                            const updatedSizes = [...existingSizes, newBoxSize];
+
+                            await updateShipmentCompany({
+                              id: companyData._id,
+                              data: {
+                                allowedBoxSizes: updatedSizes,
+                              },
+                            }).unwrap();
+
+                            // تحديث boxSizes في الواجهة
+                            const updatedBoxSizes = updatedSizes.map(
+                              (s: any) => ({
+                                ...s,
+                                label: `${s.length}×${s.width}×${s.height} سم`,
+                              })
+                            );
+                            setBoxSizes(updatedBoxSizes);
+
+                            // إعادة جلب بيانات الشركات
+                            refetchCompanies();
+                          } else {
+                            // إذا كان الصندوق موجوداً، فقط حدث boxSizes
+                            const updatedBoxSizes = existingSizes.map(
+                              (s: any) => ({
+                                ...s,
+                                label: `${s.length}×${s.width}×${s.height} سم`,
+                              })
+                            );
+                            setBoxSizes(updatedBoxSizes);
+                          }
+                        } catch (updateErr) {
+                          console.error("فشل تحديث أحجام الصناديق:", updateErr);
+                          // لا نوقف العملية، فقط نسجل الخطأ
+                        }
+                      }
+                    }
+
                     // أغلق المودال ونظف الحقول
                     setCustomModalOpen(false);
                     setCustomParcel({
@@ -490,7 +564,7 @@ export default function CarrierCard({
                     });
                   } catch (err) {
                     console.error("فشل إنشاء الطرد:", err);
-                    setError("فشل إضافة الطرد، حاول مرة أخرى.");
+                    setLocalError("فشل إضافة الطرد، حاول مرة أخرى.");
                   }
                 }}
               >

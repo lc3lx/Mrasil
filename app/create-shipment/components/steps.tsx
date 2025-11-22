@@ -807,9 +807,23 @@ function Step2Content({
           )}
           <div className="v7-neu-input-container relative overflow-hidden group sm:w-1/2 lg:w-1/3">
             <input
-              // type="number"
+              type="text"
+              inputMode="numeric"
               min="0"
-              {...register("total", { required: "الحقل مطلوب" })}
+              {...register("total", {
+                required: "الحقل مطلوب",
+                onChange: (e) => {
+                  // Allow only numbers and decimal point
+                  const value = e.target.value.replace(/[^0-9.]/g, "");
+                  // Prevent multiple decimal points
+                  const parts = value.split(".");
+                  const filteredValue =
+                    parts.length > 2
+                      ? parts[0] + "." + parts.slice(1).join("")
+                      : value;
+                  setValue("total", filteredValue, { shouldValidate: true });
+                },
+              })}
               placeholder="أدخل الإجمالى"
               className="v7-neu-input text-base"
             />
@@ -1088,11 +1102,9 @@ function Step3Content({
                     full_name: values.recipient_full_name || "",
                     mobile: values.recipient_mobile || "",
                     email: values.recipient_email || "",
-                    address:
-                     values.recipient_district ,
+                    address: values.recipient_district,
                     city: values.recipient_city || "",
-                    district:
-                      values.recipient_district ,
+                    district: values.recipient_district,
                     country: "sa",
                   },
                   description: values.orderDescription || "",
@@ -1188,7 +1200,9 @@ function Step3Content({
         const results = await Promise.all(pricePromises);
 
         // فصل النتائج الناجحة عن الأخطاء
-        const successfulPrices = results.filter((result: any) => result.success);
+        const successfulPrices = results.filter(
+          (result: any) => result.success
+        );
         const failedPrices = results.filter((result: any) => !result.success);
 
         setPrices(successfulPrices);
@@ -1386,6 +1400,8 @@ function Step3Content({
                       ? error
                       : (error as any)?.message || ""
                   }
+                  setBoxSizes={setBoxSizes}
+                  companiesData={companiesData}
                 />
               );
             })
