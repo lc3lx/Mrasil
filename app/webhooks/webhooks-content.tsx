@@ -19,9 +19,6 @@ export function WebhooksContent() {
   const [webhookUrl, setWebhookUrl] = useState("")
   const sallaToken = "38c5a910b012dfcbca23913cfb167308602e62fa9edea4c9ac2fa28"
   const manualAuthUrlRef = useRef("")
-  const [showInputs, setShowInputs] = useState(false);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
   const [triggerGetAuthUrl, { data: authData, isLoading: isShopifyAuthLoading, error: authError }] = useLazyGetAuthUrlQuery();
 
   // Get webhook status
@@ -74,6 +71,24 @@ export function WebhooksContent() {
     }
   }
 
+  // Handle Shopify Auth URL - same as Salla
+  const handleShopifyAuth = async () => {
+    try {
+      const result = await triggerGetAuthUrl({ firstName: "store", lastName: "user" });
+      if (result.data?.authUrl) {
+        window.open(result.data.authUrl, "_blank");
+      }
+    } catch (error) {
+      toast.error("حدث خطأ أثناء الحصول على رابط المصادقة")
+    }
+  }
+
+  // Handle WooCommerce Auth URL - same as Salla
+  const handleWooCommerceAuth = async () => {
+    // TODO: Add WooCommerce API endpoint
+    toast.info("قريباً: سيتم إضافة دعم WooCommerce")
+  }
+
   const webhook = { active: webhookStatus?.isEnabled ?? false }
 
   return (
@@ -98,44 +113,20 @@ export function WebhooksContent() {
                   </div>
                   <h3 className="font-medium dark:text-gray-200 text-lg">Shopify</h3>
                   <p className="text-base text-gray-500 dark:text-gray-400 text-center mt-2">قم بتوصيل متجر Shopify الخاص بك</p>
-                  {showInputs && (
-                    <div className="flex flex-col gap-2 mb-4">
-                      <input
-                        type="text"
-                        className="v7-neu-input text-right"
-                        placeholder="الاسم الأول"
-                        value={firstName}
-                        onChange={e => setFirstName(e.target.value)}
-                      />
-                      <input
-                        type="text"
-                        className="v7-neu-input text-right"
-                        placeholder="اسم العائلة"
-                        value={lastName}
-                        onChange={e => setLastName(e.target.value)}
-                      />
-                    </div>
-                  )}
                   <Button
                     className="mt-4 v7-neu-button dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 text-lg py-2 px-4"
                     disabled={isShopifyAuthLoading}
-                    onClick={async () => {
-                      if (!showInputs) {
-                        setShowInputs(true);
-                        return;
-                      }
-                      if (firstName && lastName) {
-                        await triggerGetAuthUrl({ firstName, lastName });
-                      }
-                    }}
+                    onClick={handleShopifyAuth}
                   >
-                    {isShopifyAuthLoading ? "...جاري التوصيل" : "توصيل"}
+                    {isShopifyAuthLoading ? (
+                      <>
+                        <Loader2 className="animate-spin h-5 w-5 ml-2" />
+                        جاري التوصيل
+                      </>
+                    ) : "توصيل"}
                   </Button>
-                  {authData && authData.authUrl && (
-                    <div className="mt-4 text-green-700 text-center break-all">رابط التوثيق: <a href={authData.authUrl} target="_blank" rel="noopener noreferrer" className="underline">{authData.authUrl}</a></div>
-                  )}
                   {authError && (
-                    <div className="mt-4 text-red-600 text-center">{authError?.data?.error || "حدث خطأ أثناء جلب رابط التوثيق"}</div>
+                    <div className="mt-4 text-red-600 text-center text-sm">{authError?.data?.error || "حدث خطأ أثناء جلب رابط التوثيق"}</div>
                   )}
                 </CardContent>
               </Card>
@@ -149,7 +140,12 @@ export function WebhooksContent() {
                   </div>
                   <h3 className="font-medium dark:text-gray-200 text-lg">WooCommerce</h3>
                   <p className="text-base text-gray-500 dark:text-gray-400 text-center mt-2">قم بتوصيل متجر WooCommerce الخاص بك</p>
-                  <Button className="mt-4 v7-neu-button dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 text-lg py-2 px-4">توصيل</Button>
+                  <Button 
+                    className="mt-4 v7-neu-button dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 text-lg py-2 px-4"
+                    onClick={handleWooCommerceAuth}
+                  >
+                    توصيل
+                  </Button>
                 </CardContent>
               </Card>
             </div>
@@ -171,7 +167,12 @@ export function WebhooksContent() {
                     }}
                     disabled={isLoadingZidAuth}
                   >
-                    توصيل
+                    {isLoadingZidAuth ? (
+                      <>
+                        <Loader2 className="animate-spin h-5 w-5 ml-2" />
+                        جاري التوصيل
+                      </>
+                    ) : "توصيل"}
                   </Button>
                 </CardContent>
               </Card>
@@ -182,17 +183,20 @@ export function WebhooksContent() {
                   <div className="w-20 h-20 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center mb-4">
                     <Image src="/salla.svg" alt="سلة" width={60} height={60} className="dark:invert" />
                   </div>
-                  <h3 className="font-medium dark:text-gray-200 text-2xl">زد</h3>
+                  <h3 className="font-medium dark:text-gray-200 text-lg">سلة</h3>
                   <p className="text-base text-gray-500 dark:text-gray-400 text-center mt-2">قم بتوصيل متجر سلة الخاص بك</p>
                 <Button
                   type="button"
                   onClick={handleManualGetAuthUrl}
-                  className="mt-4 v7-neu-button dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 text-lg py-3 px-6"
+                  className="mt-4 v7-neu-button dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 text-lg py-2 px-4"
                   disabled={isAuthLoading}
                 >
                   {isAuthLoading ? (
-                    <Loader2 className="animate-spin h-6 w-6 ml-2" />
-                  ) :  " توصيل"}
+                    <>
+                      <Loader2 className="animate-spin h-5 w-5 ml-2" />
+                      جاري التوصيل
+                    </>
+                  ) : "توصيل"}
                 </Button>
         </CardContent>
       </Card>

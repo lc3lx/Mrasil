@@ -396,19 +396,32 @@ export default function OrdersContent() {
                     </tr>
                   </thead>
                   <tbody className="text-center">
-                    {filteredOrders.map((order) => (
-                      <tr
-                        key={order._id}
-                        className={`v7-neu-table-row cursor-pointer text-base border-none ${
-                          selectedOrder === order._id ? "bg-blue-50" : ""
-                        }`}
-                        onClick={() => handleSelectOrder(order._id)}
-                        tabIndex={0}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" || e.key === " ")
-                            handleSelectOrder(order._id);
-                        }}
-                      >
+                    {filteredOrders.length === 0 ? (
+                      <tr>
+                        <td colSpan={12} className="p-8 text-center">
+                          <div className="flex flex-col items-center justify-center py-8">
+                            <div className="v7-neu-icon-xl mx-auto mb-4">
+                              <Package className="h-12 w-12 text-gry" />
+                            </div>
+                            <p className="text-xl font-bold text-gry mb-2">لا توجد بيانات</p>
+                            <p className="text-base text-gry">ستظهر الطلبات هنا عند توفرها</p>
+                          </div>
+                        </td>
+                      </tr>
+                    ) : (
+                      filteredOrders.map((order) => (
+                        <tr
+                          key={order._id}
+                          className={`v7-neu-table-row cursor-pointer text-base border-none ${
+                            selectedOrder === order._id ? "bg-blue-50" : ""
+                          }`}
+                          onClick={() => handleSelectOrder(order._id)}
+                          tabIndex={0}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ")
+                              handleSelectOrder(order._id);
+                          }}
+                        >
                         <td
                           className="p-2 sticky left-0  z-10 text-center border-none"
                           onClick={(e) => e.stopPropagation()}
@@ -505,7 +518,8 @@ export default function OrdersContent() {
                           </div>
                         </td>
                       </tr>
-                    ))}
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>

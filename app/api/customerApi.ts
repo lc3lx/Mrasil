@@ -11,6 +11,37 @@ export interface CustomerAddress {
   email?: string;
 }
 
+export interface NotificationPreferences {
+  shipmentUpdates?: boolean;
+  deliveryNotifications?: boolean;
+  delayNotifications?: boolean;
+  paymentNotifications?: boolean;
+  securityNotifications?: boolean;
+  marketingNotifications?: boolean;
+  emailNotifications?: boolean;
+  smsNotifications?: boolean;
+  pushNotifications?: boolean;
+}
+
+export interface SecuritySettings {
+  twoFactorEnabled?: boolean;
+}
+
+export interface TrackingSettings {
+  companyName?: string;
+  logo?: string;
+  primaryColor?: string;
+  secondaryColor?: string;
+  showHeader?: boolean;
+  showFooter?: boolean;
+  showMap?: boolean;
+  showTimeline?: boolean;
+  language?: string;
+  customCss?: string;
+  customJs?: string;
+  embedCode?: string;
+}
+
 export interface Customer {
   _id: string;
   firstName: string;
@@ -38,6 +69,9 @@ export interface Customer {
   company_name_en?: string;
   tax_number?: string;
   profileImage?: string;
+  notificationPreferences?: NotificationPreferences;
+  securitySettings?: SecuritySettings;
+  trackingSettings?: TrackingSettings;
 }
 
 export interface CustomerResponse {
@@ -100,6 +134,51 @@ export const customerApi = createApi({
       },
       invalidatesTags: ["Customer"],
     }),
+    updateNotificationPreferences: builder.mutation<
+      CustomerResponse,
+      NotificationPreferences
+    >({
+      query: (preferences) => ({
+        url: "/customer/updateNotificationPreferences",
+        method: "PUT",
+        body: JSON.stringify({ notificationPreferences: preferences }),
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+      invalidatesTags: ["Customer"],
+    }),
+    updateSecuritySettings: builder.mutation<
+      CustomerResponse,
+      SecuritySettings
+    >({
+      query: (settings) => ({
+        url: "/customer/updateSecuritySettings",
+        method: "PUT",
+        body: JSON.stringify({ securitySettings: settings }),
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+      invalidatesTags: ["Customer"],
+    }),
+    updateTrackingSettings: builder.mutation<
+      CustomerResponse,
+      TrackingSettings
+    >({
+      query: (settings) => ({
+        url: "/customer/updateTrackingSettings",
+        method: "PUT",
+        body: JSON.stringify({ trackingSettings: settings }),
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+      invalidatesTags: ["Customer"],
+    }),
   }),
 });
 
@@ -107,4 +186,7 @@ export const {
   useGetCustomerByIdQuery,
   useGetCustomerMeQuery,
   useUpdateCustomerMeMutation,
+  useUpdateNotificationPreferencesMutation,
+  useUpdateSecuritySettingsMutation,
+  useUpdateTrackingSettingsMutation,
 } = customerApi;

@@ -3,11 +3,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export function ModernHeader() {
   const router = useRouter();
+  const pathname = usePathname();
   const [loading, setLoading] = useState(false);
 
   const handleSignup = async (e: React.MouseEvent) => {
@@ -43,9 +44,20 @@ export function ModernHeader() {
       </ul>
 
       {/* Center: Logo */}
-      <div className="   sm:w-[12rem] sm:h-[6rem] w-[6rem] h-[3rem] ">
+      <Link 
+        href="/invoices"
+        onClick={(e) => {
+          // منع السلوك الافتراضي إذا كنا بالفعل في صفحة invoices
+          if (pathname === '/invoices') {
+            e.preventDefault();
+            // إعادة تحميل الصفحة بدون redirect
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        }}
+        className="sm:w-[12rem] sm:h-[6rem] w-[6rem] h-[3rem] hover:opacity-80 transition-opacity block"
+      >
         <Image src="/logo.png" alt="MARASIL Logo" width={120} height={60} className=" w-full h-full object-contain" />
-      </div>
+      </Link>
 
       {/* Left side: Auth links */}
       <div className="flex items-center gap-6">

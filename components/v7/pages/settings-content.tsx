@@ -33,6 +33,10 @@
   import {
     useGetCustomerMeQuery,
     useUpdateCustomerMeMutation,
+    useUpdateNotificationPreferencesMutation,
+    useUpdateSecuritySettingsMutation,
+    type NotificationPreferences,
+    type SecuritySettings,
   } from "@/app/api/customerApi";
   import { useChangePasswordMutation } from "@/app/api/profileApi";
   import { useForm } from "react-hook-form";
@@ -46,6 +50,7 @@
     DialogFooter,
   } from "@/components/ui/dialog";
   import Image from "next/image";
+  import { toast } from "sonner";
 
   // Password change schema (copied from ChangePasswordForm)
   const passwordFormSchema = z
@@ -70,6 +75,10 @@
     const { data, isLoading, error } = useGetCustomerMeQuery();
     const [updateCustomerMe, { isLoading: isUpdating }] =
       useUpdateCustomerMeMutation();
+    const [updateNotificationPreferences, { isLoading: isUpdatingNotifications }] =
+      useUpdateNotificationPreferencesMutation();
+    const [updateSecuritySettings, { isLoading: isUpdatingSecurity }] =
+      useUpdateSecuritySettingsMutation();
     const [profileForm, setProfileForm] = useState({
       firstName: "",
       lastName: "",
@@ -108,6 +117,90 @@ const { register, handleSubmit, reset } = useForm({
     const [isPasswordSubmitting, setIsPasswordSubmitting] = useState(false);
     const [openAddSenderModal, setOpenAddSenderModal] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  // Notification preferences state
+  const [notificationPrefs, setNotificationPrefs] = useState<NotificationPreferences>({
+    shipmentUpdates: true,
+    deliveryNotifications: true,
+    delayNotifications: true,
+    paymentNotifications: true,
+    securityNotifications: true,
+    marketingNotifications: false,
+    emailNotifications: true,
+    smsNotifications: true,
+    pushNotifications: true,
+  });
+
+  // Security settings state
+  const [securitySettings, setSecuritySettings] = useState<SecuritySettings>({
+    twoFactorEnabled: false,
+  });
+
+  // Load preferences from API
+  useEffect(() => {
+    if (data?.data) {
+      if (data.data.notificationPreferences) {
+        setNotificationPrefs({
+          shipmentUpdates: data.data.notificationPreferences.shipmentUpdates ?? true,
+          deliveryNotifications: data.data.notificationPreferences.deliveryNotifications ?? true,
+          delayNotifications: data.data.notificationPreferences.delayNotifications ?? true,
+          paymentNotifications: data.data.notificationPreferences.paymentNotifications ?? true,
+          securityNotifications: data.data.notificationPreferences.securityNotifications ?? true,
+          marketingNotifications: data.data.notificationPreferences.marketingNotifications ?? false,
+          emailNotifications: data.data.notificationPreferences.emailNotifications ?? true,
+          smsNotifications: data.data.notificationPreferences.smsNotifications ?? true,
+          pushNotifications: data.data.notificationPreferences.pushNotifications ?? true,
+        });
+      }
+      if (data.data.securitySettings) {
+        setSecuritySettings({
+          twoFactorEnabled: data.data.securitySettings.twoFactorEnabled ?? false,
+        });
+      }
+    }
+  }, [data]);
+
+  // Handle notification preference change
+  const handleNotificationChange = async (key: keyof NotificationPreferences, value: boolean) => {
+    const updatedPrefs = { ...notificationPrefs, [key]: value };
+    setNotificationPrefs(updatedPrefs);
+    
+    try {
+      await updateNotificationPreferences(updatedPrefs).unwrap();
+      toast.success('تم تحديث الإعدادات بنجاح');
+    } catch (error: any) {
+      console.error('Error updating notification preferences:', error);
+      toast.error(error.data?.message || 'حدث خطأ أثناء تحديث الإعدادات');
+      // Revert on error
+      setNotificationPrefs(notificationPrefs);
+    }
+  };
+
+  // Handle security settings change
+  const handleSecurityChange = async (key: keyof SecuritySettings, value: boolean) => {
+    const updatedSettings = { ...securitySettings, [key]: value };
+    setSecuritySettings(updatedSettings);
+    
+    try {
+      await updateSecuritySettings(updatedSettings).unwrap();
+      toast.success('تم تحديث إعدادات الأمان بنجاح');
+    } catch (error: any) {
+      console.error('Error updating security settings:', error);
+      toast.error(error.data?.message || 'حدث خطأ أثناء تحديث إعدادات الأمان');
+      // Revert on error
+      setSecuritySettings(securitySettings);
+    }
+  };
+
+  // Save all notification preferences
+  const handleSaveNotifications = async () => {
+    try {
+      await updateNotificationPreferences(notificationPrefs).unwrap();
+      toast.success('تم حفظ إعدادات الإشعارات بنجاح');
+    } catch (error: any) {
+      toast.error(error.data?.message || 'حدث خطأ أثناء حفظ إعدادات الإشعارات');
+    }
+  };
 
     async function onPasswordSubmit(values: z.infer<typeof passwordFormSchema>) {
       setIsPasswordSubmitting(true);
@@ -287,7 +380,12 @@ useEffect(() => {
                         تأمين حسابك بطبقة إضافية من الحماية
                       </p>
                     </div>
-                    <Switch id="twoFactor" />
+                    <Switch 
+                      id="twoFactor" 
+                      checked={securitySettings.twoFactorEnabled}
+                      onCheckedChange={(checked) => handleSecurityChange('twoFactorEnabled', checked)}
+                      disabled={isUpdatingSecurity}
+                    />
                   </div>
                 </div>
 
@@ -315,7 +413,12 @@ useEffect(() => {
                           إشعارات عند تحديث حالة الشحنة
                         </p>
                       </div>
-                      <Switch id="shipmentUpdates" defaultChecked />
+                      <Switch 
+                        id="shipmentUpdates" 
+                        checked={notificationPrefs.shipmentUpdates}
+                        onCheckedChange={(checked) => handleNotificationChange('shipmentUpdates', checked)}
+                        disabled={isUpdatingNotifications}
+                      />
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
@@ -326,7 +429,12 @@ useEffect(() => {
                           إشعارات عند توصيل الشحنة
                         </p>
                       </div>
-                      <Switch id="deliveryNotifications" defaultChecked />
+                      <Switch 
+                        id="deliveryNotifications" 
+                        checked={notificationPrefs.deliveryNotifications}
+                        onCheckedChange={(checked) => handleNotificationChange('deliveryNotifications', checked)}
+                        disabled={isUpdatingNotifications}
+                      />
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
@@ -337,7 +445,12 @@ useEffect(() => {
                           إشعارات عند تأخير الشحنة
                         </p>
                       </div>
-                      <Switch id="delayNotifications" defaultChecked />
+                      <Switch 
+                        id="delayNotifications" 
+                        checked={notificationPrefs.delayNotifications}
+                        onCheckedChange={(checked) => handleNotificationChange('delayNotifications', checked)}
+                        disabled={isUpdatingNotifications}
+                      />
                     </div>
                   </div>
                 </div>
@@ -353,7 +466,12 @@ useEffect(() => {
                           إشعارات عند إتمام عمليات الدفع
                         </p>
                       </div>
-                      <Switch id="paymentNotifications" defaultChecked />
+                      <Switch 
+                        id="paymentNotifications" 
+                        checked={notificationPrefs.paymentNotifications}
+                        onCheckedChange={(checked) => handleNotificationChange('paymentNotifications', checked)}
+                        disabled={isUpdatingNotifications}
+                      />
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
@@ -364,7 +482,12 @@ useEffect(() => {
                           إشعارات عند تسجيل الدخول من جهاز جديد
                         </p>
                       </div>
-                      <Switch id="securityNotifications" defaultChecked />
+                      <Switch 
+                        id="securityNotifications" 
+                        checked={notificationPrefs.securityNotifications}
+                        onCheckedChange={(checked) => handleNotificationChange('securityNotifications', checked)}
+                        disabled={isUpdatingNotifications}
+                      />
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
@@ -375,7 +498,12 @@ useEffect(() => {
                           إشعارات عن العروض والتحديثات
                         </p>
                       </div>
-                      <Switch id="marketingNotifications" />
+                      <Switch 
+                        id="marketingNotifications" 
+                        checked={notificationPrefs.marketingNotifications}
+                        onCheckedChange={(checked) => handleNotificationChange('marketingNotifications', checked)}
+                        disabled={isUpdatingNotifications}
+                      />
                     </div>
                   </div>
                 </div>
@@ -391,7 +519,12 @@ useEffect(() => {
                           استلام الإشعارات عبر البريد الإلكتروني
                         </p>
                       </div>
-                      <Switch id="emailNotifications" defaultChecked />
+                      <Switch 
+                        id="emailNotifications" 
+                        checked={notificationPrefs.emailNotifications}
+                        onCheckedChange={(checked) => handleNotificationChange('emailNotifications', checked)}
+                        disabled={isUpdatingNotifications}
+                      />
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
@@ -400,7 +533,12 @@ useEffect(() => {
                           استلام الإشعارات عبر الرسائل النصية
                         </p>
                       </div>
-                      <Switch id="smsNotifications" defaultChecked />
+                      <Switch 
+                        id="smsNotifications" 
+                        checked={notificationPrefs.smsNotifications}
+                        onCheckedChange={(checked) => handleNotificationChange('smsNotifications', checked)}
+                        disabled={isUpdatingNotifications}
+                      />
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
@@ -409,13 +547,24 @@ useEffect(() => {
                           استلام الإشعارات على تطبيق الجوال
                         </p>
                       </div>
-                      <Switch id="pushNotifications" defaultChecked />
+                      <Switch 
+                        id="pushNotifications" 
+                        checked={notificationPrefs.pushNotifications}
+                        onCheckedChange={(checked) => handleNotificationChange('pushNotifications', checked)}
+                        disabled={isUpdatingNotifications}
+                      />
                     </div>
                   </div>
                 </div>
-                  <Button className="v7-neu-button gap-1">
+                  <Button 
+                    className="v7-neu-button gap-1"
+                    onClick={handleSaveNotifications}
+                    disabled={isUpdatingNotifications}
+                  >
                     <Save className="h-4 w-4" />
-                    <span>حفظ التغييرات</span>
+                    <span>
+                      {isUpdatingNotifications ? "جاري الحفظ..." : "حفظ التغييرات"}
+                    </span>
                   </Button>
               </div>
             </div>

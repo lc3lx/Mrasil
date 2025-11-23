@@ -27,7 +27,7 @@ export default function TokenErrorModal({ message, isOpen }: TokenErrorModalProp
       const redirectTimer = setTimeout(() => {
         localStorage.removeItem('token')
         localStorage.removeItem('user')
-        router.push('/login')
+        router.push('/invoices')
       }, 6000)
 
       return () => {
@@ -46,7 +46,7 @@ export default function TokenErrorModal({ message, isOpen }: TokenErrorModalProp
         <p className="text-gray-600 mb-6">{message}</p>
         <div className="flex justify-center">
           <div className="text-sm text-gray-500">
-            سيتم توجيهك إلى صفحة تسجيل الدخول تلقائياً...
+            سيتم توجيهك إلى الصفحة الرئيسية تلقائياً...
           </div>
         </div>
       </div>

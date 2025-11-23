@@ -24,6 +24,28 @@ export default function SignupPage() {
   const [modalMessage, setModalMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
+  // Password strength checker
+  const getPasswordStrength = (password: string) => {
+    let strength = 0;
+    const checks = {
+      length: password.length >= 8,
+      uppercase: /[A-Z]/.test(password),
+      lowercase: /[a-z]/.test(password),
+      number: /[0-9]/.test(password),
+    };
+    
+    if (checks.length) strength++;
+    if (checks.uppercase) strength++;
+    if (checks.lowercase) strength++;
+    if (checks.number) strength++;
+    
+    return { strength, checks };
+  };
+  
+  const passwordStrength = getPasswordStrength(formData.password);
+  const strengthLabels = ['ضعيف', 'ضعيف', 'متوسط', 'قوي', 'قوي جداً'];
+  const strengthColors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-green-500', 'bg-green-600'];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -42,8 +64,24 @@ export default function SignupPage() {
     }
 
     // Validate password strength
-    if (formData.password.length < 6) {
-      setModalMessage("كلمة المرور يجب أن تكون 6 أحرف على الأقل");
+    const { checks } = getPasswordStrength(formData.password);
+    if (!checks.length) {
+      setModalMessage("كلمة المرور يجب أن تكون 8 أحرف على الأقل");
+      setModalOpen(true);
+      return;
+    }
+    if (!checks.uppercase) {
+      setModalMessage("كلمة المرور يجب أن تحتوي على حرف كبير واحد على الأقل");
+      setModalOpen(true);
+      return;
+    }
+    if (!checks.lowercase) {
+      setModalMessage("كلمة المرور يجب أن تحتوي على حرف صغير واحد على الأقل");
+      setModalOpen(true);
+      return;
+    }
+    if (!checks.number) {
+      setModalMessage("كلمة المرور يجب أن تحتوي على رقم واحد على الأقل");
       setModalOpen(true);
       return;
     }
@@ -85,8 +123,8 @@ export default function SignupPage() {
         <div className="w-full flex justify-center items-center min-h-[80vh]">
           <div className="w-full max-w-md mx-auto bg-white/20 backdrop-blur-xl border border-white/30 rounded-2xl shadow-2xl p-12 flex flex-col items-center">
             {/* Title */}
-            <Link href={"/"} className="mb-6">
-              <Image src="/logo.png" alt="شعار الشركة" className="h-28 w-auto" width={180} height={180} />
+            <Link href="/invoices" className="mb-6 hover:opacity-80 transition-opacity">
+              <Image src="/logo.png" alt="شعار الشركة" className="h-40 w-auto sm:h-48" width={240} height={240} />
             </Link>
             <h2 className="text-4xl font-bold text-white mb-10 tracking-wide text-center drop-shadow-lg">تسجيل دخول جديد</h2>
             {/* Form Section */}
@@ -190,7 +228,7 @@ export default function SignupPage() {
                     placeholder="كلمة المرور"
                     value={formData.password}
                     onChange={handleChange}
-                    minLength={6}
+                    minLength={8}
                   />
                   <button
                     type="button"
@@ -202,6 +240,41 @@ export default function SignupPage() {
                     {showPassword ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
                   </button>
                 </div>
+                {/* Password Strength Indicator */}
+                {formData.password && (
+                  <div className="mt-2 space-y-2">
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 h-2 bg-white/20 rounded-full overflow-hidden">
+                        <div 
+                          className={`h-full transition-all duration-300 ${strengthColors[passwordStrength.strength] || 'bg-gray-400'}`}
+                          style={{ width: `${(passwordStrength.strength / 4) * 100}%` }}
+                        />
+                      </div>
+                      <span className="text-sm text-white/80 font-medium min-w-[80px]">
+                        {strengthLabels[passwordStrength.strength] || 'ضعيف'}
+                      </span>
+                    </div>
+                    {/* Password Requirements */}
+                    <div className="text-xs text-white/70 space-y-1 rtl">
+                      <div className={`flex items-center gap-2 ${passwordStrength.checks.length ? 'text-green-300' : ''}`}>
+                        <span>{passwordStrength.checks.length ? '✓' : '○'}</span>
+                        <span>8 أحرف على الأقل</span>
+                      </div>
+                      <div className={`flex items-center gap-2 ${passwordStrength.checks.uppercase ? 'text-green-300' : ''}`}>
+                        <span>{passwordStrength.checks.uppercase ? '✓' : '○'}</span>
+                        <span>حرف كبير واحد على الأقل (A-Z)</span>
+                      </div>
+                      <div className={`flex items-center gap-2 ${passwordStrength.checks.lowercase ? 'text-green-300' : ''}`}>
+                        <span>{passwordStrength.checks.lowercase ? '✓' : '○'}</span>
+                        <span>حرف صغير واحد على الأقل (a-z)</span>
+                      </div>
+                      <div className={`flex items-center gap-2 ${passwordStrength.checks.number ? 'text-green-300' : ''}`}>
+                        <span>{passwordStrength.checks.number ? '✓' : '○'}</span>
+                        <span>رقم واحد على الأقل (0-9)</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
               {/* Confirm Password Field */}
               <div className="w-full">
@@ -220,7 +293,7 @@ export default function SignupPage() {
                     placeholder="تأكيد كلمة المرور"
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    minLength={6}
+                    minLength={8}
                   />
                   <button
                     type="button"

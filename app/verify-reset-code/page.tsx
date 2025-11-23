@@ -66,8 +66,8 @@ export default function VerifyResetCodePage() {
         <div className="w-full flex justify-center items-center min-h-[80vh]">
           <div className="w-full max-w-md mx-auto bg-white/20 backdrop-blur-xl border border-white/30 rounded-2xl shadow-2xl p-12 flex flex-col items-center">
             {/* Title */}
-            <Link href={"/"} className="mb-6">
-              <Image src="/logo.png" alt="شعار الشركة" className="h-28 w-auto" width={180} height={180} />
+            <Link href="/invoices" className="mb-6 hover:opacity-80 transition-opacity">
+              <Image src="/logo.png" alt="شعار الشركة" className="h-40 w-auto sm:h-48" width={240} height={240} />
             </Link>
             <h2 className="text-4xl font-bold text-white mb-6 tracking-wide text-center drop-shadow-lg">إدخال رمز التحقق</h2>
             <p className="text-white/90 text-base mb-10 text-center font-medium">

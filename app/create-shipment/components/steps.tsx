@@ -1028,7 +1028,13 @@ function Step3Content({
   const [priceErrors, setPriceErrors] = useState<any[]>([]);
 
   // إضافة متغيرات لتتبع البيانات المهمة فقط
-  const priceKey = `${values.recipient_city}-${values.weight}-${values.total}-${values.paymentMethod}`;
+  // إضافة الأبعاد إلى priceKey لحساب الوزن البعدي
+  const dimensionKey = values.boxSize 
+    ? `${values.boxSize.length}-${values.boxSize.width}-${values.boxSize.height}`
+    : values.dimension_length && values.dimension_width && values.dimension_high
+    ? `${values.dimension_length}-${values.dimension_width}-${values.dimension_high}`
+    : '';
+  const priceKey = `${values.recipient_city}-${values.weight}-${values.total}-${values.paymentMethod}-${dimensionKey}`;
   const [lastPriceKey, setLastPriceKey] = useState<string>("");
 
   useEffect(() => {
@@ -1094,7 +1100,7 @@ function Step3Content({
         const pricePromises = companiesWithTypes.map(
           async (companyWithType: any) => {
             const fetchPrice = async () => {
-              const payload = {
+              const payload: any = {
                 company: companyWithType.company,
                 shapmentingType: companyWithType.shippingType.type,
                 order: {
@@ -1115,6 +1121,21 @@ function Step3Content({
                   weight: Number(values.weight) || 1,
                 },
               };
+
+              // إضافة الأبعاد إذا كانت متوفرة (من boxSize أو dimension_*)
+              if (values.boxSize) {
+                payload.dimension = {
+                  length: Number(values.boxSize.length || 0),
+                  width: Number(values.boxSize.width || 0),
+                  high: Number(values.boxSize.height || 0),
+                };
+              } else if (values.dimension_length && values.dimension_width && values.dimension_high) {
+                payload.dimension = {
+                  length: Number(values.dimension_length || 0),
+                  width: Number(values.dimension_width || 0),
+                  high: Number(values.dimension_high || 0),
+                };
+              }
 
               console.log(
                 `جلب سعر لـ ${companyWithType.company} - ${companyWithType.shippingType.type}`
