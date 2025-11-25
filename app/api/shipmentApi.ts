@@ -86,6 +86,17 @@ export interface ShipmentOrderResponse {
   message?: string;
 }
 
+export interface SMSAOffice {
+  code: string;
+  address: string;
+  cityName: string;
+  addressAR: string;
+  coordinates: string;
+  firstShift: string;
+  secondShift: string;
+  weekendShift: string;
+}
+
 // واجهات جديدة لشركات الشحن
 interface AllowedBoxSize {
   length: number;
@@ -221,6 +232,16 @@ export const shipmentApi = createApi({
       }),
       transformResponse: (response: any) => response.data || response,
     }),
+
+    // إضافة endpoint لجلب مكاتب SMSA
+    getSMSAOffices: builder.query<{ status: string; data: SMSAOffice[] }, void>({
+      query: () => ({
+        url: "/shipment/smsa-offices",
+        method: "GET",
+        credentials: "include",
+      }),
+      transformResponse: (response: any) => response,
+    }),
   }),
 });
 
@@ -231,4 +252,5 @@ export const {
   useCreateShipmentOrderMutation,
   useGetAllShipmentCompaniesQuery,
   useGetShipmentCompanyInfoQuery,
+  useGetSMSAOfficesQuery,
 } = shipmentApi;

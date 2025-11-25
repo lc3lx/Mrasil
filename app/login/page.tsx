@@ -65,16 +65,16 @@ export default function LoginPage() {
     <div className="min-h-screen flex flex-col relative" style={{ backgroundImage: 'url(/login.png)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
       <div className="absolute inset-0 bg-black/40 z-0" />
       <ResponseModal isOpen={modalOpen} onClose={() => setModalOpen(false)} status="fail" message={modalMessage} />
-      <main className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="w-full flex justify-center items-center min-h-[80vh]">
-          <div className="w-full max-w-md mx-auto bg-white/20 backdrop-blur-xl border border-white/30 rounded-2xl shadow-2xl p-12 flex flex-col items-center">
+      <main className="flex-1 flex items-center justify-center py-10 px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="w-full flex justify-center items-center">
+          <div className="w-full max-w-md mx-auto bg-white/20 backdrop-blur-xl border border-white/30 rounded-2xl shadow-2xl p-10 flex flex-col items-center">
             {/* Title */}
-            <Link href="/invoices" className="mb-6 hover:opacity-80 transition-opacity">
-              <Image src="/logo.png" alt="شعار الشركة" className="h-40 w-auto sm:h-48" width={240} height={240} />
+            <Link href="/invoices" className="mb-5 hover:opacity-80 transition-opacity">
+              <Image src="/logo.png" alt="شعار الشركة" className="h-36 w-auto sm:h-44" width={220} height={220} />
             </Link>
-            <h2 className="text-4xl font-bold text-white mb-10 tracking-wide text-center drop-shadow-lg">تسجيل دخول</h2>
+            <h2 className="text-3xl font-bold text-white mb-9 tracking-wide text-center drop-shadow-lg">تسجيل دخول</h2>
             {/* Form Section */}
-            <form onSubmit={handleSubmit} className="w-full flex flex-col gap-6">
+            <form onSubmit={handleSubmit} className="w-full flex flex-col gap-5">
               {/* Email Field */}
               <div className="w-full">
                 <div className="relative">
@@ -88,7 +88,7 @@ export default function LoginPage() {
                     name="email"
                     type="email"
                     required
-                    className="block w-full pl-12 pr-4 py-3.5 bg-white/10 text-white placeholder-white/70 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-white/60 focus:border-none text-base border border-white/20"
+                    className="block w-full pl-12 pr-4 py-3 bg-white/10 text-white placeholder-white/70 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-white/60 focus:border-none text-base border border-white/20"
                       placeholder="البريد الإلكتروني"
                     value={formData.email}
                     onChange={handleChange}
@@ -108,7 +108,7 @@ export default function LoginPage() {
                     name="password"
                     type={showPassword ? "text" : "password"}
                     required
-                    className="block w-full pl-12 pr-10 py-3.5 bg-white/10 text-white placeholder-white/70 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-white/60 focus:border-none text-base border border-white/20"
+                    className="block w-full pl-12 pr-10 py-3 bg-white/10 text-white placeholder-white/70 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-white/60 focus:border-none text-base border border-white/20"
                     placeholder="كلمة المرور"
                     value={formData.password}
                     onChange={handleChange}
@@ -125,7 +125,7 @@ export default function LoginPage() {
                 </div>
               </div>
               {/* Remember Me & Forgot Password */}
-              <div className="flex items-center justify-between text-white/80 text-sm mb-2">
+              <div className="flex items-center justify-between text-white/80 text-sm mb-1.5">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     id="remember-me"
@@ -141,7 +141,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-4 rounded-xl text-white bg-primary font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full py-3.5 rounded-xl text-white bg-primary font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {isLoading ? (
                   <div className="flex items-center justify-center">
@@ -156,7 +156,7 @@ export default function LoginPage() {
                 )}
               </button>
               {/* Register Link */}
-              <div className="w-full flex justify-center gap-4 mt-4">
+              <div className="w-full flex justify-center gap-4 mt-3.5">
                 <p className="text-white/80 text-base font-medium  flex gap-2">
                   ليس لديك حساب؟
                   <Link href="/signup" className="underline hover:text-white">تسجيل دخول جديد</Link>

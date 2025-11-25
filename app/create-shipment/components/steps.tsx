@@ -32,6 +32,7 @@ import {
   useCreateShipmentMutation,
   useCreateShipmentOrderMutation,
   useGetMyShipmentsQuery,
+  useGetSMSAOfficesQuery,
 } from "../../api/shipmentApi";
 import {
   useGetAllClientAddressesQuery,
@@ -156,6 +157,8 @@ const schema = yup
     description: yup.string().optional(),
     customerAddress: yup.string().optional(),
     paymentMethod: yup.string().required("طريقة الدفع مطلوبة"),
+    senderOfficeCode: yup.string().optional(),
+    recipientOfficeCode: yup.string().optional(),
   })
   .required();
 
@@ -201,6 +204,8 @@ export function CreateShipmentSteps() {
       total: undefined,
       description: "",
       customerAddress: "",
+      senderOfficeCode: "",
+      recipientOfficeCode: "",
     },
   });
 
@@ -306,6 +311,8 @@ export function CreateShipmentSteps() {
           width: Number(data?.boxSize?.width || 0),
           length: Number(data?.boxSize?.length || 0),
         },
+        senderOfficeCode: data.senderOfficeCode || undefined,
+        recipientOfficeCode: data.recipientOfficeCode || undefined,
       };
       const newShipment = await createShipment(payload).unwrap();
       setModalStatus("success");
@@ -420,14 +427,44 @@ export function CreateShipmentSteps() {
                     className={`h-14 w-14 rounded-full flex items-center justify-center transition-all duration-500 ${
                       step === 3
                         ? "bg-gradient-to-br from-[#3498db]/95 to-[#3498db] text-white shadow-lg shadow-[#3498db]/30"
+                        : step > 3
+                        ? "bg-gradient-to-br from-[#3498db]/95 to-[#3498db] text-white shadow-lg shadow-[#3498db]/30"
                         : "v7-neu-icon-sm"
                     }`}
                   >
-                    <Package className="h-7 w-7" />
+                    {step > 3 ? (
+                      <CheckCircle2 className="h-7 w-7" />
+                    ) : (
+                      <Package className="h-7 w-7" />
+                    )}
                   </div>
 
                   <span className="mt-3 text-sm font-medium">اختر الناقل</span>
                 </div>
+
+                {/* Step 4 - SMSA Offices (conditional) */}
+                {getValues("company") === "smsa" &&
+                  getValues("shipmentType") === "offices" && (
+                    <div
+                      className={`flex flex-col items-center relative z-0  ${
+                        step >= 4 ? "text-[#3498db] " : "text-gry"
+                      }`}
+                    >
+                      <div
+                        className={`h-14 w-14 rounded-full flex items-center justify-center transition-all duration-500 ${
+                          step === 4
+                            ? "bg-gradient-to-br from-[#3498db]/95 to-[#3498db] text-white shadow-lg shadow-[#3498db]/30"
+                            : "v7-neu-icon-sm"
+                        }`}
+                      >
+                        <Building className="h-7 w-7" />
+                      </div>
+
+                      <span className="mt-3 text-sm font-medium">
+                        اختر المكاتب
+                      </span>
+                    </div>
+                  )}
               </div>
             </div>
 
@@ -439,13 +476,26 @@ export function CreateShipmentSteps() {
             {step === 3 && (
               <Step3Content
                 prevStep={prevStep}
-                onSubmit={handleSubmit(onSubmit)}
+                onSubmit={
+                  getValues("company") === "smsa" &&
+                  getValues("shipmentType") === "offices"
+                    ? nextStep
+                    : handleSubmit(onSubmit)
+                }
                 selectedProvider={selectedProvider}
                 handleProviderSelect={handleProviderSelect}
                 shipmentType={shipmentType}
                 handleShipmentTypeSelect={handleShipmentTypeSelect}
               />
             )}
+            {step === 4 &&
+              getValues("company") === "smsa" &&
+              getValues("shipmentType") === "offices" && (
+                <Step4Content
+                  prevStep={prevStep}
+                  onSubmit={handleSubmit(onSubmit)}
+                />
+              )}
           </div>
         </div>
 
@@ -853,19 +903,12 @@ function Step2Content({
                     />
                   </svg>
                 </span>
-                الموافقة على سياسة الخصوصية
+                بالمتابعة انت تقر بأن المواد المشحونة متوافقة مع قوانين وأنظمة
+                السلطات المحلية واشتراطات الأمن والسلامة. أقر بأني أتحمل كامل
+                المسؤولية القانونية في حال وجود أي مواد خطرة أو قابلة للإشتعال
+                أو غير قانونية سأتحمل شخصياً التبعات القانونية
+                والإدارية أو الغرامات.
               </span>
-            </div>
-            <div className="bg-white/60 rounded-xl px-4 py-3 text-sm text-[#6b7a90] border border-[#e3eaf3] text-right">
-              بالمتابعة، أنت توافق على{" "}
-              <button
-                type="button"
-                onClick={() => setOpenPrivacyModal(true)}
-                className="text-[#3498db] font-bold underline hover:text-blue-700"
-              >
-                شروط الخدمة وسياسة الخصوصية
-              </button>{" "}
-              الخاصة بنا
             </div>
           </div>
         </div>
@@ -1029,11 +1072,11 @@ function Step3Content({
 
   // إضافة متغيرات لتتبع البيانات المهمة فقط
   // إضافة الأبعاد إلى priceKey لحساب الوزن البعدي
-  const dimensionKey = values.boxSize 
+  const dimensionKey = values.boxSize
     ? `${values.boxSize.length}-${values.boxSize.width}-${values.boxSize.height}`
     : values.dimension_length && values.dimension_width && values.dimension_high
     ? `${values.dimension_length}-${values.dimension_width}-${values.dimension_high}`
-    : '';
+    : "";
   const priceKey = `${values.recipient_city}-${values.weight}-${values.total}-${values.paymentMethod}-${dimensionKey}`;
   const [lastPriceKey, setLastPriceKey] = useState<string>("");
 
@@ -1129,7 +1172,11 @@ function Step3Content({
                   width: Number(values.boxSize.width || 0),
                   high: Number(values.boxSize.height || 0),
                 };
-              } else if (values.dimension_length && values.dimension_width && values.dimension_high) {
+              } else if (
+                values.dimension_length &&
+                values.dimension_width &&
+                values.dimension_high
+              ) {
                 payload.dimension = {
                   length: Number(values.dimension_length || 0),
                   width: Number(values.dimension_width || 0),
@@ -1569,5 +1616,183 @@ function SelectField({ name, label, error }: any) {
       />
       {error && <p className="text-sm text-red-500">{error.message}</p>}
     </div>
+  );
+}
+
+// Step 4 Content - SMSA Offices Selection
+function Step4Content({
+  prevStep,
+  onSubmit,
+}: {
+  prevStep: () => void;
+  onSubmit: (e: React.FormEvent) => void;
+}) {
+  const {
+    register,
+    formState: { errors },
+    watch,
+    getValues,
+    setValue,
+  } = useFormContext();
+
+  const { data: officesData, isLoading: isLoadingOffices } =
+    useGetSMSAOfficesQuery();
+  const offices = officesData?.data || [];
+
+  const shipperCity = watch("shipper_city");
+  const recipientCity = watch("recipient_city");
+  const senderOfficeCode = watch("senderOfficeCode");
+  const recipientOfficeCode = watch("recipientOfficeCode");
+
+  // Filter offices by city
+  const shipperOffices = offices.filter(
+    (office: any) => office.cityName === shipperCity
+  );
+  const recipientOffices = offices.filter(
+    (office: any) => office.cityName === recipientCity
+  );
+
+  return (
+    <form onSubmit={onSubmit} className="space-y-6">
+      <div className="space-y-6">
+        {/* Sender Office Selection */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold text-[#1a365d] flex items-center gap-2">
+            <MapPin className="w-5 h-5 text-[#3498db]" />
+            اختر مكتب المرسل ({shipperCity || "المدينة"})
+          </h3>
+          {isLoadingOffices ? (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#3498db] mx-auto"></div>
+              <p className="mt-2 text-gray-500">جاري جلب المكاتب...</p>
+            </div>
+          ) : shipperOffices.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              لا توجد مكاتب متاحة في {shipperCity || "هذه المدينة"}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {shipperOffices.map((office: any) => (
+                <div
+                  key={office.code}
+                  onClick={() => setValue("senderOfficeCode", office.code)}
+                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                    senderOfficeCode === office.code
+                      ? "border-[#3498db] bg-[#3498db]/5"
+                      : "border-gray-200 hover:border-[#3498db]/50"
+                  }`}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-[#1a365d] mb-1">
+                        {office.addressAR || office.address}
+                      </h4>
+                      <p className="text-sm text-gray-600 mb-2">
+                        {office.cityName}
+                      </p>
+                      {office.firstShift && (
+                        <p className="text-xs text-gray-500">
+                          دوام: {office.firstShift}
+                        </p>
+                      )}
+                    </div>
+                    <input
+                      type="radio"
+                      checked={senderOfficeCode === office.code}
+                      onChange={() => setValue("senderOfficeCode", office.code)}
+                      className="mt-1"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          {errors.senderOfficeCode && (
+            <p className="text-sm text-red-500">
+              {errors.senderOfficeCode.message as string}
+            </p>
+          )}
+        </div>
+
+        {/* Recipient Office Selection */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold text-[#1a365d] flex items-center gap-2">
+            <MapPin className="w-5 h-5 text-[#3498db]" />
+            اختر مكتب المستلم ({recipientCity || "المدينة"})
+          </h3>
+          {isLoadingOffices ? (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#3498db] mx-auto"></div>
+              <p className="mt-2 text-gray-500">جاري جلب المكاتب...</p>
+            </div>
+          ) : recipientOffices.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              لا توجد مكاتب متاحة في {recipientCity || "هذه المدينة"}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {recipientOffices.map((office: any) => (
+                <div
+                  key={office.code}
+                  onClick={() => setValue("recipientOfficeCode", office.code)}
+                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                    recipientOfficeCode === office.code
+                      ? "border-[#3498db] bg-[#3498db]/5"
+                      : "border-gray-200 hover:border-[#3498db]/50"
+                  }`}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-[#1a365d] mb-1">
+                        {office.addressAR || office.address}
+                      </h4>
+                      <p className="text-sm text-gray-600 mb-2">
+                        {office.cityName}
+                      </p>
+                      {office.firstShift && (
+                        <p className="text-xs text-gray-500">
+                          دوام: {office.firstShift}
+                        </p>
+                      )}
+                    </div>
+                    <input
+                      type="radio"
+                      checked={recipientOfficeCode === office.code}
+                      onChange={() =>
+                        setValue("recipientOfficeCode", office.code)
+                      }
+                      className="mt-1"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          {errors.recipientOfficeCode && (
+            <p className="text-sm text-red-500">
+              {errors.recipientOfficeCode.message as string}
+            </p>
+          )}
+        </div>
+      </div>
+
+      <div className="flex justify-between mt-8">
+        <Button
+          type="button"
+          onClick={prevStep}
+          variant="outline"
+          className="border-2 text-lg px-8 py-4"
+        >
+          السابق
+        </Button>
+        <Button
+          type="submit"
+          className="bg-gradient-to-r from-[#1e3a6c] text-white text-lg px-8 py-4"
+          disabled={!senderOfficeCode || !recipientOfficeCode}
+        >
+          إنشاء الشحنة
+        </Button>
+      </div>
+    </form>
   );
 }
