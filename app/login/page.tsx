@@ -22,17 +22,10 @@ export default function LoginPage() {
   const [modalMessage, setModalMessage] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  // Redirect based on user role if already authenticated
+  // Redirect to home if already authenticated
   useEffect(() => {
     if (isAuthenticated && user) {
-      if (user.role === 'admin') {
-        router.push('/dashboard');
-      } else if (user.email && user.email.includes('admin')) {
-        // Fallback: إذا كان الإيميل يحتوي على admin
-        router.push('/dashboard');
-      } else {
-        router.push('/');
-      }
+      router.push('/');
     }
   }, [isAuthenticated, user, router]);
 

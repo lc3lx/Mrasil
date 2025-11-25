@@ -61,20 +61,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(userData);
     setIsAuthenticated(true);
     
-    // توجيه الأدمن للداشبورد
-    if (userData.role === 'admin') {
-      console.log('AuthProvider - Redirecting admin to dashboard');
-      router.push('/dashboard');
-    } else {
-      console.log('AuthProvider - Redirecting regular user to home');
-      // إذا كان الإيميل يحتوي على admin، وجهه للداشبورد كـ fallback
-      if (userData.email && userData.email.includes('admin')) {
-        console.log('AuthProvider - Email contains admin, redirecting to dashboard');
-        router.push('/dashboard');
-      } else {
-        router.push('/');
-      }
-    }
+    // توجيه جميع المستخدمين للصفحة الرئيسية
+    router.push('/');
   };
 
   const logout = () => {
