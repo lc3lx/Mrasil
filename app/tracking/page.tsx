@@ -116,30 +116,57 @@ export default function () {
   };
 
   const getStatusColor = (status: string) => {
-    switch (status) {
+    if (!status) return "text-gray-500";
+    const normalizedStatus = status.toLowerCase();
+    switch (normalizedStatus) {
       case "delivered":
         return "text-green-500";
+      case "in_transit":
       case "transit":
         return "text-amber-500";
       case "processing":
         return "text-blue-500";
       default:
+        // التحقق من الحالات الكبيرة
+        if (status === "Delivered" || status === "DELIVERED") {
+          return "text-green-500";
+        }
+        if (status === "IN_TRANSIT") {
+          return "text-amber-500";
+        }
         return "text-gray-500";
     }
   };
 
   const getStatusText = (status: string) => {
-    switch (status) {
+    if (!status) return "غير محدد";
+    const normalizedStatus = status.toLowerCase();
+    switch (normalizedStatus) {
       case "delivered":
         return "تم التسليم";
+      case "in_transit":
       case "transit":
         return "جاري التوصيل";
       case "processing":
         return "قيد المعالجة";
       case "ready":
+      case "ready_for_pickup":
         return "جاهز للشحن";
+      case "cancelled":
+      case "canceled":
+        return "ملغاة";
       default:
-        return status;
+        // التحقق من الحالات الكبيرة
+        if (status === "Delivered" || status === "DELIVERED") {
+          return "تم التسليم";
+        }
+        if (status === "IN_TRANSIT") {
+          return "جاري التوصيل";
+        }
+        if (status === "READY_FOR_PICKUP") {
+          return "جاهز للشحن";
+        }
+        return status || "غير محدد";
     }
   };
 

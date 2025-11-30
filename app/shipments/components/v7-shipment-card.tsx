@@ -127,6 +127,7 @@ export function V7ShipmentCard({
       case "IN_TRANSIT":
         return <Truck className="h-5 w-5 text-orange-600" />;
       case "DELIVERED":
+      case "Delivered":
         return <CheckCircle className="h-5 w-5 text-green-600" />;
       case "CANCELLED":
       case "Canceled":
@@ -144,6 +145,7 @@ export function V7ShipmentCard({
       case "IN_TRANSIT":
         return "جاري التوصيل";
       case "DELIVERED":
+      case "Delivered":
         return "تم التوصيل";
       case "CANCELLED":
       case "Canceled":
@@ -161,6 +163,7 @@ export function V7ShipmentCard({
       case "IN_TRANSIT":
         return "bg-orange-50 text-orange-700 border-orange-200";
       case "DELIVERED":
+      case "Delivered":
         return "bg-green-50 text-green-700 border-green-200";
       case "CANCELLED":
       case "Canceled":
@@ -178,6 +181,7 @@ export function V7ShipmentCard({
       case "IN_TRANSIT":
         return "text-orange-700";
       case "DELIVERED":
+      case "Delivered":
         return "text-green-700";
       case "CANCELLED":
       case "Canceled":

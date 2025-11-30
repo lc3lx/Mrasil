@@ -16,12 +16,15 @@ export default function StatusBadge({ status, type, size = 'sm' }: StatusBadgePr
       case 'shipment':
         switch (status) {
           case 'Delivered':
+          case 'DELIVERED':
             return `${baseClasses} bg-emerald-100 text-emerald-800 border border-emerald-200`;
           case 'IN_TRANSIT':
             return `${baseClasses} bg-blue-100 text-blue-800 border border-blue-200`;
           case 'READY_FOR_PICKUP':
             return `${baseClasses} bg-amber-100 text-amber-800 border border-amber-200`;
           case 'Canceled':
+          case 'CANCELED':
+          case 'CANCELLED':
             return `${baseClasses} bg-red-100 text-red-800 border border-red-200`;
           default:
             return `${baseClasses} bg-gray-100 text-gray-800 border border-gray-200`;
@@ -78,10 +81,17 @@ export default function StatusBadge({ status, type, size = 'sm' }: StatusBadgePr
     switch (type) {
       case 'shipment':
         switch (status) {
-          case 'Delivered': return 'تم التسليم';
-          case 'IN_TRANSIT': return 'في الطريق';
-          case 'READY_FOR_PICKUP': return 'جاهزة للاستلام';
-          case 'Canceled': return 'ملغية';
+          case 'Delivered':
+          case 'DELIVERED':
+            return 'تم التسليم';
+          case 'IN_TRANSIT':
+            return 'في الطريق';
+          case 'READY_FOR_PICKUP':
+            return 'جاهزة للاستلام';
+          case 'Canceled':
+          case 'CANCELED':
+          case 'CANCELLED':
+            return 'ملغية';
           default: return status || '-';
         }
       

@@ -171,7 +171,8 @@ export default function ShipmentsPage() {
     apiStatus: string | undefined | null
   ): ShipmentStatus => {
     if (!apiStatus) return "processing";
-    switch (apiStatus.toUpperCase()) {
+    const upperStatus = apiStatus.toUpperCase();
+    switch (upperStatus) {
       case "DELIVERED":
         return "delivered";
       case "IN_TRANSIT":
@@ -184,6 +185,10 @@ export default function ShipmentsPage() {
       case "CANCELED":
         return "cancel";
       default:
+        // التحقق من حالة Delivered (بحرف D كبير والباقي صغير)
+        if (apiStatus === "Delivered") {
+          return "delivered";
+        }
         return "processing";
     }
   };
