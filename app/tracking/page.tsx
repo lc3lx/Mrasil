@@ -15,7 +15,7 @@ import {
 import V7Layout from "@/components/v7/v7-layout";
 import axios from "axios";
 import { useParams, useSearchParams } from "next/navigation";
-import { useGetMyShipmentsQuery } from "../api/shipmentApi";
+import { useGetMyShipmentsQuery, useGetShipmentByIdQuery } from "../api/shipmentApi";
 import { useTrackShipmentMutation } from "../api/trakingApi";
 
 interface TimelineStep {
@@ -82,16 +82,22 @@ export default function () {
     useGetMyShipmentsQuery({ page: 1, itemsPerPage: 5 });
   const lastFiveShipments = myShipmentsData?.data?.slice(-5) ?? [];
 
-  // الحصول على بيانات الشحنة الفعلية من قائمة الشحنات بناءً على trackingNumber
-  const currentShipment = number
+  // جلب الشحنة من API بناءً على trackingNumber
+  const { data: shipmentData, isLoading: isLoadingShipment } = useGetShipmentByIdQuery(
+    number || "",
+    { skip: !number }
+  );
+
+  // الحصول على بيانات الشحنة الفعلية - أولاً من API، ثم من lastFiveShipments
+  const currentShipment = shipmentData?.data || (number
     ? lastFiveShipments.find(
         (shipment: any) =>
           shipment.trackingId === number ||
           shipment.trackingNumber === number ||
           shipment._id === number
       )
-    : null;
-  console.log("lastFiveShipments", lastFiveShipments);
+    : null);
+  console.log("currentShipment", currentShipment);
   // handel Track
   const handleTrack = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -139,7 +145,7 @@ export default function () {
   };
 
   const getStatusText = (status: string) => {
-    if (!status) return "غير محدد";
+    if (!status) return "";
     const normalizedStatus = status.toLowerCase();
     switch (normalizedStatus) {
       case "delivered":
@@ -166,21 +172,46 @@ export default function () {
         if (status === "READY_FOR_PICKUP") {
           return "جاهز للشحن";
         }
-        return status || "غير محدد";
+        return status || "";
     }
   };
 
   const getStatusIcon = (status: string) => {
-    switch (status) {
+    if (!status) {
+      const finalStatus = shipmentStatus || "";
+      if (finalStatus === "Delivered" || finalStatus === "DELIVERED") {
+        return <CheckCircle className="h-6 w-6 text-green-500" />;
+      }
+      if (finalStatus === "IN_TRANSIT") {
+        return <Truck className="h-6 w-6 text-amber-500" />;
+      }
+      if (finalStatus === "READY_FOR_PICKUP") {
+        return <Package className="h-6 w-6 text-purple-500" />;
+      }
+      return <Package className="h-6 w-6 text-gray-500" />;
+    }
+    const normalizedStatus = status.toLowerCase();
+    switch (normalizedStatus) {
       case "delivered":
         return <CheckCircle className="h-6 w-6 text-green-500" />;
+      case "in_transit":
       case "transit":
         return <Truck className="h-6 w-6 text-amber-500" />;
       case "processing":
         return <Package className="h-6 w-6 text-blue-500" />;
       case "ready":
+      case "ready_for_pickup":
         return <Package className="h-6 w-6 text-purple-500" />;
       default:
+        if (status === "Delivered" || status === "DELIVERED") {
+          return <CheckCircle className="h-6 w-6 text-green-500" />;
+        }
+        if (status === "IN_TRANSIT") {
+          return <Truck className="h-6 w-6 text-amber-500" />;
+        }
+        if (status === "READY_FOR_PICKUP") {
+          return <Package className="h-6 w-6 text-purple-500" />;
+        }
         return <Package className="h-6 w-6 text-gray-500" />;
     }
   };
@@ -191,7 +222,7 @@ export default function () {
 
   // بيانات من الشحنة الفعلية فقط
   const shipmentSender = currentShipment?.senderAddress;
-  const shipmentReceiver = currentShipment?.receiverAddress;
+  const shipmentReceiver = currentShipment?.receiverAddress || currentShipment?.order?.customer;
   const shipmentWeight = currentShipment?.weight;
   const shipmentCreatedAt = currentShipment?.createdAt;
   const shipmentStatus = currentShipment?.shipmentstates;
@@ -259,13 +290,13 @@ export default function () {
             </div>
           )}
 
-          {trackingResult && (
+          {(trackingResult || currentShipment) && (
             <>
               <div className="mt-8 space-y-6 v7-fade-in">
                 <div className="flex flex-col md:flex-row justify-between gap-6 p-6 rounded-xl v7-neu-card-inner">
                   <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
                     <div className="v7-neu-icon">
-                      {getStatusIcon(trackingResult?.status)}
+                      {getStatusIcon(trackingResult?.status || shipmentStatus || resultSmsa?.status)}
                     </div>
                     <div>
                       <div className="text-sm text-[#6d6a67]">رقم الشحنة</div>
@@ -274,19 +305,21 @@ export default function () {
                           result?.tracking_number ||
                           resultSmsa?.trackingNumber ||
                           currentShipment?.trackingId ||
-                          currentShipment?.trackingNumber}
+                          currentShipment?.trackingNumber ||
+                          currentShipment?._id ||
+                          "-"}
                       </div>
                     </div>
                   </div>
                   <div className="flex flex-col items-start">
                     <div className="text-sm text-[#6d6a67]">حالة الشحنة</div>
                     <div
-                      className={`text-lg font-bold text-amber-500 ${getStatusColor(
-                        shipmentStatus || trackingResult?.status
-                      )} ${getStatusColor(resultSmsa?.status)}`}
+                      className={`text-lg font-bold ${getStatusColor(
+                        shipmentStatus || trackingResult?.status || resultSmsa?.status
+                      )}`}
                     >
-                      {getStatusText(shipmentStatus || trackingResult?.status)}{" "}
-                      {getStatusText(resultSmsa?.status)}
+                      {getStatusText(shipmentStatus || trackingResult?.status || resultSmsa?.status) || 
+                       (shipmentSender?.full_name ? `${shipmentSender.full_name} → ${shipmentReceiver?.full_name || shipmentReceiver?.clientName || ""}` : "")}
                     </div>
                   </div>
                 </div>
@@ -483,19 +516,19 @@ export default function () {
                     <div className="flex justify-between">
                       <span className=" text-[#6d6a67]">الاسم:</span>
                       <span className=" text-[#1A5889] font-medium">
-                        {shipmentReceiver?.clientName || "-"}
+                        {shipmentReceiver?.full_name || shipmentReceiver?.clientName || "-"}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span className=" text-[#6d6a67]">الهاتف:</span>
                       <span className=" text-[#1A5889] font-medium">
-                        {shipmentReceiver?.clientPhone || "-"}
+                        {shipmentReceiver?.mobile || shipmentReceiver?.clientPhone || "-"}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span className=" text-[#6d6a67]">العنوان:</span>
                       <span className=" text-[#1A5889] font-medium">
-                        {shipmentReceiver?.clientAddress || "-"}{" "}
+                        {shipmentReceiver?.address || shipmentReceiver?.clientAddress || "-"}{" "}
                         {shipmentReceiver?.city || ""}
                       </span>
                     </div>

@@ -162,6 +162,15 @@ export const shipmentApi = createApi({
       providesTags: ["Shipment"],
     }),
 
+    getShipmentById: builder.query<Shipment, string>({
+      query: (id) => ({
+        url: `/shipment/my-shipment/${id}`,
+        method: "GET",
+        credentials: "include",
+      }),
+      providesTags: (result, error, id) => [{ type: "Shipment", id }],
+    }),
+
     createShipmentOrder: builder.mutation<
       ShipmentOrderResponse,
       CreateShipmentOrderPayload
@@ -247,6 +256,7 @@ export const shipmentApi = createApi({
 
 export const {
   useGetMyShipmentsQuery,
+  useGetShipmentByIdQuery,
   useCreateShipmentMutation,
   useCancelShipmentMutation,
   useCreateShipmentOrderMutation,
