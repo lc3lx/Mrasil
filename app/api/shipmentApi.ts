@@ -169,6 +169,10 @@ export const shipmentApi = createApi({
         credentials: "include",
       }),
       providesTags: (result, error, id) => [{ type: "Shipment", id }],
+      transformResponse: (response: any) => {
+        // API returns { status: "success", data: shipment }
+        return response?.data || response;
+      },
     }),
 
     createShipmentOrder: builder.mutation<
@@ -243,14 +247,16 @@ export const shipmentApi = createApi({
     }),
 
     // إضافة endpoint لجلب مكاتب SMSA
-    getSMSAOffices: builder.query<{ status: string; data: SMSAOffice[] }, void>({
-      query: () => ({
-        url: "/shipment/smsa-offices",
-        method: "GET",
-        credentials: "include",
-      }),
-      transformResponse: (response: any) => response,
-    }),
+    getSMSAOffices: builder.query<{ status: string; data: SMSAOffice[] }, void>(
+      {
+        query: () => ({
+          url: "/shipment/smsa-offices",
+          method: "GET",
+          credentials: "include",
+        }),
+        transformResponse: (response: any) => response,
+      }
+    ),
   }),
 });
 

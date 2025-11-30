@@ -15,7 +15,10 @@ import {
 import V7Layout from "@/components/v7/v7-layout";
 import axios from "axios";
 import { useParams, useSearchParams } from "next/navigation";
-import { useGetMyShipmentsQuery, useGetShipmentByIdQuery } from "../api/shipmentApi";
+import {
+  useGetMyShipmentsQuery,
+  useGetShipmentByIdQuery,
+} from "../api/shipmentApi";
 import { useTrackShipmentMutation } from "../api/trakingApi";
 
 interface TimelineStep {
@@ -83,21 +86,38 @@ export default function () {
   const lastFiveShipments = myShipmentsData?.data?.slice(-5) ?? [];
 
   // جلب الشحنة من API بناءً على trackingNumber
-  const { data: shipmentData, isLoading: isLoadingShipment } = useGetShipmentByIdQuery(
-    number || "",
-    { skip: !number }
-  );
+  const {
+    data: shipmentData,
+    isLoading: isLoadingShipment,
+    refetch: refetchShipment,
+  } = useGetShipmentByIdQuery(number || "", { skip: !number });
+
+  // إعادة جلب الشحنة عند تغيير number
+  useEffect(() => {
+    if (number) {
+      refetchShipment();
+    }
+  }, [number, refetchShipment]);
 
   // الحصول على بيانات الشحنة الفعلية - أولاً من API، ثم من lastFiveShipments
-  const currentShipment = shipmentData?.data || (number
-    ? lastFiveShipments.find(
-        (shipment: any) =>
-          shipment.trackingId === number ||
-          shipment.trackingNumber === number ||
-          shipment._id === number
-      )
-    : null);
+  // shipmentData قد يكون الشحنة مباشرة أو { status: "success", data: shipment }
+  const apiShipment = shipmentData?.data || shipmentData;
+  const currentShipment =
+    apiShipment ||
+    (number
+      ? lastFiveShipments.find(
+          (shipment: any) =>
+            shipment.trackingId === number ||
+            shipment.trackingNumber === number ||
+            shipment._id === number
+        )
+      : null);
+
+  console.log("shipmentData", shipmentData);
+  console.log("apiShipment", apiShipment);
   console.log("currentShipment", currentShipment);
+  console.log("shipmentSender", currentShipment?.senderAddress);
+  console.log("shipmentReceiver", currentShipment?.receiverAddress);
   // handel Track
   const handleTrack = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -222,7 +242,8 @@ export default function () {
 
   // بيانات من الشحنة الفعلية فقط
   const shipmentSender = currentShipment?.senderAddress;
-  const shipmentReceiver = currentShipment?.receiverAddress || currentShipment?.order?.customer;
+  const shipmentReceiver =
+    currentShipment?.receiverAddress || currentShipment?.order?.customer;
   const shipmentWeight = currentShipment?.weight;
   const shipmentCreatedAt = currentShipment?.createdAt;
   const shipmentStatus = currentShipment?.shipmentstates;
@@ -296,7 +317,11 @@ export default function () {
                 <div className="flex flex-col md:flex-row justify-between gap-6 p-6 rounded-xl v7-neu-card-inner">
                   <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
                     <div className="v7-neu-icon">
-                      {getStatusIcon(trackingResult?.status || shipmentStatus || resultSmsa?.status)}
+                      {getStatusIcon(
+                        trackingResult?.status ||
+                          shipmentStatus ||
+                          resultSmsa?.status
+                      )}
                     </div>
                     <div>
                       <div className="text-sm text-[#6d6a67]">رقم الشحنة</div>
@@ -315,11 +340,23 @@ export default function () {
                     <div className="text-sm text-[#6d6a67]">حالة الشحنة</div>
                     <div
                       className={`text-lg font-bold ${getStatusColor(
-                        shipmentStatus || trackingResult?.status || resultSmsa?.status
+                        shipmentStatus ||
+                          trackingResult?.status ||
+                          resultSmsa?.status
                       )}`}
                     >
-                      {getStatusText(shipmentStatus || trackingResult?.status || resultSmsa?.status) || 
-                       (shipmentSender?.full_name ? `${shipmentSender.full_name} → ${shipmentReceiver?.full_name || shipmentReceiver?.clientName || ""}` : "")}
+                      {getStatusText(
+                        shipmentStatus ||
+                          trackingResult?.status ||
+                          resultSmsa?.status
+                      ) ||
+                        (shipmentSender?.full_name
+                          ? `${shipmentSender.full_name} → ${
+                              shipmentReceiver?.full_name ||
+                              shipmentReceiver?.clientName ||
+                              ""
+                            }`
+                          : "")}
                     </div>
                   </div>
                 </div>
@@ -481,60 +518,72 @@ export default function () {
                 </div>
               </div>
 
-              <div className=" grid md:grid-cols-2 gap-6 mt-6">
-                <div className=" p-6 rounded-xl v7-neu-card-inner">
-                  <h1 className="text-lg font-bold text-[#3498db] mb-4 ">
-                    معلومات المرسل
-                  </h1>
-                  <div className=" space-y-3 text-sm">
-                    <div className="flex justify-between">
-                      <span className=" text-[#6d6a67]">الاسم:</span>
-                      <span className=" text-[#1A5889] font-medium">
-                        {shipmentSender?.full_name || "-"}
-                      </span>
+              {(shipmentSender || shipmentReceiver) && (
+                <div className=" grid md:grid-cols-2 gap-6 mt-6">
+                  {shipmentSender && (
+                    <div className=" p-6 rounded-xl v7-neu-card-inner">
+                      <h1 className="text-lg font-bold text-[#3498db] mb-4 ">
+                        معلومات المرسل
+                      </h1>
+                      <div className=" space-y-3 text-sm">
+                        <div className="flex justify-between">
+                          <span className=" text-[#6d6a67]">الاسم:</span>
+                          <span className=" text-[#1A5889] font-medium">
+                            {shipmentSender?.full_name || "-"}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className=" text-[#6d6a67]">الهاتف:</span>
+                          <span className=" text-[#1A5889] font-medium">
+                            {shipmentSender?.mobile || "-"}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className=" text-[#6d6a67]">العنوان:</span>
+                          <span className=" text-[#1A5889] font-medium">
+                            {shipmentSender?.address || "-"}{" "}
+                            {shipmentSender?.city || ""}
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex justify-between">
-                      <span className=" text-[#6d6a67]">الهاتف:</span>
-                      <span className=" text-[#1A5889] font-medium">
-                        {shipmentSender?.mobile || "-"}
-                      </span>
+                  )}
+                  {shipmentReceiver && (
+                    <div className=" p-6 rounded-xl v7-neu-card-inner">
+                      <h1 className="text-lg font-bold text-[#3498db] mb-4">
+                        معلومات المستلم
+                      </h1>
+                      <div className=" space-y-3 text-sm">
+                        <div className="flex justify-between">
+                          <span className=" text-[#6d6a67]">الاسم:</span>
+                          <span className=" text-[#1A5889] font-medium">
+                            {shipmentReceiver?.full_name ||
+                              shipmentReceiver?.clientName ||
+                              "-"}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className=" text-[#6d6a67]">الهاتف:</span>
+                          <span className=" text-[#1A5889] font-medium">
+                            {shipmentReceiver?.mobile ||
+                              shipmentReceiver?.clientPhone ||
+                              "-"}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className=" text-[#6d6a67]">العنوان:</span>
+                          <span className=" text-[#1A5889] font-medium">
+                            {shipmentReceiver?.address ||
+                              shipmentReceiver?.clientAddress ||
+                              "-"}{" "}
+                            {shipmentReceiver?.city || ""}
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex justify-between">
-                      <span className=" text-[#6d6a67]">العنوان:</span>
-                      <span className=" text-[#1A5889] font-medium">
-                        {shipmentSender?.address || "-"}{" "}
-                        {shipmentSender?.city || ""}
-                      </span>
-                    </div>
-                  </div>
+                  )}
                 </div>
-                <div className=" p-6 rounded-xl v7-neu-card-inner">
-                  <h1 className="text-lg font-bold text-[#3498db] mb-4">
-                    معلومات المستلم
-                  </h1>
-                  <div className=" space-y-3 text-sm">
-                    <div className="flex justify-between">
-                      <span className=" text-[#6d6a67]">الاسم:</span>
-                      <span className=" text-[#1A5889] font-medium">
-                        {shipmentReceiver?.full_name || shipmentReceiver?.clientName || "-"}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className=" text-[#6d6a67]">الهاتف:</span>
-                      <span className=" text-[#1A5889] font-medium">
-                        {shipmentReceiver?.mobile || shipmentReceiver?.clientPhone || "-"}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className=" text-[#6d6a67]">العنوان:</span>
-                      <span className=" text-[#1A5889] font-medium">
-                        {shipmentReceiver?.address || shipmentReceiver?.clientAddress || "-"}{" "}
-                        {shipmentReceiver?.city || ""}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              )}
             </>
           )}
 
