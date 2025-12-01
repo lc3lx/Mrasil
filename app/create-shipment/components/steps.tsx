@@ -1717,16 +1717,15 @@ function Step4Content({
     الخُبر: "Khobar",
   };
 
-  // دالة للبحث في addressAR و cityName
+  // دالة للمقارنة الدقيقة مع cityName فقط (بدون البحث في addressAR)
   const matchesCity = (office: any, cityArabic: string) => {
-    if (!cityArabic) return false;
+    if (!cityArabic || !office) return false;
 
     const cityEnglish = cityMapping[cityArabic] || cityArabic;
     const officeCity = (office.cityName || "").trim();
-    const addressAR = (office.addressAR || "").trim();
     const cityArabicTrimmed = (cityArabic || "").trim();
 
-    // 1. المقارنة مع cityName (الإنجليزية)
+    // 1. المقارنة الدقيقة مع cityName (الإنجليزية) - هذا هو الأساس
     if (officeCity.toLowerCase() === cityEnglish.toLowerCase()) {
       return true;
     }
@@ -1736,17 +1735,8 @@ function Step4Content({
       return true;
     }
 
-    // 3. البحث في addressAR إذا كان يحتوي على اسم المدينة العربية
-    // هذا مهم لأن addressAR قد يحتوي على اسم المدينة
-    if (addressAR && addressAR.includes(cityArabicTrimmed)) {
-      return true;
-    }
-
-    // 4. البحث الجزئي في addressAR (في حال كان اسم المدينة جزء من العنوان)
-    // مثال: "الملز - شارع صلاح الدين" قد يحتوي على "الرياض" في العنوان
-    const addressARLower = addressAR.toLowerCase();
-    const cityArabicLower = cityArabicTrimmed.toLowerCase();
-    if (addressARLower.includes(cityArabicLower)) {
+    // 3. المقارنة بدون case sensitivity للعربية
+    if (officeCity.toLowerCase() === cityArabicTrimmed.toLowerCase()) {
       return true;
     }
 
@@ -1763,13 +1753,24 @@ function Step4Content({
   });
 
   // Debug logs
-  console.log("Step4 - Offices Data:", {
+  console.log("Step4 - Offices Filtering:", {
     totalOffices: offices.length,
     shipperCity,
     recipientCity,
+    shipperCityEnglish: cityMapping[shipperCity || ""] || shipperCity,
+    recipientCityEnglish: cityMapping[recipientCity || ""] || recipientCity,
     shipperOfficesCount: shipperOffices.length,
     recipientOfficesCount: recipientOffices.length,
-    sampleOffice: offices[0],
+    shipperOffices: shipperOffices.map((o: any) => ({
+      code: o.code,
+      cityName: o.cityName,
+      addressAR: o.addressAR,
+    })),
+    recipientOffices: recipientOffices.map((o: any) => ({
+      code: o.code,
+      cityName: o.cityName,
+      addressAR: o.addressAR,
+    })),
   });
 
   return (
@@ -1805,10 +1806,15 @@ function Step4Content({
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <h4 className="font-semibold text-[#1a365d] mb-1">
-                        {office.addressAR || office.address}
+                        {office.addressAR ||
+                          office.address ||
+                          "عنوان غير متوفر"}
                       </h4>
-                      <p className="text-sm text-gray-600 mb-2">
-                        {office.cityName}
+                      <p className="text-sm text-gray-600 mb-1">
+                        المدينة: {office.cityName || "غير محدد"}
+                      </p>
+                      <p className="text-xs text-gray-500 mb-1">
+                        الكود: {office.code}
                       </p>
                       {office.firstShift && (
                         <p className="text-xs text-gray-500">
@@ -1864,10 +1870,15 @@ function Step4Content({
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <h4 className="font-semibold text-[#1a365d] mb-1">
-                        {office.addressAR || office.address}
+                        {office.addressAR ||
+                          office.address ||
+                          "عنوان غير متوفر"}
                       </h4>
-                      <p className="text-sm text-gray-600 mb-2">
-                        {office.cityName}
+                      <p className="text-sm text-gray-600 mb-1">
+                        المدينة: {office.cityName || "غير محدد"}
+                      </p>
+                      <p className="text-xs text-gray-500 mb-1">
+                        الكود: {office.code}
                       </p>
                       {office.firstShift && (
                         <p className="text-xs text-gray-500">
