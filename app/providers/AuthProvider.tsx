@@ -62,7 +62,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsAuthenticated(true);
     
     // توجيه جميع المستخدمين للصفحة الرئيسية
-    router.push('/');
+        router.push('/');
   };
 
   const logout = () => {

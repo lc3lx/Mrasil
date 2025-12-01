@@ -247,7 +247,13 @@ export function CreateShipmentSteps() {
   }, []);
 
   // Stepper navigation
-  const nextStep = () => setStep((s) => Math.min(s + 1, 3));
+  const nextStep = () => {
+    const company = getValues("company");
+    const shipmentType = getValues("shipmentType");
+    const isSMSAOffices = company === "smsa" && shipmentType === "offices";
+    const maxStep = isSMSAOffices ? 4 : 3;
+    setStep((s) => Math.min(s + 1, maxStep));
+  };
   const prevStep = () => setStep((s) => Math.max(s - 1, 1));
 
   // Provider selection
@@ -358,7 +364,14 @@ export function CreateShipmentSteps() {
                 <div
                   className={`absolute top-7 rtl:right-1 ltr:left-0  `}
                   style={{
-                    width: `${(step - 1) * 48}%  `,
+                    width: `${(() => {
+                      const company = getValues("company");
+                      const shipmentType = getValues("shipmentType");
+                      const isSMSAOffices =
+                        company === "smsa" && shipmentType === "offices";
+                      const totalSteps = isSMSAOffices ? 4 : 3;
+                      return ((step - 1) / (totalSteps - 1)) * 100;
+                    })()}%`,
                     height: "4px",
                     background: "linear-gradient(to left, #3498db, #2980b9) ",
                     borderRadius: "2px",
@@ -476,12 +489,24 @@ export function CreateShipmentSteps() {
             {step === 3 && (
               <Step3Content
                 prevStep={prevStep}
-                onSubmit={
-                  getValues("company") === "smsa" &&
-                  getValues("shipmentType") === "offices"
-                    ? nextStep
-                    : handleSubmit(onSubmit)
-                }
+                onSubmit={(e: any) => {
+                  const company = getValues("company");
+                  const shipmentType = getValues("shipmentType");
+                  console.log(
+                    "Step3 onSubmit - Company:",
+                    company,
+                    "ShipmentType:",
+                    shipmentType
+                  );
+                  const isSMSAOffices =
+                    company === "smsa" && shipmentType === "offices";
+                  if (isSMSAOffices) {
+                    e.preventDefault();
+                    nextStep();
+                  } else {
+                    handleSubmit(onSubmit)(e);
+                  }
+                }}
                 selectedProvider={selectedProvider}
                 handleProviderSelect={handleProviderSelect}
                 shipmentType={shipmentType}
@@ -1052,6 +1077,12 @@ function Step3Content({
     if (selected) {
       setValue("company", company);
       setValue("shipmentType", shippingType);
+      console.log(
+        "handleCompanySelect - Company:",
+        company,
+        "ShippingType:",
+        shippingType
+      );
       // ✅ ضيف label وخلّي المعرف هو _id
       const sizes = (selected.allowedBoxSizes || []).map((s: any) => ({
         ...s,
