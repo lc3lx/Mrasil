@@ -247,19 +247,29 @@ export const shipmentApi = createApi({
     }),
 
     // إضافة endpoint لجلب مكاتب SMSA
-    getSMSAOffices: builder.query<{ status: string; data: SMSAOffice[] }, void>(
-      {
-        query: () => ({
-          url: "/shipment/smsa-offices",
-          method: "GET",
-          credentials: "include",
-        }),
-        transformResponse: (response: any) => {
-          // API يعيد { status: "success", data: [...] }
-          return response?.data || response;
-        },
-      }
-    ),
+    getSMSAOffices: builder.query<SMSAOffice[], void>({
+      query: () => ({
+        url: "/shipment/smsa-offices",
+        method: "GET",
+        credentials: "include",
+      }),
+      transformResponse: (response: any) => {
+        // Backend يعيد { status: "success", data: [...] }
+        // نحتاج إرجاع data فقط
+        if (response?.status === "success" && response?.data) {
+          return response.data;
+        }
+        // إذا كانت الاستجابة array مباشرة
+        if (Array.isArray(response)) {
+          return response;
+        }
+        // إذا كانت data موجودة مباشرة
+        if (response?.data && Array.isArray(response.data)) {
+          return response.data;
+        }
+        return [];
+      },
+    }),
   }),
 });
 

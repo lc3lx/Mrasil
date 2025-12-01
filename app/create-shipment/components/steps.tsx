@@ -1666,12 +1666,22 @@ function Step4Content({
     setValue,
   } = useFormContext();
 
-  const { data: officesData, isLoading: isLoadingOffices } =
-    useGetSMSAOfficesQuery();
-  // التحقق من بنية الاستجابة - قد تكون { status: "success", data: [...] } أو array مباشرة
-  const offices = Array.isArray(officesData)
-    ? officesData
-    : officesData?.data || [];
+  const {
+    data: officesData,
+    isLoading: isLoadingOffices,
+    error: officesError,
+  } = useGetSMSAOfficesQuery();
+
+  // officesData يجب أن يكون array مباشرة بعد transformResponse
+  const offices = Array.isArray(officesData) ? officesData : [];
+
+  console.log("Step4 - Offices API Response:", {
+    officesData,
+    officesCount: offices.length,
+    isLoadingOffices,
+    officesError,
+    sampleOffice: offices[0],
+  });
 
   const shipperCity = watch("shipper_city");
   const recipientCity = watch("recipient_city");
