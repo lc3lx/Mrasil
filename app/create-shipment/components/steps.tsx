@@ -253,7 +253,7 @@ export function CreateShipmentSteps() {
   // Provider selection
   const handleProviderSelect = (provider: (typeof providerOptions)[0]) => {
     setSelectedProvider(provider);
-    setValue("company", provider.label);
+    setValue("company", provider.key); // استخدام key بدلاً من label
     setValue("orderDescription", provider.notes);
   };
   // Shipment type selection
@@ -1637,20 +1637,38 @@ function Step4Content({
 
   const { data: officesData, isLoading: isLoadingOffices } =
     useGetSMSAOfficesQuery();
-  const offices = officesData?.data || [];
+  // التحقق من بنية الاستجابة - قد تكون { status: "success", data: [...] } أو array مباشرة
+  const offices = Array.isArray(officesData)
+    ? officesData
+    : officesData?.data || [];
 
   const shipperCity = watch("shipper_city");
   const recipientCity = watch("recipient_city");
   const senderOfficeCode = watch("senderOfficeCode");
   const recipientOfficeCode = watch("recipientOfficeCode");
 
-  // Filter offices by city
-  const shipperOffices = offices.filter(
-    (office: any) => office.cityName === shipperCity
-  );
-  const recipientOffices = offices.filter(
-    (office: any) => office.cityName === recipientCity
-  );
+  // Filter offices by city (مع تطابق دقيق)
+  const shipperOffices = offices.filter((office: any) => {
+    const officeCity = (office.cityName || "").trim();
+    const shipperCityTrimmed = (shipperCity || "").trim();
+    return officeCity === shipperCityTrimmed;
+  });
+
+  const recipientOffices = offices.filter((office: any) => {
+    const officeCity = (office.cityName || "").trim();
+    const recipientCityTrimmed = (recipientCity || "").trim();
+    return officeCity === recipientCityTrimmed;
+  });
+
+  // Debug logs
+  console.log("Step4 - Offices Data:", {
+    totalOffices: offices.length,
+    shipperCity,
+    recipientCity,
+    shipperOfficesCount: shipperOffices.length,
+    recipientOfficesCount: recipientOffices.length,
+    sampleOffice: offices[0],
+  });
 
   return (
     <form onSubmit={onSubmit} className="space-y-6">

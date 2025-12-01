@@ -254,7 +254,10 @@ export const shipmentApi = createApi({
           method: "GET",
           credentials: "include",
         }),
-        transformResponse: (response: any) => response,
+        transformResponse: (response: any) => {
+          // API يعيد { status: "success", data: [...] }
+          return response?.data || response;
+        },
       }
     ),
   }),
