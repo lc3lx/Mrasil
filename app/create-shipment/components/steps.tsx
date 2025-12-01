@@ -489,6 +489,7 @@ export function CreateShipmentSteps() {
             {step === 3 && (
               <Step3Content
                 prevStep={prevStep}
+                nextStep={nextStep}
                 onSubmit={(e: any) => {
                   const company = getValues("company");
                   const shipmentType = getValues("shipmentType");
@@ -1002,6 +1003,7 @@ function Step3Content({
   handleProviderSelect,
   shipmentType,
   handleShipmentTypeSelect,
+  nextStep,
 }: any) {
   const {
     register,
@@ -1011,6 +1013,12 @@ function Step3Content({
     setValue,
   } = useFormContext();
   const values = getValues();
+
+  // التحقق من إذا كان SMSA offices
+  const selectedCompany = watch("company");
+  const selectedShipmentType = watch("shipmentType");
+  const isSMSAOffices =
+    selectedCompany === "smsa" && selectedShipmentType === "offices";
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [boxSizes, setBoxSizes] = useState<any[]>([]);
   const [selectedBoxSize, setSelectedBoxSize] = useState<any>(null);
@@ -1031,8 +1039,6 @@ function Step3Content({
     { label: "الشحن السريع", value: "Express" },
     { label: "الشحن البارد", value: "Cold" },
   ];
-
-  const selectedCompany = watch("company");
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -1525,7 +1531,8 @@ function Step3Content({
           السابق
         </Button>
         <Button
-          type="submit"
+          type={isSMSAOffices ? "button" : "submit"}
+          onClick={isSMSAOffices ? nextStep : undefined}
           className="bg-gradient-to-r from-[#1e3a6c]  text-white  text-lg px-8 py-4 "
           disabled={isSubmitting}
         >
@@ -1552,6 +1559,8 @@ function Step3Content({
               </svg>
               جاري الإرسال...
             </span>
+          ) : isSMSAOffices ? (
+            "التالي"
           ) : (
             "إنشاء الشحنة"
           )}
@@ -1687,6 +1696,10 @@ function Step4Content({
   const recipientCity = watch("recipient_city");
   const senderOfficeCode = watch("senderOfficeCode");
   const recipientOfficeCode = watch("recipientOfficeCode");
+
+  // State للبحث في المكاتب
+  const [senderSearchQuery, setSenderSearchQuery] = useState("");
+  const [recipientSearchQuery, setRecipientSearchQuery] = useState("");
 
   // Mapping بين المدن العربية والإنجليزية (بناءً على JSON الخاص بـ SMSA)
   const cityMapping: Record<string, string> = {
@@ -1841,12 +1854,37 @@ function Step4Content({
   };
 
   // Filter offices by city (مع تطابق دقيق)
-  const shipperOffices = offices.filter((office: any) => {
+  const shipperOfficesByCity = offices.filter((office: any) => {
     return matchesCity(office, shipperCity);
   });
 
-  const recipientOffices = offices.filter((office: any) => {
+  const recipientOfficesByCity = offices.filter((office: any) => {
     return matchesCity(office, recipientCity);
+  });
+
+  // دالة للبحث في العنوان
+  const matchesSearch = (office: any, searchQuery: string) => {
+    if (!searchQuery || !searchQuery.trim()) return true;
+
+    const query = searchQuery.trim().toLowerCase();
+    const addressAR = (office.addressAR || "").toLowerCase();
+    const address = (office.address || "").toLowerCase();
+    const code = (office.code || "").toLowerCase();
+
+    return (
+      addressAR.includes(query) ||
+      address.includes(query) ||
+      code.includes(query)
+    );
+  };
+
+  // Filter offices by city AND search query
+  const shipperOffices = shipperOfficesByCity.filter((office: any) => {
+    return matchesSearch(office, senderSearchQuery);
+  });
+
+  const recipientOffices = recipientOfficesByCity.filter((office: any) => {
+    return matchesSearch(office, recipientSearchQuery);
   });
 
   // Debug logs
@@ -1879,14 +1917,34 @@ function Step4Content({
             <MapPin className="w-5 h-5 text-[#3498db]" />
             اختر مكتب المرسل ({shipperCity || "المدينة"})
           </h3>
+
+          {/* Search Input for Sender Offices */}
+          {!isLoadingOffices && shipperOfficesByCity.length > 0 && (
+            <div className="relative">
+              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Input
+                type="text"
+                placeholder="ابحث عن عنوان المكتب أو الكود..."
+                value={senderSearchQuery}
+                onChange={(e) => setSenderSearchQuery(e.target.value)}
+                className="pr-10 w-full v7-neu-input"
+              />
+            </div>
+          )}
+
           {isLoadingOffices ? (
             <div className="text-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#3498db] mx-auto"></div>
               <p className="mt-2 text-gray-500">جاري جلب المكاتب...</p>
             </div>
-          ) : shipperOffices.length === 0 ? (
+          ) : shipperOfficesByCity.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
               لا توجد مكاتب متاحة في {shipperCity || "هذه المدينة"}
+            </div>
+          ) : shipperOffices.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              لا توجد نتائج للبحث "{senderSearchQuery}" في{" "}
+              {shipperCity || "هذه المدينة"}
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1943,14 +2001,34 @@ function Step4Content({
             <MapPin className="w-5 h-5 text-[#3498db]" />
             اختر مكتب المستلم ({recipientCity || "المدينة"})
           </h3>
+
+          {/* Search Input for Recipient Offices */}
+          {!isLoadingOffices && recipientOfficesByCity.length > 0 && (
+            <div className="relative">
+              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Input
+                type="text"
+                placeholder="ابحث عن عنوان المكتب أو الكود..."
+                value={recipientSearchQuery}
+                onChange={(e) => setRecipientSearchQuery(e.target.value)}
+                className="pr-10 w-full v7-neu-input"
+              />
+            </div>
+          )}
+
           {isLoadingOffices ? (
             <div className="text-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#3498db] mx-auto"></div>
               <p className="mt-2 text-gray-500">جاري جلب المكاتب...</p>
             </div>
-          ) : recipientOffices.length === 0 ? (
+          ) : recipientOfficesByCity.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
               لا توجد مكاتب متاحة في {recipientCity || "هذه المدينة"}
+            </div>
+          ) : recipientOffices.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              لا توجد نتائج للبحث "{recipientSearchQuery}" في{" "}
+              {recipientCity || "هذه المدينة"}
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
