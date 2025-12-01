@@ -1688,17 +1688,78 @@ function Step4Content({
   const senderOfficeCode = watch("senderOfficeCode");
   const recipientOfficeCode = watch("recipientOfficeCode");
 
+  // Mapping بين المدن العربية والإنجليزية
+  const cityMapping: Record<string, string> = {
+    الرياض: "Riyadh",
+    جدة: "Jeddah",
+    مكة: "Makkah",
+    المدينة: "Madinah",
+    الدمام: "Dammam",
+    الخبر: "Khobar",
+    الطائف: "Taif",
+    تبوك: "Tabuk",
+    بريدة: "Buraydah",
+    "خميس مشيط": "Khamis Mushait",
+    الهفوف: "Al Hofuf",
+    المبرز: "Al Mubarraz",
+    "حفر الباطن": "Hafr Al Batin",
+    حائل: "Hail",
+    نجران: "Najran",
+    الجبيل: "Jubail",
+    أبها: "Abha",
+    جازان: "Jazan",
+    سكاكا: "Sakaka",
+    عرعر: "Arar",
+    الباحة: "Al Baha",
+    الرس: "Ar Rass",
+    عنيزة: "Unaizah",
+    القطيف: "Qatif",
+    الخُبر: "Khobar",
+  };
+
+  // دالة للبحث في addressAR و cityName
+  const matchesCity = (office: any, cityArabic: string) => {
+    if (!cityArabic) return false;
+
+    const cityEnglish = cityMapping[cityArabic] || cityArabic;
+    const officeCity = (office.cityName || "").trim();
+    const addressAR = (office.addressAR || "").trim();
+    const cityArabicTrimmed = (cityArabic || "").trim();
+
+    // 1. المقارنة مع cityName (الإنجليزية)
+    if (officeCity.toLowerCase() === cityEnglish.toLowerCase()) {
+      return true;
+    }
+
+    // 2. المقارنة مع cityName (العربية) - في حال كانت API ترجعها بالعربية
+    if (officeCity === cityArabicTrimmed) {
+      return true;
+    }
+
+    // 3. البحث في addressAR إذا كان يحتوي على اسم المدينة العربية
+    // هذا مهم لأن addressAR قد يحتوي على اسم المدينة
+    if (addressAR && addressAR.includes(cityArabicTrimmed)) {
+      return true;
+    }
+
+    // 4. البحث الجزئي في addressAR (في حال كان اسم المدينة جزء من العنوان)
+    // مثال: "الملز - شارع صلاح الدين" قد يحتوي على "الرياض" في العنوان
+    const addressARLower = addressAR.toLowerCase();
+    const cityArabicLower = cityArabicTrimmed.toLowerCase();
+    if (addressARLower.includes(cityArabicLower)) {
+      return true;
+    }
+
+    return false;
+  };
+
   // Filter offices by city (مع تطابق دقيق)
   const shipperOffices = offices.filter((office: any) => {
-    const officeCity = (office.cityName || "").trim();
-    const shipperCityTrimmed = (shipperCity || "").trim();
-    return officeCity === shipperCityTrimmed;
+    return matchesCity(office, shipperCity);
   });
 
   const recipientOffices = offices.filter((office: any) => {
-    const officeCity = (office.cityName || "").trim();
-    const recipientCityTrimmed = (recipientCity || "").trim();
-    return officeCity === recipientCityTrimmed;
+    return matchesCity(office, recipientCity);
   });
 
   // Debug logs
