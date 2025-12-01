@@ -1688,42 +1688,104 @@ function Step4Content({
   const senderOfficeCode = watch("senderOfficeCode");
   const recipientOfficeCode = watch("recipientOfficeCode");
 
-  // Mapping بين المدن العربية والإنجليزية
+  // Mapping بين المدن العربية والإنجليزية (بناءً على JSON الخاص بـ SMSA)
   const cityMapping: Record<string, string> = {
+    // المدن الرئيسية
     الرياض: "Riyadh",
     جدة: "Jeddah",
     مكة: "Makkah",
     المدينة: "Madinah",
     الدمام: "Dammam",
-    الخبر: "Khobar",
+    الخبر: "Khubar", // في JSON هو Khubar وليس Khobar
     الطائف: "Taif",
     تبوك: "Tabuk",
     بريدة: "Buraydah",
     "خميس مشيط": "Khamis Mushait",
-    الهفوف: "Al Hofuf",
-    المبرز: "Al Mubarraz",
-    "حفر الباطن": "Hafr Al Batin",
+    الهفوف: "Hufuf", // في JSON هو Hufuf وليس Al Hofuf
+    المبرز: "Mubarraz",
+    "حفر الباطن": "Hafar Al Baten",
     حائل: "Hail",
     نجران: "Najran",
     الجبيل: "Jubail",
     أبها: "Abha",
     جازان: "Jazan",
-    سكاكا: "Sakaka",
+    سكاكا: "Skakah",
     عرعر: "Arar",
-    الباحة: "Al Baha",
-    الرس: "Ar Rass",
-    عنيزة: "Unaizah",
+    الباحة: "Baha", // في JSON هو Baha وليس Al Baha
+    الرس: "Rass",
+    عنيزة: "Unayzah",
     القطيف: "Qatif",
-    الخُبر: "Khobar",
+    // مدن إضافية من JSON
+    الدوادمي: "Duwadimi",
+    عفيف: "Afif",
+    الأفلاج: "Aflaj",
+    الخرج: "Kharj",
+    المجمعة: "Majmaah",
+    ساجر: "Sajir",
+    شقراء: "Shaqra",
+    الزلفي: "Zulfi",
+    الظهران: "Dhahran",
+    الخفجي: "Khafji",
+    النعيرية: "Nairiyah",
+    البقيق: "Buqaiq",
+    رفحاء: "Rafha",
+    القريات: "Qurayyat",
+    "دومة الجندل": "Dawmat Al Jandal",
+    ضباء: "Dhuba",
+    طبرجل: "Tabarjal",
+    طريف: "Turayf",
+    المذنب: "Midhnab",
+    القويعية: "Quwayiyah",
+    حناكية: "Hanakiyah",
+    الليث: "Lith",
+    "عيون الجواء": "Uyun Al Jiwa",
+    "أحد رفيدة": "Ahad Rafidah",
+    حرض: "Haradh",
+    الرويضة: "Ruwaydah",
+    ثادق: "Thadiq",
+    الغاط: "Ghat",
+    الارطاوية: "Artawiyah",
+    الرفيعة: "Rafiah",
+    الرين: "Ar Rayn",
+    "بني عمرو": "Bani Amro",
   };
 
-  // دالة للمقارنة الدقيقة مع cityName فقط (بدون البحث في addressAR)
+  // دالة لتطبيع أسماء المدن (إزالة الكلمات الشائعة)
+  const normalizeCityName = (cityName: string): string => {
+    if (!cityName) return "";
+    let normalized = cityName.trim();
+
+    // إزالة الكلمات الشائعة
+    const commonWords = [
+      "المكرمة",
+      "المنورة",
+      "المحمدية",
+      "القديمة",
+      "الجديدة",
+      "الشمالية",
+      "الجنوبية",
+      "الشرقية",
+      "الغربية",
+    ];
+
+    commonWords.forEach((word) => {
+      normalized = normalized.replace(new RegExp(`\\s*${word}\\s*`, "gi"), "");
+    });
+
+    return normalized.trim();
+  };
+
+  // دالة للمقارنة المرنة مع cityName
   const matchesCity = (office: any, cityArabic: string) => {
     if (!cityArabic || !office) return false;
 
     const cityEnglish = cityMapping[cityArabic] || cityArabic;
     const officeCity = (office.cityName || "").trim();
     const cityArabicTrimmed = (cityArabic || "").trim();
+
+    // تطبيع الأسماء
+    const normalizedArabic = normalizeCityName(cityArabicTrimmed);
+    const normalizedOfficeCity = normalizeCityName(officeCity);
 
     // 1. المقارنة الدقيقة مع cityName (الإنجليزية) - هذا هو الأساس
     if (officeCity.toLowerCase() === cityEnglish.toLowerCase()) {
@@ -1737,6 +1799,41 @@ function Step4Content({
 
     // 3. المقارنة بدون case sensitivity للعربية
     if (officeCity.toLowerCase() === cityArabicTrimmed.toLowerCase()) {
+      return true;
+    }
+
+    // 4. المقارنة بعد التطبيع (للمدن مثل "مكة" و "مكة المكرمة")
+    if (normalizedOfficeCity.toLowerCase() === normalizedArabic.toLowerCase()) {
+      return true;
+    }
+
+    // 5. البحث الجزئي - إذا كان اسم المدينة جزء من cityName
+    if (officeCity.toLowerCase().includes(cityEnglish.toLowerCase())) {
+      return true;
+    }
+
+    if (
+      normalizedOfficeCity
+        .toLowerCase()
+        .includes(normalizedArabic.toLowerCase())
+    ) {
+      return true;
+    }
+
+    // 6. معالجة حالات خاصة
+    // مكة = Makkah
+    if (
+      (cityArabicTrimmed === "مكة" || normalizedArabic === "مكة") &&
+      (officeCity === "Makkah" || officeCity.toLowerCase().includes("makkah"))
+    ) {
+      return true;
+    }
+
+    // المدينة = Madinah
+    if (
+      (cityArabicTrimmed === "المدينة" || normalizedArabic === "المدينة") &&
+      (officeCity === "Madinah" || officeCity.toLowerCase().includes("madinah"))
+    ) {
       return true;
     }
 
