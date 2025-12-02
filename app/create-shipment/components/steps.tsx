@@ -1713,7 +1713,7 @@ function Step4Content({
     الطائف: "Taif",
     تبوك: "Tabuk",
     بريدة: "Buraydah",
-    "خميس مشيط": "Khamis Mushait",
+    "خميس مشيط": "Khamis Mushayt", // في JSON هو Mushayt وليس Mushait
     الهفوف: "Hufuf", // في JSON هو Hufuf وليس Al Hofuf
     المبرز: "Mubarraz",
     "حفر الباطن": "Hafar Al Baten",
@@ -1721,7 +1721,7 @@ function Step4Content({
     نجران: "Najran",
     الجبيل: "Jubail",
     أبها: "Abha",
-    جازان: "Jazan",
+    جازان: "Gizan", // في JSON هو Gizan وليس Jazan
     سكاكا: "Skakah",
     عرعر: "Arar",
     الباحة: "Baha", // في JSON هو Baha وليس Al Baha

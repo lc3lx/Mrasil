@@ -1,0 +1,4285 @@
+{
+    "status": "success",
+    "data": [
+        {
+            "code": "1",
+            "address": "Al Sawidi Dist. Al Suwaidi Main St.",
+            "cityName": "Riyadh",
+            "addressAR": "حي السويدي - طريق السويدي العام",
+            "coordinates": "24.5984,46.6872",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "2",
+            "address": "Malaz - Al Ahsa St.",
+            "cityName": "Riyadh",
+            "addressAR": "الملز - شارع الأحساء",
+            "coordinates": "24.5985,46.7324",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "3",
+            "address": "Al Ghurabi St.",
+            "cityName": "Riyadh",
+            "addressAR": "شارع الغرابي ",
+            "coordinates": "24.6462,46.7185",
+            "firstShift": "09:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "4",
+            "address": "Dhahrat Liban Dist. - Alshefa Rd.",
+            "cityName": "Riyadh",
+            "addressAR": "ظهرة لبن - شارع الشفاء",
+            "coordinates": "24.6325,46.5645",
+            "firstShift": "10:00 - 14:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "5",
+            "address": "Al Manar Dist. - Alshafi St",
+            "cityName": "Riyadh",
+            "addressAR": "حي المنار - طريق الامام الشافعي",
+            "coordinates": "24.723,46.7875",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "6",
+            "address": "Al Rabwah- Exit 14 (Jarir Bookstore)",
+            "cityName": "Riyadh",
+            "addressAR": "حي الربوة - مخرج 14- مكتبة جرير",
+            "coordinates": "24.6917,46.7655",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "7",
+            "address": "Sulaimanya- Dhabab St.",
+            "cityName": "Riyadh",
+            "addressAR": "السليمانية - شارع الضباب ",
+            "coordinates": "24.6785,46.7023",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "8",
+            "address": "Alnahdah, Prince Bandar bin Abdullaziz St.",
+            "cityName": "Riyadh",
+            "addressAR": "النهضة، شارع الامير بندر بن عبدالعزيز",
+            "coordinates": "24.7594,46.7947",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "9",
+            "address": "Al-Ghadir, king Abdulaziz St. (Exit 5)",
+            "cityName": "Riyadh",
+            "addressAR": "حي الغدير، طريق الملك عبدالعزيز - مخرج 5",
+            "coordinates": "24.7756,46.6649",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "11",
+            "address": "Malaz - Salahudin Street",
+            "cityName": "Riyadh",
+            "addressAR": "الملز - شارع صلاح الدين الأيوبي",
+            "coordinates": "24.6657,46.7313",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "12",
+            "address": "Alsharafiyah - King Abdullah Road",
+            "cityName": "Jeddah",
+            "addressAR": "الشرفية - طريق الملك عبدالله",
+            "coordinates": "21.5114,39.1883",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "13",
+            "address": "AlRawdhah, Madinah Rd.",
+            "cityName": "Jeddah",
+            "addressAR": "طريق المدينه النازل قبل كوبري المربع ",
+            "coordinates": "21.5689,39.1688",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "14",
+            "address": "Tahliah St.",
+            "cityName": "Jeddah",
+            "addressAR": "شارع التحلية",
+            "coordinates": "21.5656,39.2178",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "15",
+            "address": "Al Samir Dist. - Anqara Street",
+            "cityName": "Jeddah",
+            "addressAR": "حي السامر - شارع انقرة",
+            "coordinates": "21.5839,39.2291",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "16",
+            "address": "Bani Malik Dist.- Palestine St- Crossing Pr. Majed Rd",
+            "cityName": "Jeddah",
+            "addressAR": "حي بني مالك، شارع فلسطين تقاطع شارع الأمير ماجد",
+            "coordinates": "21.5347,39.2088",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "17",
+            "address": "Khaldiah Dist.",
+            "cityName": "Jeddah",
+            "addressAR": "حي الخالدية",
+            "coordinates": "21.5592,39.1386",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "18",
+            "address": "Hail St.",
+            "cityName": "Jeddah",
+            "addressAR": "شارع حائل",
+            "coordinates": "21.4996,39.1808",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "22",
+            "address": "King Fahad Rd. Al Bawadi Dist.",
+            "cityName": "Jeddah",
+            "addressAR": "طريق الملك فهد - حي البوادي",
+            "coordinates": "21.5981,39.1732",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 22:00"
+        },
+        {
+            "code": "23",
+            "address": "King Soud Rd. Al Amamrah",
+            "cityName": "Dammam",
+            "addressAR": "طريق الملك سعود- حي العمامرة",
+            "coordinates": "26.4425,50.1088",
+            "firstShift": "09:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "25",
+            "address": "9th St. Prince Talal",
+            "cityName": "Dammam",
+            "addressAR": "الشارع التاسع",
+            "coordinates": "26.4498,50.1086",
+            "firstShift": "08:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "26",
+            "address": "Block 91- Abu Baker Siddiq St.",
+            "cityName": "Dammam",
+            "addressAR": "مخطط 91- شارع أبوبكر الصديق",
+            "coordinates": "26.413,50.0316",
+            "firstShift": "08:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "28",
+            "address": "Khubar Shamaliyah, King Abdulaziz Rd.",
+            "cityName": "Khubar",
+            "addressAR": "الخبر الشمالية - شارع الملك عبدالعزيز",
+            "coordinates": "26.2907,50.2076",
+            "firstShift": "09:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "30",
+            "address": "Thoqbah, Makkah St",
+            "cityName": "Khubar",
+            "addressAR": "حي الثقبة- شارع مكة",
+            "coordinates": "26.2736,50.1946",
+            "firstShift": "08:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "31",
+            "address": "Nuzha St.",
+            "cityName": "Makkah",
+            "addressAR": "شارع النزهة",
+            "coordinates": "21.4378,39.7941",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "32",
+            "address": "Madina Rd.",
+            "cityName": "Makkah",
+            "addressAR": "طريق المدينة",
+            "coordinates": "21.4919,39.7939",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "33",
+            "address": "Josham dist. King Abdullah Rd.",
+            "cityName": "Madinah",
+            "addressAR": "حي جشم - طريق الملك عبدالله",
+            "coordinates": "24.4554,39.6685",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "34",
+            "address": "Airport St.",
+            "cityName": "Madinah",
+            "addressAR": "شارع المطار",
+            "coordinates": "24.4883,39.6354",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "36",
+            "address": "Duwadimi, King Abdulaziz St",
+            "cityName": "Duwadimi",
+            "addressAR": "الدوادمي، شارع الملك عبدالعزيز",
+            "coordinates": "24.5146,44.4077",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "37",
+            "address": "Al Khalidiya Dist. King Abdulaziz St.",
+            "cityName": "Hafar Al Baten",
+            "addressAR": "حي الخالدية - شارع الملك عبدالعزيز",
+            "coordinates": "28.4209,45.9713",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "38",
+            "address": "Afif, King Abdulaziz Rd",
+            "cityName": "Afif",
+            "addressAR": "عفيف، طريق الملك عبدالعزيز",
+            "coordinates": "23.9025,42.9128",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "39",
+            "address": "Aflaj, King Abdulaziz St.",
+            "cityName": "Aflaj",
+            "addressAR": "طريق الملك عبدالعزيز",
+            "coordinates": "22.2776,46.7217",
+            "firstShift": "10:00 - 13:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "40",
+            "address": "King Abdulaziz Road, Sulaymaniyah",
+            "cityName": "Kharj",
+            "addressAR": "طريق الملك عبدالعزيز، السليمانية",
+            "coordinates": "24.1451,47.3043",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "42",
+            "address": "Rass, King Abdulaziz Rd",
+            "cityName": "Rass",
+            "addressAR": "الرس، طريق الملك عبدالعزيز",
+            "coordinates": "25.8675,43.4903",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "43",
+            "address": "Al Iskan Dist. - Ali Ben Abi Talib Str.",
+            "cityName": "Buraydah",
+            "addressAR": "حي الاسكان - شارع علي بن ابي طالب",
+            "coordinates": "26.3695,43.9332",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "44",
+            "address": "Al Mahtah Dist. Usama Bin Zaid St.",
+            "cityName": "Hail",
+            "addressAR": "حي المحطة، شارع اسامة بن زيد",
+            "coordinates": "27.5151,41.694",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 21:00"
+        },
+        {
+            "code": "45",
+            "address": "Majmaah, Prince Sultan Rd.",
+            "cityName": "Majmaah",
+            "addressAR": "المجمعة، طريق الامير سلطان",
+            "coordinates": "25.9212,45.3786",
+            "firstShift": "08:00 - 12:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "46",
+            "address": "Al Fayhaa Dist, Pr. Mohammed Bin Abdulrahman Rd. Exit# 15",
+            "cityName": "Riyadh",
+            "addressAR": "حي الفيحاء ,طريق الأمير محمد بن عبدالرحمن - مخرج 15",
+            "coordinates": "24.6877,46.8171",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "47",
+            "address": "Shifa- Ibn Taimyah Street",
+            "cityName": "Riyadh",
+            "addressAR": "الشفاء- شارع إبن تيمية",
+            "coordinates": "24.5554,46.7016",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "48",
+            "address": "Rawdah - Alhassan Bin Ali St.",
+            "cityName": "Riyadh",
+            "addressAR": "حي الروضة - شارع الحسن بن علي",
+            "coordinates": "24.7273,46.7683",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "49",
+            "address": "Aziziah- Public Transportation Center",
+            "cityName": "Riyadh",
+            "addressAR": "العزيزية، مركز النقل العام",
+            "coordinates": "24.5975,46.7452",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "50",
+            "address": "Olaya- Makkah Road",
+            "cityName": "Riyadh",
+            "addressAR": "العليا، طريق مكة",
+            "coordinates": "24.6814,46.6934",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "52",
+            "address": "Urouba St.",
+            "cityName": "Riyadh",
+            "addressAR": "طريق العروبة",
+            "coordinates": "24.7196,46.6896",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "53",
+            "address": "Naseem Dist - Saad Bin Abi Waqas St",
+            "cityName": "Riyadh",
+            "addressAR": "حي النسيم - شارع سعد إبن أبي وقاص",
+            "coordinates": "24.7314,46.8165",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "54",
+            "address": "Sajir, King Abdulaziz St",
+            "cityName": "Sajir",
+            "addressAR": "ساجر- طريق الملك عبدالعزيز",
+            "coordinates": "25.1895,44.6016",
+            "firstShift": "09:00 - 14:00",
+            "secondShift": "16:00 - 19:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "55",
+            "address": "Shaqra, King Saud Rd.",
+            "cityName": "Shaqra",
+            "addressAR": " حي الملك فهد, طريق الملك سعود",
+            "coordinates": "25.2473,45.2542",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "56",
+            "address": "Shikhah Dist., Shabili St.",
+            "cityName": "Unayzah",
+            "addressAR": "عنيزة,حي شيخة, شارع الشبيلي",
+            "coordinates": "26.0922,43.9925",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "57",
+            "address": "Zulfi, King Fahad Rd",
+            "cityName": "Zulfi",
+            "addressAR": "الزلفي، طريق الملك فهد",
+            "coordinates": "26.2994,44.8136",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "58",
+            "address": "Hitten, Prince Mohammed bin Salman Rd",
+            "cityName": "Riyadh",
+            "addressAR": "حطين، طريق الأمير محمد بن سلمان",
+            "coordinates": "24.7596,46.598",
+            "firstShift": "10:00 - 14:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "59",
+            "address": "Almurooj Dist. - Imam Saud  St. Exit# 9",
+            "cityName": "Riyadh",
+            "addressAR": "حي المروج- شارع الإمام سعود - مخرج 9",
+            "coordinates": "24.7503,46.6683",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "60",
+            "address": "Alwurud Dist. - King Abdullah Rd- Opposite Sahara Mall",
+            "cityName": "Riyadh",
+            "addressAR": "حي الورود - طريق الملك عبدالله - مقابل صحارى مول",
+            "coordinates": "24.7348,46.6821",
+            "firstShift": "10:00 - 22:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "62",
+            "address": "Al Falah, Prince Mohammed Bin Salman Rd",
+            "cityName": "Riyadh",
+            "addressAR": "الفلاح، طريق الامير محمد بن سلمان",
+            "coordinates": "24.8025,46.7022",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "66",
+            "address": "Al Midra Center - ARAMCO Compound",
+            "cityName": "Dhahran",
+            "addressAR": "مركز الميدرا - مجمع أرامكو",
+            "coordinates": "",
+            "firstShift": "08:30 - 16:30",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "67",
+            "address": "Hofuf (Dhahran St.)",
+            "cityName": "Mubarraz",
+            "addressAR": "الهفوف - شارع الظهران",
+            "coordinates": "25.4278,49.5727",
+            "firstShift": "08:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "68",
+            "address": "Jubail- Riyadh Street.",
+            "cityName": "Jubail",
+            "addressAR": "الجبيل - شارع الرياض",
+            "coordinates": "27.0787,49.551",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "13:00 - 18:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "69",
+            "address": "Khafji - King Fahad Dist. ",
+            "cityName": "Khafji",
+            "addressAR": "الخفجي - حي الملك فهد",
+            "coordinates": "28.416,48.4917",
+            "firstShift": "08:00 - 22:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "70",
+            "address": "An Nairiyah, Prince Sultan St. ",
+            "cityName": "Nairiyah",
+            "addressAR": "النعيرية, شارع الأمير سلطان",
+            "coordinates": "27.472,48.4694",
+            "firstShift": "09:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "71",
+            "address": "Buqaiq, King Abulaziz St, Back side of STC",
+            "cityName": "Buqaiq",
+            "addressAR": "شارع الملك عبدالعزيز، خلف مبنى شركة الاتصالات السعودية",
+            "coordinates": "25.9234,49.6579",
+            "firstShift": "08:00 - 20:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "73",
+            "address": "Rafha, Prince Naif St.",
+            "cityName": "Rafha",
+            "addressAR": "المحمدية - شارع الامير نايف",
+            "coordinates": "29.6218,43.5342",
+            "firstShift": "09:00 - 22:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "74",
+            "address": "Al Khalidiya Dist. - King Faisal Street.",
+            "cityName": "Qurayyat",
+            "addressAR": "حي الخالدية - شارع الملك فيصل",
+            "coordinates": "31.3359,37.3337",
+            "firstShift": "08:00 - 22:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "75",
+            "address": "Arar, Yellow St. , AlMohammadiah",
+            "cityName": "Arar",
+            "addressAR": "عرعر,الشارع الأصفر، المحمدية",
+            "coordinates": "30.9857,41.0262",
+            "firstShift": "08:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 21:00"
+        },
+        {
+            "code": "76",
+            "address": "Dawmat Al Jandal, Khazma Jafar Ibn Abi Talib Rd.",
+            "cityName": "Dawmat Al Jandal",
+            "addressAR": "حي خزامة طريق جعفر بن ابي طالب",
+            "coordinates": "29.8093,39.8659",
+            "firstShift": "09:00 - 13:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "77",
+            "address": "Dhuba, King Abdullah Rd",
+            "cityName": "Dhuba",
+            "addressAR": "طريق الملك عبدالله قرب مكتب العمل",
+            "coordinates": "27.3507,35.7051",
+            "firstShift": "08:00 - 22:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "78",
+            "address": "Al Muhammadiyah Dist. King Fahad Rd.",
+            "cityName": "Skakah",
+            "addressAR": "حي المحمدية - طريق الملك فهد",
+            "coordinates": "29.9552,40.1994",
+            "firstShift": "08:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 21:00"
+        },
+        {
+            "code": "79",
+            "address": "Tabarjal, Khalidiyah, Yarmuk Street",
+            "cityName": "Tabarjal",
+            "addressAR": "طبرجل، الخالدية، شارع اليرموك",
+            "coordinates": "30.5009,38.2187",
+            "firstShift": "09:00 - 13:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "80",
+            "address": "Madinah Rd. Opposite General Prison",
+            "cityName": "Tabuk",
+            "addressAR": "طريق المدينة, مقابل السجن العام",
+            "coordinates": "28.4078,36.5933",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 21:00"
+        },
+        {
+            "code": "81",
+            "address": "Murooj Dist. King Abdullah Rd. opposite Ministry of Civil Service ",
+            "cityName": "Tabuk",
+            "addressAR": "حي المروج, طريق الملك عبدالله مقابل وزارة الخدمة المدنية",
+            "coordinates": "28.4197,36.5681",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "82",
+            "address": "Turayf, International Highway Rd.",
+            "cityName": "Turayf",
+            "addressAR": "الطريق الدولي السريع",
+            "coordinates": "31.6752,38.6614",
+            "firstShift": "09:00 - 13:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "83",
+            "address": "Ar Rabwah Dist. (Obeikan- P. Sultan Str. (Al Obeikan Bookstore)",
+            "cityName": "Abha",
+            "addressAR": "حي الربوه (العبيكان - شارع الامير سلطان",
+            "coordinates": "18.211,42.5209",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "84",
+            "address": "Abha Al Mansak-20th Street",
+            "cityName": "Abha",
+            "addressAR": "حي المنسك",
+            "coordinates": "18.2172,42.5472",
+            "firstShift": "08:00 - 12:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "85",
+            "address": "Al Baha (Hawiyah St.)",
+            "cityName": "Baha",
+            "addressAR": "الباحة - شارع الحوية",
+            "coordinates": "20.0163,41.4713",
+            "firstShift": "08:00 - 22:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "86",
+            "address": "Namas, Almarouj Dist.near CIVIL DEFENSE",
+            "cityName": "Namas",
+            "addressAR": "النماص، حي المروج -بجوار الدفاع المدني",
+            "coordinates": "19.1023,42.1257",
+            "firstShift": "08:00 - 12:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "87",
+            "address": "Al Mubabraz Area, King Faisal St",
+            "cityName": "Sulayyil",
+            "addressAR": "حي المبرز - شارع الملك فيصل",
+            "coordinates": "20.4729,45.575",
+            "firstShift": "09:00 - 13:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "89",
+            "address": "Al Najdi Dist. King Soud Rd.",
+            "cityName": "Biljurashi",
+            "addressAR": "حي النجدي - طريق الملك سعود",
+            "coordinates": "19.8623,41.5598",
+            "firstShift": "08:00 - 12:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "94",
+            "address": "Khamis Mushayte (Obeikan- Military City Rd.)",
+            "cityName": "Khamis Mushayt",
+            "addressAR": "خميس مشيط (العبيكان، طريق المدينة العسكرية)",
+            "coordinates": "18.2406,42.7741",
+            "firstShift": "08:00 - 22:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "95",
+            "address": "Humaila, King Fahad Rd.",
+            "cityName": "Khamis Mushayt",
+            "addressAR": "حي الهميلة، طريق الملك فهد",
+            "coordinates": "18.3063,42.7196",
+            "firstShift": "08:00 - 12:00",
+            "secondShift": "13:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "96",
+            "address": "Shubaah, Umar Bin Al Khattab Rd.",
+            "cityName": "Khamis Mushayt",
+            "addressAR": "شباعة، طريق عمر بن الخطاب",
+            "coordinates": "18.3174,42.7248",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "97",
+            "address": "King Faisal Rd. opposite Al Ghoneim Mall",
+            "cityName": "Muhayil",
+            "addressAR": "طريق الملك فيصل، مقابل أسواق الغنيم",
+            "coordinates": "18.5458,42.0379",
+            "firstShift": "08:00 - 22:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "98",
+            "address": "Jamaah, Jamiya Road",
+            "cityName": "Najran",
+            "addressAR": "حي الجامع, طريق الجامعة",
+            "coordinates": "17.6429,44.4792",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "99",
+            "address": "Abu Diyab Dist. King Fahad Rd.",
+            "cityName": "Sabya",
+            "addressAR": "حي أبو دياب - طريق الملك فهد",
+            "coordinates": "17.1315,42.6479",
+            "firstShift": "08:00 - 22:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "100",
+            "address": "Al Khazan, Prince Mutib Ibn Abdulaziz St",
+            "cityName": "Sharourah",
+            "addressAR": "الخزان، شارع الامير متعب",
+            "coordinates": "17.4857,47.1146",
+            "firstShift": "08:00 - 12:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "103",
+            "address": "Al Nahdah, Al Bara Bin Malek Street",
+            "cityName": "Majardah",
+            "addressAR": "حي النهضة, شارع البراء بن مالك",
+            "coordinates": "19.1157,41.9133",
+            "firstShift": "08:00 - 12:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "104",
+            "address": "Al Khurma, Alrawdhah - Prince Sultan St",
+            "cityName": "Khurmah",
+            "addressAR": "الخرمة، حي الروضة - شارع الامير سلطان",
+            "coordinates": "21.9251,42.0221",
+            "firstShift": "10:00 - 14:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "105",
+            "address": "Al Ula, Khalid Bin Alwalid St",
+            "cityName": "Ula",
+            "addressAR": "العلا، شارع خالد بن الوليد",
+            "coordinates": "26.6063,37.9287",
+            "firstShift": "10:00 - 12:00",
+            "secondShift": "14:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "106",
+            "address": "Faisaliyah Dist. Airport Road",
+            "cityName": "Taif",
+            "addressAR": "حي الفيصلية - طريق المطار",
+            "coordinates": "21.2957,40.4263",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "107",
+            "address": "Shehar St.",
+            "cityName": "Taif",
+            "addressAR": "شارع شهار",
+            "coordinates": "21.2494,40.4139",
+            "firstShift": "09:00 - 12:30",
+            "secondShift": "16:30 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "108",
+            "address": "Maashi District, Jaish Street",
+            "cityName": "Taif",
+            "addressAR": "حي معشي، شارع الجيش",
+            "coordinates": "21.281,40.4029",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "109",
+            "address": "Rabeigh (Main St.)",
+            "cityName": "Rabigh",
+            "addressAR": "رابغ (الشارع العام) طريق الملك عبد الله",
+            "coordinates": "22.7995,39.0361",
+            "firstShift": "09:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "110",
+            "address": "Ranya (Taif Rd.)",
+            "cityName": "Ranyah",
+            "addressAR": "طريق الطائف",
+            "coordinates": "21.2457,42.8464",
+            "firstShift": "10:00 - 14:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "111",
+            "address": "Almunif Dist. King Abdulaziz Street",
+            "cityName": "Turbah",
+            "addressAR": "حي المنيف - طريق الملك عبدالعزيز",
+            "coordinates": "21.211,41.6375",
+            "firstShift": "10:00 - 14:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "112",
+            "address": "Ashurouq Dist.- King Abdulaziz St.",
+            "cityName": "Yanbu",
+            "addressAR": "حي الشروق- طريق الملك عبد العزيز",
+            "coordinates": "24.0868,38.0746",
+            "firstShift": "08:00 - 22:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 22:00"
+        },
+        {
+            "code": "114",
+            "address": "Al Ladaam area, Riyadh Road",
+            "cityName": "Wadi Al Dawasir",
+            "addressAR": "حي اللدام, طريق الرياض",
+            "coordinates": "20.4656,44.7984",
+            "firstShift": "08:00 - 12:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "115",
+            "address": "Al Rawabi Dist. King Fahad Rd. (Dammam-Alkhobar Highway)",
+            "cityName": "Khubar",
+            "addressAR": "حي الروابي - طريق الملك فهد- شارع الدمام -الخبر السريع",
+            "coordinates": "26.3329,50.2023",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "116",
+            "address": "Bikeryah, King Khalid St",
+            "cityName": "Bikeryah",
+            "addressAR": "البكيرية، طريق الملك خالد",
+            "coordinates": "26.1355,43.6661",
+            "firstShift": "09:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "117",
+            "address": "Al Majeediyah, Riyadh St.",
+            "cityName": "Qatif",
+            "addressAR": "المجيدية, شارع الرياض",
+            "coordinates": "26.5522,50.02",
+            "firstShift": "08:00 - 22:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "118",
+            "address": "Tathleeth, Prince Sultan Bin Abdulaziz Rd.",
+            "cityName": "Tathleeth",
+            "addressAR": "طريق الأمير سلطان بن عبدالعزيز",
+            "coordinates": "19.5286,43.5202",
+            "firstShift": "09:00 - 13:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "119",
+            "address": "Alsafa- Pri. Moteb St.",
+            "cityName": "Jeddah",
+            "addressAR": "حي الصفا- شارع الأمير متعب",
+            "coordinates": "21.5882,39.2067",
+            "firstShift": "07:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "120",
+            "address": "Alrabwah- Pri. Majed St.",
+            "cityName": "Jeddah",
+            "addressAR": "حي الربوة- شارع الأمير ماجد",
+            "coordinates": "21.5956,39.1941",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "121",
+            "address": "Aziziyah Dist. Ohud St.",
+            "cityName": "Madinah",
+            "addressAR": "حي العزيزية- شارع أحد",
+            "coordinates": "24.4677,39.5475",
+            "firstShift": "08:00 - 22:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "122",
+            "address": "Al Azizia North Main Street, Makkah Concord Hotel Building ",
+            "cityName": "Makkah",
+            "addressAR": "حي العزيزية الشمالي, الشارع العام , بناية فندق مكة كونكورد",
+            "coordinates": "21.4135,39.8637",
+            "firstShift": "09:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "125",
+            "address": "Albasatin Dist.",
+            "cityName": "Jeddah",
+            "addressAR": "حي البساتين",
+            "coordinates": "21.6844,39.1225",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "126",
+            "address": "Salamah, Sari Branch Rd.",
+            "cityName": "Jeddah",
+            "addressAR": " حي سلامة, طريق ساري الفرعي",
+            "coordinates": "21.5772,39.1508",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "127",
+            "address": "Midhnab - King Abdulaziz St.",
+            "cityName": "Midhnab",
+            "addressAR": "المذنب - شارع الملك عبدالعزيز",
+            "coordinates": "25.8556,44.2245",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "128",
+            "address": "Quwayiyah, King Abdulaziz Rd.",
+            "cityName": "Quwayiyah",
+            "addressAR": "حي الحزم - طريق الملك عبدالعزيز",
+            "coordinates": "24.0586,45.2721",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "129",
+            "address": "Ishbiliyah Dist. - Imam Saud Rd.",
+            "cityName": "Riyadh",
+            "addressAR": "حي إشبيلية- طريق الإمام سعود",
+            "coordinates": "24.7915,46.7678",
+            "firstShift": "08:00 - 22:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "130",
+            "address": "Alhamra Dist. - King Abdullah Rd.(Jarir Bookstore)",
+            "cityName": "Riyadh",
+            "addressAR": "حي الحمراء- طريق الملك عبدالله - مكتبة جرير",
+            "coordinates": "24.7674,46.7558",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "131",
+            "address": "Hittin Dist. Pri. Turki Alawal Rd. Exit# 2",
+            "cityName": "Riyadh",
+            "addressAR": "حي حطين- طريق الأمير تركي الأول - مخرج 2",
+            "coordinates": "24.7495,46.6152",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "132",
+            "address": "Albadiah Dist. - Almadinah Rd. Exit# 28",
+            "cityName": "Riyadh",
+            "addressAR": "حي البديعة- طريق المدينة - مخرج 28",
+            "coordinates": "24.579,46.6094",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "133",
+            "address": "Sahafah Area - King Abdulaziz Rd.",
+            "cityName": "Riyadh",
+            "addressAR": "حي الصحافة - طريق الملك عبد العزيز",
+            "coordinates": "24.8089,46.6485",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "134",
+            "address": "DQ Dist, Al Fazari Complex",
+            "cityName": "Riyadh",
+            "addressAR": "حي السفارات، ساحة الفزاري",
+            "coordinates": "24.6861,46.626",
+            "firstShift": "08:00 - 16:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "135",
+            "address": "Lazzah Dist. Pri. Naif St.",
+            "cityName": "Hufuf",
+            "addressAR": "حي لزة- شارع الأمير نايف",
+            "coordinates": "25.3451,49.5818",
+            "firstShift": "08:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "136",
+            "address": "Sulimaniyah Dist. Prince Fawaz bin Abdulaziz St.",
+            "cityName": "Hufuf",
+            "addressAR": "\tحي السليمانية، شارع الأمير فواز بن عبد العزيز",
+            "coordinates": "25.3599,49.5474",
+            "firstShift": "08:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "137",
+            "address": "2nd Industerial City- Makkah Rd.",
+            "cityName": "Dammam",
+            "addressAR": "الصناعية الثانية- طريق مكة",
+            "coordinates": "26.2454,49.9818",
+            "firstShift": "08:30 - 17:30",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "138",
+            "address": "Ghirnatah, King Khalid Street",
+            "cityName": "Dammam",
+            "addressAR": "حي غرناطة - شارع الملك خالد",
+            "coordinates": "26.432,50.0674",
+            "firstShift": "10:00 - 19:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "139",
+            "address": "Alkhalidiayh Dist.",
+            "cityName": "Dammam",
+            "addressAR": "حي الخالدية",
+            "coordinates": "26.4142,50.1365",
+            "firstShift": "08:00 - 22:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "141",
+            "address": "Ath Thuqbah Dist. - King Fahad Rd.",
+            "cityName": "Khubar",
+            "addressAR": "حي الثقبة- طريق الملك فهد",
+            "coordinates": "26.2712,50.2124",
+            "firstShift": "10:00 - 13:00",
+            "secondShift": "14:00 - 19:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "142",
+            "address": "Industerial City- 114 St.",
+            "cityName": "Jubail",
+            "addressAR": "المدينة الصناعية- الشارع 114",
+            "coordinates": "27.0082,49.6584",
+            "firstShift": "08:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "143",
+            "address": "Rahima (Ras Tannurah) - 50th St.",
+            "cityName": "Ras Tannurah",
+            "addressAR": "رحيمة (رأس تنورة) شارع الخمسين",
+            "coordinates": "26.7065,50.067",
+            "firstShift": "09:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "182",
+            "address": "Dhahran Aljanoub, King Khalid Rd.",
+            "cityName": "Dhahran Aljanoub",
+            "addressAR": "حي السوق - طريق الملك خالد",
+            "coordinates": "17.6681,43.5077",
+            "firstShift": "09:00 - 13:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "184",
+            "address": "Sayhat, Al Danah Area- King Abdulaziz St. ",
+            "cityName": "Sayhat",
+            "addressAR": "سيهات, حي الدانة - طريق الملك عبدالعزيز",
+            "coordinates": "26.4686,50.0458",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "13:00 - 18:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "185",
+            "address": "Mansourah Dist, Al Kharj Road",
+            "cityName": "Riyadh",
+            "addressAR": "حي المنصورة، طريق الخرج",
+            "coordinates": "24.620292,46.749509",
+            "firstShift": "09:00 - 21:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "186",
+            "address": "Al Malqa Dist. - King Fahad Rd.",
+            "cityName": "Riyadh",
+            "addressAR": "حي الملقا - طريق الملك فهد",
+            "coordinates": "24.7999,46.6271",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "187",
+            "address": "Azizia Area- King Fahad Road",
+            "cityName": "Jeddah",
+            "addressAR": "حي العزيزيه - طريق الملك فهد ",
+            "coordinates": "21.5514,39.1895",
+            "firstShift": "09:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "188",
+            "address": "Naseem Area- Bani Malek Street",
+            "cityName": "Jeddah",
+            "addressAR": "حي النسيم - شارع بني مالك",
+            "coordinates": "21.5208,39.2395",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "189",
+            "address": "Tayseer, Abu Buraidah Al Ashari St.",
+            "cityName": "Jeddah",
+            "addressAR": "تيسير،شارع أبو بريدة الأشعري",
+            "coordinates": "21.5555,39.2872",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "190",
+            "address": "Al Hamadaneya Dist. - Al Haramain Rd.",
+            "cityName": "Jeddah",
+            "addressAR": "حي الحمدانيه - طريق الحرمين",
+            "coordinates": "21.7434,39.1909",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "191",
+            "address": "Ibn Khaldun Dist., King Fahd Rd.",
+            "cityName": "Dammam",
+            "addressAR": "حي ابن خلدون شارع الملك فهد",
+            "coordinates": "26.4213,50.0908",
+            "firstShift": "10:00 - 12:00",
+            "secondShift": "13:00 - 19:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "192",
+            "address": "Ad Dawhah Dist. - Abdullah Ibn Abbas Str.",
+            "cityName": "Khubar",
+            "addressAR": "حي الدوحه - شارع عبدالله بن عباس",
+            "coordinates": "26.3226,50.157",
+            "firstShift": "08:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "193",
+            "address": "Al Qura, King Faisal Rd.",
+            "cityName": "Abha",
+            "addressAR": "القرى، طريق الملك فيصل",
+            "coordinates": "18.2342,42.5007",
+            "firstShift": "08:00 - 12:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "194",
+            "address": "Al Jafar Dist. - Al Jafar Str.",
+            "cityName": "Hufuf",
+            "addressAR": "حي الجفر - شارع الجفر",
+            "coordinates": "25.3755,49.7201",
+            "firstShift": "08:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "196",
+            "address": "As Shamas Dist. - Khubayb Str.",
+            "cityName": "Buraydah",
+            "addressAR": "حي الشماس - شارع الخبيب",
+            "coordinates": "26.335,43.9684",
+            "firstShift": "08:00 - 22:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "197",
+            "address": "Block 5 - King Fahad Str.",
+            "cityName": "Gizan",
+            "addressAR": "مخطط 5 - شارع الملك فهد",
+            "coordinates": "16.9159,42.562",
+            "firstShift": "08:00 - 22:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "199",
+            "address": "Jabal Al Nour Dist.- Jabal Al Nour Road ",
+            "cityName": "Makkah",
+            "addressAR": "حي جبل النور - طريق جبل النور",
+            "coordinates": "21.4467,39.8611",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "200",
+            "address": "Al Maqla Dist. - King Abdulaziz Road",
+            "cityName": "Skakah",
+            "addressAR": "حي المعاقلة (دوار الصواني) طريق الملك عبدالعزيز",
+            "coordinates": "29.979,40.2044",
+            "firstShift": "08:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "201",
+            "address": "As Salman Dist. - King Khalid Str.",
+            "cityName": "Tabuk",
+            "addressAR": "حي السلمان - شارع الملك خالد",
+            "coordinates": "28.3797,36.5759",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 21:00"
+        },
+        {
+            "code": "202",
+            "address": "Abu Arish, King Fahd Rd",
+            "cityName": "Abu Arish",
+            "addressAR": "طريق الملك فهد",
+            "coordinates": "16.9783,42.8324",
+            "firstShift": "08:00 - 22:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "203",
+            "address": "Sarat Abida, King Khalid St",
+            "cityName": "Sarat Abida",
+            "addressAR": "سراة عبيدة، طريق الملك خالد",
+            "coordinates": "18.0823,43.1465",
+            "firstShift": "08:00 - 12:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "204",
+            "address": "Shifa, Pr. Sultan Bin Abdulaziz Rd",
+            "cityName": "Taima",
+            "addressAR": "تيماء، الشفاء طريق الامير سلطان بن عبدالعزيز",
+            "coordinates": "27.6129,38.5273",
+            "firstShift": "10:00 - 15:00",
+            "secondShift": "16:30 - 19:30",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "205",
+            "address": "Samtah, Al Jaradiyah",
+            "cityName": "Samtah",
+            "addressAR": "صامطة، الجرادية",
+            "coordinates": "16.5861,42.9194",
+            "firstShift": "08:00 - 22:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "206",
+            "address": "Ghazza Dist. King Fahad Rd.",
+            "cityName": "Mukhwah",
+            "addressAR": "حي الغزة - طريق الملك فهد ",
+            "coordinates": "19.7709,41.4354",
+            "firstShift": "08:00 - 12:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "207",
+            "address": "Al Kamil Dist, near alwatan Gas Station",
+            "cityName": "Sabt Al Alaya",
+            "addressAR": "حي الكامل، قرب محطة الوطن",
+            "coordinates": "19.5734,41.9566",
+            "firstShift": "09:00 - 13:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "208",
+            "address": "An Naseem Al Gharbi Area- Hassan Bin Thabit St. ",
+            "cityName": "Riyadh",
+            "addressAR": "حي النسيم الغربي - شارع حسان بن ثابت",
+            "coordinates": "24.7232,46.8404",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "209",
+            "address": "National Guard Hospital - Khashm Ala'an",
+            "cityName": "Riyadh",
+            "addressAR": "مستشفى الحرس الوطني - خشم العان",
+            "coordinates": "",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "210",
+            "address": "Naeem District - 30th Street",
+            "cityName": "Jeddah",
+            "addressAR": "حي النعيم - شارع 30",
+            "coordinates": "21.6209,39.1501",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "211",
+            "address": "Al Nahda Dist. Hira St.",
+            "cityName": "Jeddah",
+            "addressAR": "حي النهضة - شارع حراء",
+            "coordinates": "21.6073,39.1245",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "212",
+            "address": "Tanumah, Al Dahna Dist - King Faisal Rd.",
+            "cityName": "Tanumah",
+            "addressAR": "تنومة، حي الدهناء - طريق الملك فيصل",
+            "coordinates": "18.918,42.2013",
+            "firstShift": "10:00 - 12:00",
+            "secondShift": "13:00 - 19:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "214",
+            "address": "Southern Alrakah Dist. - Khalid Bin Al Walid Str.",
+            "cityName": "Khubar",
+            "addressAR": "الراكه الجنوبيه - شارع خالد بن الوليد ",
+            "coordinates": "26.3628,50.1976",
+            "firstShift": "08:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "216",
+            "address": "Al Kadsiya Area - Sheikh Jaber Str.",
+            "cityName": "Riyadh",
+            "addressAR": "حي القادسيه - شارع الشيخ جابر",
+            "coordinates": "24.8162,46.8043",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "218",
+            "address": "Al Masif, Abi Bakr As Siddiq Branch Rd",
+            "cityName": "Riyadh",
+            "addressAR": "حي المصيف، طريق ابوبكر الصديق",
+            "coordinates": "24.7639,46.6927",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "219",
+            "address": "Aishah Bint Abi Bakr Street- beside Al Khaleej Training & Education",
+            "cityName": "Riyadh",
+            "addressAR": "شارع عائشه بنت ابي بكر - بجانب معهد الخليج",
+            "coordinates": "24.5763,46.662",
+            "firstShift": "10:00 - 14:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "221",
+            "address": "Sulay Exit 18, Wadi Alfara St.",
+            "cityName": "Riyadh",
+            "addressAR": "حي السلي -شارع وادي الفرع - مخرج 18",
+            "coordinates": "24.6443,46.8277",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "222",
+            "address": "National Guard Hospital- King Abdullah- Iskan Al Haras",
+            "cityName": "Hufuf",
+            "addressAR": "مستشفى الحرس الوطني - الملك عبدالله إسكان الحرس",
+            "coordinates": "",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "224",
+            "address": "Al Hawiyyah- Riyadh Road",
+            "cityName": "Taif",
+            "addressAR": "في مكتب خدمات الحوية حي المعترض - طريق الرياض",
+            "coordinates": "21.4364,40.4996",
+            "firstShift": "08:00 - 22:30",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "226",
+            "address": "Abdullah Fouad Dist.- Pr. Mohd. Ibn Fahd St.",
+            "cityName": "Dammam",
+            "addressAR": "حي عبدالله فؤاد - شارع الأمير محمد بن فهد ",
+            "coordinates": "26.419,50.1109",
+            "firstShift": "08:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "227",
+            "address": "Rawdha Dist.-Prince Naif Street",
+            "cityName": "Dammam",
+            "addressAR": "حي الروضة - شارع الأمير نايف ",
+            "coordinates": "26.4023,50.0852",
+            "firstShift": "09:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "228",
+            "address": "4339 National Guard Hospital- Dammam-Khobar Highway",
+            "cityName": "Dammam",
+            "addressAR": "مستشفى الحرس الوطني - طريق الدمام / الخبر",
+            "coordinates": "",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "229",
+            "address": "Al Faisaliyah Dist. Omar Bin Alkhattab",
+            "cityName": "Dammam",
+            "addressAR": "حي الفيصلية - طريق عمر بن الخطاب",
+            "coordinates": "26.4018,50.0649",
+            "firstShift": "09:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "230",
+            "address": "Safwa- Imam Ali Ibn Abitaleb Main Road",
+            "cityName": "Safwa",
+            "addressAR": "الصفوة - شارع الإمام على بن أبي طالب بعد البنك العربي - ",
+            "coordinates": "26.6412,49.9632",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "13:00 - 18:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "231",
+            "address": "Adamah, 18th Street",
+            "cityName": "Dammam",
+            "addressAR": "العدامة، شارع ١٨",
+            "coordinates": "26.4382,50.0964",
+            "firstShift": "10:00 - 14:00",
+            "secondShift": "15:00 - 19:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "232",
+            "address": "Taiba District, Thabit Bin Muadh Ansari St.",
+            "cityName": "Jeddah",
+            "addressAR": "حي طيبة ، شارع ثابت بن معاذ الأنصاري",
+            "coordinates": "21.8047,39.1477",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "234",
+            "address": "Ummluj, Al Safa",
+            "cityName": "Ummlujj",
+            "addressAR": "حي صفاء, طريق الملك فيصل",
+            "coordinates": "25.0577,37.2644",
+            "firstShift": "09:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "238",
+            "address": "Qeba Rd- Near Qeba Mosque Opp. Alrajhi & Injaz Bank",
+            "cityName": "Madinah",
+            "addressAR": "طريق قباء - قرب مسجد قباء",
+            "coordinates": "24.442,39.6156",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "239",
+            "address": "An Nuzha, Prince Mishal St.",
+            "cityName": "Hufuf",
+            "addressAR": "حي النزهة، شارع الامير مشعل",
+            "coordinates": "25.4557,49.5976",
+            "firstShift": "09:00 - 13:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "240",
+            "address": "Al Safra Dist. King Abdullah Rd.",
+            "cityName": "Buraydah",
+            "addressAR": "حي الصفراء - طريق الملك عبدالله",
+            "coordinates": "26.3611,43.9633",
+            "firstShift": "09:00 - 22:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "242",
+            "address": "Hail, King Fahad Rd",
+            "cityName": "Hail",
+            "addressAR": "حائل، طريق الملك فهد )حائل(",
+            "coordinates": "27.4946,41.6786",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "243",
+            "address": "Al Murjan Dist. ",
+            "cityName": "Jeddah",
+            "addressAR": "حي المرجان",
+            "coordinates": "21.6892,39.1066",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "244",
+            "address": "Alazizya Dist. Prince Majed Rd",
+            "cityName": "Jeddah",
+            "addressAR": "حي العزيزية - شارع الأمير ماجد",
+            "coordinates": "21.5562,39.2038",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "246",
+            "address": "Al Jisr Area- King Khalid St.",
+            "cityName": "Khubar",
+            "addressAR": "حي الجسر - شارع الملك خالد",
+            "coordinates": "26.2098,50.1981",
+            "firstShift": "08:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "247",
+            "address": "Madinat Al Umal, Prince Muqrin St.",
+            "cityName": "Khubar",
+            "addressAR": "مدينة العمال، شارع الامير مقرن",
+            "coordinates": "26.298,50.2046",
+            "firstShift": "09:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "248",
+            "address": "Al Oyoon Dist. Othman Bin Afan Rd.",
+            "cityName": "Madinah",
+            "addressAR": "حي العيون - طريق عثمان بن عفان",
+            "coordinates": "24.4894,39.603",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "249",
+            "address": "Al Awali Dist. Ibrahim AlJuffali St.",
+            "cityName": "Makkah",
+            "addressAR": "حي العوالي - شارع إبراهيم الجفالي",
+            "coordinates": "21.3566,39.886",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "250",
+            "address": "Ar Rusayfah Dist - Pr. Nasser Ibn Masoud St.",
+            "cityName": "Makkah",
+            "addressAR": "حي الرصيفة, شارع الأمير ناصر بن مسعود",
+            "coordinates": "21.4104,39.7922",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "251",
+            "address": "As Shawaqiyyah Dist. Dr Abdul Qadir Koshak St",
+            "cityName": "Makkah",
+            "addressAR": "حي الشوقية شارع الدكتور عبدالقادر كوشك",
+            "coordinates": "21.3764,39.7879",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "252",
+            "address": "Athaybah Dist. King A.Aziz Rd- Opposite Najran Maternity Hospital",
+            "cityName": "Najran",
+            "addressAR": "حي الأثايبة - طريق الملك عبدالعزيز- مقابل مستشفى الولادة",
+            "coordinates": "17.5517,44.2708",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "255",
+            "address": "As Sulay Dist. Abu Ubaidah Amir Ibn Al Jarrah Road",
+            "cityName": "Riyadh",
+            "addressAR": "حي السلي - طريق أبو عبيدة بن الجراح",
+            "coordinates": "24.688,46.85",
+            "firstShift": "10:00 - 14:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "256",
+            "address": "Tuwaiq Dist. Bilal Ibn Rabah Road",
+            "cityName": "Riyadh",
+            "addressAR": "حي طويق- طريق بلال بن رباح ",
+            "coordinates": "24.5781,46.5699",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "257",
+            "address": "Janadriyah Area- Khurais Rd. Opposite of Panda Al Nahdem",
+            "cityName": "Riyadh",
+            "addressAR": "الجنادرية- طريق خريص - مقابل بندة النظيم",
+            "coordinates": "24.8100318,46.8741514",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "258",
+            "address": "As Sulimaniyah Dist. Pri. Mamdouh Bin Abdulaziz Rd.",
+            "cityName": "Riyadh",
+            "addressAR": "السليمانية - طريق الأمير ممدوح بن عبدالعزيز",
+            "coordinates": "24.7118,46.6958",
+            "firstShift": "10:00 - 14:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "260",
+            "address": "Ad Darb, Ash Shuqayq Rd",
+            "cityName": "Darb",
+            "addressAR": "الدرب، طريق الشقيق",
+            "coordinates": "17.7424,42.2821",
+            "firstShift": "08:00 - 22:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "261",
+            "address": "Main Street- in-front of Civil Defense",
+            "cityName": "Rijal Alma",
+            "addressAR": "الشارع العام - مقابل الدفاع المدني",
+            "coordinates": "18.256,42.2641",
+            "firstShift": "09:00 - 13:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "262",
+            "address": "Al Hadab St.",
+            "cityName": "Dayer",
+            "addressAR": "شارع الهداب",
+            "coordinates": "17.3276,43.102",
+            "firstShift": "09:00 - 13:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "264",
+            "address": "Al Rayan Area- Zamil Abdullah Al Salem Rd.",
+            "cityName": "Unayzah",
+            "addressAR": "الريان - طريق زامل عبدالله السالم",
+            "coordinates": "26.0819,43.9788",
+            "firstShift": "09:00 - 21:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "265",
+            "address": "Muzahmiyah, King Abulaziz St",
+            "cityName": "Muzamiyah",
+            "addressAR": "طريق الملك عبدالعزيز",
+            "coordinates": "24.4868,46.3045",
+            "firstShift": "08:00 - 22:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "266",
+            "address": "Ash Shara'ei - Eng. Omar Qadi Road.",
+            "cityName": "Makkah",
+            "addressAR": "حي الشرائع-طريق المهندس عمر قاضي",
+            "coordinates": "21.4731,39.9403",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "267",
+            "address": "Area 5000- King Khalid Military City",
+            "cityName": "King Khalid Military City",
+            "addressAR": "حي 5000- مدينة الملك خالد العسكرية",
+            "coordinates": "27.9908,45.557",
+            "firstShift": "09:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "268",
+            "address": "Rabwah Dist. King Abdulaziz St.",
+            "cityName": "Qaryat Al Ulya",
+            "addressAR": "حي الربوة - طريق الملك عبدالعزيز",
+            "coordinates": "27.5619,47.7077",
+            "firstShift": "09:00 - 13:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "269",
+            "address": "Riyadh Al Khabra, King Abdullah Rd",
+            "cityName": "Riyadh Al Khabra",
+            "addressAR": "رياض الخبراء - طريق الملك عبدالله",
+            "coordinates": "26.0536,43.5585",
+            "firstShift": "10:00 - 14:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "270",
+            "address": "Al Biyaah Area, Ibn Khateeb Rd",
+            "cityName": "Taif",
+            "addressAR": "حي البيعة، طريق  ابن الخطيب",
+            "coordinates": "21.2862,40.4386",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "271",
+            "address": "Ar Raid Dist, King Abdullah Rd",
+            "cityName": "Riyadh",
+            "addressAR": "حي الرائد, طريق الملك عبدالله",
+            "coordinates": "24.7077,46.6273",
+            "firstShift": "10:00 - 14:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "272",
+            "address": "Royal Commission Dist, Near Bus Stations ",
+            "cityName": "Yanbu",
+            "addressAR": "حي الهيئة الملكية, بجوار محطة الحافلات",
+            "coordinates": "24.0085,38.2211",
+            "firstShift": "09:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "273",
+            "address": "King Fahad Rd, Before Airport Bridge",
+            "cityName": "Abha",
+            "addressAR": "طريق الملك فهد, قبل كبري المطار",
+            "coordinates": "18.2548,42.629",
+            "firstShift": "08:00 - 12:00",
+            "secondShift": "13:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "276",
+            "address": "AlSalamah Dist - Abdul Rahman As Sidayri Road",
+            "cityName": "Jeddah",
+            "addressAR": "حي السلامة, طريق عبدالرحمن السديري",
+            "coordinates": "21.593,39.1559",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "277",
+            "address": "Wajh, Safa Dist.",
+            "cityName": "Wajh",
+            "addressAR": "حي الصفا  - شارع علي بن طلب",
+            "coordinates": "26.2326,36.4576",
+            "firstShift": "09:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "278",
+            "address": "Al Qismah Main Street, opposite of National Anak Hospital",
+            "cityName": "Anak",
+            "addressAR": "شارع القصمة العام - مقابل مستشفى عنك العام",
+            "coordinates": "26.5196,50.0331",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "13:00 - 18:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "279",
+            "address": "Hawtat Bani Tamim, Al Muhammadiyah",
+            "cityName": "Hawtat Bani Tamim",
+            "addressAR": "حي المحمدية, طريق الملك فهد",
+            "coordinates": "23.5041,46.8937",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "280",
+            "address": "Remah, The Old Court St",
+            "cityName": "Remah",
+            "addressAR": "شارع المحكمة القديم",
+            "coordinates": "25.5722,47.1576",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "281",
+            "address": "Ash Shariah, King Abdulaziz Rd",
+            "cityName": "Baysh",
+            "addressAR": "حي الشريعة, طريق الملك عبدالعزيز",
+            "coordinates": "17.3979,42.5388",
+            "firstShift": "08:00 - 12:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "283",
+            "address": "Othman Bin Afan Rd",
+            "cityName": "Mahd Ad Dhahab",
+            "addressAR": "طريق عثمان بن عفان",
+            "coordinates": "23.5052,40.8903",
+            "firstShift": "10:00 - 13:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "284",
+            "address": "Al Ranonah, Al Abbas Bin Ubaidah Rd",
+            "cityName": "Madinah",
+            "addressAR": "حي الرنونة, طريق العباس بن عبيده",
+            "coordinates": "24.4245,39.5922",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "285",
+            "address": "Badaya, King Abdulaziz St",
+            "cityName": "Badaya",
+            "addressAR": "البدايع، طريق الملك عبدالعزيز",
+            "coordinates": "26.0055,43.7376",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "286",
+            "address": "Al Hadaiq Road, opposite of King Faisal Hospital",
+            "cityName": "Taif",
+            "addressAR": "طريق الحدائق , مقابل مستشفى الملك فيصل",
+            "coordinates": "21.2461,40.4252",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "287",
+            "address": "Ubhour Dist. Aber Alqarat Street",
+            "cityName": "Jeddah",
+            "addressAR": "حي ابحر - شارع عابر القارات",
+            "coordinates": "21.7571,39.1198",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "289",
+            "address": "Qiwayzah Area, Jack Road",
+            "cityName": "Jeddah",
+            "addressAR": "قويزة، شارع جاك",
+            "coordinates": "21.4991,39.2777",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "290",
+            "address": "Al Otaibia, Al Jazair Road",
+            "cityName": "Makkah",
+            "addressAR": "العتيبية - شارع الجزائر",
+            "coordinates": "21.4418,39.8189",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "291",
+            "address": "Hanakiyah, Qasim Old Rd",
+            "cityName": "Hanakiyah",
+            "addressAR": "طريق القصيم القديم",
+            "coordinates": "24.8664,40.5003",
+            "firstShift": "10:00 - 12:00",
+            "secondShift": "14:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "292",
+            "address": "An Nahdah, Salman Al Farsi St.",
+            "cityName": "Riyadh",
+            "addressAR": "النهضة شارع سلمان الفارسي",
+            "coordinates": "24.7567,46.8153",
+            "firstShift": "10:00 - 14:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "294",
+            "address": "Rawdha area, King Fahd Rd",
+            "cityName": "Tabuk",
+            "addressAR": "حي الروضة، طريق الملك فهد",
+            "coordinates": "28.3987,36.5278",
+            "firstShift": "09:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "295",
+            "address": "Amro Bin Al Aas Street, Al Lith",
+            "cityName": "Lith",
+            "addressAR": "شارع عمرو بن العاص، الليث ",
+            "coordinates": "20.1513,40.2707",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "296",
+            "address": "Altaleem Area, King Fahad Rd",
+            "cityName": "Uyun Al Jiwa",
+            "addressAR": "حي التعليم، طريق الملك فهد",
+            "coordinates": "26.4903,43.6326",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "297",
+            "address": "King Khalid Road - Opposit to Clock Round",
+            "cityName": "Ahad Rafidah",
+            "addressAR": "أحد رفيدة، طريق الملك خالد - مقابل دوار الساعة",
+            "coordinates": "18.1778,42.8263",
+            "firstShift": "08:00 - 12:00",
+            "secondShift": "13:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "298",
+            "address": "Alfaisaliyah, King Abdulaziz Rd",
+            "cityName": "Najran",
+            "addressAR": "حي الفيصلية، طريق الملك عبدالعزيز",
+            "coordinates": "17.5253,44.2046",
+            "firstShift": "08:00 - 12:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "299",
+            "address": "Tareeb, King Fahad Rd.",
+            "cityName": "Tareeb",
+            "addressAR": "طريب، طريق الملك فهد",
+            "coordinates": "18.5706,43.2081",
+            "firstShift": "09:00 - 13:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "300",
+            "address": "Al Zuhur Area, Abu Hurairah St.",
+            "cityName": "Dammam",
+            "addressAR": "حي الزهور - شارع ابو هريرة",
+            "coordinates": "26.451,50.092",
+            "firstShift": "10:00 - 12:00",
+            "secondShift": "13:00 - 19:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "301",
+            "address": "Badr, Al Shuhada St",
+            "cityName": "Badr",
+            "addressAR": "طريق الشهداء",
+            "coordinates": "23.7788,38.7923",
+            "firstShift": "10:00 - 14:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "302",
+            "address": "As Salam District- King Abdulaziz Road",
+            "cityName": "Khulais",
+            "addressAR": "حي السلام - طريق الملك عبدالعزيز",
+            "coordinates": "22.0888,39.3138",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "305",
+            "address": "Mahala Al Hejaz Area, Yamama Commercial Center lane Dammam Rd ",
+            "cityName": "Jubail",
+            "addressAR": "منطقة الحجاز, مركز اليمامة التجاري بجوار مكتبة اليمامة العامة ",
+            "coordinates": "27.1506,49.5637",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "13:00 - 18:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "308",
+            "address": "King Saud St, Al Khuzama District",
+            "cityName": "Kharj",
+            "addressAR": "الخرج، حي الخزامى، طريق الملك سعود",
+            "coordinates": "24.1297,47.2786",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "309",
+            "address": "Qilwah, King Fahd Rd",
+            "cityName": "Qilwah",
+            "addressAR": "طريق الملك فهد، مقابل محطة العواجي البترولية",
+            "coordinates": "19.9631,41.2244",
+            "firstShift": "08:00 - 12:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "310",
+            "address": "Riyadh  Rd Opposite to Al Aqiq Petrol Station",
+            "cityName": "Aqiq",
+            "addressAR": "طريق الرياض مقابل محطة محروقات  العقيق",
+            "coordinates": "20.2369,41.6331",
+            "firstShift": "08:00 - 12:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "311",
+            "address": "Mandaq, King Abdulaziz St",
+            "cityName": "Mandaq",
+            "addressAR": "المندق، طريق الملك عبدالعزيز",
+            "coordinates": "20.1243,41.285",
+            "firstShift": "08:00 - 12:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "312",
+            "address": "Rafaya AlGimsh main st.",
+            "cityName": "Rafaya AlGimsh",
+            "addressAR": "رفائع الجمش، الطريق العام",
+            "coordinates": "24.6781,43.6942",
+            "firstShift": "10:00 - 13:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "313",
+            "address": "Zahra Dist. King Abdullah Rd.",
+            "cityName": "Haql",
+            "addressAR": "الظهرة - طريق الملك عبدالله",
+            "coordinates": "29.286,34.9486",
+            "firstShift": "10:00 - 15:00",
+            "secondShift": "16:30 - 19:30",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "314",
+            "address": "Al-Safa Area Before Nahdi Pharmacy Prince Sultan ST.",
+            "cityName": "Gizan",
+            "addressAR": "طريق الامير سلطان بجوار صيدلية النهدي",
+            "coordinates": "16.8822,42.5656",
+            "firstShift": "08:00 - 22:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "315",
+            "address": "King Faisal Road, South Corniche, near Al Eiad Sweets Shop",
+            "cityName": "Qunfudhah",
+            "addressAR": "طريق الملك فيصل, جنوب الكورنيش",
+            "coordinates": "19.1199882,41.0802471",
+            "firstShift": "09:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "316",
+            "address": "Namera, Main Rd",
+            "cityName": "Namerah",
+            "addressAR": "نمرة، الطريق الرئيسي",
+            "coordinates": "19.5769,41.6716",
+            "firstShift": "08:00 - 12:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "320",
+            "address": "Al Ardah, Prince Sultan Road.",
+            "cityName": "Alardhah",
+            "addressAR": "العارضة ,طريق الأمير سلطان",
+            "coordinates": "17.0294,43.0384",
+            "firstShift": "09:00 - 13:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "321",
+            "address": "Khayber, AlGhazwah",
+            "cityName": "Khayber",
+            "addressAR": "الغزوة - طريق الملك عبدالعزيز",
+            "coordinates": "25.6892,39.2953",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "322",
+            "address": "Dharat Laban, Taif Street",
+            "cityName": "Riyadh",
+            "addressAR": "ظهرة لبن - شارع الطائف",
+            "coordinates": "24.6401,46.5418",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "323",
+            "address": "Qurtubah, Said Ibn Zaid Rd.",
+            "cityName": "Riyadh",
+            "addressAR": "قرطبة، شارع سعيد بن زيد",
+            "coordinates": "24.8229,46.7284",
+            "firstShift": "08:00 - 22:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "324",
+            "address": "Bani Sar - King Abdulaziz Rd.",
+            "cityName": "Baha",
+            "addressAR": "بني سار - طريق الملك عبدالعزيز",
+            "coordinates": "20.0962,41.4429",
+            "firstShift": "09:30 - 13:30",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "325",
+            "address": "Batha Border, Office No. 87 inside Golden Team for Customs Clearance building",
+            "cityName": "Batha",
+            "addressAR": "منفذ البطحاء - مبنى الفريق الذهبي، مكتب رقم 87",
+            "coordinates": "",
+            "firstShift": "09:00 - 17:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "326",
+            "address": "Habona Main Rd. near NCB",
+            "cityName": "Habona",
+            "addressAR": "حبونا الطريق الرئيسي، بجوار البنك الاهلي",
+            "coordinates": "17.8461,44.0192",
+            "firstShift": "08:00 - 12:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "327",
+            "address": "Munsiyah Dist. Al Sahaba Rd.",
+            "cityName": "Riyadh",
+            "addressAR": "المونسية - شارع الصحابة",
+            "coordinates": "24.8192,46.7748",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "330",
+            "address": "Alworud, Prine Majed St",
+            "cityName": "Jeddah",
+            "addressAR": "حي الورود، طريق الامير ماجد",
+            "coordinates": "21.5174,39.2138",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "331",
+            "address": "Wadi hali, Jazan Intl. Rd.",
+            "cityName": "Wadi Hali",
+            "addressAR": "وادي حلي، طريق جازان الدولي",
+            "coordinates": "18.7707,41.3859",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "333",
+            "address": "Ahad Almasarha, Al-Qasum Area",
+            "cityName": "Ahad Al Masarhah",
+            "addressAR": "احد المسارحة، حي القسوم",
+            "coordinates": "16.7149,42.9464",
+            "firstShift": "08:00 - 12:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "334",
+            "address": "As Suways, King Faisal Rd.",
+            "cityName": "Gizan",
+            "addressAR": "حي السويس، طريق الملك فيصل",
+            "coordinates": "16.8815,42.5903",
+            "firstShift": "08:00 - 22:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "335",
+            "address": "Baqaa - Main Rd.",
+            "cityName": "Baqaa",
+            "addressAR": "بقعاء - الطريق العام",
+            "coordinates": "27.9051,42.3871",
+            "firstShift": "10:00 - 14:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "336",
+            "address": "Dhamad, Pr.Sultan Rd",
+            "cityName": "Dhamad",
+            "addressAR": "ضمد - طريق الامير سلطان",
+            "coordinates": "17.1098,42.7684",
+            "firstShift": "08:00 - 12:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "337",
+            "address": "Al Ajaweed Mega Office",
+            "cityName": "Jeddah",
+            "addressAR": "فرع حي الاجاويد الكبير",
+            "coordinates": "21.4174,39.2923",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "338",
+            "address": "Al Muruj Area, King Faisal bin Abdulaziz St",
+            "cityName": "Hafar Al Baten",
+            "addressAR": "المروج، شارع الملك فيصل",
+            "coordinates": "28.3976,45.9839",
+            "firstShift": "09:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "339",
+            "address": "Al-Ruwais, Qadat Al-Fikr St",
+            "cityName": "Jeddah",
+            "addressAR": "حي الرويس، شارع قادة الفكر",
+            "coordinates": "21.5265,39.1779",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "340",
+            "address": "Huraymila, King Abdullah Rd.",
+            "cityName": "Huraymila",
+            "addressAR": "حريملاء، طريق الملك عبدالله",
+            "coordinates": "25.1314,46.1247",
+            "firstShift": "08:00 - 12:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "342",
+            "address": "Dhurma - King Abdullaziz Rd",
+            "cityName": "Dhurma",
+            "addressAR": "ضرما، طريق الملك عبدالعزيز",
+            "coordinates": "24.5905,46.1507",
+            "firstShift": "10:00 - 15:00",
+            "secondShift": "16:00 - 19:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "343",
+            "address": "Umm Al Hamam",
+            "cityName": "Riyadh",
+            "addressAR": "ام الحمام",
+            "coordinates": "24.6983,46.6498",
+            "firstShift": "09:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "344",
+            "address": "New Muwayh, King Abdulaziz Rd",
+            "cityName": "Muwayh",
+            "addressAR": "المويه الجديد، طريق الملك عبدالعزيز",
+            "coordinates": "22.4321,41.7564",
+            "firstShift": "10:00 - 14:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "345",
+            "address": "An Narjis, Uthman bin Affan Rd",
+            "cityName": "Riyadh",
+            "addressAR": "حي النرجس، طريق عثمان بن عفان",
+            "coordinates": "24.8200001,46.6860408",
+            "firstShift": "09:00 - 22:00",
+            "secondShift": "16:00 - 19:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "346",
+            "address": "Tumair, King Fahad Rd",
+            "cityName": "Tumair",
+            "addressAR": "تمير، طريق الملك فهد",
+            "coordinates": "25.6989,45.8888",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "347",
+            "address": "Uglat Asugour, King Abdullaziz Rd",
+            "cityName": "Uqlat As Suqur",
+            "addressAR": "عقلة الصقور، طريق الملك فهد",
+            "coordinates": "25.8297,42.2098",
+            "firstShift": "10:00 - 14:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "348",
+            "address": "Hautat Sudair, King Faisal Rd",
+            "cityName": "Hawtat Sudayr",
+            "addressAR": "حوطة سدير، طريق الملك فيصل",
+            "coordinates": "25.5902,45.6364",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "349",
+            "address": "Al Zuhur District, Omar Ibn Al-Khattab Rd.",
+            "cityName": "Yanbu",
+            "addressAR": "حي الزهور طريق عمر بن الخطاب",
+            "coordinates": "24.0806,38.0545",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "350",
+            "address": "Adham, King Abdulaziz Rd",
+            "cityName": "Adham",
+            "addressAR": "اضم، طريق الملك عبدالعزيز",
+            "coordinates": "20.4429,40.8794",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "355",
+            "address": "AlSalam, Prince Nasir Bin Abdulaziz St",
+            "cityName": "Kharj",
+            "addressAR": "حي السلام، شارع الامير ناصر بن عبدالعزيز",
+            "coordinates": "24.1582,47.3239",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "357",
+            "address": "Ulaishah, Imam Turki Ibn Abdullah",
+            "cityName": "Riyadh",
+            "addressAR": "عليشة، شارع الامام تركي بن عبدالله",
+            "coordinates": "24.6302,46.6874",
+            "firstShift": "10:00 - 14:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "359",
+            "address": "SARRAR",
+            "cityName": "SARRAR",
+            "addressAR": "الصرار",
+            "coordinates": "26.9785,48.3928",
+            "firstShift": "09:00 - 13:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "360",
+            "address": "Wadi bin Hashbal road",
+            "cityName": "Wadi Bin Hashbal ",
+            "addressAR": "وادي بن هشبل - الشارع العام",
+            "coordinates": "18.5864,42.6971",
+            "firstShift": "08:00 - 12:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "362",
+            "address": "King Abdulaziz Road, Edabi",
+            "cityName": "Edabi",
+            "addressAR": "طريق الملك عبدالعزيز, العيدابي",
+            "coordinates": "17.2326,42.9307",
+            "firstShift": "08:00 - 12:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "363",
+            "address": "Al Asyah, King Abdulaziz Rd",
+            "cityName": "alasyah",
+            "addressAR": "الاسياح، طريق الملك عبدالعزيز",
+            "coordinates": "26.7702,44.211",
+            "firstShift": "10:00 - 14:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "364",
+            "address": "Mansouriyah, Khadijah Bin Khwailed St",
+            "cityName": "Arar",
+            "addressAR": "المنصورية، شارع خديجة بنت خويلد",
+            "coordinates": "30.9874,41.0557",
+            "firstShift": "09:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "365",
+            "address": "Alshamly - Al Waha Dist, King Faisal Rd",
+            "cityName": "Ash Shamli",
+            "addressAR": "الشملي - حي الواحة، طريق الملك فيصل",
+            "coordinates": "26.8586,40.323",
+            "firstShift": "10:00 - 14:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "367",
+            "address": "Kakiyyah, 3rd Ring Rd",
+            "cityName": "Makkah",
+            "addressAR": "الكعكية، الدايري الثالث",
+            "coordinates": "21.3893,39.814",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "368",
+            "address": "Zaidi, Prince Naif Rd",
+            "cityName": "Makkah",
+            "addressAR": "الزايدي، طريق الامير نايف",
+            "coordinates": "21.401,39.708",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "369",
+            "address": "Nada, Imam Muhammad Ibn Abdulwahab St",
+            "cityName": "Dammam",
+            "addressAR": "الندى، شارع الامام محمد بن عبدالوهاب",
+            "coordinates": "26.3658,50.075",
+            "firstShift": "08:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "370",
+            "address": "Al Waziriyah Dist, Al Muroor Rd",
+            "cityName": "Jeddah",
+            "addressAR": "حي الوزيرية، طريق المرور",
+            "coordinates": "21.4532,39.252",
+            "firstShift": "09:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "371",
+            "address": "Sultana, Abubakar Siddiq Rd",
+            "cityName": "Madinah",
+            "addressAR": "سلطانة، طريق ابي بكر الصديق",
+            "coordinates": "24.4872,39.5765",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "372",
+            "address": "Nassim, Prince Sultan Rd",
+            "cityName": "Khamis Mushayt",
+            "addressAR": "النسيم، طريق الامير سلطان",
+            "coordinates": "18.2952,42.756",
+            "firstShift": "08:00 - 12:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "373",
+            "address": "Bishah, Al Mousa",
+            "cityName": "Bishah",
+            "addressAR": "بيشة، الموسى",
+            "coordinates": "20.0116,42.6173",
+            "firstShift": "08:00 - 22:00",
+            "secondShift": "",
+            "weekendShift": "16:00 - 20:00"
+        },
+        {
+            "code": "374",
+            "address": "Oyun, Maizl - Main Rd",
+            "cityName": "Ayun",
+            "addressAR": "العيون، المعيزل",
+            "coordinates": "25.6043,49.5597",
+            "firstShift": "09:00 - 13:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "378",
+            "address": "King Fahad University of Petroleum, Building 17: Student Affairs, 1st Floor, Dhahran",
+            "cityName": "RSC KFUPM",
+            "addressAR": "جامعة الملك فهد للبترول",
+            "coordinates": "",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "381",
+            "address": "Dragon Mart,International City, Dragon Mart 2 - Al Awir Road",
+            "cityName": "Dubai",
+            "addressAR": "دراجون مارت 2",
+            "coordinates": "25.1721342,55.4240391",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "383",
+            "address": "Al Nahyan, Murror Road, Street Number 4",
+            "cityName": "Abu Dhabi",
+            "addressAR": "ابوظبي، طريق المرور",
+            "coordinates": "24.464206,54.383821",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "384",
+            "address": "92 Shehab St., Mohandeseen",
+            "cityName": "Cairo",
+            "addressAR": "شارع شيهاب, المهندسين",
+            "coordinates": "30.058669,31.200052",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "385",
+            "address": "Salah Salem St., Helioplis",
+            "cityName": "Cairo",
+            "addressAR": "شارع صلاح سالم, هليوبلس",
+            "coordinates": "30.076955,31.308315",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "386",
+            "address": "Mohamed Metwaly El-Sharawy St., Sheraton",
+            "cityName": "Cairo",
+            "addressAR": "شارع محمد متولي الشعراوي, شيراتون",
+            "coordinates": "30.101158,31.378013",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "387",
+            "address": "2 Mohammed Masoud St., Wabour Al-Meyah",
+            "cityName": "Alexandria",
+            "addressAR": "شارع محمد مسعود, وابور الميه",
+            "coordinates": "29.917806,31.198656",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "388",
+            "address": "Mohammed Abbas St.  - Al-Walideyah AlQebleyah",
+            "cityName": "Assiut",
+            "addressAR": "شارع محمد عباس الوليديه القبليه قسم تاني",
+            "coordinates": "27.190484,31.178438",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "389",
+            "address": "Marat, King Salman Rd",
+            "cityName": "Marat",
+            "addressAR": "مرات، طريق الملك سلمان",
+            "coordinates": "25.0709,45.4627",
+            "firstShift": "10:00 - 14:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "390",
+            "address": "Al Sahnah, King Abdullah Rd",
+            "cityName": "Dilam",
+            "addressAR": "السحنة طريق الملك عبدالله",
+            "coordinates": "23.9987,47.1381",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "391",
+            "address": "Al Hariq, King Faisal Street",
+            "cityName": "Hariq",
+            "addressAR": "الحريق، شارع الملك فيصل",
+            "coordinates": "23.6194,46.5196",
+            "firstShift": "01:00 - 13:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "393",
+            "address": "Al Marwah, Dirab Rd.",
+            "cityName": "Riyadh",
+            "addressAR": "حي المروة، طريق ديراب",
+            "coordinates": "24.5445,46.6654",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "394",
+            "address": "Thuwal",
+            "cityName": "Thuwal, KAUST",
+            "addressAR": "ثول",
+            "coordinates": "22.2855,39.1121",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "395",
+            "address": "Al Fursan, Arwa Bint Rabea St",
+            "cityName": "Dammam",
+            "addressAR": "الفرسان، شارع أروى بنت الربيع",
+            "coordinates": "26.3564,49.9583",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "13:00 - 18:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "396",
+            "address": "RSC – BH Muharraq, Unit 6, Bldg. 23, Ave# 23, Block 224, GLS Compound",
+            "cityName": "MUHARRAQ",
+            "addressAR": "RSC – BH Muharraq, Unit 6, Bldg. 23, Ave# 23, Block 224, GLS Compound",
+            "coordinates": "26.274264,50.6125275",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "397",
+            "address": "Al Kilabiyah Area, Main street (Juatha)",
+            "cityName": "Hufuf",
+            "addressAR": "الكلابية",
+            "coordinates": "25.4389,49.6485",
+            "firstShift": "09:00 - 13:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "399",
+            "address": "Aarid Dist, Kawther St.",
+            "cityName": "Riyadh",
+            "addressAR": "حي العارض، شارع الكوثر",
+            "coordinates": "24.8624,46.6432",
+            "firstShift": "08:00 - 22:00",
+            "secondShift": "16:00 - 19:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "401",
+            "address": "Bariq, King Abdullah Rd",
+            "cityName": "Bariq",
+            "addressAR": "طريق الملك عبدالله ,بارق",
+            "coordinates": "18.9399,41.9235",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "402",
+            "address": "Al Lith Road, Waly Al Ahd District,",
+            "cityName": "Makkah",
+            "addressAR": "طريق الليث , منطقة ولي العهد",
+            "coordinates": "21.341,39.6939",
+            "firstShift": "09:00 - 12:30",
+            "secondShift": "16:30 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "403",
+            "address": "Jumoum King Faisal Road",
+            "cityName": "Jamoum",
+            "addressAR": "الجموم طريق الملك فيصل",
+            "coordinates": "21.6193,39.6865",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "404",
+            "address": "Sanabel, Prince Abdulmajeed St",
+            "cityName": "Jeddah",
+            "addressAR": "السنابل، طريق الامير عبدالمجيد، ",
+            "coordinates": "21.4004,39.2837",
+            "firstShift": "10:00 - 18:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "405",
+            "address": "Salehiyah, Yasir Bn Amr AlKanany St",
+            "cityName": "Jeddah",
+            "addressAR": "الصالحية، شارع ياسر بن عمر الكناني",
+            "coordinates": "21.7659,39.2032",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "406",
+            "address": "Futah, Hibatullah Al Khazraji St.",
+            "cityName": "Riyadh",
+            "addressAR": "الفوطة، شارع هبة الله الخزرجي",
+            "coordinates": "24.6426,46.7151",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "407",
+            "address": "Ash Shimasiyah, Buraidah Rd.",
+            "cityName": "Buraydah",
+            "addressAR": "الشماسية، طريق بريدة",
+            "coordinates": "26.322,44.2552",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "408",
+            "address": "Bijadiyah, King Abdulaziz Rd.",
+            "cityName": "Bijadiyah",
+            "addressAR": "البجادية، طريق الملك عبدالعزيز",
+            "coordinates": "24.2993,43.7472",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "409",
+            "address": "Mahdiyah, Alsail Alkabeer Rd",
+            "cityName": "Riyadh",
+            "addressAR": "المهدية، طريق السيل الكبير",
+            "coordinates": "24.659945,46.51969",
+            "firstShift": "10:00 - 14:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "410",
+            "address": "Al Wadeen, Prince Sultan St",
+            "cityName": "Al Wadeen",
+            "addressAR": "الواديين، شارع الامير سلطان",
+            "coordinates": "18.0964,42.8091",
+            "firstShift": "08:00 - 12:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "411",
+            "address": "Batha Quraish, Al Qadi Rd",
+            "cityName": "Makkah",
+            "addressAR": "بطحاء قريش، طريق القاضي",
+            "coordinates": "21.3573,39.8308",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "412",
+            "address": "Wesam, King Fahd Rd",
+            "cityName": "Taif",
+            "addressAR": "الوسام، طريق الملك فهد",
+            "coordinates": "21.2303,40.379",
+            "firstShift": "09:00 - 12:30",
+            "secondShift": "16:00 - 20:30",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "413",
+            "address": "Asfan, Pr. Mishal Bin Abdullah Rd",
+            "cityName": "Asfan",
+            "addressAR": "عسفان، طريق الامير مشعل بن عبدالله",
+            "coordinates": "21.9177,39.351",
+            "firstShift": "10:00 - 18:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "414",
+            "address": "Yanbu al Nakhal, Main Road",
+            "cityName": "Yanbu Al Nakhal",
+            "addressAR": "ينبع النخل، الطريق الرئيسي",
+            "coordinates": "24.3132,38.4203",
+            "firstShift": "10:00 - 12:00",
+            "secondShift": "14:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "415",
+            "address": "Nimar, Najm Ad Din Al Ayyubi Rd.",
+            "cityName": "Riyadh",
+            "addressAR": "نمار - طريق نجم الدين الأيوبي",
+            "coordinates": "24.554,46.5562",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "416",
+            "address": "Al Hait, Main St",
+            "cityName": "Al Hait",
+            "addressAR": "الحائط، الشارع الرئيسي",
+            "coordinates": "26.0021,40.4731",
+            "firstShift": "10:00 - 15:00",
+            "secondShift": "16:00 - 19:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "417",
+            "address": "Al Muntazahat (Kilo14), Old Makkah Rd",
+            "cityName": "Jeddah",
+            "addressAR": "المنتزهات - كيلو 14، طريق مكة القديم",
+            "coordinates": "21.4475,39.3009",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "419",
+            "address": "Ar Ruwaidhah, Makkah Rd",
+            "cityName": "Ruwaydah",
+            "addressAR": "الرويضة، طريق مكة",
+            "coordinates": "23.7595,44.7618",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "420",
+            "address": "Thadiq, King Abdulaziz Rd.",
+            "cityName": "Thadiq",
+            "addressAR": "ثادق، طريق الملك عبدالعزيز",
+            "coordinates": "25.2756,45.8666",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "421",
+            "address": "Ghat, King Salman Rd",
+            "cityName": "Ghat",
+            "addressAR": "الغاط، طريق الملك سلمان",
+            "coordinates": "26.0392,44.9432",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "422",
+            "address": "Al Artawiyah, Zulfi Rd",
+            "cityName": "Artawiyah",
+            "addressAR": "الارطاوية، طريق الزلفي",
+            "coordinates": "26.4906,45.3439",
+            "firstShift": "10:00 - 13:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "423",
+            "address": "Dhahran - Jamiah, Ibn Batuta St",
+            "cityName": "Dhahran",
+            "addressAR": "الظهران- حي الجامعة، شارع ابن بطوطة",
+            "coordinates": "26.3482,50.1342",
+            "firstShift": "08:00 - 12:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "424",
+            "address": "Ar Rafiah, Main Rd",
+            "cityName": "Rafiah",
+            "addressAR": "الرفيعة، الطريق الرئيسي",
+            "coordinates": "27.012,47.0654",
+            "firstShift": "09:30 - 13:30",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "426",
+            "address": "Ar Rayn, King Saud Rd",
+            "cityName": "Ar Rayn",
+            "addressAR": "الرين، طريق الملك سعود",
+            "coordinates": "23.5449,45.5075",
+            "firstShift": "09:00 - 13:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "427",
+            "address": "SMSA Egypt - Mansoura\t \t",
+            "cityName": "Mansoura",
+            "addressAR": "مركز خددمات سمسا - المنصورة",
+            "coordinates": "",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "428",
+            "address": "SMSA Egypt - Tanta\t \t\t \t",
+            "cityName": "Tanta",
+            "addressAR": "مركز خددمات سمسا - طنطا",
+            "coordinates": "",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "429",
+            "address": "SMSA Egypt - Port Said\t \t",
+            "cityName": "Port Said",
+            "addressAR": "مركز خدمات سمسا - بورسعيد",
+            "coordinates": "",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "434",
+            "address": "Shehabiyah Dist., Prince Bader bin Abdulaziz St.",
+            "cityName": "Hufuf",
+            "addressAR": "حي الشهابية- شارع الأمير بدر بن عبد العزيز",
+            "coordinates": "25.3596,49.6192",
+            "firstShift": "09:00 - 13:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "435",
+            "address": "Ash Shati Ash Sharqi Dist.- Pr. Mohd. Ibn Fahd St.",
+            "cityName": "Dammam",
+            "addressAR": "حي الشاطئ الشرقي - شارع الأمير محمد بن فهد",
+            "coordinates": "26.4745,50.1253",
+            "firstShift": "10:00 - 13:00",
+            "secondShift": "14:00 - 19:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "436",
+            "address": "Dariyah, Salam Dist. Omar Khattab Rd.",
+            "cityName": "Dariyah",
+            "addressAR": "ضرية, السلام, طريق عمر بن الخطاب ",
+            "coordinates": "24.7115,42.9215",
+            "firstShift": "10:00 - 14:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "437",
+            "address": "Mudhaylif, Main Road",
+            "cityName": "Mudhaylif",
+            "addressAR": "المظيلف, الطريق العام",
+            "coordinates": "19.5373,41.0589",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "438",
+            "address": "Jeddah Mahameed, Main Road",
+            "cityName": "Jeddah",
+            "addressAR": "المحاميد, الطريق العام",
+            "coordinates": "21.4412,39.3947",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "440",
+            "address": "7001 - Shop # 7, Sheikh Building, Al Muntasir Street",
+            "cityName": "Ras al Khaymah",
+            "addressAR": "7001 - محل # 7 , مبنى الشيخ, شارع المنتصر",
+            "coordinates": "25.7870963,55.9690578",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "441",
+            "address": "4002 - Bin Daher Motors Buildings, Street # 5, Umm Ramool",
+            "cityName": "Dubai",
+            "addressAR": "4002 - حي الخالدية, شارع الأمير سعود الفيصل",
+            "coordinates": "25.2241181,55.3708765",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "443",
+            "address": "Shop 64, Building 3427, Road 185, Block 701",
+            "cityName": "Manama",
+            "addressAR": "محل 64, مبنى 3427, طريق 185, مجمع 701",
+            "coordinates": "26.195406,50.544303",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "444",
+            "address": "Ash Shinan - Nahdah Dist., King Abdullah Rd.",
+            "cityName": "Ash Shinan",
+            "addressAR": "الشنان - حي النهضة - طريق الملك عبداللة ",
+            "coordinates": "27.1771,42.4359",
+            "firstShift": "10:00 - 14:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "445",
+            "address": "Uwayqilah, Main Road",
+            "cityName": "Uwayqilah",
+            "addressAR": "العويقيلة, الطريق العام",
+            "coordinates": "30.3659,42.241",
+            "firstShift": "10:00 - 14:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "448",
+            "address": "Farasan Island, Main Rd.",
+            "cityName": "Farasan",
+            "addressAR": "جزيرة فرسان, الطريق العام",
+            "coordinates": "16.7021,42.1204",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "14:00 - 19:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "449",
+            "address": "Abha, Employee Dist. Main Rd.",
+            "cityName": "Abha",
+            "addressAR": "أبها, حي الموظفين",
+            "coordinates": "18.231,42.5963",
+            "firstShift": "08:00 - 12:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "450",
+            "address": "Billasmar, Main Rd.",
+            "cityName": "Balasmar",
+            "addressAR": "بللسمر, الطريق العام",
+            "coordinates": "18.7699,42.2545",
+            "firstShift": "10:00 - 12:00",
+            "secondShift": "13:00 - 19:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "451",
+            "address": "Tendaha, Riyadh Rd.",
+            "cityName": "Tendaha",
+            "addressAR": "تندحة, الطريق الرياض",
+            "coordinates": "18.3583,42.8294",
+            "firstShift": "10:00 - 12:00",
+            "secondShift": "14:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "452",
+            "address": "Bashayer, Main Rd.",
+            "cityName": "Bashayer",
+            "addressAR": "البشائر, الطريق العام",
+            "coordinates": "19.7479,41.9106",
+            "firstShift": "09:00 - 13:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "453",
+            "address": "Muntazah Ash Sharqi, Omar Bin Khattab Rd.",
+            "cityName": "Hail",
+            "addressAR": "حي المنتزه الشرقي- طريق عمر بن الخطاب",
+            "coordinates": "27.5541,41.7037",
+            "firstShift": "08:00 - 22:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "454",
+            "address": "Nawwariyyah Dist, Madinah Rd.",
+            "cityName": "Makkah",
+            "addressAR": "حي النوارية- طريق المدينة المنورة",
+            "coordinates": "21.5503,39.7759",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "455",
+            "address": "Shariae Dist. King Faisal Rd.",
+            "cityName": "Makkah",
+            "addressAR": "حي الشرائع, طريق الملك فيصل ",
+            "coordinates": "21.4882,39.9448",
+            "firstShift": "09:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "457",
+            "address": "Qaysumah, King Salman St.",
+            "cityName": "Qaysumah",
+            "addressAR": "القيصومة, شارع الملك سلمان",
+            "coordinates": "28.3137,46.1333",
+            "firstShift": "12:00 - 20:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "460",
+            "address": "Prince Ahmed Bin Abdulaziz Rd. Laban Dist.",
+            "cityName": "Riyadh",
+            "addressAR": "شارع الأمير أحمد بن عبد العزيز، حي لبن",
+            "coordinates": "24.6356,46.6228",
+            "firstShift": "10:00 - 14:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "465",
+            "address": "Medrekah, Main Rd.",
+            "cityName": "Medrekah",
+            "addressAR": "شارع العام ,مدركة ",
+            "coordinates": "21.9826,39.9899",
+            "firstShift": "10:00 - 18:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "466",
+            "address": "Dahia King Fahd, Hamad Bin Osamah St. ",
+            "cityName": "Dammam",
+            "addressAR": "الضاحية الملك فهد شارع حامد بن أسامة",
+            "coordinates": "26.4218,50.0031",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "13:00 - 18:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "468",
+            "address": "Atawlah, Main Rd.",
+            "cityName": "Atawlah",
+            "addressAR": "الأطاولة, الطريق العام",
+            "coordinates": "20.2283,41.3635",
+            "firstShift": "08:00 - 12:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "469",
+            "address": "Tarut, Main Rd.",
+            "cityName": "Tarut",
+            "addressAR": "تاروت , الطريق الرياض",
+            "coordinates": "26.5574,50.0727",
+            "firstShift": "09:00 - 21:00",
+            "secondShift": "13:00 - 18:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "470",
+            "address": "Al Samh Ibn Malik St. Al Kharj Road, Ad Difa Dist.",
+            "cityName": "Riyadh",
+            "addressAR": "اسكان الخرج 2 بجوار العثيم شارع السمح بن مالك",
+            "coordinates": "24.5781,46.8294",
+            "firstShift": "10:00 - 14:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "471",
+            "address": "Main Rd., Dhalm",
+            "cityName": "Dhalim",
+            "addressAR": "ظلم الطريق العام",
+            "coordinates": "21.2918,40.4047",
+            "firstShift": "10:00 - 14:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "474",
+            "address": "Nasiriyyah, Pr Faisal Ibn Fahd Ibn Abdulaziz Rd.",
+            "cityName": "Riyadh",
+            "addressAR": "طريق الأمير فهد بن سلمان بن عبدالعزيز,الناصرية",
+            "coordinates": "24.6546,46.6763",
+            "firstShift": "10:00 - 15:00",
+            "secondShift": "16:00 - 19:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "475",
+            "address": "Diriyah Khalidiya, Imam Saud Ibn Abdulaziz St.",
+            "cityName": "Riyadh",
+            "addressAR": "الامام سعود بن عبدالعزيز بن محمد، الخالدية، الدرعية",
+            "coordinates": "24.7562,46.5684",
+            "firstShift": "10:00 - 14:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "477",
+            "address": "Aziziyah, Pr. Sultan Bin Abdulaziz Rd.",
+            "cityName": "Hafar Al Baten",
+            "addressAR": "طريق الامير سلطان بن عبدالعزيز، العزيزية",
+            "coordinates": "28.4418,45.9482",
+            "firstShift": "09:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "478",
+            "address": "Al Mousa, Tendaha Rd",
+            "cityName": "Khamis Mushayt",
+            "addressAR": "الموسى، طريق تندحة",
+            "coordinates": "18.3375,42.77",
+            "firstShift": "08:00 - 12:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "480",
+            "address": "Badr Al Janoub, Main Rd.",
+            "cityName": "Badr Al Janoub",
+            "addressAR": "طريق العام ,بدر الجنوب",
+            "coordinates": "17.8915,43.7212",
+            "firstShift": "09:00 - 13:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "481",
+            "address": "Marwah Dist. Hamzah Al Birkani St.",
+            "cityName": "Jeddah",
+            "addressAR": "حمزه البركاني، المروة",
+            "coordinates": "21.6245,39.2033",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "483",
+            "address": "Wasqah, Corniche Rd.",
+            "cityName": "Wasqah",
+            "addressAR": "الوسقة طريق الكورنيش",
+            "coordinates": "19.9854,40.5706",
+            "firstShift": "10:00 - 13:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "485",
+            "address": "Bahrah, Jeddah Rd.",
+            "cityName": "Bahrah",
+            "addressAR": "بحرة ، طريق جدة",
+            "coordinates": "21.4074,39.487",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "486",
+            "address": "Qouz, Main Rd",
+            "cityName": "Qawz",
+            "addressAR": "طريق العام ,القوز",
+            "coordinates": "18.9882,41.3107",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "487",
+            "address": "Mahlah, Al Haqu Rd.",
+            "cityName": "Mahalah",
+            "addressAR": "المحلة، طريق الحقو",
+            "coordinates": "17.3362,42.6015",
+            "firstShift": "08:00 - 12:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "488",
+            "address": "Waha Dist., Mohd Bin Soliman Albassam St",
+            "cityName": "Jeddah",
+            "addressAR": "حي الواحة، شارع محمد بن سلمان البسام",
+            "coordinates": "21.5507,39.2381",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "489",
+            "address": "Ghazalah, King Abdullah Rd",
+            "cityName": "Ghazalah",
+            "addressAR": "الغزالة، طريق الملك عبدالله",
+            "coordinates": "26.7931,41.316",
+            "firstShift": "09:00 - 13:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "490",
+            "address": "Malqa, Prince Mohammed Bin Saad Bin Abdulaziz Rd",
+            "cityName": "Riyadh",
+            "addressAR": "حي الملقا، طريق الامير محمد بن سعد بن عبد العزيز",
+            "coordinates": "24.8092,46.6007",
+            "firstShift": "10:00 - 14:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "491",
+            "address": "King Fahd Dist, Khalid Bin Oqbah Quraishi St",
+            "cityName": "Madinah",
+            "addressAR": "حي الملك فهد، شارع خالد بن عقبة القرشي",
+            "coordinates": "24.4964,39.7068",
+            "firstShift": "10:00 - 15:00",
+            "secondShift": "16:00 - 19:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "493",
+            "address": "Uyayinah King Abdulaziz Rd",
+            "cityName": "Al Uyaynah",
+            "addressAR": "العيينة، طريق الملك عبدالعزيز",
+            "coordinates": "24.9063,46.3826",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "494",
+            "address": "An Nuqrah, Al Shifa - near Al Shuhada Mosque",
+            "cityName": "Hail",
+            "addressAR": "النقرة، حي الشفاء بالقرب من دوار مسجد الشهداء",
+            "coordinates": "27.4487,41.6281",
+            "firstShift": "09:00 - 22:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "495",
+            "address": "Al Rayth, Main Rd",
+            "cityName": "Rayth",
+            "addressAR": "الريث، الطريق العام",
+            "coordinates": "17.5977,42.8657",
+            "firstShift": "08:00 - 12:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "496",
+            "address": "Faisaliyyah, Makarunah Rd",
+            "cityName": "Jeddah",
+            "addressAR": "الفيصلية، شارع المكرونة",
+            "coordinates": "21.5772,39.189",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "497",
+            "address": "Ajawad, Salah Bin Ibrahim Zahri St",
+            "cityName": "Jeddah",
+            "addressAR": "الاجواد، شارع صالح الزهري",
+            "coordinates": "21.597,39.2499",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "498",
+            "address": "Al Khansaa, Al Hajj Street.",
+            "cityName": "Makkah",
+            "addressAR": "الخنساء, شارع الحاج",
+            "coordinates": "21.4501,39.8487",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "500",
+            "address": "Bishah, King Abdullah Dist.",
+            "cityName": "Bishah",
+            "addressAR": "بيشة، حي الملك عبدالله",
+            "coordinates": "19.985,42.5981",
+            "firstShift": "09:00 - 13:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "501",
+            "address": "Mudhbah, Bustan St",
+            "cityName": "Taif",
+            "addressAR": "المضباع، شارع البستان",
+            "coordinates": "21.4431,40.4825",
+            "firstShift": "09:00 - 12:30",
+            "secondShift": "16:30 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "502",
+            "address": "Qirawan, Prince Mohammed Bin Saad Bin Abdulaziz Rd",
+            "cityName": "Riyadh",
+            "addressAR": "القيروان، طريق الامير محمد بن سعد بن عبدالعزيز",
+            "coordinates": "24.8237,46.5935",
+            "firstShift": "10:00 - 14:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "503",
+            "address": "Mazruiyah King Faisal Road",
+            "cityName": "Dammam",
+            "addressAR": "المزرعة طريق الملك فيصل",
+            "coordinates": "26.4364,50.1255",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "13:00 - 18:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "504",
+            "address": "Alquds, Prince Mohd Bn Faisal Bn Turki St.",
+            "cityName": "Riyadh",
+            "addressAR": "القدس، شارع الامير محمد بن فيصل بن تركي",
+            "coordinates": "24.7575,46.7609",
+            "firstShift": "09:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "505",
+            "address": "DMM Uhud King Saud St. (Al Dakatra)",
+            "cityName": "Dammam",
+            "addressAR": "الدمام أحد شارع الملك سعود (الدكاترة)",
+            "coordinates": "26.4254,50.0352",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "506",
+            "address": "Ar Rimal, Khalid Bin Zaid St.",
+            "cityName": "Riyadh",
+            "addressAR": "الرمال، شارع  خالد بن زايد",
+            "coordinates": "24.8348,46.8142",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "507",
+            "address": "Dulay Rasheed Main Rd",
+            "cityName": "Dulay Rasheed",
+            "addressAR": "ضليع رشيد، الطريق الرئيسي",
+            "coordinates": "25.5044,42.8495",
+            "firstShift": "10:00 - 14:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "508",
+            "address": "Nifi Main Rd",
+            "cityName": "NIFI",
+            "addressAR": "نفي، الطريق الرئيسي",
+            "coordinates": "25.0218,43.8149",
+            "firstShift": "10:00 - 13:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "509",
+            "address": "Wadi Al Foraa  Main Rd",
+            "cityName": "Wadi Al Foraa",
+            "addressAR": "وادي الفرع، الطريق الرئيسي",
+            "coordinates": "23.4298,39.7243",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "510",
+            "address": "Birk Jeddah-Abha Rd.",
+            "cityName": "Albirk",
+            "addressAR": "البرك، طريق جدة-ابها",
+            "coordinates": "18.2138,41.5339",
+            "firstShift": "08:00 - 12:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "511",
+            "address": "Nabhaniah King Abdulaziz Rd.",
+            "cityName": "Nabhaniah",
+            "addressAR": "النبهانية، طريق الملك عبدالعزيز",
+            "coordinates": "25.8575,43.0729",
+            "firstShift": "10:00 - 14:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "512",
+            "address": "Mathar Ash Shamli, Prince Sultan Bin Abdulaziz Road",
+            "cityName": "Riyadh",
+            "addressAR": "المعذر الشمالي طريق الأمير سلطان بن عبدالعزيز",
+            "coordinates": "24.6841,46.6743",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "514",
+            "address": "Irqah, Al Fadhliya",
+            "cityName": "Riyadh",
+            "addressAR": "عرقة - الفضلية",
+            "coordinates": "24.6742,46.5912",
+            "firstShift": "10:00 - 14:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "515",
+            "address": "Ath Thybiyah, Main Rd",
+            "cityName": "Hafar Al Baten",
+            "addressAR": "الذيبية، الطريق العام",
+            "coordinates": "28.1119,45.6588",
+            "firstShift": "11:00 - 14:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "521",
+            "address": "Shuran, Qiba Road",
+            "cityName": "Madinah",
+            "addressAR": "شوران, طريق قباء",
+            "coordinates": "24.3983,39.6338",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "522",
+            "address": "Aziziyah, Hassan Ibn Abdulaziz Street",
+            "cityName": "Madinah",
+            "addressAR": " العزيزية شارع حسن بن عبدالعزيز",
+            "coordinates": "24.4248,39.4994",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "523",
+            "address": "Sabt Shumran, Main Road",
+            "cityName": "Sabt Shumran",
+            "addressAR": "سبت شمران ، الطريق العام",
+            "coordinates": "19.4544,41.7932",
+            "firstShift": "08:00 - 12:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "526",
+            "address": "Rashidiyyah,Arafat Ash Sharaya Rd",
+            "cityName": "Makkah",
+            "addressAR": "الراشدية، طريق عرفات الشرائع",
+            "coordinates": "21.4845,39.9983",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "527",
+            "address": "Al-Fayha, Umm Almomnin Aisha St.",
+            "cityName": "Makkah",
+            "addressAR": "الفيحاء، شارع ام المؤمنين عائشة",
+            "coordinates": "21.4566,39.7626",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "528",
+            "address": "Mukatat Riyadh, Ahmed Maki Bin Attar St.",
+            "cityName": "Jeddah",
+            "addressAR": "مخطط الرياض، شارع احمد مكي بن عطار",
+            "coordinates": "21.8498,39.1994",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "529",
+            "address": "Qadsiyah, Omar Bin Khattab St.",
+            "cityName": "Tabuk",
+            "addressAR": "القادسية، شارع عمر بن الخطاب",
+            "coordinates": "28.439,36.5154",
+            "firstShift": "09:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "530",
+            "address": "Nuzha, Othman Bin Afan St.",
+            "cityName": "Dammam",
+            "addressAR": "النزهة، شارع عثمان بن عفان",
+            "coordinates": "26.3853,50.1045",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "533",
+            "address": "Muhayil Assir, King Abdullah Rd.",
+            "cityName": "Muhayil",
+            "addressAR": "محايل, عسير طريق الملك عبد الله",
+            "coordinates": "18.54172,42.05453",
+            "firstShift": "08:00 - 12:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "534",
+            "address": "Smsa Express Warehouse- Hail",
+            "cityName": "Hail",
+            "addressAR": "مستودعات سمسا - حائل",
+            "coordinates": "",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "535",
+            "address": "Al Bayan, Majzat Thour Al Sedosi St",
+            "cityName": "Riyadh",
+            "addressAR": "حي البيان، شارع مجزاة بن ثور السدوسي",
+            "coordinates": "24.8844,46.8594",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "539",
+            "address": "SMSA Express Warehouse - Jeddah",
+            "cityName": "Jeddah",
+            "addressAR": "مستودعات سمسا - جدة",
+            "coordinates": "",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "540",
+            "address": "SMSA Express Warehouse - Dammam",
+            "cityName": "Dammam",
+            "addressAR": "مستودعات سمسا - الدمام",
+            "coordinates": "",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "541",
+            "address": "SMSA Express Warehouse - Buraidah",
+            "cityName": "Buraydah",
+            "addressAR": "مستودعات سمسا - بريدة",
+            "coordinates": "",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "542",
+            "address": "SMSA Express Warehouse - Tabuk",
+            "cityName": "Tabuk",
+            "addressAR": "مستودعات سمسا - تبوك",
+            "coordinates": "",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "543",
+            "address": "SMSA Express Warehouse - Madinah",
+            "cityName": "Madinah",
+            "addressAR": "مستودعات سمسا - المدينة المنورة",
+            "coordinates": "",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "544",
+            "address": "SMSA Express Warehouse - Khamis Mushyt",
+            "cityName": "Khamis Mushayt",
+            "addressAR": "مستودعات سمسا - خميس مشيط",
+            "coordinates": "",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "545",
+            "address": "SMSA Express Warehouse - Al Jouf",
+            "cityName": "Jouf",
+            "addressAR": "مستودعات سمسا - الجوف",
+            "coordinates": "",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "546",
+            "address": "Mahani, Main Rd",
+            "cityName": "Mahani",
+            "addressAR": "المحاني, الطريق الرئيسي",
+            "coordinates": "22.4918,40.4304",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "547",
+            "address": "Hazm, Abu Abdullah Al Hussaini St.",
+            "cityName": "Umm As Sahik",
+            "addressAR": "حزم ، شارع أبو عبد الله الحسيني",
+            "coordinates": "26.6354,49.9146",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "548",
+            "address": "Shuqaiq, Jeddah-Abha Highway Rd.",
+            "cityName": "Shuqaiq",
+            "addressAR": "حي الشقيق , طريق جدة - أبها السريع",
+            "coordinates": "17.7219,42.0392",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "549",
+            "address": "Sawaha, Jeddah-Abha Highway Rd.",
+            "cityName": "Qahma",
+            "addressAR": "حي القحمة , طريق جدة - أبها السريع",
+            "coordinates": "17.9977,41.6776",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "550",
+            "address": "Qaid, Main Rd.",
+            "cityName": "Qaid",
+            "addressAR": "حي القاعد, الطريق العام",
+            "coordinates": "27.8367,41.7246",
+            "firstShift": "09:00 - 13:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "551",
+            "address": "Bahr Abu Sukaynah, Main Rd.",
+            "cityName": "Bahr Abu Sukaynah",
+            "addressAR": "حي بحر أبو سكينة ,الطريق الرئيسي",
+            "coordinates": "18.3228,41.9074",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "552",
+            "address": "Al Mansourah, Muhammad Bin Shuail St",
+            "cityName": "Riyadh",
+            "addressAR": "المنصورة، شارع محمد بن شعيل",
+            "coordinates": "24.6077,46.7468",
+            "firstShift": "09:00 - 21:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "555",
+            "address": "Fayfa Main Rd",
+            "cityName": "Fayfa",
+            "addressAR": "فيفا، الطريق العام",
+            "coordinates": "17.2726,43.1192",
+            "firstShift": "10:00 - 18:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "556",
+            "address": "Harajah, Khamis-Najran Highway Road",
+            "cityName": "Harajah",
+            "addressAR": "الحرجة، طريق خميس مشيط - نجران",
+            "coordinates": "17.9449,43.3704",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "557",
+            "address": "Yadamah, Prince Nayif Bin Abdulaziz Rd.",
+            "cityName": "Yadamah",
+            "addressAR": "يدمه، طريق الامير نايف بن عبدالعزيز",
+            "coordinates": "18.5297,44.2106",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "558",
+            "address": "Haradh, 58 st",
+            "cityName": "Haradh",
+            "addressAR": "حرض، شارع 58",
+            "coordinates": "24.1328,49.051",
+            "firstShift": "10:00 - 18:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "559",
+            "address": "Uraija, Al Imam Abi Hanifah St",
+            "cityName": "Riyadh",
+            "addressAR": "العريجاء، شارع الامام ابي حنيفة",
+            "coordinates": "24.6136,46.6356",
+            "firstShift": "10:00 - 14:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "560",
+            "address": "Al Hazm, Al Mathari St",
+            "cityName": "Riyadh",
+            "addressAR": "الحزم، شارع المطاري",
+            "coordinates": "24.5368,46.6501",
+            "firstShift": "10:00 - 15:00",
+            "secondShift": "16:00 - 19:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "562",
+            "address": "Al-Rayyan District - Habib Bin Awf Al-Abdi Street",
+            "cityName": "Jeddah",
+            "addressAR": "حي الريان - شارع حبيب بن عوف العبدي",
+            "coordinates": "21.7015,39.2113",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "563",
+            "address": "Al-Shuhadaa, Khaled bin Al-Walid Street",
+            "cityName": "Riyadh",
+            "addressAR": "حي الشهداء شارع خالد بن الوليد",
+            "coordinates": "24.7951,46.7425",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "564",
+            "address": "Thumamah, Al Thoumamah Rd.",
+            "cityName": "Riyadh",
+            "addressAR": "حي الثمامة - طريق الثمامة",
+            "coordinates": "24.849942,46.765307",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "565",
+            "address": "Bryman, Mohammed Bin Suraihid St.",
+            "cityName": "Jeddah",
+            "addressAR": "حي بريمان, شارع محمد بن سريهيد",
+            "coordinates": "21.6547,39.2488",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "566",
+            "address": "Dirab, Al Haweya St.",
+            "cityName": "Riyadh",
+            "addressAR": " حي ديراب,شارع الحوية",
+            "coordinates": "24.4912,46.6242",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "567",
+            "address": "Yarmuk, Al Sahaba Rd",
+            "cityName": "Riyadh",
+            "addressAR": "اليرموك، طريق الصحابة",
+            "coordinates": "24.8088,46.7797",
+            "firstShift": "08:00 - 23:00",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "568",
+            "address": "King Abdullah Makkah Mukarramah Rd",
+            "cityName": "Riyadh",
+            "addressAR": "حي الملك عبدالله، طريق مكة المكرمة",
+            "coordinates": "24.7076,46.7498",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "569",
+            "address": "Madaen Al Fahd, Main Rd",
+            "cityName": "Jeddah",
+            "addressAR": "حي مدائن الفهد, الطريق الرئيسي",
+            "coordinates": "21.4645,39.2247",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "571",
+            "address": "Al Ais, Main Rd",
+            "cityName": "Al Ais",
+            "addressAR": "العيص، الطريق العام",
+            "coordinates": "25.0609,38.1096",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "572",
+            "address": "Fayha, Bakhashab St.",
+            "cityName": "Jeddah",
+            "addressAR": "الفيحاء، شارع باخشب",
+            "coordinates": "21.4855,39.2186",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "574",
+            "address": "Sawari Dist, King Faisal Ibn Abdulaziz St.",
+            "cityName": "Jeddah",
+            "addressAR": " حي الصواري, شارع الملك فيصل بن عبد العزيز",
+            "coordinates": "21.7885,39.0941",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "575",
+            "address": "Khomrah Dist, Pr. Fawaz bin Abdulaziz St.",
+            "cityName": "Jeddah",
+            "addressAR": " حي الخمرة, شارع الأمير فواز بن عبد العزيز",
+            "coordinates": "21.3281,39.2559",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "577",
+            "address": "Olaya, Olaya Street",
+            "cityName": "Riyadh",
+            "addressAR": "العليا، شارع العليا",
+            "coordinates": "24.677782,46.692969",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "578",
+            "address": "Izdihar Al Hussein Ibn Ali St.",
+            "cityName": "Riyadh",
+            "addressAR": "حي الازدهار، شارع الحسين بن علي",
+            "coordinates": "24.783326,46.721231",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "579",
+            "address": "Masani, Haraj Bin Qasim",
+            "cityName": "Riyadh",
+            "addressAR": "حي المصاني حراج بن قاسم",
+            "coordinates": "24.570039,46.741361",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "581",
+            "address": "Block 1 , small industrial area Ardiya , Farwaniya",
+            "cityName": "Farwaniya",
+            "addressAR": "الفروانية قطعة 1 المنطقة الصناعية الصغيرة",
+            "coordinates": "",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "582",
+            "address": "Al Sir, Main Road",
+            "cityName": "Al Sir",
+            "addressAR": "آل سير, الطريق الرئيسي",
+            "coordinates": "21.207126,40.592307",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "583",
+            "address": "Akishiya, Al Lith Road",
+            "cityName": "Makkah",
+            "addressAR": "العكيشية، طريق الليث",
+            "coordinates": "",
+            "firstShift": "11:00 - 15:00",
+            "secondShift": "21:30 - 23:30",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "585",
+            "address": "Matar Dist, Abdullah Ibn Wadiah St.",
+            "cityName": "Madinah",
+            "addressAR": "حي مطر, شارع عبدالله بن وديعه",
+            "coordinates": "",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "590",
+            "address": "Maizilah Dist. Janadriyah Branch Rd.",
+            "cityName": "Riyadh",
+            "addressAR": "المعيزيلة، طريق الجنادرية",
+            "coordinates": "",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "592",
+            "address": "Ar Rashidiyyah Dist. Bilal Ibn Duwaim St.",
+            "cityName": "Makkah",
+            "addressAR": "الراشدية، شارع بلال بن الدويم ",
+            "coordinates": "",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "593",
+            "address": "Al Zahra, Arid Ibn Mahshi St.",
+            "cityName": "Jeddah",
+            "addressAR": "حي الزهراء,  شارع عارض بن محشي ",
+            "coordinates": "",
+            "firstShift": "09:00 - 12:00",
+            "secondShift": "16:00 - 21:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "595",
+            "address": "Bani Amro, Main Rd.",
+            "cityName": "Bani Amro",
+            "addressAR": "بني عمرو، الطريق الرئيسي",
+            "coordinates": "",
+            "firstShift": "09:00 - 13:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "597",
+            "address": "Hamra Dist, Main Road",
+            "cityName": "Hufuf",
+            "addressAR": "حي الحمرا، الطريق الرئيسي",
+            "coordinates": "",
+            "firstShift": "",
+            "secondShift": "",
+            "weekendShift": "OFF"
+        },
+        {
+            "code": "598",
+            "address": "Narjis Dist, Masharef Hills",
+            "cityName": "Riyadh",
+            "addressAR": "حي النرجس، تلال مشارف",
+            "coordinates": "",
+            "firstShift": "10:00 - 14:00",
+            "secondShift": "16:00 - 20:00",
+            "weekendShift": "OFF"
+        }
+    ]
+}
