@@ -1720,7 +1720,7 @@ function Step4Content({
     حائل: "Hail",
     نجران: "Najran",
     الجبيل: "Jubail",
-    أبها: "Abha",
+    ابها: "Abha",
     جازان: "Gizan", // في JSON هو Gizan وليس Jazan
     سكاكا: "Skakah",
     عرعر: "Arar",
@@ -1761,7 +1761,6 @@ function Step4Content({
     الرفيعة: "Rafiah",
     الرين: "Ar Rayn",
     "بني عمرو": "Bani Amro",
-      صبيا: "Sabya",
   };
 
   // دالة لتطبيع أسماء المدن (إزالة الكلمات الشائعة)
