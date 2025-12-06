@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { X, Send, Loader2, Minimize2, Maximize2, MessageSquare, CheckCircle, XCircle, AlertCircle } from "lucide-react"
@@ -8,7 +8,26 @@ import { useTheme } from "next-themes"
 import { TutorialImage } from "./v7-tutorial-image"
 import { MarasilAtomLogo } from "@/app/invoices/components/MarasilAtomLogo"
 import { motion } from "framer-motion"
-import { AIEngine, AIMessage as AIEngineMessage, AIContext } from "@/lib/ai-assistant/ai-engine"
+ 
+const INITIAL_ASSISTANT_MESSAGE = `مرحباً! أنا مساعدك الذكي في مراسل 🤖
+
+يمكنني مساعدتك في:
+✅ إنشاء شحنة جديدة
+✅ تتبع الشحنات
+✅ إلغاء الشحنات
+✅ عرض شحناتك وطلباتك
+✅ البحث عن معلومات
+✅ معلومات حسابك
+
+كيف يمكنني مساعدتك اليوم؟ 😊`
+
+const MARASIL_AI_ENDPOINT =
+  process.env.NEXT_PUBLIC_AI_CHAT_ENDPOINT || "https://www.marasil.site/ai/chat"
+
+type ConversationEntry = {
+  role: "user" | "assistant"
+  content: string
+}
 
 interface Message {
   id: string
@@ -53,7 +72,9 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [isMinimized, setIsMinimized] = useState(false)
   const [unreadCount, setUnreadCount] = useState(0)
-  const [aiEngine, setAiEngine] = useState<AIEngine | null>(null)
+  const [conversationHistory, setConversationHistory] = useState<ConversationEntry[]>([
+    { role: "assistant", content: INITIAL_ASSISTANT_MESSAGE },
+  ])
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const { resolvedTheme } = useTheme()
   const currentTheme = resolvedTheme || "light"
@@ -64,22 +85,59 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
     "إنشاء شحنة جديدة",
     "عرض طلباتي",
   ])
+  const conversationHistoryRef = useRef(conversationHistory)
 
-  // تهيئة محرك AI
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      const cleanToken = token.replace(/^Bearer\s+/i, "");
-      const context: AIContext = {
-        token: cleanToken,
-        conversationHistory: [],
-      };
-      
-      // استخدام Backend AI (true) أو النموذج المحلي (false)
-      const useBackend = process.env.NEXT_PUBLIC_USE_BACKEND_AI === "true";
-      setAiEngine(new AIEngine(context, useBackend));
+    conversationHistoryRef.current = conversationHistory
+  }, [conversationHistory])
+
+  const getUserContext = () => {
+    if (typeof window === "undefined") {
+      return { token: "", userName: "" }
     }
-  }, []);
+
+    const token = localStorage.getItem("token")
+    const cleanToken = token ? token.replace(/^Bearer\s+/i, "") : ""
+
+    let userName = ""
+    const userDataStr = localStorage.getItem("userData")
+    if (userDataStr) {
+      try {
+        const userData = JSON.parse(userDataStr)
+        userName = userData.firstName || userData.name || ""
+      } catch (error) {
+        console.warn("failed to parse userData", error)
+      }
+    }
+
+    return { token: cleanToken, userName }
+  }
+
+  const requestAIResponse = useCallback(
+    async (userInput: string, historyPayload: ConversationEntry[]) => {
+      const { token, userName } = getUserContext()
+
+      const response = await fetch(MARASIL_AI_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: userInput,
+          history: historyPayload,
+          token,
+          userName,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`فشل الاتصال بالخادم (${response.status})`)
+      }
+
+      return response.json()
+    },
+    [],
+  )
 
   // تمرير إلى آخر رسالة عند إضافة رسالة جديدة
   useEffect(() => {
@@ -108,68 +166,65 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
   }
 
   const handleSendMessage = async () => {
-    if (!input.trim() || !aiEngine) return
+    if (!input.trim()) return
 
-    const userInput = input.trim();
+    const userInput = input.trim()
+    const timestamp = new Date()
 
-    // إضافة رسالة المستخدم
     const userMessage: Message = {
-      id: `user-${Date.now()}`,
+      id: `user-${timestamp.getTime()}`,
       content: userInput,
       role: "user",
-      timestamp: new Date(),
+      timestamp,
     }
+
     setMessages((prev) => [...prev, userMessage])
+    setConversationHistory((prev) => [...prev, { role: "user", content: userInput }])
     setInput("")
     setIsLoading(true)
 
+    const historyPayload: ConversationEntry[] = [...conversationHistoryRef.current, {
+      role: "user",
+      content: userInput,
+    }]
+
+    let lastAssistantResponse = ""
     try {
-      // معالجة الرسالة عبر محرك AI
-      const aiResponse = await aiEngine.processMessage(userInput);
+      const backendResponse = await requestAIResponse(userInput, historyPayload)
+      const responseText =
+        backendResponse?.response ||
+        "تم استلام سؤالك! لكن لم أحصل على رد من الخدمة، جرب مرة أخرى لو سمحت."
+      lastAssistantResponse = responseText
 
-      // تحويل رسالة AI إلى Message
       const assistantMessage: Message = {
-        id: aiResponse.id,
-        content: aiResponse.content,
-        role: aiResponse.role,
-        timestamp: aiResponse.timestamp,
-        action: aiResponse.action,
-      }
-
-      setMessages((prev) => [...prev, assistantMessage])
-      
-      // تحديث الاقتراحات بناءً على السياق
-      updateSuggestions(aiResponse.action?.type);
-    } catch (error) {
-      console.error("AI Error:", error);
-      const errorMessage: Message = {
-        id: `error-${Date.now()}`,
-        content: "عذراً، حدث خطأ أثناء معالجة طلبك. يرجى المحاولة مرة أخرى.",
+        id: `assistant-${Date.now()}`,
+        content: responseText,
         role: "assistant",
         timestamp: new Date(),
       }
-      setMessages((prev) => [...prev, errorMessage])
-    } finally {
-      setIsLoading(false)
-    }
-  }
 
-  const updateSuggestions = (actionType?: string) => {
-    switch (actionType) {
-      case "get_shipments":
-        setSuggestions(["تتبع شحنة", "إنشاء شحنة جديدة", "إلغاء شحنة"]);
-        break;
-      case "track_shipment":
-        setSuggestions(["عرض شحناتي", "إلغاء شحنة", "إنشاء شحنة جديدة"]);
-        break;
-      case "create_shipment":
-        setSuggestions(["تتبع الشحنة", "عرض شحناتي", "معلومات حسابي"]);
-        break;
-      case "get_orders":
-        setSuggestions(["إنشاء شحنة", "عرض شحناتي", "معلومات حسابي"]);
-        break;
-      default:
-        setSuggestions(["عرض شحناتي", "تتبع شحنة", "إنشاء شحنة جديدة", "عرض طلباتي"]);
+      setMessages((prev) => [...prev, assistantMessage])
+      setConversationHistory((prev) => [...prev, { role: "assistant", content: responseText }])
+    } catch (error: any) {
+      console.error("AI Error:", error)
+      const assistantMessage: Message = {
+        id: `assistant-error-${Date.now()}`,
+        content:
+          error?.message === "Failed to fetch"
+            ? "ما قدرت أتواصل مع خدمة الذكاء حالياً. تأكد من اتصالك بالانترنت وجرب مرة ثانية."
+            : "عذراً، صار عندي خطأ أثناء المعالجة. جرب مرة ثانية لو سمحت.",
+        role: "assistant",
+        timestamp: new Date(),
+      }
+      setMessages((prev) => [...prev, assistantMessage])
+      setConversationHistory((prev) => [...prev, { role: "assistant", content: assistantMessage.content }])
+      lastAssistantResponse = assistantMessage.content
+    } finally {
+      conversationHistoryRef.current = [
+        ...historyPayload,
+        { role: "assistant", content: lastAssistantResponse || messages[messages.length - 1]?.content || "" },
+      ]
+      setIsLoading(false)
     }
   }
 
