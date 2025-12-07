@@ -31,7 +31,7 @@ import { useNotifications } from "@/hooks/useNotifications";
 import { useGetProfileQuery } from "@/app/api/profileApi";
 import { V7FloatingAssistant } from "./v7-floating-assistant";
 import Image from "next/image";
-import ProfileUpLoad from "@/app/parcels/components/ProfileUpLoad";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface V7HeaderProps {
   onMenuClick: () => void;
@@ -520,9 +520,10 @@ const handleSearch = (e: React.FormEvent) => {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="flex items-center gap-2">
-            <div className="v7-neu-avatar overflow-hidden rounded-full w-8 h-8 border border-[#e5e7eb]">
-              <ProfileUpLoad
-                initialImage={
+            <Avatar className="v7-neu-avatar w-8 h-8 border border-[#e5e7eb]">
+              <AvatarImage
+                className="object-cover"
+                src={
                   profileData?.data.profileImage
                     ? profileData.data.profileImage.startsWith("http")
                       ? `${profileData.data.profileImage}?t=${Date.now()}`
@@ -532,8 +533,10 @@ const handleSearch = (e: React.FormEvent) => {
                         }${profileData.data.profileImage}?t=${Date.now()}`
                     : "/homePageImages/user.jpg"
                 }
+                alt="صورة الحساب"
               />
-            </div>
+              <AvatarFallback>U</AvatarFallback>
+            </Avatar>
             <div className="hidden flex-col items-start md:flex">
               <span className="text-sm font-medium">
                 {profileLoading

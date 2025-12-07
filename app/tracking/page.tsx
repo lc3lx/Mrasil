@@ -263,7 +263,7 @@ export default function () {
           </p>
         </div>
 
-        <div className="v7-neu-card p-4 sm:p-6 rounded-xl">
+        <div className="v7-neu-card p-4 sm:p-6 rounded-xl overflow-hidden">
           <div className="mb-6 text-center md:text-right space-y-2">
             <h2 className="text-xl font-bold text-[#3498db]">
               أدخل رقم الشحنة
@@ -316,8 +316,8 @@ export default function () {
           {(trackingResult || currentShipment) && (
             <>
               <div className="mt-8 space-y-6 v7-fade-in">
-                <div className="flex flex-col lg:flex-row justify-between gap-6 p-4 sm:p-6 rounded-xl v7-neu-card-inner">
-                  <div className="flex flex-col lg:flex-row items-start lg:items-center gap-4 w-full">
+                <div className="flex flex-col lg:flex-row justify-between gap-6 p-4 sm:p-6 rounded-xl v7-neu-card-inner overflow-hidden flex-wrap min-w-0">
+                  <div className="flex flex-col lg:flex-row items-start lg:items-center gap-4 w-full flex-wrap min-w-0">
                     <div className="v7-neu-icon">
                       {getStatusIcon(
                         trackingResult?.status ||
@@ -401,7 +401,7 @@ export default function () {
           {/*  */}
         </div>
 
-        <div className="mt-8 v7-neu-card p-6 rounded-xl">
+        <div className="mt-8 v7-neu-card p-6 rounded-xl overflow-hidden">
           <h1 className="text-xl font-bold text-[#3498db] mb-4">
             الشحنات الأخيرة
           </h1>
@@ -409,7 +409,7 @@ export default function () {
             {lastFiveShipments?.map((data: any, idx: number) => (
               <div
                 key={data?._id || data?.trackingId || idx}
-                className="flex items-center justify-between p-4 rounded-lg v7-neu-card-inner"
+                className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-lg v7-neu-card-inner"
               >
                 <div className="flex items-center gap-3">
                   <div className="v7-neu-icon-sm">

@@ -66,8 +66,8 @@ const CancelToast = ({
           padding: 10px 14px;
           border-radius: 5px;
           overflow: hidden;
-          background: #fff;
-          box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+          background: transparent;
+          box-shadow: none;
           position: relative;
           isolation: isolate;
           animation: cancel-toast-open 0.4s ease forwards;

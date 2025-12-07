@@ -241,7 +241,7 @@ const sortedCarriers = [...filteredCarriers].sort((a, b) => {
                     <SelectValue placeholder="الفلاتر" className="text-[#294D8B]" />
                   </div>
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white text-[#294D8B] border border-gray-200 shadow-lg">
                   <SelectItem value="all">جميع الشركات</SelectItem>
                   <SelectItem value="active">الشركات النشطة</SelectItem>
                   <SelectItem value="inactive">الشركات غير النشطة</SelectItem>
@@ -256,7 +256,7 @@ const sortedCarriers = [...filteredCarriers].sort((a, b) => {
                     <SelectValue placeholder="الترتيب" className="text-[#294D8B]" />
                   </div>
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white text-[#294D8B] border border-gray-200 shadow-lg">
                   <SelectItem value="name-asc">الاسم (تصاعدي)</SelectItem>
                   <SelectItem value="name-desc">الاسم (تنازلي)</SelectItem>
                 </SelectContent>

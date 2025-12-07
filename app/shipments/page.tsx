@@ -41,6 +41,7 @@ import { useGetMyShipmentsQuery } from "@/app/api/shipmentApi";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ShipmentsGrid } from "./components/ShipmentsGrid";
 import { useSearchParams } from "next/navigation";
+import { useGetShipmentStatsQuery, useGetHomePageStatisticsQuery } from "@/app/api/homePageApi";
 
 type ShipmentStatus =
   | "delivered"
@@ -118,6 +119,10 @@ export default function ShipmentsPage() {
     isLoading,
     error,
   } = useGetMyShipmentsQuery({ page: currentPage, itemsPerPage: 5 });
+
+  // Fetch aggregated stats across ALL shipments (not limited by current page)
+  const { data: shipmentStats } = useGetShipmentStatsQuery();
+  const { data: homeStats } = useGetHomePageStatisticsQuery();
 
   useEffect(() => {
     setIsLoaded(true);
@@ -406,26 +411,23 @@ export default function ShipmentsPage() {
     return 0;
   });
 
-  // Count shipments by status
-  const deliveredCount = shipments.filter((s) => {
-    const status = mapApiStatusToComponentStatus(s.shipmentstates);
-    return status === "delivered";
-  }).length;
+  // Counts by status over ALL shipments (prefer backend stats, fallback to current page)
+  const deliveredCount =
+    shipmentStats?.deliveredShipments ??
+    shipments.filter((s) => mapApiStatusToComponentStatus(s.shipmentstates) === "delivered").length;
 
-  const transitCount = shipments.filter((s) => {
-    const status = mapApiStatusToComponentStatus(s.shipmentstates);
-    return status === "transit";
-  }).length;
+  const transitCount =
+    shipmentStats?.inTransitShipments ??
+    shipments.filter((s) => mapApiStatusToComponentStatus(s.shipmentstates) === "transit").length;
 
-  const readyCount = shipments.filter((s) => {
-    const status = mapApiStatusToComponentStatus(s.shipmentstates);
-    return status === "ready";
-  }).length;
+  // Backend provides pendingShipments aggregate; use it for "ready" as closest aggregate, fallback to page calc
+  const readyCount =
+    shipmentStats?.pendingShipments ??
+    shipments.filter((s) => mapApiStatusToComponentStatus(s.shipmentstates) === "ready").length;
 
-  const cancelCount = shipments.filter((s) => {
-    const status = mapApiStatusToComponentStatus(s.shipmentstates);
-    return status === "cancel";
-  }).length;
+  const cancelCount =
+    homeStats?.canceledShipments ??
+    shipments.filter((s) => mapApiStatusToComponentStatus(s.shipmentstates) === "cancel").length;
 
   // Count shipments by source
   const sourceCount = availableSources.reduce((acc, source) => {

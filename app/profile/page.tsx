@@ -749,7 +749,7 @@ export default function ProfilePage() {
               <h2 className="text-xl font-bold">
                 {profileData?.data.firstName} {profileData?.data.lastName}
               </h2>
-              <p className="v7-neu-badge px-3 py-1 rounded-full text-xs w-fit">
+              <p className="v7-neu-badge px-3 py-1 rounded-full text-xs w-fit mx-auto">
                 {customerData?.data.role == "user"
                   ? null
                   : customerData?.data?.role || ""}
