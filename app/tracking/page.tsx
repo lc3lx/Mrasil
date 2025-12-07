@@ -272,7 +272,7 @@ export default function () {
           </div>
 
           <form
-            className="flex flex-col md:flex-row gap-4"
+            className="flex flex-col lg:flex-row gap-4"
             onSubmit={handleTrack}
           >
             <div className="relative flex-1 v7-neu-input-container">
@@ -287,7 +287,7 @@ export default function () {
             </div>
             <Button
               type="submit"
-              className="inline-flex items-center justify-center hover:text-white gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 v7-neu-button"
+              className="inline-flex w-full lg:w-auto items-center justify-center hover:text-white gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 v7-neu-button"
               disabled={isTracking}
             >
               {isTracking ? (
@@ -314,8 +314,8 @@ export default function () {
           {(trackingResult || currentShipment) && (
             <>
               <div className="mt-8 space-y-6 v7-fade-in">
-                <div className="flex flex-col md:flex-row justify-between gap-6 p-6 rounded-xl v7-neu-card-inner">
-                  <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+                <div className="flex flex-col lg:flex-row justify-between gap-6 p-6 rounded-xl v7-neu-card-inner">
+                  <div className="flex flex-col lg:flex-row items-start lg:items-center gap-4">
                     <div className="v7-neu-icon">
                       {getStatusIcon(
                         trackingResult?.status ||
@@ -361,7 +361,7 @@ export default function () {
                   </div>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <div className="p-6 rounded-xl v7-neu-card-inner space-y-4">
                     <h3 className="text-lg font-bold text-[#3498db]">
                       تفاصيل الشحنة
@@ -482,7 +482,7 @@ export default function () {
                     </h3>
                     <div className="relative">
                       <div className="absolute top-0 bottom-0 right-5 w-[2px] bg-gray-200"></div>
-                      {trackingResult?.activities?.map((act, idx) => {
+                      {(trackingResult?.activities ?? []).map((act: any, idx: number) => {
                         const dateObj = new Date(act.timestamp);
                         const formattedDate = dateObj.toLocaleDateString(
                           "en-US",
@@ -519,7 +519,7 @@ export default function () {
               </div>
 
               {(shipmentSender || shipmentReceiver) && (
-                <div className=" grid md:grid-cols-2 gap-6 mt-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
                   {shipmentSender && (
                     <div className=" p-6 rounded-xl v7-neu-card-inner">
                       <h1 className="text-lg font-bold text-[#3498db] mb-4 ">
@@ -595,8 +595,11 @@ export default function () {
             الشحنات الأخيرة
           </h1>
           <div className=" flex flex-col gap-4">
-            {lastFiveShipments?.map((data) => (
-              <div className="flex items-center justify-between p-4 rounded-lg v7-neu-card-inner">
+            {lastFiveShipments?.map((data: any, idx: number) => (
+              <div
+                key={data?._id || data?.trackingId || idx}
+                className="flex items-center justify-between p-4 rounded-lg v7-neu-card-inner"
+              >
                 <div className="flex items-center gap-3">
                   <div className="v7-neu-icon-sm">
                     <svg

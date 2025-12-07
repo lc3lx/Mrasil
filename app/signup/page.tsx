@@ -192,7 +192,7 @@ export default function SignupPage() {
                     name="phone"
                     type="tel"
                     required
-                    className="block w-full pl-12 pr-4 py-2.5 bg-white/10 text-white placeholder-white/70 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-white/60 focus:border-none text-sm sm:text-base border border-white/20"
+                    className="block w-full pl-12 pr-4 py-2.5 bg-white/10 text-white placeholder-white/70 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-white/60 focus:border-none text-sm sm:text-base border border-white/20 text-right placeholder:text-right"
                     placeholder="رقم الهاتف"
                     value={formData.phone}
                     onChange={handleChange}
