@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 
-export function V7LoadingScreen({ title = "جاري تحميل لوحة التحكم..." }: { title?: string }) {
+export function V7LoadingScreen({ title = "جاري التحميل..." }: { title?: string }) {
   const [progress, setProgress] = useState(0)
 
   useEffect(() => {
@@ -21,11 +21,7 @@ export function V7LoadingScreen({ title = "جاري تحميل لوحة التح
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#f0f4f8]">
-      <div className="relative mb-6">
-        <div className="v7-loading-logo">SE</div>
-      </div>
-
-      <h1 className="text-2xl font-bold text-[#3498db] mb-8">جار التحميل</h1>
+      <h1 className="text-2xl font-bold text-[#3498db] mb-8">جاري التحميل</h1>
 
       <div className="w-64 h-3 v7-neu-inset rounded-full overflow-hidden">
         <div

@@ -253,16 +253,18 @@ export default function () {
   console.log("data", { trackingResult, currentShipment });
   return (
     <V7Layout>
-      <div className="space-y-8 pb-20 my-16">
-        <div>
-          <h1 className="text-2xl font-bold text-[#294D8B]">تتبع الشحنات</h1>
-          <p className="text-sm text-[#6d6a67]">
+      <div className="space-y-8 pb-8 md:pb-20 mt-8 md:my-16 px-4 sm:px-6 lg:px-0">
+        <div className="text-center md:text-right space-y-2">
+          <h1 className="text-2xl md:text-3xl font-bold text-[#294D8B]">
+            تتبع الشحنات
+          </h1>
+          <p className="text-sm md:text-base text-[#6d6a67]">
             تتبع شحناتك ومعرفة حالتها الحالية
           </p>
         </div>
 
-        <div className="v7-neu-card p-6 rounded-xl">
-          <div className="mb-6">
+        <div className="v7-neu-card p-4 sm:p-6 rounded-xl">
+          <div className="mb-6 text-center md:text-right space-y-2">
             <h2 className="text-xl font-bold text-[#3498db]">
               أدخل رقم الشحنة
             </h2>
@@ -272,7 +274,7 @@ export default function () {
           </div>
 
           <form
-            className="flex flex-col lg:flex-row gap-4"
+            className="flex flex-col xl:flex-row gap-3 sm:gap-4"
             onSubmit={handleTrack}
           >
             <div className="relative flex-1 v7-neu-input-container">
@@ -280,14 +282,14 @@ export default function () {
               <input
                 type="text"
                 placeholder="مثال: SE1002202504"
-                className="v7-neu-input w-full pl-12 text-right"
+                className="v7-neu-input w-full pl-12 pr-4 text-right"
                 value={number}
                 onChange={(e) => setNumber(e.target.value)}
               />
             </div>
             <Button
               type="submit"
-              className="inline-flex w-full lg:w-auto items-center justify-center hover:text-white gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 v7-neu-button"
+              className="inline-flex w-full xl:w-auto items-center justify-center hover:text-white gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-primary text-primary-foreground hover:bg-primary/90 h-12 px-4 py-2 v7-neu-button"
               disabled={isTracking}
             >
               {isTracking ? (
@@ -314,205 +316,14 @@ export default function () {
           {(trackingResult || currentShipment) && (
             <>
               <div className="mt-8 space-y-6 v7-fade-in">
-                <div className="flex flex-col lg:flex-row justify-between gap-6 p-6 rounded-xl v7-neu-card-inner">
-                  <div className="flex flex-col lg:flex-row items-start lg:items-center gap-4">
+                <div className="flex flex-col lg:flex-row justify-between gap-6 p-4 sm:p-6 rounded-xl v7-neu-card-inner">
+                  <div className="flex flex-col lg:flex-row items-start lg:items-center gap-4 w-full">
                     <div className="v7-neu-icon">
                       {getStatusIcon(
                         trackingResult?.status ||
                           shipmentStatus ||
                           resultSmsa?.status
                       )}
-                    </div>
-                    <div>
-                      <div className="text-sm text-[#6d6a67]">رقم الشحنة</div>
-                      <div className="text-lg font-bold">
-                        {number ||
-                          result?.tracking_number ||
-                          resultSmsa?.trackingNumber ||
-                          currentShipment?.trackingId ||
-                          currentShipment?.trackingNumber ||
-                          currentShipment?._id ||
-                          "-"}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-start">
-                    <div className="text-sm text-[#6d6a67]">حالة الشحنة</div>
-                    <div
-                      className={`text-lg font-bold ${getStatusColor(
-                        shipmentStatus ||
-                          trackingResult?.status ||
-                          resultSmsa?.status
-                      )}`}
-                    >
-                      {getStatusText(
-                        shipmentStatus ||
-                          trackingResult?.status ||
-                          resultSmsa?.status
-                      ) ||
-                        (shipmentSender?.full_name
-                          ? `${shipmentSender.full_name} → ${
-                              shipmentReceiver?.full_name ||
-                              shipmentReceiver?.clientName ||
-                              ""
-                            }`
-                          : "")}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <div className="p-6 rounded-xl v7-neu-card-inner space-y-4">
-                    <h3 className="text-lg font-bold text-[#3498db]">
-                      تفاصيل الشحنة
-                    </h3>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <MapPin className="h-4 w-4 text-gry" />
-                          <span className="text-sm text-gry">من</span>
-                        </div>
-                        <div className="font-medium">
-                          {shipmentSender?.address ||
-                            resultSmsa?.OriginCity ||
-                            "-"}{" "}
-                          {shipmentSender?.city || ""}
-                        </div>
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <MapPin className="h-4 w-4 text-gry" />
-                          <span className="text-sm text-gry">إلى</span>
-                        </div>
-                        <div className="font-medium">
-                          {shipmentReceiver?.clientAddress ||
-                            resultSmsa?.DesinationCity ||
-                            "-"}{" "}
-                          {shipmentReceiver?.city || ""}
-                        </div>
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <Calendar className="h-4 w-4 text-gry" />
-                          <span className="text-sm text-gry">تاريخ الشحن</span>
-                        </div>
-                        <div className="font-medium">
-                          {shipmentCreatedAt
-                            ? new Date(shipmentCreatedAt).toLocaleDateString(
-                                "ar-SA",
-                                {
-                                  day: "numeric",
-                                  month: "long",
-                                  year: "numeric",
-                                }
-                              )
-                            : result?.created_at
-                            ? new Date(result.created_at).toLocaleDateString(
-                                "en-SA"
-                              )
-                            : resultSmsa?.scans?.[7]?.ScanDateTime
-                            ? new Date(
-                                resultSmsa.scans[7].ScanDateTime
-                              ).toLocaleString("en-EG", {
-                                day: "numeric",
-                                month: "long",
-                                year: "numeric",
-                              })
-                            : "-"}
-                        </div>
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <Clock className="h-4 w-4 text-gry" />
-                          <span className="text-sm text-gry">
-                            موعد التسليم المتوقع
-                          </span>
-                        </div>
-                        <div className="font-medium">
-                          {trackingResult?.estimatedDelivery ||
-                            (resultSmsa?.scans?.[0]?.ScanDateTime
-                              ? new Date(
-                                  resultSmsa.scans[0].ScanDateTime
-                                ).toLocaleString("ar-EG", {
-                                  day: "numeric",
-                                  month: "long",
-                                  year: "numeric",
-                                })
-                              : "-")}
-                        </div>
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <Package className="h-4 w-4 text-gry" />
-                          <span className="text-sm text-gry">الوزن</span>
-                        </div>
-                        <div className="font-medium">
-                          {shipmentWeight ||
-                            result?.weight?.value ||
-                            resultSmsa?.weight ||
-                            "-"}{" "}
-                          {shipmentWeight
-                            ? "كجم"
-                            : result?.weight?.value
-                            ? result.weight.unit || "KG"
-                            : resultSmsa?.weight
-                            ? "KG"
-                            : ""}
-                        </div>
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <Truck className="h-4 w-4 text-gry" />
-                          <span className="text-sm text-gry">نوع الخدمة</span>
-                        </div>
-                        <div className="font-medium">
-                          {shipmentType ||
-                            trackingResult?.service ||
-                            shipmentCompany ||
-                            "-"}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="p-6 rounded-xl v7-neu-card-inner">
-                    <h3 className="text-lg font-bold text-[#3498db] mb-4">
-                      مسار الشحنة
-                    </h3>
-                    <div className="relative">
-                      <div className="absolute top-0 bottom-0 right-5 w-[2px] bg-gray-200"></div>
-                      {(trackingResult?.activities ?? []).map((act: any, idx: number) => {
-                        const dateObj = new Date(act.timestamp);
-                        const formattedDate = dateObj.toLocaleDateString(
-                          "en-US",
-                          { month: "short", day: "numeric", year: "numeric" }
-                        );
-                        const formattedTime = dateObj.toLocaleTimeString(
-                          "en-US",
-                          { hour: "2-digit", minute: "2-digit" }
-                        );
-
-                        return (
-                          <div key={idx} className="relative flex gap-4 mb-4">
-                            <div
-                              className={`h-8 w-8 rounded-full ${
-                                act?.status === "Delivered"
-                                  ? "bg-green-500"
-                                  : "bg-gray-300"
-                              }`}
-                            ></div>
-                            <div>
-                              <div className="text-sm font-medium">
-                                {act?.description}
-                              </div>
-                              <div className="text-xs text-gray-500">
-                                {formattedDate} - {formattedTime}
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
                     </div>
                   </div>
                 </div>

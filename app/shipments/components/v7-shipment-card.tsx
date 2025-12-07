@@ -25,6 +25,218 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import moment from "moment";
 
+const CancelToast = ({
+  trackingNumber,
+  onClose,
+}: {
+  trackingNumber: string;
+  onClose: () => void;
+}) => {
+  const [closing, setClosing] = useState(false);
+
+  const handleClose = () => {
+    setClosing(true);
+    setTimeout(onClose, 200);
+  };
+
+  return (
+    <>
+      <div className={`cancel-toast-container success ${closing ? "closing" : ""}`}>
+        <div className="cancel-toast__icon-wrapper">
+          <div className="cancel-toast__icon" />
+        </div>
+        <div className="cancel-toast__message">
+          <h4>تم إلغاء الشحنة</h4>
+          <p>
+            تم إلغاء الشحنة رقم <strong>{trackingNumber}</strong> بنجاح
+          </p>
+        </div>
+        <button className="cancel-toast__close" onClick={handleClose} aria-label="إغلاق الإشعار" />
+        <div className="cancel-toast__timer timer-animation" />
+      </div>
+      <style jsx global>{`
+        @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap");
+
+        .cancel-toast-container {
+          font-family: "Poppins", sans-serif;
+          display: flex;
+          align-items: center;
+          max-width: 400px;
+          width: fit-content;
+          padding: 10px 14px;
+          border-radius: 5px;
+          overflow: hidden;
+          background: #fff;
+          box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+          position: relative;
+          isolation: isolate;
+          animation: cancel-toast-open 0.4s ease forwards;
+          direction: rtl;
+          gap: 14px;
+        }
+
+        .cancel-toast-container.closing {
+          animation: cancel-toast-close 0.3s ease forwards;
+        }
+
+        .cancel-toast__icon-wrapper {
+          width: 30px;
+          height: 30px;
+          background: var(--secondary);
+          border-radius: 5px;
+          padding: 5px;
+          box-sizing: border-box;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .cancel-toast__icon {
+          background: var(--primary);
+          border-radius: 50%;
+          width: 100%;
+          height: 100%;
+          position: relative;
+          transform: rotate(-45deg);
+        }
+
+        .cancel-toast__icon::before,
+        .cancel-toast__icon::after {
+          content: "";
+          position: absolute;
+          background: var(--secondary);
+          border-radius: 5px;
+          top: 50%;
+          left: 50%;
+        }
+
+        .cancel-toast__message {
+          padding: 5px 20px 5px 10px;
+          color: #404040;
+        }
+
+        .cancel-toast__message h4 {
+          margin: 0;
+          font-size: 14px;
+          font-weight: 600;
+          letter-spacing: 0.05em;
+        }
+
+        .cancel-toast__message p {
+          margin: 4px 0 0;
+          font-size: 11px;
+          font-weight: 400;
+          letter-spacing: 0.05em;
+          color: #606060;
+        }
+
+        .cancel-toast__close {
+          position: relative;
+          padding: 12px;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          background: transparent;
+          transition: background 0.2s ease-in-out;
+        }
+
+        .cancel-toast__close::before,
+        .cancel-toast__close::after {
+          content: "";
+          position: absolute;
+          height: 12px;
+          width: 1px;
+          border-radius: 5px;
+          background: #606060;
+          top: 50%;
+          left: 50%;
+          transition: background 0.2s ease-in-out;
+        }
+
+        .cancel-toast__close::before {
+          transform: translate(-50%, -50%) rotate(45deg);
+        }
+
+        .cancel-toast__close::after {
+          transform: translate(-50%, -50%) rotate(-45deg);
+        }
+
+        .cancel-toast__close:hover {
+          background: rgba(0, 0, 0, 0.08);
+        }
+
+        .cancel-toast__close:hover::before,
+        .cancel-toast__close:hover::after {
+          background: #404040;
+        }
+
+        .cancel-toast__timer {
+          width: 100%;
+          height: 4px;
+          background: var(--primary);
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          border-top-right-radius: 5px;
+          box-shadow: 0 0 8px var(--primary);
+        }
+
+        .timer-animation {
+          animation: cancel-toast-countdown 6s linear forwards;
+        }
+
+        .cancel-toast-container.success {
+          --primary: #2dd743;
+          --secondary: #e3fee6;
+        }
+
+        .cancel-toast__icon::before {
+          width: 10px;
+          height: 3px;
+          transform: translate(calc(-50% + 1px), calc(-50% + 1px));
+        }
+
+        .cancel-toast__icon::after {
+          width: 3px;
+          height: 6px;
+          transform: translate(calc(-50% - 3px), calc(-50% - 1px));
+        }
+
+        @keyframes cancel-toast-open {
+          from {
+            opacity: 0;
+            transform: translateY(-25px) scale(0.95);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+
+        @keyframes cancel-toast-close {
+          from {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+          to {
+            opacity: 0;
+            transform: translateY(-25px) scale(0.5);
+          }
+        }
+
+        @keyframes cancel-toast-countdown {
+          from {
+            width: 100%;
+          }
+          to {
+            width: 0%;
+          }
+        }
+      `}</style>
+    </>
+  );
+};
+
 const companyLogoMap: Record<string, string> = {
   smsa: "/companies/smsa.jpg",
   jandt: "/jandt.jpg",
@@ -287,23 +499,9 @@ export function V7ShipmentCard({
         company: shipment.shapmentCompany, // This will be sent in the request body
       }).unwrap();
 
-      // رسالة إلغاء - إشعار أحمر كبير يغطي الشاشة
       toast.custom(
         (t) => (
-          <div
-            className="bg-red-600 text-white rounded-xl shadow-2xl p-8 w-[95%] max-w-[95vw] mx-auto text-center border-4 border-red-700"
-            style={{
-              fontSize: "24px",
-              fontWeight: "bold",
-              zIndex: 10000,
-              boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
-            }}
-          >
-            <div className="text-3xl mb-3 font-extrabold">⚠️ تم الإلغاء</div>
-            <div className="text-xl opacity-95">
-              تم إلغاء الشحنة رقم {trackingNumber} بنجاح
-            </div>
-          </div>
+          <CancelToast trackingNumber={trackingNumber} onClose={() => toast.dismiss(t)} />
         ),
         {
           duration: 6000,
