@@ -229,8 +229,9 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
   }
 
   // وظيفة بسيطة لمحاكاة استجابات المساعد الذكي
-  const getBotResponse = (userInput: string): string | { text: string; image?: string; imageCaption?: string } => {
-    const input = userInput.toLowerCase().trim()
+  const formatMessageContent = (content: string = "") => {
+    const parts: Array<{ type: "text" | "button"; content: string }> = [];
+    const lines = content.split("\n").filter((line) => line.trim() !== "");
 
     // التعامل مع الأوامر المباشرة
     if (input.startsWith("/")) {

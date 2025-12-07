@@ -50,9 +50,9 @@ export default function V7Wallet({
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [transferImage, setTransferImage] = useState<File | null>(null);
-  const [transferImagePreview, setTransferImagePreview] = useState<
-    string | null
-  >(null);
+  const [transferImagePreview, setTransferImagePreview] = useState<string | null>(
+    null,
+  );
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const [processedPayments, setProcessedPayments] = useState<Set<string>>(
@@ -656,21 +656,30 @@ export default function V7Wallet({
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        setError("حجم الملف يجب أن يكون أقل من 5MB");
-        return;
-      }
-      if (!file.type.startsWith("image/")) {
-        setError("الملف يجب أن يكون صورة");
-        return;
-      }
-      setTransferImage(file);
-      setTransferImagePreview(URL.createObjectURL(file));
-      setError("");
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (file.size > 5 * 1024 * 1024) {
+      setError("حجم الملف يجب أن يكون أقل من 5MB")
+      return
     }
-  };
+
+    const isImage = file.type.startsWith("image/")
+    const isPdf = file.type === "application/pdf"
+
+    if (!isImage && !isPdf) {
+      setError("الملف يجب أن يكون صورة أو PDF")
+      return
+    }
+
+    if (transferImagePreview) {
+      URL.revokeObjectURL(transferImagePreview)
+    }
+
+    setTransferImage(file)
+    setTransferImagePreview(isImage ? URL.createObjectURL(file) : null)
+    setError("")
+  }
 
   const removeImage = () => {
     if (transferImagePreview) {
@@ -726,8 +735,8 @@ export default function V7Wallet({
         }
 
         const formData = new FormData();
-        formData.append("amount", paymentAmount.toString());
-        formData.append("transferImage", transferImage);
+        formData.append("amount", paymentAmount.toString())
+        formData.append("bankReceipt", transferImage)
         const userToken = localStorage.getItem("token");
 
         const response = await fetch(
