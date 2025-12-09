@@ -751,17 +751,27 @@ export function V7ShipmentCard({
                   [
                     "الأبعاد",
                     (() => {
-                      const dim = shipment.dimension;
+                      const dim =
+                        shipment?.dimension ||
+                        shipment?.orderId?.dimension ||
+                        shipment?.orderId?.box_dimensions;
                       if (!dim) return "-";
 
-                      const length = dim.length ?? dim.height;
-                      const width = dim.width;
-                      const height = dim.high ?? dim.height;
+                      const getNum = (v: any) =>
+                        typeof v === "string" ? Number(v) : v;
+                      const length = getNum(
+                        dim.length ?? dim.Length ?? dim.long ?? dim.Long ?? dim.height
+                      );
+                      const width = getNum(dim.width ?? dim.Width ?? dim.wide ?? dim.Wide);
+                      const height = getNum(dim.height ?? dim.Height ?? dim.high ?? dim.High);
 
                       if (
                         typeof length === "number" &&
                         typeof width === "number" &&
                         typeof height === "number" &&
+                        isFinite(length) &&
+                        isFinite(width) &&
+                        isFinite(height) &&
                         length > 0 &&
                         width > 0 &&
                         height > 0
@@ -814,12 +824,32 @@ export function V7ShipmentCard({
                 {[
                   [
                     "الاسم",
-                    `${shipment.receiverAddress?.clientName || ""}`.trim(),
+                    shipment?.receiverAddress?.clientName ||
+                      shipment?.orderId?.clientAddress?.clientName ||
+                      shipment?.orderId?.customer?.full_name ||
+                      "",
                   ],
-
-                  ["الهاتف", shipment.receiverAddress?.clientPhone || ""],
-                  ["العنوان", shipment.receiverAddress?.clientAddress || ""],
-                  ["المدينة", shipment.receiverAddress?.city || ""],
+                  [
+                    "الهاتف",
+                    shipment?.receiverAddress?.clientPhone ||
+                      shipment?.orderId?.clientAddress?.clientPhone ||
+                      shipment?.orderId?.customer?.mobile ||
+                      "",
+                  ],
+                  [
+                    "العنوان",
+                    shipment?.receiverAddress?.clientAddress ||
+                      shipment?.orderId?.clientAddress?.clientAddress ||
+                      shipment?.orderId?.customer?.address ||
+                      "",
+                  ],
+                  [
+                    "المدينة",
+                    shipment?.receiverAddress?.city ||
+                      shipment?.orderId?.clientAddress?.city ||
+                      shipment?.orderId?.customer?.city ||
+                      "",
+                  ],
                 ].map(([label, value]) =>
                   (typeof value === "string" || typeof value === "number") &&
                   value !== undefined &&

@@ -211,6 +211,18 @@ export const shipmentApi = createApi({
       invalidatesTags: ["Shipment"],
     }),
 
+    printShipmentInvoice: builder.mutation<any, { company: string; trackingNumber: string }>(
+      {
+        query: ({ company, trackingNumber }) => ({
+          url: `/shipment/printShipmentInvoice`,
+          method: "POST",
+          body: { company, trackingNumber },
+          credentials: "include",
+        }),
+        invalidatesTags: ["Shipment"],
+      }
+    ),
+
     // إضافة endpoint لشركات الشحن
     getAllShipmentCompanies: builder.query<ShipmentCompany[], void>({
       query: () => ({
@@ -282,4 +294,5 @@ export const {
   useGetAllShipmentCompaniesQuery,
   useGetShipmentCompanyInfoQuery,
   useGetSMSAOfficesQuery,
+  usePrintShipmentInvoiceMutation,
 } = shipmentApi;

@@ -193,23 +193,23 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
     }
   }, [hasErrors, isMainDataLoading, retryCount]);
 
-  const companiesWithTypes = (shipmentCompanyInfo || []).flatMap(
-    (company: any) =>
-      company.shippingTypes.map((shippingType: any) => {
-        let displayName = company.name;
-
-        // إذا سمسا وDry خليها سمسا برو
-        if (company.name === "smsa" && shippingType.type === "Dry") {
-          displayName = "smsa Pro"; // أو أي اسم آخر حسب واجهتك
-        }
-
-        return {
-          ...company,
-          companyName: displayName, // استخدم هذا الاسم للعرض
-          shippingType,
-        };
+  const companiesWithTypes = Array.isArray(shipmentCompanyInfo)
+    ? shipmentCompanyInfo.flatMap((company: any) => {
+        const types = company.shippingTypes ?? company.shipmentType ?? [];
+        const baseName = company.name ?? company.company ?? company.companyName ?? "";
+        return types.map((shippingType: any) => {
+          let displayName = baseName;
+          if ((baseName || "").toLowerCase() === "smsa" && shippingType?.type === "Dry") {
+            displayName = "smsa Pro";
+          }
+          return {
+            ...company,
+            companyName: displayName,
+            shippingType,
+          };
+        });
       })
-  );
+    : [];
   const priorityOrder = ["smsa Pro", "aramex", "smsa", "redbox", "omniclama"];
 
   const sortedCompanies = companiesWithTypes.sort((a: any, b: any) => {
@@ -220,6 +220,23 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
       (aIndex === -1 ? Infinity : aIndex) - (bIndex === -1 ? Infinity : bIndex)
     );
   });
+
+  const getTypePrice = (st: any) => {
+    const p = st?.price;
+    if (typeof p === "number") return p;
+    if (typeof p === "string" && p.trim() !== "") {
+      const n = Number(p);
+      if (!Number.isNaN(n)) return n;
+    }
+    const base = Number(st?.basePrice ?? 0);
+    const profit = Number(st?.profitPrice ?? 0);
+    const tax = Number(st?.priceaddedtax ?? 0);
+    let total = base + profit;
+    if (!Number.isNaN(tax) && tax > 0) {
+      total = tax < 1 ? total * (1 + tax) : total + tax;
+    }
+    return total;
+  };
 
   // عرض حالة التحميل
   if (isMainDataLoading) {
@@ -450,27 +467,23 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
                 <div className="  grid  grid-cols-1 md:grid-cols-2 gap-4  w-full">
                   {sortedCompanies.map((company: any, idx: number) => {
                     const isLast = idx === companiesWithTypes.length - 1;
-                    const name = company.name?.toLowerCase() || "";
+                    const keyName = (
+                      company.company ?? company.name ?? company.companyName ?? ""
+                    )
+                      .toString()
+                      .toLowerCase();
                     let imgSrc = "/placeholder-logo.png";
-                    if (name.includes("aramex"))
-                      imgSrc = "/companies/araMex.png";
-                    else if (name.includes("smsa"))
-                      imgSrc = "/companies/smsa.jpg";
-                    else if (name.includes("imile"))
-                      imgSrc = "/carriers/imile-logo.png";
-                    else if (name.includes("fedex"))
-                      imgSrc = "/carriers/fedex-logo.png";
-                    else if (name.includes("dhl"))
-                      imgSrc = "/carriers/dhl-logo.png";
-                    else if (name.includes("ups"))
-                      imgSrc = "/carriers/ups-logo.png";
-                    else if (name.includes("redbox"))
-                      imgSrc = "/companies/redBox.png";
-                    else if (name.includes("omniclama"))
-                      imgSrc = "/companies/lamaBox.png";
+                    if (keyName.includes("aramex")) imgSrc = "/companies/araMex.png";
+                    else if (keyName.includes("smsa")) imgSrc = "/companies/smsa.jpg";
+                    else if (keyName.includes("imile")) imgSrc = "/carriers/imile-logo.png";
+                    else if (keyName.includes("fedex")) imgSrc = "/carriers/fedex-logo.png";
+                    else if (keyName.includes("dhl")) imgSrc = "/carriers/dhl-logo.png";
+                    else if (keyName.includes("ups")) imgSrc = "/carriers/ups-logo.png";
+                    else if (keyName.includes("redbox")) imgSrc = "/companies/redBox.png";
+                    else if (keyName.includes("omniclama")) imgSrc = "/companies/lamaBox.png";
                     return (
                       <div
-                        key={company.name + idx}
+                        key={`${(company.company ?? company.name ?? company.companyName ?? "company").toString()}-${idx}`}
                         className={`shadow-md rounded-lg p-4 flex flex-col items-center gap-2 bg-white/30 flex-1
                           ${isLast ? "md:col-span-2" : "flex-1"}
                           `}
@@ -496,14 +509,12 @@ export function HomeContent({ theme = "light" }: { theme?: "light" | "dark" }) {
                               className=" text-center border-b last:border-b-0 text-lg"
                             >
                               <span className="font-bold text-[#3498db] flex items-center">
-                                {/* {company.shippingType.price} */}
-                                {Number.isInteger(company.shippingType.price)
-                                  ? company.shippingType.price
-                                      .toString()
-                                      .slice(0, 4)
-                                  : parseFloat(
-                                      company.shippingType.price.toPrecision(4)
-                                    )}
+                                {(() => {
+                                  const p = getTypePrice(company.shippingType);
+                                  return Number.isInteger(p)
+                                    ? p.toString()
+                                    : parseFloat(p.toPrecision(4));
+                                })()}
                                 <Image
                                   alt="real"
                                   src={RealBlue}

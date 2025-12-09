@@ -5,11 +5,13 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Menu, X } from "lucide-react";
 
 export function ModernHeader() {
   const router = useRouter();
   const pathname = usePathname();
   const [loading, setLoading] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleSignup = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -28,20 +30,34 @@ export function ModernHeader() {
   }, []);
 
   return (
-    <nav  className={` v7-neu-header-home sm:py-1 px-16 py-2   mx-auto  fixed sm:left-1/2  sm:-translate-x-1/2   z-50 bg-white/10 backdrop-blur-md border-b border-white/20  transform transition-transform duration-700 ease-in-out  scale-105
-    ${
-          isSmall ? "sm:min-w-[65rem] min-w-[20rem]     top-4  rounded-full  mx-auto  " : "  w-full     top-0  "
-        }
-    `}>
-      <div className={` mx-auto px-4  flex justify-between items-center transition-all duration-300`}>
+    <nav
+      className={`v7-neu-header-home fixed inset-x-0 top-0 z-50 w-full bg-transparent border-b border-white/20 backdrop-blur-md transform transition-all duration-500 ease-in-out py-2.5 px-4 sm:px-8 md:px-12 lg:px-16
+      ${isSmall ? "lg:min-w-[65rem] lg:top-4 lg:rounded-full" : "top-0"}
+    `}
+      style={{ WebkitTextSizeAdjust: "100%", WebkitTapHighlightColor: "transparent" }}
+    >
+      <div className={`relative max-w-screen-xl mx-auto flex items-center justify-center xl:justify-between transition-all duration-300`}>
 
-      {/* Right side: Navigation */}
-      <ul className={`flex items-center gap-6 text-black font-bold   text-lg `}>
-        <Link href="#" className=" hidden sm:block">الرئيسية</Link>
-        <Link href="#" className=" hidden sm:block">الأسعار</Link>
-        <Link href="#" className=" hidden sm:block">الشركاء</Link>
-        <Link href="#" className=" hidden sm:block">المدونة</Link>
-      </ul>
+      {/* Right side: Navigation / Hamburger */}
+      <div className="flex items-center gap-3 absolute left-3 top-1/2 -translate-y-1/2 xl:static xl:translate-y-0 xl:order-0 xl:flex-1 xl:justify-start">
+        <button
+          onClick={() => setMenuOpen((v) => !v)}
+          className="xl:hidden p-2 rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 transition-colors"
+          aria-label={menuOpen ? "إغلاق القائمة" : "فتح القائمة"}
+        >
+          {menuOpen ? (
+            <X className="w-6 h-6 text-black" />
+          ) : (
+            <Menu className="w-6 h-6 text-black" />
+          )}
+        </button>
+        <ul className="hidden xl:flex items-center gap-6 text-black font-bold text-lg">
+          <Link href="#">الرئيسية</Link>
+          <Link href="#">الأسعار</Link>
+          <Link href="#">الشركاء</Link>
+          <Link href="#">المدونة</Link>
+        </ul>
+      </div>
 
       {/* Center: Logo */}
       <Link 
@@ -59,13 +75,13 @@ export function ModernHeader() {
         <Image src="/logo.png" alt="MARASIL Logo" width={120} height={60} className=" w-full h-full object-contain" />
       </Link>
 
-      {/* Left side: Auth links */}
-      <div className="flex items-center gap-6">
+      {/* Left side: Auth links (desktop) */}
+      <div className="hidden xl:flex xl:flex-1 items-center justify-end gap-6">
         <Link href="/login" className="text-black font-bold sm:text-lg text-sm">
           تسجيل دخول
         </Link>
         <Button
-          className=" hidden sm:block font-medium sm:text-base text-sm rounded-lg  px-6 py-3 bg-[#0F2F55] hover:bg-[#0F2F55]/90 text-white  transition-colors sm:min-w-[140px] shadow"
+          className=" font-medium sm:text-base text-sm rounded-lg  px-6 py-3 bg-[#0F2F55] hover:bg-[#0F2F55]/90 text-white  transition-colors sm:min-w-[140px] shadow"
           onClick={handleSignup}
           disabled={loading}
           >
@@ -99,6 +115,44 @@ export function ModernHeader() {
         </Button>
       </div>
           </div>
+
+      {/* Mobile/Tablet dropdown menu under header + blurred backdrop */}
+      {menuOpen && (
+        <>
+          {/* Blurred overlay to dim the background */}
+          <div
+            className="fixed inset-0 z-40 bg-transparent backdrop-blur-sm xl:hidden"
+            onClick={() => setMenuOpen(false)}
+          />
+          {/* Dropdown panel */}
+          <div className="absolute inset-x-0 top-full z-50 xl:hidden">
+            <div className="w-full px-0">
+              <div className="rounded-b-2xl border border-white/10 border-t-0 bg-white/5 backdrop-blur-sm shadow-xl overflow-hidden">
+                <div className="px-6 py-4">
+                  <nav className="flex flex-col items-center text-center divide-y divide-white/5 text-black">
+                    <Link className="py-3 font-bold text-base" href="#" onClick={() => setMenuOpen(false)}>الرئيسية</Link>
+                    <Link className="py-3 font-bold text-base" href="#" onClick={() => setMenuOpen(false)}>الأسعار</Link>
+                    <Link className="py-3 font-bold text-base" href="#" onClick={() => setMenuOpen(false)}>الشركاء</Link>
+                    <Link className="py-3 font-bold text-base" href="#" onClick={() => setMenuOpen(false)}>المدونة</Link>
+                  </nav>
+                  <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
+                    <Link href="/login" className="text-black font-bold" onClick={() => setMenuOpen(false)}>
+                      تسجيل دخول
+                    </Link>
+                    <Button
+                      className="font-medium rounded-lg px-6 py-3 bg-[#0F2F55] hover:bg-[#0F2F55]/90 text-white transition-colors shadow"
+                      onClick={(e) => { setMenuOpen(false); handleSignup(e as any); }}
+                      disabled={loading}
+                    >
+                      {loading ? "..." : "للتسجيل مجانًا"}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </nav>
   );
 }
