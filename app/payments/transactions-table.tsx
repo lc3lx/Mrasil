@@ -70,25 +70,25 @@ function getMethodIcon(method: string) {
 function getMethodLabel(method: string) {
   switch (method) {
     case "moyasar":
-      return "شحن المحفظة";
+      return "شحن المحفظة عبر البطاقة";
     case "shipment_payment":
-      return "دفع شحنة";
+      return "دفع تكلفة الشحنة";
     case "shipment_cancel_refund":
-      return "استرجاع إلغاء شحنة";
+      return "استرجاع مبلغ إلغاء الشحنة";
     case "return_shipment":
-      return "شحنة إرجاع";
+      return "دفع تكلفة شحنة الإرجاع";
     case "return_shipment_refund":
-      return "استرجاع شحنة إرجاع";
+      return "استرجاع مبلغ شحنة الإرجاع";
     case "coupon_credit":
-      return "قسيمة خصم";
+      return "استخدام قسيمة الخصم";
     case "admin_credit":
-      return "إضافة من الإدارة";
+      return "إضافة رصيد من الإدارة";
     case "admin_debit":
-      return "خصم من الإدارة";
+      return "خصم رصيد من الإدارة";
     case "manual_addition":
-      return "إضافة يدوية";
+      return "إضافة رصيد يدوياً";
     case "manual_removal":
-      return "خصم يدوي";
+      return "خصم رصيد يدوياً";
     default:
       return method;
   }
@@ -96,6 +96,12 @@ function getMethodLabel(method: string) {
 
 export function TransactionsTable() {
   const { data, isLoading, isError } = useGetMyTransactionsQuery();
+
+  // ترتيب المعاملات من الأحدث إلى الأقدم
+  const sortedTransactions =
+    data?.data?.slice().sort((a: any, b: any) => {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    }) || [];
   const [updateTransactionStatus] = useUpdateTransactionStatusMutation();
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMsg, setModalMsg] = useState("");
@@ -202,164 +208,174 @@ export function TransactionsTable() {
                   </td>
                 </tr>
               )}
-              {data &&
-                data.data &&
-                data.data.length === 0 &&
-                !isLoading &&
-                !isError && (
-                  <tr>
-                    <td colSpan={8} className="text-center py-6">
-                      لا توجد معاملات
+              {sortedTransactions.length === 0 && !isLoading && !isError && (
+                <tr>
+                  <td colSpan={8} className="text-center py-6">
+                    لا توجد معاملات
+                  </td>
+                </tr>
+              )}
+              {sortedTransactions.map((trx: any) => (
+                <>
+                  <tr
+                    key={trx._id}
+                    className={`border-b border-gray-200 dark:border-gray-700 hover:bg-[#f0f4f8] dark:hover:bg-gray-700 ${
+                      trx.type === "debit" ? "bg-red-50 dark:bg-red-950/20" : ""
+                    }`}
+                  >
+                    <td className="py-3 px-4 text-[#3498db] dark:text-blue-400 font-mono text-sm">
+                      {trx._id.slice(-8)}
                     </td>
-                  </tr>
-                )}
-              {data &&
-                data.data &&
-                data.data.map((trx) => (
-                  <>
-                    <tr
-                      key={trx._id}
-                      className="border-b border-gray-200 dark:border-gray-700 hover:bg-[#f0f4f8] dark:hover:bg-gray-700"
-                    >
-                      <td className="py-3 px-4 text-[#3498db] dark:text-blue-400 font-mono text-sm">
-                        {trx._id.slice(-8)}
-                      </td>
-                      <td className="py-3 px-4 text-muted-foreground dark:text-gray-400">
-                        {new Date(trx.createdAt).toLocaleDateString("ar-EG")}
-                      </td>
-                      <td className="py-3 px-4">
-                        <Badge
-                          variant={
-                            trx.type === "credit" ? "default" : "destructive"
-                          }
-                          className="text-xs"
-                        >
-                          {trx.type === "credit" ? "إيداع" : "سحب"}
-                        </Badge>
-                      </td>
-                      <td className="py-3 px-4">
-                        <div className="flex items-center gap-2">
-                          <span className="text-lg">
-                            {getMethodIcon(trx.method)}
-                          </span>
-                          <span className="text-sm text-muted-foreground dark:text-gray-400">
-                            {getMethodLabel(trx.method)}
-                          </span>
-                        </div>
-                      </td>
-                      <td
-                        className={
-                          trx.amount > 0
-                            ? "py-3 px-4 text-green-600 dark:text-green-400 font-semibold"
-                            : "py-3 px-4 text-red-600 dark:text-red-400 font-semibold"
+                    <td className="py-3 px-4 text-muted-foreground dark:text-gray-400">
+                      {new Date(trx.createdAt).toLocaleDateString("ar-EG")}
+                    </td>
+                    <td className="py-3 px-4">
+                      <Badge
+                        variant={
+                          trx.type === "credit" ? "default" : "destructive"
                         }
+                        className={`text-xs font-semibold px-3 py-1 ${
+                          trx.type === "credit"
+                            ? "bg-green-100 text-green-800 hover:bg-green-200"
+                            : "bg-red-100 text-red-800 hover:bg-red-200 border-red-300"
+                        }`}
                       >
-                        {trx.amount > 0 ? "+" : ""}
-                        {trx.amount.toLocaleString()} ريال
-                      </td>
-                      <td className="py-3 px-4">
-                        <span
-                          className={`inline-block px-2 py-1 rounded-full text-xs ${getStatusBadgeClass(
-                            trx.status
-                          )}`}
-                        >
-                          {trx.status === "completed"
-                            ? "مكتمل"
-                            : trx.status === "pending"
-                            ? "قيد الانتظار"
-                            : trx.status === "failed"
-                            ? "فشل"
-                            : trx.status}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4">
-                        {trx.referenceId ? (
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs text-muted-foreground dark:text-gray-400 font-mono">
-                              {trx.referenceId.slice(-8)}
-                            </span>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="h-6 w-6 p-0"
-                            >
-                              <ExternalLink className="h-3 w-3" />
-                            </Button>
-                          </div>
+                        {trx.type === "credit" ? (
+                          <span className="flex items-center gap-1">
+                            <span>↓</span>
+                            إيداع
+                          </span>
                         ) : (
-                          <span className="text-xs text-muted-foreground dark:text-gray-400">
-                            -
+                          <span className="flex items-center gap-1">
+                            <span>↑</span>
+                            سحب
                           </span>
                         )}
-                      </td>
-                      <td className="py-3 px-4">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => toggleRowExpansion(trx._id)}
-                          className="h-8 w-8 p-0"
-                        >
-                          {expandedRows[trx._id] ? (
-                            <ChevronUp className="h-4 w-4" />
-                          ) : (
-                            <ChevronDown className="h-4 w-4" />
-                          )}
-                        </Button>
-                      </td>
-                    </tr>
-                    {expandedRows[trx._id] && (
-                      <tr>
-                        <td colSpan={8} className="p-0">
-                          <Card className="m-4 bg-gray-50 dark:bg-gray-900">
-                            <CardContent className="p-4">
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                  <h4 className="font-semibold text-sm mb-2">
-                                    تفاصيل المعاملة
-                                  </h4>
-                                  <p className="text-sm text-muted-foreground dark:text-gray-400">
-                                    {trx.description || "لا يوجد وصف"}
-                                  </p>
-                                </div>
-                                <div>
-                                  <h4 className="font-semibold text-sm mb-2">
-                                    معلومات إضافية
-                                  </h4>
-                                  <div className="space-y-1 text-sm">
-                                    <div>
-                                      <span className="text-muted-foreground dark:text-gray-400">
-                                        نوع المرجع:
-                                      </span>
-                                      <span className="mr-2">
-                                        {trx.referenceType || "غير محدد"}
-                                      </span>
-                                    </div>
-                                    <div>
-                                      <span className="text-muted-foreground dark:text-gray-400">
-                                        طريقة الدفع:
-                                      </span>
-                                      <span className="mr-2">{trx.method}</span>
-                                    </div>
-                                    <div>
-                                      <span className="text-muted-foreground dark:text-gray-400">
-                                        تاريخ الإنشاء:
-                                      </span>
-                                      <span className="mr-2">
-                                        {new Date(trx.createdAt).toLocaleString(
-                                          "ar-EG"
-                                        )}
-                                      </span>
-                                    </div>
+                      </Badge>
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">
+                          {getMethodIcon(trx.method)}
+                        </span>
+                        <span className="text-sm text-muted-foreground dark:text-gray-400">
+                          {getMethodLabel(trx.method)}
+                        </span>
+                      </div>
+                    </td>
+                    <td
+                      className={
+                        trx.type === "debit"
+                          ? "py-3 px-4 text-red-700 dark:text-red-400 font-bold bg-red-50 dark:bg-red-950/20 rounded-lg"
+                          : "py-3 px-4 text-green-700 dark:text-green-400 font-bold bg-green-50 dark:bg-green-950/20 rounded-lg"
+                      }
+                    >
+                      {trx.type === "debit" ? "-" : "+"}
+                      {Math.abs(trx.amount).toLocaleString()} ريال
+                    </td>
+                    <td className="py-3 px-4">
+                      <span
+                        className={`inline-block px-2 py-1 rounded-full text-xs ${getStatusBadgeClass(
+                          trx.status
+                        )}`}
+                      >
+                        {trx.status === "completed"
+                          ? "مكتمل"
+                          : trx.status === "pending"
+                          ? "قيد الانتظار"
+                          : trx.status === "failed"
+                          ? "فشل"
+                          : trx.status}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4">
+                      {trx.referenceId ? (
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-muted-foreground dark:text-gray-400 font-mono">
+                            {trx.referenceId.slice(-8)}
+                          </span>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-6 w-6 p-0"
+                          >
+                            <ExternalLink className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <span className="text-xs text-muted-foreground dark:text-gray-400">
+                          -
+                        </span>
+                      )}
+                    </td>
+                    <td className="py-3 px-4">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => toggleRowExpansion(trx._id)}
+                        className="h-8 w-8 p-0"
+                      >
+                        {expandedRows[trx._id] ? (
+                          <ChevronUp className="h-4 w-4" />
+                        ) : (
+                          <ChevronDown className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </td>
+                  </tr>
+                  {expandedRows[trx._id] && (
+                    <tr>
+                      <td colSpan={8} className="p-0">
+                        <Card className="m-4 bg-gray-50 dark:bg-gray-900">
+                          <CardContent className="p-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div>
+                                <h4 className="font-semibold text-sm mb-2">
+                                  تفاصيل المعاملة
+                                </h4>
+                                <p className="text-sm text-muted-foreground dark:text-gray-400">
+                                  {trx.description || "لا يوجد وصف"}
+                                </p>
+                              </div>
+                              <div>
+                                <h4 className="font-semibold text-sm mb-2">
+                                  معلومات إضافية
+                                </h4>
+                                <div className="space-y-1 text-sm">
+                                  <div>
+                                    <span className="text-muted-foreground dark:text-gray-400">
+                                      نوع المرجع:
+                                    </span>
+                                    <span className="mr-2">
+                                      {trx.referenceType || "غير محدد"}
+                                    </span>
+                                  </div>
+                                  <div>
+                                    <span className="text-muted-foreground dark:text-gray-400">
+                                      طريقة الدفع:
+                                    </span>
+                                    <span className="mr-2">{trx.method}</span>
+                                  </div>
+                                  <div>
+                                    <span className="text-muted-foreground dark:text-gray-400">
+                                      تاريخ الإنشاء:
+                                    </span>
+                                    <span className="mr-2">
+                                      {new Date(trx.createdAt).toLocaleString(
+                                        "ar-EG"
+                                      )}
+                                    </span>
                                   </div>
                                 </div>
                               </div>
-                            </CardContent>
-                          </Card>
-                        </td>
-                      </tr>
-                    )}
-                  </>
-                ))}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </td>
+                    </tr>
+                  )}
+                </>
+              ))}
             </tbody>
           </table>
         </div>
