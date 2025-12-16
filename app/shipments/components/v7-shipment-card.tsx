@@ -1,5 +1,8 @@
 "use client";
-import { useCancelShipmentMutation } from "@/app/api/shipmentApi";
+import {
+  useCancelShipmentMutation,
+  usePrintShipmentInvoiceMutation,
+} from "@/app/api/shipmentApi";
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -41,7 +44,9 @@ const CancelToast = ({
 
   return (
     <>
-      <div className={`cancel-toast-container success ${closing ? "closing" : ""}`}>
+      <div
+        className={`cancel-toast-container success ${closing ? "closing" : ""}`}
+      >
         <div className="cancel-toast__icon-wrapper">
           <div className="cancel-toast__icon" />
         </div>
@@ -51,7 +56,11 @@ const CancelToast = ({
             تم إلغاء الشحنة رقم <strong>{trackingNumber}</strong> بنجاح
           </p>
         </div>
-        <button className="cancel-toast__close" onClick={handleClose} aria-label="إغلاق الإشعار" />
+        <button
+          className="cancel-toast__close"
+          onClick={handleClose}
+          aria-label="إغلاق الإشعار"
+        />
         <div className="cancel-toast__timer timer-animation" />
       </div>
       <style jsx global>{`
@@ -487,6 +496,120 @@ export function V7ShipmentCard({
 
   // Inside the V7ShipmentCard component, add this:
   const [cancelShipment] = useCancelShipmentMutation();
+  const [printShipmentInvoice, { isLoading: isPrintingInvoice }] =
+    usePrintShipmentInvoiceMutation();
+
+  const handlePrintInvoice = async () => {
+    // التحقق من وجود عنوان المستلم
+    const hasReceiverAddress =
+      shipment?.receiverAddress?.clientName ||
+      shipment?.receiverAddress?.clientPhone ||
+      shipment?.receiverAddress?.clientAddress ||
+      shipment?.orderId?.clientAddress?.clientName ||
+      shipment?.orderId?.clientAddress?.clientPhone ||
+      shipment?.orderId?.clientAddress?.clientAddress;
+
+    if (!hasReceiverAddress) {
+      toast.error("يجب اختيار عنوان المستلم أولاً", {
+        description: "ثم ستتمكن من طباعة البوليصة",
+        duration: 5000,
+      });
+      return;
+    }
+
+    try {
+      const result = await printShipmentInvoice({
+        company: shipment.shapmentCompany?.toLowerCase() || "",
+        trackingNumber: trackingNumber,
+      }).unwrap();
+
+      // التحقق من وجود البوليصة في الاستجابة
+      if (result?.status === "success" && result?.data) {
+        const invoiceData = result.data;
+
+        // استخراج label_link من print_results (OmniLama)
+        let labelUrl = null;
+
+        // إذا كانت الاستجابة تحتوي على print_results
+        if (
+          invoiceData?.print_results &&
+          Array.isArray(invoiceData.print_results) &&
+          invoiceData.print_results.length > 0
+        ) {
+          const firstResult = invoiceData.print_results[0];
+          if (firstResult?.label_link) {
+            labelUrl = firstResult.label_link;
+          }
+        }
+
+        // إذا كانت البوليصة base64 (SMSA)
+        if (
+          typeof invoiceData === "string" &&
+          invoiceData.startsWith("data:application/pdf")
+        ) {
+          downloadBase64File(invoiceData, `invoice-${trackingNumber}.pdf`);
+        } else if (typeof invoiceData === "string") {
+          // إذا كانت base64 بدون prefix
+          const base64Data = invoiceData.includes(",")
+            ? invoiceData
+            : `data:application/pdf;base64,${invoiceData}`;
+          downloadBase64File(base64Data, `invoice-${trackingNumber}.pdf`);
+        } else if (labelUrl) {
+          // إذا كان label_link موجود (OmniLama)
+          window.open(labelUrl, "_blank");
+          toast.success("تم فتح البوليصة", {
+            description: "تم فتح البوليصة في نافذة جديدة",
+            duration: 3000,
+          });
+        } else if (
+          invoiceData?.url ||
+          invoiceData?.label ||
+          invoiceData?.label_link
+        ) {
+          // إذا كانت رابط مباشر
+          const url =
+            invoiceData.url || invoiceData.label || invoiceData.label_link;
+          window.open(url, "_blank");
+        } else {
+          toast.success("تم جلب البوليصة بنجاح", {
+            description: "جاري فتح البوليصة...",
+            duration: 3000,
+          });
+        }
+      } else if (result?.status === "pending") {
+        toast.info("البوليصة قيد المعالجة", {
+          description: result?.message || "سيتم إعادة المحاولة لاحقاً",
+          duration: 5000,
+        });
+      } else {
+        toast.error("فشل في جلب البوليصة", {
+          description: result?.message || "يرجى المحاولة مرة أخرى",
+          duration: 5000,
+        });
+      }
+    } catch (error: any) {
+      console.error("Failed to print invoice:", error);
+      const errorMessage =
+        error?.data?.message || error?.message || "حدث خطأ أثناء طلب البوليصة";
+
+      // التحقق من رسالة الخطأ الخاصة بعدم وجود عنوان المستلم
+      if (
+        errorMessage.includes("عنوان") ||
+        errorMessage.includes("address") ||
+        errorMessage.includes("receiver")
+      ) {
+        toast.error("يجب اختيار عنوان المستلم أولاً", {
+          description: "ثم ستتمكن من طباعة البوليصة",
+          duration: 5000,
+        });
+      } else {
+        toast.error("فشل في طلب البوليصة", {
+          description: errorMessage,
+          duration: 5000,
+        });
+      }
+    }
+  };
 
   const handleCancelShipment = async () => {
     if (isCancelling) return; // منع النقر المتعدد
@@ -501,7 +624,10 @@ export function V7ShipmentCard({
 
       toast.custom(
         (t) => (
-          <CancelToast trackingNumber={trackingNumber} onClose={() => toast.dismiss(t)} />
+          <CancelToast
+            trackingNumber={trackingNumber}
+            onClose={() => toast.dismiss(t)}
+          />
         ),
         {
           duration: 6000,
@@ -636,6 +762,28 @@ export function V7ShipmentCard({
               </Button>
             </Link>
 
+            {/* زر طباعة البوليصة */}
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full v7-neu-button-sm group h-8 text-xs flex items-center justify-center gap-x-2"
+              onClick={handlePrintInvoice}
+              disabled={isPrintingInvoice}
+            >
+              {isPrintingInvoice ? (
+                <>
+                  <div className="h-4 w-4 border-2 border-[#3498db] border-t-transparent rounded-full animate-spin" />
+                  <span className="sr-only sm:not-sr-only">جاري الطلب...</span>
+                </>
+              ) : (
+                <>
+                  <Printer className="h-4 w-4 group-hover:text-[#3498db] transition-colors" />
+                  <span className="sr-only sm:not-sr-only">طباعة البوليصة</span>
+                </>
+              )}
+            </Button>
+
+            {/* زر تحميل البوليصة (إذا كانت موجودة) */}
             {labelUrl ? (
               carrierInfo.name.toLowerCase() === "smsa" ? (
                 shipment?.smsaResponse?.label && (
@@ -677,17 +825,7 @@ export function V7ShipmentCard({
                   </Button>
                 </a>
               )
-            ) : (
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full  v7-neu-button-sm group h-8 text-xs flex items-center justify-center gap-x-2 opacity-50 cursor-not-allowed"
-                disabled
-              >
-                <Printer className="h-4 w-4" />
-                <span className="sr-only sm:not-sr-only">تحميل البوليصة</span>
-              </Button>
-            )}
+            ) : null}
 
             {shipment.shipmentstates === "Delivered" ? (
               <Button
@@ -760,10 +898,18 @@ export function V7ShipmentCard({
                       const getNum = (v: any) =>
                         typeof v === "string" ? Number(v) : v;
                       const length = getNum(
-                        dim.length ?? dim.Length ?? dim.long ?? dim.Long ?? dim.height
+                        dim.length ??
+                          dim.Length ??
+                          dim.long ??
+                          dim.Long ??
+                          dim.height
                       );
-                      const width = getNum(dim.width ?? dim.Width ?? dim.wide ?? dim.Wide);
-                      const height = getNum(dim.height ?? dim.Height ?? dim.high ?? dim.High);
+                      const width = getNum(
+                        dim.width ?? dim.Width ?? dim.wide ?? dim.Wide
+                      );
+                      const height = getNum(
+                        dim.height ?? dim.Height ?? dim.high ?? dim.High
+                      );
 
                       if (
                         typeof length === "number" &&

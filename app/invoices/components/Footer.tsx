@@ -16,23 +16,51 @@ export function Footer() {
               <FaFacebookF />
             </a>
           </li> */}
-          <li style={{ "--clr": "#1da1f2" } as React.CSSProperties} className=" w-[34px] h-[34px] sm:w-[80px] sm:h-[80px]">
-            <a href="#" aria-label="Twitter/X" className="w-[34px] h-[34px] sm:w-[80px] sm:h-[80px]">
+          <li
+            style={{ "--clr": "#1da1f2" } as React.CSSProperties}
+            className=" w-[34px] h-[34px] sm:w-[80px] sm:h-[80px]"
+          >
+            <a
+              href="https://x.com/marasil_company"
+              aria-label="Twitter/X"
+              className="w-[34px] h-[34px] sm:w-[80px] sm:h-[80px]"
+            >
               <FaTwitter />
             </a>
           </li>
-          <li style={{ "--clr": "#c32aa3" } as React.CSSProperties} className=" w-[34px] h-[34px] sm:w-[80px] sm:h-[80px]">
-            <a href="#" aria-label="Instagram" className=" w-[34px] h-[34px] sm:w-[80px] sm:h-[80px]">
+          <li
+            style={{ "--clr": "#c32aa3" } as React.CSSProperties}
+            className=" w-[34px] h-[34px] sm:w-[80px] sm:h-[80px]"
+          >
+            <a
+              href="https://www.instagram.com/marasil.company?igsh=MWY4b3psbWZwaHV5eg=="
+              aria-label="Instagram"
+              className=" w-[34px] h-[34px] sm:w-[80px] sm:h-[80px]"
+            >
               <FaInstagram />
             </a>
           </li>
-          <li style={{ "--clr": "#ff0000" } as React.CSSProperties} className="w-[34px] h-[34px] sm:w-[80px] sm:h-[80px]">
-            <a href="#" aria-label="YouTube" className=" w-[34px] h-[34px] sm:w-[80px] sm:h-[80px]">
+          <li
+            style={{ "--clr": "#ff0000" } as React.CSSProperties}
+            className="w-[34px] h-[34px] sm:w-[80px] sm:h-[80px]"
+          >
+            <a
+              href="#"
+              aria-label="YouTube"
+              className=" w-[34px] h-[34px] sm:w-[80px] sm:h-[80px]"
+            >
               <FaYoutube />
             </a>
           </li>
-          <li style={{ "--clr": "#25d366" } as React.CSSProperties} className=" w-[34px] h-[34px] sm:w-[80px] sm:h-[80px]">
-            <a href="#" aria-label="WhatsApp" className="w-[34px] h-[34px] sm:w-[80px] sm:h-[80px]">
+          <li
+            style={{ "--clr": "#25d366" } as React.CSSProperties}
+            className=" w-[34px] h-[34px] sm:w-[80px] sm:h-[80px]"
+          >
+            <a
+              href="https://wa.me/966500556618"
+              aria-label="WhatsApp"
+              className="w-[34px] h-[34px] sm:w-[80px] sm:h-[80px]"
+            >
               <FaWhatsapp />
             </a>
           </li>
@@ -47,7 +75,7 @@ export function Footer() {
           .footer-icons {
             position: relative;
             display: flex;
-            flex-wrap:wrap;
+            flex-wrap: wrap;
             gap: 50px;
             padding: 0;
             margin: 0;
