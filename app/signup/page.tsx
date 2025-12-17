@@ -114,10 +114,18 @@ export default function SignupPage() {
     }
 
     try {
-      // Prepare data for API (exclude confirmPassword from request body)
-      const { confirmPassword, ...signupData } = formData;
+      // Ensure all required fields are present
+      if (!formData.confirmPassword) {
+        setModalMessage("يرجى إدخال تأكيد كلمة المرور");
+        setModalOpen(true);
+        return;
+      }
 
-      console.log("Signup form data being sent:", signupData);
+      console.log("Signup form data being sent:", {
+        ...formData,
+        password: "[HIDDEN]",
+        confirmPassword: "[HIDDEN]",
+      });
 
       await signup(formData).unwrap();
       toast.success("تم إنشاء الحساب بنجاح! الرجاء تسجيل الدخول.");

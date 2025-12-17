@@ -1,4 +1,4 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { API_BASE_URL } from "@/lib/constants";
 
 // Define types for all requests and responses
@@ -42,13 +42,13 @@ export interface AuthResponse {
 
 // Create the auth API slice
 export const authApi = createApi({
-  reducerPath: 'authApi',
+  reducerPath: "authApi",
   baseQuery: fetchBaseQuery({
     baseUrl: API_BASE_URL,
     prepareHeaders: (headers) => {
       // إضافة Content-Type للطلبات
-      headers.set('Content-Type', 'application/json');
-      
+      headers.set("Content-Type", "application/json");
+
       // إضافة التوكين إذا كان موجود
       const token = localStorage.getItem("token");
       if (token) {
@@ -61,45 +61,49 @@ export const authApi = createApi({
   endpoints: (builder) => ({
     signup: builder.mutation<AuthResponse, SignupRequest>({
       query: (userData: SignupRequest) => {
-        // Exclude confirmPassword from the request body
-        const { confirmPassword, ...signupData } = userData;
         return {
-          url: '/auth/signup',
-          method: 'POST',
-          body: signupData,
+          url: "/auth/signup",
+          method: "POST",
+          body: userData,
         };
       },
     }),
     login: builder.mutation<AuthResponse, LoginRequest>({
       query: (credentials: LoginRequest) => ({
-        url: '/auth/login',
-        method: 'POST',
+        url: "/auth/login",
+        method: "POST",
         body: credentials,
       }),
     }),
-    forgotPassword: builder.mutation<{ message: string }, ForgotPasswordRequest>({
+    forgotPassword: builder.mutation<
+      { message: string },
+      ForgotPasswordRequest
+    >({
       query: (data: ForgotPasswordRequest) => ({
-        url: '/auth/forgotpassword',
-        method: 'POST',
+        url: "/auth/forgotpassword",
+        method: "POST",
         body: data,
       }),
     }),
-    verifyResetCode: builder.mutation<{ message: string }, VerifyResetCodeRequest>({
+    verifyResetCode: builder.mutation<
+      { message: string },
+      VerifyResetCodeRequest
+    >({
       query: (data: VerifyResetCodeRequest) => ({
-        url: '/auth/verfiypassword',
-        method: 'POST',
+        url: "/auth/verfiypassword",
+        method: "POST",
         body: { resetCode: data.resetCode },
         headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
+          Accept: "application/json",
+          "Content-Type": "application/json",
         },
-        credentials: 'include',
+        credentials: "include",
       }),
     }),
     resetPassword: builder.mutation<{ message: string }, ResetPasswordRequest>({
       query: (data: ResetPasswordRequest) => ({
-        url: '/auth/resetpassword',
-        method: 'PUT',
+        url: "/auth/resetpassword",
+        method: "PUT",
         body: data,
       }),
     }),
@@ -116,4 +120,4 @@ export const {
 } = authApi;
 
 // Export default for store configuration
-export default authApi; 
+export default authApi;
