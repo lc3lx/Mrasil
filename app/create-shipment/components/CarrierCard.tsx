@@ -23,6 +23,7 @@ import {
 export interface BoxSize {
   key?: string;
   label: string;
+  title?: string;
   length: number;
   width: number;
   height: number;
@@ -221,56 +222,64 @@ export default function CarrierCard({
         </div>
       </div>
 
-      {isSelected && boxSizes.length > 0 && (
+      {isSelected && (boxSizes.length > 0 || company.company === "smsa") && (
         <div className="mt-4">
           <h3 className="font-semibold text-lg mb-2">أحجام الصناديق</h3>
 
           <div className="flex items-center gap-4 flex-wrap">
-            {boxSizes.map((card, idx) => {
-              const selected = selectedBoxSize === card;
-              const key = card.key ?? `box-${idx}`;
-              return (
-                <motion.div
-                  key={key}
-                  className={`v7-neu-card-inner p-12 cursor-pointer w-fit ${
-                    selected
-                      ? " bg-gradient-to-br from-[#3498db]/5 to-[#3498db]/10"
-                      : "hover:bg-gradient-to-br hover:from-[#3498db]/5 hover:to-transparent"
-                  }`}
-                  onClick={() => {
-                    setSelectedBoxSize(card);
-                    setValue("boxSize", card);
-                  }}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <div className="flex flex-col items-center text-center gap-2 relative">
-                    <div
-                      className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                        selected
-                          ? "bg-gradient-to-br from-[#3498db] to-[#2980b9] text-white"
-                          : "bg-[#3498db]/10 text-[#3498db]"
-                      }`}
-                    >
-                      <Package className="h-6 w-6" />
-                    </div>
-
-                    <div className="text-base text-gray-700 mt-1">
-                      {card.length}×{card.width}×{card.height} سم
-                    </div>
-
-                    {selected && (
-                      <div className="absolute top-2 right-2 w-5 h-5 bg-[#3498db] rounded-full flex items-center justify-center">
-                        <Check className="h-4 w-4 text-white" />
+            {boxSizes.length > 0 &&
+              boxSizes.map((card, idx) => {
+                const selected = selectedBoxSize === card;
+                const key = card.key ?? `box-${idx}`;
+                return (
+                  <motion.div
+                    key={key}
+                    className={`v7-neu-card-inner p-12 cursor-pointer w-fit ${
+                      selected
+                        ? " bg-gradient-to-br from-[#3498db]/5 to-[#3498db]/10"
+                        : "hover:bg-gradient-to-br hover:from-[#3498db]/5 hover:to-transparent"
+                    }`}
+                    onClick={() => {
+                      setSelectedBoxSize(card);
+                      setValue("boxSize", card);
+                    }}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <div className="flex flex-col items-center text-center gap-2 relative">
+                      <div
+                        className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                          selected
+                            ? "bg-gradient-to-br from-[#3498db] to-[#2980b9] text-white"
+                            : "bg-[#3498db]/10 text-[#3498db]"
+                        }`}
+                      >
+                        <Package className="h-6 w-6" />
                       </div>
-                    )}
-                  </div>
-                </motion.div>
-              );
-            })}
 
-            {["smsa", "aramex"].includes(company.company) &&
-              ["Dry"].includes(company.shippingType.type) &&
+                      <div className="text-center mt-1">
+                        <div className="text-base font-medium text-gray-700">
+                          {card.label || card.title || "صندوق مخصص"}
+                        </div>
+                        <div className="text-sm text-gray-500 mt-0.5">
+                          {card.length}×{card.width}×{card.height} سم
+                        </div>
+                      </div>
+
+                      {selected && (
+                        <div className="absolute top-2 right-2 w-5 h-5 bg-[#3498db] rounded-full flex items-center justify-center">
+                          <Check className="h-4 w-4 text-white" />
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                );
+              })}
+
+            {((["smsa", "aramex"].includes(company.company) &&
+              ["Dry"].includes(company.shippingType.type)) ||
+              (company.company === "smsa" &&
+                company.shippingType.type === "offices")) &&
               (Array.isArray(parcelsData) ? parcelsData : []).map(
                 (parcel: any) => {
                   const selected =
@@ -310,9 +319,14 @@ export default function CarrierCard({
                           <Package className="h-6 w-6" />
                         </div>
 
-                        <div className="text-base text-gray-700 mt-1 ">
-                          {parcel.dimensions.length}×{parcel.dimensions.width}×
-                          {parcel.dimensions.height} سم
+                        <div className="text-center mt-1">
+                          <div className="text-base font-medium text-gray-700">
+                            {parcel.title || "صندوق مخصص"}
+                          </div>
+                          <div className="text-sm text-gray-500 mt-0.5">
+                            {parcel.dimensions.length}×{parcel.dimensions.width}
+                            ×{parcel.dimensions.height} سم
+                          </div>
                         </div>
 
                         {selected && (
@@ -327,30 +341,117 @@ export default function CarrierCard({
               )}
 
             {/* زر إضافة حجم مخصص */}
-            {["smsa", "aramex"].includes(company.company) &&
-              ["Dry"].includes(company.shippingType.type) && (
-                <Button
-                  type="button"
-                  className="v7-neu-card-inner p-12 cursor-pointer w-fit h-40 flex flex-col gap-2"
-                  onClick={() => setCustomModalOpen(true)}
+            {(company.company === "smsapro" ||
+              company.company === "smsa" ||
+              (company.company === "aramex" &&
+                ["Dry"].includes(company.shippingType.type))) && (
+              <Button
+                type="button"
+                className="v7-neu-card-inner p-12 cursor-pointer w-fit h-40 flex flex-col gap-2"
+                onClick={() => setCustomModalOpen(true)}
+              >
+                <span
+                  className={`p-4 rounded-full flex items-center justify-center ${
+                    customModalOpen
+                      ? "bg-gradient-to-br from-[#3498db] to-[#2980b9] text-white"
+                      : "bg-[#3498db]/10 text-[#3498db]"
+                  }`}
                 >
-                  <span
-                    className={`p-4 rounded-full flex items-center justify-center ${
-                      customModalOpen
-                        ? "bg-gradient-to-br from-[#3498db] to-[#2980b9] text-white"
-                        : "bg-[#3498db]/10 text-[#3498db]"
-                    }`}
-                  >
-                    <Package
-                      className="w-5 h-5"
-                      style={{ width: "20px", height: "20px" }}
-                    />
-                  </span>
+                  <Package
+                    className="w-5 h-5"
+                    style={{ width: "20px", height: "20px" }}
+                  />
+                </span>
 
-                  <h4 className="font-bold text-gray-800 text-lg">
-                    إضافة حجم طرد مخصص +
+                <h4 className="font-bold text-gray-800 text-lg">
+                  إضافة حجم طرد مخصص +
+                </h4>
+              </Button>
+            )}
+
+            {/* إدخال الأبعاد يدوياً لـ SMSA إذا لم تكن هناك صناديق جاهزة */}
+            {company.company === "smsa" &&
+              boxSizes.length === 0 &&
+              (Array.isArray(parcelsData) ? parcelsData : []).length === 0 && (
+                <div className="w-full mt-4 p-4 bg-gray-50 rounded-lg border">
+                  <h4 className="font-semibold text-gray-700 mb-3">
+                    أدخل أبعاد الطرد يدوياً
                   </h4>
-                </Button>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div>
+                      <Label htmlFor="length" className="text-sm text-gray-600">
+                        الطول (سم)
+                      </Label>
+                      <Input
+                        id="length"
+                        type="number"
+                        placeholder="الطول"
+                        value={values?.dimension_length || ""}
+                        onChange={(e) => {
+                          setValue(
+                            "dimension_length",
+                            Number(e.target.value) || 0
+                          );
+                          setValue("boxSize", null);
+                          setSelectedBoxSize({} as BoxSize);
+                        }}
+                        className="mt-1"
+                        min="1"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="width" className="text-sm text-gray-600">
+                        العرض (سم)
+                      </Label>
+                      <Input
+                        id="width"
+                        type="number"
+                        placeholder="العرض"
+                        value={values?.dimension_width || ""}
+                        onChange={(e) => {
+                          setValue(
+                            "dimension_width",
+                            Number(e.target.value) || 0
+                          );
+                          setValue("boxSize", null);
+                          setSelectedBoxSize({} as BoxSize);
+                        }}
+                        className="mt-1"
+                        min="1"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="height" className="text-sm text-gray-600">
+                        الارتفاع (سم)
+                      </Label>
+                      <Input
+                        id="height"
+                        type="number"
+                        placeholder="الارتفاع"
+                        value={values?.dimension_high || ""}
+                        onChange={(e) => {
+                          setValue(
+                            "dimension_high",
+                            Number(e.target.value) || 0
+                          );
+                          setValue("boxSize", null);
+                          setSelectedBoxSize({} as BoxSize);
+                        }}
+                        className="mt-1"
+                        min="1"
+                      />
+                    </div>
+                  </div>
+                  {(values?.dimension_length ||
+                    values?.dimension_width ||
+                    values?.dimension_high) && (
+                    <div className="text-sm text-green-600 mt-2">
+                      تم إدخال الأبعاد: {values.dimension_length || 0} ×{" "}
+                      {values.dimension_width || 0} ×{" "}
+                      {values.dimension_high || 0} سم
+                    </div>
+                  )}
+                </div>
               )}
           </div>
         </div>
@@ -530,7 +631,10 @@ export default function CarrierCard({
                             const updatedBoxSizes = updatedSizes.map(
                               (s: any) => ({
                                 ...s,
-                                label: `${s.length}×${s.width}×${s.height} سم`,
+                                label:
+                                  s.title ||
+                                  s.label ||
+                                  `${s.length}×${s.width}×${s.height} سم`,
                               })
                             );
                             setBoxSizes(updatedBoxSizes);
@@ -542,7 +646,10 @@ export default function CarrierCard({
                             const updatedBoxSizes = existingSizes.map(
                               (s: any) => ({
                                 ...s,
-                                label: `${s.length}×${s.width}×${s.height} سم`,
+                                label:
+                                  s.title ||
+                                  s.label ||
+                                  `${s.length}×${s.width}×${s.height} سم`,
                               })
                             );
                             setBoxSizes(updatedBoxSizes);

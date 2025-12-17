@@ -128,6 +128,11 @@ const providerOptions = [
     notes: "redbox يجب ادخال الأبعاد، الطول والعرض والإرتفاع",
   },
   { key: "smsa", label: "سمسا", notes: "سمسا لا تشحن إلى بعض المناطق" },
+  {
+    key: "smsapro",
+    label: "سمسا برو",
+    notes: "سمسا برو مع أحجام الصناديق المتاحة",
+  },
   { key: "thabit", label: "ثابت", notes: "ثابت لا تشحن الى محايل" },
   // ... add more as needed
 ];
@@ -248,11 +253,7 @@ export function CreateShipmentSteps() {
 
   // Stepper navigation
   const nextStep = () => {
-    const company = getValues("company");
-    const shipmentType = getValues("shipmentType");
-    const isSMSAOffices = company === "smsa" && shipmentType === "offices";
-    const maxStep = isSMSAOffices ? 4 : 3;
-    setStep((s) => Math.min(s + 1, maxStep));
+    setStep((s) => Math.min(s + 1, 4));
   };
   const prevStep = () => setStep((s) => Math.max(s - 1, 1));
 
@@ -1043,6 +1044,17 @@ function Step3Content({
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
+    const company = getValues("company");
+    const shipmentType = getValues("shipmentType");
+    const isSMSAOffices = company === "smsa" && shipmentType === "offices";
+
+    // إذا كانت SMSA مع المكاتب، اذهب للخطوة التالية (اختيار المكاتب)
+    if (isSMSAOffices) {
+      nextStep();
+      return;
+    }
+
+    // للشركات الأخرى، أرسل البيانات مباشرة
     setIsSubmitting(true);
     try {
       await onSubmit(e);
@@ -1092,7 +1104,7 @@ function Step3Content({
       // ✅ ضيف label وخلّي المعرف هو _id
       const sizes = (selected.allowedBoxSizes || []).map((s: any) => ({
         ...s,
-        label: `${s.length}×${s.width}×${s.height} سم`,
+        label: s.title || s.label || `${s.length}×${s.width}×${s.height} سم`,
       }));
 
       setBoxSizes(sizes);
@@ -1378,20 +1390,6 @@ function Step3Content({
             </div>
             <div className="mt-3 text-center text-sm text-gray-600">
               هذا قد يستغرق بضع ثوان
-            </div>
-          </div>
-        )}
-
-        {/* عرض رسالة نجاح جلب الأسعار */}
-        {pricesFetched && prices.length > 0 && !loadingPrices && (
-          <div className="v7-neu-card p-4 rounded-xl bg-green-50 border border-green-200">
-            <div className="flex items-center gap-2">
-              <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center">
-                <Check className="w-3 h-3 text-white" />
-              </div>
-              <span className="text-green-700 font-medium">
-                تم جلب أسعار {prices.length} خيار شحن بنجاح! اختر الأنسب لك.
-              </span>
             </div>
           </div>
         )}

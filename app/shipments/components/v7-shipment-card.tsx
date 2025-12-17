@@ -762,26 +762,32 @@ export function V7ShipmentCard({
               </Button>
             </Link>
 
-            {/* زر طباعة البوليصة */}
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full v7-neu-button-sm group h-8 text-xs flex items-center justify-center gap-x-2"
-              onClick={handlePrintInvoice}
-              disabled={isPrintingInvoice}
-            >
-              {isPrintingInvoice ? (
-                <>
-                  <div className="h-4 w-4 border-2 border-[#3498db] border-t-transparent rounded-full animate-spin" />
-                  <span className="sr-only sm:not-sr-only">جاري الطلب...</span>
-                </>
-              ) : (
-                <>
-                  <Printer className="h-4 w-4 group-hover:text-[#3498db] transition-colors" />
-                  <span className="sr-only sm:not-sr-only">طباعة البوليصة</span>
-                </>
-              )}
-            </Button>
+            {/* زر طباعة البوليصة - يظهر فقط لأومني لاما */}
+            {shipment.shapmentCompany === "omniclama" && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full v7-neu-button-sm group h-8 text-xs flex items-center justify-center gap-x-2"
+                onClick={handlePrintInvoice}
+                disabled={isPrintingInvoice}
+              >
+                {isPrintingInvoice ? (
+                  <>
+                    <div className="h-4 w-4 border-2 border-[#3498db] border-t-transparent rounded-full animate-spin" />
+                    <span className="sr-only sm:not-sr-only">
+                      جاري الطلب...
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <Printer className="h-4 w-4 group-hover:text-[#3498db] transition-colors" />
+                    <span className="sr-only sm:not-sr-only">
+                      طباعة البوليصة
+                    </span>
+                  </>
+                )}
+              </Button>
+            )}
 
             {/* زر تحميل البوليصة (إذا كانت موجودة) */}
             {labelUrl ? (

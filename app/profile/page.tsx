@@ -220,7 +220,7 @@ export default function ProfilePage() {
       // تحديث رابط الصورة في الواجهة فوراً
       if (res.data?.profileImage) {
         // إضافة base URL إذا لم يكن موجوداً
-        const imageUrl = res.data.profileImage
+        const imageUrl = res.data.profileImage;
 
         setImage(imageUrl);
         console.log("🔄 تم تحديث رابط الصورة في الـ state:", imageUrl);
@@ -701,7 +701,7 @@ export default function ProfilePage() {
                   )}
                 </form>
                 <AlertDialog open={alertOpen} onOpenChange={setAlertOpen}>
-                  <AlertDialogContent>
+                  <AlertDialogContent className="bg-[#ccd5dd] border-0 shadow-2xl">
                     <AlertDialogHeader>
                       <AlertDialogTitle>
                         {alertStatus === "success" ? "نجاح" : "خطأ"}
@@ -733,9 +733,12 @@ export default function ProfilePage() {
                 onFileSelect={handelImageUpload}
                 initialImage={
                   image
-                    ? image.startsWith("http") 
+                    ? image.startsWith("http")
                       ? `${image}?t=${Date.now()}`
-                      : `${process.env.NEXT_PUBLIC_API_URL || "https://www.marasil.site"}${image}?t=${Date.now()}`
+                      : `${
+                          process.env.NEXT_PUBLIC_API_URL ||
+                          "https://www.marasil.site"
+                        }${image}?t=${Date.now()}`
                     : customerData?.data.profileImage
                     ? customerData.data.profileImage.startsWith("http")
                       ? `${customerData.data.profileImage}?t=${Date.now()}`
