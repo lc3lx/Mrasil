@@ -323,6 +323,13 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
                       setSearch("");
                       setDescFocused(false);
                     }}
+                    onSelectWithEnglish={(cityObj, setValue) => {
+                      setForm({ ...form, city: cityObj.name_ar });
+                      setValue("shipper_city", cityObj.name_ar);
+                      setValue("shipper_city_en", cityObj.name_en);
+                      setSearch("");
+                      setDescFocused(false);
+                    }}
                   />
                 )}
               </div>

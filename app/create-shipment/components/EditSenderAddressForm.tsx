@@ -263,8 +263,19 @@ export function EditSenderAddressForm({
                 {descFocused && search && (
                   <CityAutocompleteDropdown
                     search={search}
+                    setValue={setValue}
                     onSelect={(cityObj) => {
                       setForm({ ...form, city: cityObj.name_ar });
+                      setValue("city", cityObj.name_ar, {
+                        shouldValidate: true,
+                      });
+                      setSearch("");
+                      setDescFocused(false);
+                    }}
+                    onSelectWithEnglish={(cityObj, setValue) => {
+                      setForm({ ...form, city: cityObj.name_ar });
+                      setValue("shipper_city", cityObj.name_ar);
+                      setValue("shipper_city_en", cityObj.name_en);
                       setValue("city", cityObj.name_ar, {
                         shouldValidate: true,
                       });

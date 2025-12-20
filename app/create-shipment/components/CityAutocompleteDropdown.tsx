@@ -4,9 +4,16 @@ import { useSearchCitiesQuery } from "../../api/cityApi";
 interface CityAutocompleteDropdownProps {
   search: string;
   onSelect: (city: any) => void;
+  onSelectWithEnglish?: (city: any, setValue: (field: string, value: any) => void) => void;
+  setValue?: (field: string, value: any) => void;
 }
 
-export const CityAutocompleteDropdown: React.FC<CityAutocompleteDropdownProps> = ({ search, onSelect }) => {
+export const CityAutocompleteDropdown: React.FC<CityAutocompleteDropdownProps> = ({
+  search,
+  onSelect,
+  onSelectWithEnglish,
+  setValue
+}) => {
   const { data: cityResults, isLoading } = useSearchCitiesQuery(search, { skip: !search });
   // يدعم كل من data أو results حسب استجابة الـ API
   const citySuggestions = cityResults?.results || cityResults?.data || [];
@@ -22,7 +29,13 @@ export const CityAutocompleteDropdown: React.FC<CityAutocompleteDropdownProps> =
           <div
             key={city.city_id || city._id}
             className="py-2 px-3 hover:bg-blue-50 cursor-pointer text-right"
-            onMouseDown={() => onSelect(city)}
+            onMouseDown={() => {
+              if (onSelectWithEnglish && setValue) {
+                onSelectWithEnglish(city, setValue);
+              } else {
+                onSelect(city);
+              }
+            }}
           >
             <span className="font-bold">{city.name_ar || city.name}</span>
             {city.region_name && (

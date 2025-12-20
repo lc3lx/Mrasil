@@ -1,4 +1,4 @@
-import { useState, Dispatch, SetStateAction } from "react";
+import { useState, Dispatch, SetStateAction, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   CheckCircle2,
@@ -33,6 +33,7 @@ import {
   useDeleteClientAddressMutation,
   useUpdateClientAddressMutation,
 } from "../../api/clientAdressApi";
+import { useSearchCitiesQuery } from "../../api/cityApi";
 import CityAutocompleteDropdown from "./CityAutocompleteDropdown";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
@@ -138,12 +139,35 @@ export function RecipientAddressSection({
     resolver: yupResolver(schema),
     defaultValues: initialValues,
   });
+  // البحث عن المدينة بالاسم العربي للحصول على الاسم الإنجليزي
+  const { data: cityData } = useSearchCitiesQuery(
+    selectedRecipient ? (clientAddressesData?.data || []).find(addr => addr._id === selectedRecipient)?.city || "" : "",
+    { skip: !selectedRecipient }
+  );
+
+  // تحديث الاسم الإنجليزي عند العثور على المدينة
+  useEffect(() => {
+    if (cityData?.results?.length > 0 && selectedRecipient) {
+      const selectedCity = (clientAddressesData?.data || []).find(addr => addr._id === selectedRecipient);
+      if (selectedCity) {
+        // البحث عن المدينة المطابقة في النتائج
+        const matchedCity = cityData.results.find((city: any) =>
+          city.name_ar === selectedCity.city
+        );
+        if (matchedCity) {
+          setValue("recipient_city_en", matchedCity.name_en);
+        }
+      }
+    }
+  }, [cityData, selectedRecipient, clientAddressesData, setValue]);
+
   const handleSelectRecipient = (card: any) => {
     if (selectedRecipient === card._id) {
       setSelectedRecipient(null);
       setValue("recipient_full_name", "");
       setValue("recipient_mobile", "");
       setValue("recipient_city", "");
+      setValue("recipient_city_en", "");
       setValue("recipient_address", "");
       setValue("recipient_email", "");
       setValue("recipient_district", "");
@@ -152,6 +176,7 @@ export function RecipientAddressSection({
       setValue("recipient_full_name", card.clientName || "");
       setValue("recipient_mobile", card.clientPhone);
       setValue("recipient_city", card.city);
+      setValue("recipient_city_en", ""); // سيتم تحديده لاحقاً
       setValue("recipient_address", card.clientAddress || "");
       setValue("recipient_email", card.clientEmail || "");
       setValue("recipient_district", card.district || "");
@@ -591,8 +616,21 @@ export function RecipientAddressSection({
                 {descFocused && citySearch && (
                   <CityAutocompleteDropdown
                     search={citySearch}
+                    setValue={setValue}
                     onSelect={(cityObj) => {
                       setForm({ ...form, city: cityObj.name_ar });
+                      setEditRecipient({
+                        ...editRecipient,
+                        city: cityObj.name_ar,
+                      });
+
+                      setCitySearch("");
+                      setDescFocused(false);
+                    }}
+                    onSelectWithEnglish={(cityObj, setValue) => {
+                      setForm({ ...form, city: cityObj.name_ar });
+                      setValue("recipient_city", cityObj.name_ar);
+                      setValue("recipient_city_en", cityObj.name_en);
                       setEditRecipient({
                         ...editRecipient,
                         city: cityObj.name_ar,

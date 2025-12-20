@@ -21,6 +21,7 @@ import {
   useDeleteAddressMutation,
   useUpdateAddressMutation,
 } from "../../api/adressesApi";
+import { useSearchCitiesQuery } from "../../api/cityApi";
 
 interface SenderAddressSectionProps {
   selectedSender: string | number | null;
@@ -65,6 +66,28 @@ export function SenderAddressSection({
 
   // Use API data for sender cards (customer addresses)
   const rawSenderAddresses = customerMeData?.data.addresses || [];
+
+  // البحث عن المدينة بالاسم العربي للحصول على الاسم الإنجليزي
+  const { data: cityData } = useSearchCitiesQuery(
+    selectedSender ? rawSenderAddresses.find(addr => addr.id === selectedSender)?.city || "" : "",
+    { skip: !selectedSender }
+  );
+
+  // تحديث الاسم الإنجليزي عند العثور على المدينة
+  useEffect(() => {
+    if (cityData?.results?.length > 0 && selectedSender) {
+      const selectedAddress = rawSenderAddresses.find(addr => addr.id === selectedSender);
+      if (selectedAddress) {
+        // البحث عن المدينة المطابقة في النتائج
+        const matchedCity = cityData.results.find((city: any) =>
+          city.name_ar === selectedAddress.city
+        );
+        if (matchedCity) {
+          setValue("shipper_city_en", matchedCity.name_en);
+        }
+      }
+    }
+  }, [cityData, selectedSender, rawSenderAddresses, setValue]);
   const getTime = (obj: any) => {
     const c = obj?.createdAt || obj?.updatedAt;
     if (c) {
@@ -114,12 +137,14 @@ export function SenderAddressSection({
       setValue("shipper_full_name", "");
       setValue("shipper_mobile", "");
       setValue("shipper_city", "");
+      setValue("shipper_city_en", "");
       setValue("shipper_address", "");
     } else {
       setSelectedSender(card.id);
       setValue("shipper_full_name", card.name);
       setValue("shipper_mobile", card.mobile);
       setValue("shipper_city", card.city);
+      setValue("shipper_city_en", ""); // سيتم تحديده تلقائياً من البحث
       setValue("shipper_address", card.address);
     }
   };

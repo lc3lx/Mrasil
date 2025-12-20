@@ -325,6 +325,13 @@ export function AddRecipientForm({
                       setSearch("");
                       setDescFocused(false);
                     }}
+                    onSelectWithEnglish={(cityObj, setValue) => {
+                      setForm({ ...form, city: cityObj.name_ar });
+                      setValue("recipient_city", cityObj.name_ar);
+                      setValue("recipient_city_en", cityObj.name_en);
+                      setSearch("");
+                      setDescFocused(false);
+                    }}
                   />
                 )}
               </div>

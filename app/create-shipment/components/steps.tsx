@@ -142,10 +142,12 @@ const schema = yup
     shipper_full_name: yup.string(),
     shipper_mobile: yup.string(), // no validation
     shipper_city: yup.string(),
+    shipper_city_en: yup.string(), // الاسم الإنجليزي للمدينة
     shipper_address: yup.string(),
     recipient_full_name: yup.string(),
     recipient_mobile: yup.string(), // no validation
     recipient_city: yup.string(),
+    recipient_city_en: yup.string(), // الاسم الإنجليزي للمدينة
     recipient_address: yup.string(),
     recipient_email: yup.string(),
     recipient_district: yup.string(),
@@ -190,10 +192,12 @@ export function CreateShipmentSteps() {
       shipper_full_name: "",
       shipper_mobile: "",
       shipper_city: "",
+      shipper_city_en: "", // الاسم الإنجليزي للمدينة
       shipper_address: "",
       recipient_full_name: "",
       recipient_mobile: "",
       recipient_city: "",
+      recipient_city_en: "", // الاسم الإنجليزي للمدينة
       recipient_address: "",
       recipient_email: "",
       recipient_district: "",
@@ -238,6 +242,7 @@ export function CreateShipmentSteps() {
           recipient_full_name: order.clientAddress?.clientName || "",
           recipient_mobile: order.clientAddress?.clientPhone || "",
           recipient_city: order.clientAddress?.city || "",
+          recipient_city_en: "", // سيتم تحديده من البيانات أو تركه فارغاً
           recipient_address: order.clientAddress?.clientAddress || "",
           recipient_district: order.clientAddress?.clientAddress || "",
           // Step 2
@@ -292,6 +297,7 @@ export function CreateShipmentSteps() {
             full_name: data.recipient_full_name,
             mobile: data.recipient_mobile, // send as entered
             city: data.recipient_city,
+            city_en: data.recipient_city_en, // الاسم الإنجليزي للمدينة
             country: "sa",
             address: data.recipient_address || data.recipient_district || "",
             email: data.recipient_email || "",
@@ -308,6 +314,7 @@ export function CreateShipmentSteps() {
           full_name: data.shipper_full_name,
           mobile: data.shipper_mobile, // send as entered
           city: data.shipper_city,
+          city_en: data.shipper_city_en, // الاسم الإنجليزي للمدينة
           country: "sa",
           address: data.shipper_address,
         },
@@ -561,10 +568,12 @@ function Step1Content({ nextStep }: { nextStep: () => void }) {
         "shipper_full_name",
         "shipper_mobile",
         "shipper_city",
+        "shipper_city_en",
         "shipper_address",
         "recipient_full_name",
         "recipient_mobile",
         "recipient_city",
+        "recipient_city_en",
         "recipient_address",
         "recipient_email",
       ])
@@ -1691,75 +1700,15 @@ function Step4Content({
   });
 
   const shipperCity = watch("shipper_city");
+  const shipperCityEn = watch("shipper_city_en");
   const recipientCity = watch("recipient_city");
+  const recipientCityEn = watch("recipient_city_en");
   const senderOfficeCode = watch("senderOfficeCode");
   const recipientOfficeCode = watch("recipientOfficeCode");
 
   // State للبحث في المكاتب
   const [senderSearchQuery, setSenderSearchQuery] = useState("");
   const [recipientSearchQuery, setRecipientSearchQuery] = useState("");
-
-  // Mapping بين المدن العربية والإنجليزية (بناءً على JSON الخاص بـ SMSA)
-  const cityMapping: Record<string, string> = {
-    // المدن الرئيسية
-    الرياض: "Riyadh",
-    جدة: "Jeddah",
-    مكة: "Makkah",
-    المدينة: "Madinah",
-    الدمام: "Dammam",
-    الخبر: "Khubar", // في JSON هو Khubar وليس Khobar
-    الطائف: "Taif",
-    تبوك: "Tabuk",
-    بريدة: "Buraydah",
-    "خميس مشيط": "Khamis Mushayt", // في JSON هو Mushayt وليس Mushait
-    الهفوف: "Hufuf", // في JSON هو Hufuf وليس Al Hofuf
-    المبرز: "Mubarraz",
-    "حفر الباطن": "Hafar Al Baten",
-    حائل: "Hail",
-    نجران: "Najran",
-    الجبيل: "Jubail",
-    ابها: "Abha",
-    جازان: "Gizan", // في JSON هو Gizan وليس Jazan
-    سكاكا: "Skakah",
-    عرعر: "Arar",
-    الباحة: "Baha", // في JSON هو Baha وليس Al Baha
-    الرس: "Rass",
-    عنيزة: "Unayzah",
-    القطيف: "Qatif",
-    // مدن إضافية من JSON
-    الدوادمي: "Duwadimi",
-    عفيف: "Afif",
-    الأفلاج: "Aflaj",
-    الخرج: "Kharj",
-    المجمعة: "Majmaah",
-    ساجر: "Sajir",
-    شقراء: "Shaqra",
-    الزلفي: "Zulfi",
-    الظهران: "Dhahran",
-    الخفجي: "Khafji",
-    النعيرية: "Nairiyah",
-    البقيق: "Buqaiq",
-    رفحاء: "Rafha",
-    القريات: "Qurayyat",
-    "دومة الجندل": "Dawmat Al Jandal",
-    ضباء: "Dhuba",
-    طبرجل: "Tabarjal",
-    طريف: "Turayf",
-    المذنب: "Midhnab",
-    القويعية: "Quwayiyah",
-    حناكية: "Hanakiyah",
-    الليث: "Lith",
-    "عيون الجواء": "Uyun Al Jiwa",
-    "أحد رفيدة": "Ahad Rafidah",
-    حرض: "Haradh",
-    الرويضة: "Ruwaydah",
-    ثادق: "Thadiq",
-    الغاط: "Ghat",
-    الارطاوية: "Artawiyah",
-    الرفيعة: "Rafiah",
-    الرين: "Ar Rayn",
-    "بني عمرو": "Bani Amro",
-  };
 
   // دالة لتطبيع أسماء المدن (إزالة الكلمات الشائعة)
   const normalizeCityName = (cityName: string): string => {
@@ -1787,10 +1736,14 @@ function Step4Content({
   };
 
   // دالة للمقارنة المرنة مع cityName
-  const matchesCity = (office: any, cityArabic: string) => {
+  const matchesCity = (
+    office: any,
+    cityArabic: string,
+    cityEnglish?: string
+  ) => {
     if (!cityArabic || !office) return false;
 
-    const cityEnglish = cityMapping[cityArabic] || cityArabic;
+    const finalCityEnglish = cityEnglish || cityArabic;
     const officeCity = (office.cityName || "").trim();
     const cityArabicTrimmed = (cityArabic || "").trim();
 
@@ -1799,7 +1752,7 @@ function Step4Content({
     const normalizedOfficeCity = normalizeCityName(officeCity);
 
     // 1. المقارنة الدقيقة مع cityName (الإنجليزية) - هذا هو الأساس
-    if (officeCity.toLowerCase() === cityEnglish.toLowerCase()) {
+    if (officeCity.toLowerCase() === finalCityEnglish.toLowerCase()) {
       return true;
     }
 
@@ -1819,7 +1772,7 @@ function Step4Content({
     }
 
     // 5. البحث الجزئي - إذا كان اسم المدينة جزء من cityName
-    if (officeCity.toLowerCase().includes(cityEnglish.toLowerCase())) {
+    if (officeCity.toLowerCase().includes(finalCityEnglish.toLowerCase())) {
       return true;
     }
 
@@ -1853,11 +1806,11 @@ function Step4Content({
 
   // Filter offices by city (مع تطابق دقيق)
   const shipperOfficesByCity = offices.filter((office: any) => {
-    return matchesCity(office, shipperCity);
+    return matchesCity(office, shipperCity, shipperCityEn);
   });
 
   const recipientOfficesByCity = offices.filter((office: any) => {
-    return matchesCity(office, recipientCity);
+    return matchesCity(office, recipientCity, recipientCityEn);
   });
 
   // دالة للبحث في العنوان
@@ -1890,8 +1843,8 @@ function Step4Content({
     totalOffices: offices.length,
     shipperCity,
     recipientCity,
-    shipperCityEnglish: cityMapping[shipperCity || ""] || shipperCity,
-    recipientCityEnglish: cityMapping[recipientCity || ""] || recipientCity,
+    shipperCityEnglish: shipperCityEn || shipperCity,
+    recipientCityEnglish: recipientCityEn || recipientCity,
     shipperOfficesCount: shipperOffices.length,
     recipientOfficesCount: recipientOffices.length,
     shipperOffices: shipperOffices.map((o: any) => ({
