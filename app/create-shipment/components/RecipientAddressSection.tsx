@@ -139,27 +139,99 @@ export function RecipientAddressSection({
     resolver: yupResolver(schema),
     defaultValues: initialValues,
   });
+  // دالة لحساب نسبة التشابه بين سلسلتين
+  const calculateSimilarity = (str1: string, str2: string): number => {
+    if (!str1 || !str2) return 0;
+
+    const s1 = str1.toLowerCase().trim();
+    const s2 = str2.toLowerCase().trim();
+
+    // إذا كانا متطابقين تماماً
+    if (s1 === s2) return 1;
+
+    // إذا كان أحدهما يحتوي على الآخر
+    if (s1.includes(s2) || s2.includes(s1)) return 0.9;
+
+    // حساب التشابه البسيط بناءً على الأحرف المشتركة
+    const longer = s1.length > s2.length ? s1 : s2;
+    const shorter = s1.length > s2.length ? s2 : s1;
+
+    if (longer.length === 0) return 1.0;
+
+    const distance = levenshteinDistance(longer, shorter);
+    return (longer.length - distance) / longer.length;
+  };
+
+  // دالة حساب مسافة ليفنشتاين البسيطة
+  const levenshteinDistance = (str1: string, str2: string): number => {
+    const matrix = [];
+
+    for (let i = 0; i <= str2.length; i++) {
+      matrix[i] = [i];
+    }
+
+    for (let j = 0; j <= str1.length; j++) {
+      matrix[0][j] = j;
+    }
+
+    for (let i = 1; i <= str2.length; i++) {
+      for (let j = 1; j <= str1.length; j++) {
+        if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+          matrix[i][j] = matrix[i - 1][j - 1];
+        } else {
+          matrix[i][j] = Math.min(
+            matrix[i - 1][j - 1] + 1,
+            matrix[i][j - 1] + 1,
+            matrix[i - 1][j] + 1
+          );
+        }
+      }
+    }
+
+    return matrix[str2.length][str1.length];
+  };
+
   // البحث عن المدينة بالاسم العربي للحصول على الاسم الإنجليزي
+  const selectedRecipientCity = selectedRecipient ? (clientAddressesData?.data || []).find(addr => addr._id === selectedRecipient)?.city || "" : "";
   const { data: cityData } = useSearchCitiesQuery(
-    selectedRecipient ? (clientAddressesData?.data || []).find(addr => addr._id === selectedRecipient)?.city || "" : "",
-    { skip: !selectedRecipient }
+    selectedRecipientCity,
+    {
+      skip: !selectedRecipient || !selectedRecipientCity || selectedRecipientCity.trim() === ""
+    }
   );
 
   // تحديث الاسم الإنجليزي عند العثور على المدينة
   useEffect(() => {
-    if (cityData?.results?.length > 0 && selectedRecipient) {
+    if (cityData?.results?.length > 0 && selectedRecipient && selectedRecipientCity) {
       const selectedCity = (clientAddressesData?.data || []).find(addr => addr._id === selectedRecipient);
-      if (selectedCity) {
-        // البحث عن المدينة المطابقة في النتائج
-        const matchedCity = cityData.results.find((city: any) =>
-          city.name_ar === selectedCity.city
-        );
+      if (selectedCity && selectedCity.city) {
+        // البحث عن المدينة المطابقة في النتائج باستخدام التشابه
+        const matchedCity = cityData.results.find((city: any) => {
+          const similarityThreshold = 0.7; // 70% تشابه
+
+          // مقارنة التشابه مع الاسم العربي
+          if (calculateSimilarity(city.name_ar, selectedCity.city) >= similarityThreshold) {
+            return true;
+          }
+
+          // مقارنة التشابه مع الاسم الإنجليزي
+          if (calculateSimilarity(city.name_en, selectedCity.city) >= similarityThreshold) {
+            return true;
+          }
+
+          // المطابقة الدقيقة كخيار احتياطي
+          return city.name_ar === selectedCity.city;
+        });
+
         if (matchedCity) {
           setValue("recipient_city_en", matchedCity.name_en);
+        } else {
+          // إذا لم نجد مطابقة، نترك الحقل فارغاً
+          setValue("recipient_city_en", "");
         }
       }
     }
-  }, [cityData, selectedRecipient, clientAddressesData, setValue]);
+  }, [cityData, selectedRecipient, clientAddressesData, selectedRecipientCity, setValue]);
 
   const handleSelectRecipient = (card: any) => {
     if (selectedRecipient === card._id) {

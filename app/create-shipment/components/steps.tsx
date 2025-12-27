@@ -1710,6 +1710,58 @@ function Step4Content({
   const [senderSearchQuery, setSenderSearchQuery] = useState("");
   const [recipientSearchQuery, setRecipientSearchQuery] = useState("");
 
+  // دالة لحساب نسبة التشابه بين سلسلتين
+  const calculateSimilarity = (str1: string, str2: string): number => {
+    if (!str1 || !str2) return 0;
+
+    const s1 = str1.toLowerCase().trim();
+    const s2 = str2.toLowerCase().trim();
+
+    // إذا كانا متطابقين تماماً
+    if (s1 === s2) return 1;
+
+    // إذا كان أحدهما يحتوي على الآخر
+    if (s1.includes(s2) || s2.includes(s1)) return 0.9;
+
+    // حساب التشابه البسيط بناءً على الأحرف المشتركة
+    const longer = s1.length > s2.length ? s1 : s2;
+    const shorter = s1.length > s2.length ? s2 : s1;
+
+    if (longer.length === 0) return 1.0;
+
+    const distance = levenshteinDistance(longer, shorter);
+    return (longer.length - distance) / longer.length;
+  };
+
+  // دالة حساب مسافة ليفنشتاين البسيطة
+  const levenshteinDistance = (str1: string, str2: string): number => {
+    const matrix = [];
+
+    for (let i = 0; i <= str2.length; i++) {
+      matrix[i] = [i];
+    }
+
+    for (let j = 0; j <= str1.length; j++) {
+      matrix[0][j] = j;
+    }
+
+    for (let i = 1; i <= str2.length; i++) {
+      for (let j = 1; j <= str1.length; j++) {
+        if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+          matrix[i][j] = matrix[i - 1][j - 1];
+        } else {
+          matrix[i][j] = Math.min(
+            matrix[i - 1][j - 1] + 1,
+            matrix[i][j - 1] + 1,
+            matrix[i - 1][j] + 1
+          );
+        }
+      }
+    }
+
+    return matrix[str2.length][str1.length];
+  };
+
   // دالة لتطبيع أسماء المدن (إزالة الكلمات الشائعة)
   const normalizeCityName = (cityName: string): string => {
     if (!cityName) return "";
@@ -1735,48 +1787,73 @@ function Step4Content({
     return normalized.trim();
   };
 
-  // دالة للمقارنة المرنة مع cityName
+  // دالة للمقارنة المرنة مع cityName مع الأولوية للاسم الإنجليزي
   const matchesCity = (
     office: any,
     cityArabic: string,
     cityEnglish?: string
   ) => {
-    if (!cityArabic || !office) return false;
+    if (!office) return false;
 
-    const finalCityEnglish = cityEnglish || cityArabic;
     const officeCity = (office.cityName || "").trim();
     const cityArabicTrimmed = (cityArabic || "").trim();
+    const cityEnglishTrimmed = (cityEnglish || "").trim();
+
+    // إذا لم يكن هناك لا اسم عربي ولا إنجليزي، نرفض
+    if (!cityArabicTrimmed && !cityEnglishTrimmed) return false;
 
     // تطبيع الأسماء
     const normalizedArabic = normalizeCityName(cityArabicTrimmed);
+    const normalizedEnglish = normalizeCityName(cityEnglishTrimmed);
     const normalizedOfficeCity = normalizeCityName(officeCity);
 
-    // 1. المقارنة الدقيقة مع cityName (الإنجليزية) - هذا هو الأساس
-    if (officeCity.toLowerCase() === finalCityEnglish.toLowerCase()) {
+    // الأولوية للاسم الإنجليزي إذا كان متوفراً
+    const primaryCityName = cityEnglishTrimmed || cityArabicTrimmed;
+    const normalizedPrimary = cityEnglishTrimmed
+      ? normalizedEnglish
+      : normalizedArabic;
+
+    // 1. المقارنة الدقيقة مع الاسم الأساسي (الإنجليزي أو العربي)
+    if (officeCity.toLowerCase() === primaryCityName.toLowerCase()) {
       return true;
     }
 
-    // 2. المقارنة مع cityName (العربية) - في حال كانت API ترجعها بالعربية
-    if (officeCity === cityArabicTrimmed) {
-      return true;
-    }
-
-    // 3. المقارنة بدون case sensitivity للعربية
-    if (officeCity.toLowerCase() === cityArabicTrimmed.toLowerCase()) {
-      return true;
-    }
-
-    // 4. المقارنة بعد التطبيع (للمدن مثل "مكة" و "مكة المكرمة")
-    if (normalizedOfficeCity.toLowerCase() === normalizedArabic.toLowerCase()) {
-      return true;
-    }
-
-    // 5. البحث الجزئي - إذا كان اسم المدينة جزء من cityName
-    if (officeCity.toLowerCase().includes(finalCityEnglish.toLowerCase())) {
-      return true;
-    }
-
+    // 2. المقارنة الدقيقة مع الاسم الإنجليزي إذا كان مختلفاً
     if (
+      cityEnglishTrimmed &&
+      officeCity.toLowerCase() === cityEnglishTrimmed.toLowerCase()
+    ) {
+      return true;
+    }
+
+    // 3. المقارنة الدقيقة مع الاسم العربي
+    if (cityArabicTrimmed && officeCity === cityArabicTrimmed) {
+      return true;
+    }
+
+    // 4. المقارنة بدون case sensitivity للعربية
+    if (
+      cityArabicTrimmed &&
+      officeCity.toLowerCase() === cityArabicTrimmed.toLowerCase()
+    ) {
+      return true;
+    }
+
+    // 5. المقارنة بعد التطبيع مع الاسم الأساسي
+    if (
+      normalizedOfficeCity.toLowerCase() === normalizedPrimary.toLowerCase()
+    ) {
+      return true;
+    }
+
+    // 6. البحث الجزئي مع الاسم الأساسي
+    if (officeCity.toLowerCase().includes(primaryCityName.toLowerCase())) {
+      return true;
+    }
+
+    // 7. البحث الجزئي مع الاسم العربي
+    if (
+      cityArabicTrimmed &&
       normalizedOfficeCity
         .toLowerCase()
         .includes(normalizedArabic.toLowerCase())
@@ -1784,10 +1861,23 @@ function Step4Content({
       return true;
     }
 
-    // 6. معالجة حالات خاصة
+    // 8. البحث الجزئي مع الاسم الإنجليزي
+    if (
+      cityEnglishTrimmed &&
+      normalizedOfficeCity
+        .toLowerCase()
+        .includes(normalizedEnglish.toLowerCase())
+    ) {
+      return true;
+    }
+
+    // 9. معالجة حالات خاصة
     // مكة = Makkah
     if (
-      (cityArabicTrimmed === "مكة" || normalizedArabic === "مكة") &&
+      (cityArabicTrimmed === "مكة" ||
+        normalizedArabic === "مكة" ||
+        cityEnglishTrimmed === "Makkah" ||
+        normalizedEnglish === "Makkah") &&
       (officeCity === "Makkah" || officeCity.toLowerCase().includes("makkah"))
     ) {
       return true;
@@ -1795,8 +1885,37 @@ function Step4Content({
 
     // المدينة = Madinah
     if (
-      (cityArabicTrimmed === "المدينة" || normalizedArabic === "المدينة") &&
+      (cityArabicTrimmed === "المدينة" ||
+        normalizedArabic === "المدينة" ||
+        cityEnglishTrimmed === "Madinah" ||
+        normalizedEnglish === "Madinah") &&
       (officeCity === "Madinah" || officeCity.toLowerCase().includes("madinah"))
+    ) {
+      return true;
+    }
+
+    // 10. مقارنة التشابه مع الاسم الأساسي (60%)
+    const similarityThreshold = 0.6;
+    if (
+      calculateSimilarity(primaryCityName, officeCity) >= similarityThreshold
+    ) {
+      return true;
+    }
+
+    // 11. مقارنة التشابه مع الاسم العربي إذا كان مختلفاً
+    if (
+      cityArabicTrimmed &&
+      cityArabicTrimmed !== primaryCityName &&
+      calculateSimilarity(cityArabicTrimmed, officeCity) >= similarityThreshold
+    ) {
+      return true;
+    }
+
+    // 12. مقارنة التشابه مع الاسم الإنجليزي إذا كان مختلفاً
+    if (
+      cityEnglishTrimmed &&
+      cityEnglishTrimmed !== primaryCityName &&
+      calculateSimilarity(cityEnglishTrimmed, officeCity) >= similarityThreshold
     ) {
       return true;
     }
@@ -1804,14 +1923,44 @@ function Step4Content({
     return false;
   };
 
-  // Filter offices by city (مع تطابق دقيق)
+  // Filter offices by city (مع مقارنة التشابه وتجاهل الرموز والشرطة)
+  // تطبيق نفس منطق المستلم على المرسل لضمان اتساق البحث عن المكاتب
   const shipperOfficesByCity = offices.filter((office: any) => {
-    return matchesCity(office, shipperCity, shipperCityEn);
+    // استخدم نفس منطق المستلم: إذا كان shipperCityEn فارغ، استخدم shipperCity كبديل
+    const effectiveShipperCityEn = shipperCityEn || shipperCity;
+    return matchesCity(office, shipperCity, effectiveShipperCityEn);
   });
 
   const recipientOfficesByCity = offices.filter((office: any) => {
-    return matchesCity(office, recipientCity, recipientCityEn);
+    // استخدم نفس منطق المرسل: إذا كان recipientCityEn فارغ، استخدم recipientCity كبديل
+    const effectiveRecipientCityEn = recipientCityEn || recipientCity;
+    return matchesCity(office, recipientCity, effectiveRecipientCityEn);
   });
+
+  // إذا لم يجد مكاتب للمرسل لكن وجد للمستلم، استخدم نفس منطق المستلم للمرسل
+  // هذا يحل مشكلة عدم ظهور مكاتب المرسل في بعض الحالات
+  const finalShipperOfficesByCity =
+    shipperOfficesByCity.length === 0 && recipientOfficesByCity.length > 0
+      ? (() => {
+          const fallbackOffices = offices.filter((office: any) => {
+            // استخدم نفس منطق المستلم للمرسل
+            const effectiveRecipientCityEn = recipientCityEn || recipientCity;
+            return matchesCity(office, shipperCity, effectiveRecipientCityEn);
+          });
+
+          // Debug للحالات التي يتم فيها استخدام المنطق الاحتياطي
+          console.log("Using fallback logic for shipper offices:", {
+            shipperCity,
+            recipientCity,
+            originalShipperOffices: shipperOfficesByCity.length,
+            recipientOffices: recipientOfficesByCity.length,
+            fallbackOffices: fallbackOffices.length,
+            effectiveRecipientCityEn: recipientCityEn || recipientCity,
+          });
+
+          return fallbackOffices;
+        })()
+      : shipperOfficesByCity;
 
   // دالة للبحث في العنوان
   const matchesSearch = (office: any, searchQuery: string) => {
@@ -1830,7 +1979,7 @@ function Step4Content({
   };
 
   // Filter offices by city AND search query
-  const shipperOffices = shipperOfficesByCity.filter((office: any) => {
+  const shipperOffices = finalShipperOfficesByCity.filter((office: any) => {
     return matchesSearch(office, senderSearchQuery);
   });
 
@@ -1859,6 +2008,26 @@ function Step4Content({
     })),
   });
 
+  // Debug للمقارنة بين المرسل والمستلم
+  console.log("Office Filtering Debug:", {
+    shipperCity,
+    recipientCity,
+    shipperCityEn,
+    recipientCityEn,
+    shipperCityEnType: typeof shipperCityEn,
+    recipientCityEnType: typeof recipientCityEn,
+    effectiveShipperCityEn: shipperCityEn || shipperCity,
+    effectiveRecipientCityEn: recipientCityEn || recipientCity,
+    shipperOfficesByCityCount: shipperOfficesByCity.length,
+    finalShipperOfficesByCityCount: finalShipperOfficesByCity.length,
+    recipientOfficesByCityCount: recipientOfficesByCity.length,
+    shipperMatches:
+      shipperOfficesByCity.length > 0 ? "يوجد مكاتب" : "لا يوجد مكاتب",
+    recipientMatches:
+      recipientOfficesByCity.length > 0 ? "يوجد مكاتب" : "لا يوجد مكاتب",
+    fallbackUsed: finalShipperOfficesByCity !== shipperOfficesByCity,
+  });
+
   return (
     <form onSubmit={onSubmit} className="space-y-6">
       <div className="space-y-6">
@@ -1870,7 +2039,7 @@ function Step4Content({
           </h3>
 
           {/* Search Input for Sender Offices */}
-          {!isLoadingOffices && shipperOfficesByCity.length > 0 && (
+          {!isLoadingOffices && finalShipperOfficesByCity.length > 0 && (
             <div className="relative">
               <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
               <Input
@@ -1888,7 +2057,7 @@ function Step4Content({
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#3498db] mx-auto"></div>
               <p className="mt-2 text-gray-500">جاري جلب المكاتب...</p>
             </div>
-          ) : shipperOfficesByCity.length === 0 ? (
+          ) : finalShipperOfficesByCity.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
               لا توجد مكاتب متاحة في {shipperCity || "هذه المدينة"}
             </div>

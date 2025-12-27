@@ -25,7 +25,9 @@ export const cityApi = createApi({
         credentials: "include",
       }),
       providesTags: (result) => [
-        ...(result?.data?.map((city) => ({ type: "Cities", id: city._id } as const)) || []),
+        ...(result?.data?.map(
+          (city) => ({ type: "Cities", id: city._id } as const)
+        ) || []),
         { type: "Cities", id: "LIST" },
       ],
     }),
