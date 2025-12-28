@@ -120,95 +120,163 @@ export function SenderAddressSection({
   };
 
   // البحث عن المدينة بالاسم العربي للحصول على الاسم الإنجليزي
-  const selectedAddressCity = selectedSender ? rawSenderAddresses.find(addr => addr.id === selectedSender)?.city || "" : "";
+  const selectedAddress = selectedSender
+    ? rawSenderAddresses.find(
+        (addr) => addr._id === selectedSender || addr.id === selectedSender
+      )
+    : null;
+  const selectedAddressCity = selectedAddress?.city || "";
 
-  // البحث عن المدينة بطرق متعددة إذا لم يجد الاسم الأساسي
-  const citySearchTerm = selectedAddressCity && selectedAddressCity.trim() !== ""
-    ? selectedAddressCity.trim()
-    : ""; // لا نبحث إذا كان فارغ
+  // Debug شامل للبحث عن المدينة للمرسل
+  console.log("=== SHIPPER CITY SEARCH DEBUG ===");
+  console.log("Selected Sender Info:", {
+    selectedSender,
+    selectedSenderType: typeof selectedSender,
+  });
 
-  const { data: cityData } = useSearchCitiesQuery(
-    citySearchTerm,
-    {
-      skip: !selectedSender || !citySearchTerm
-    }
+  console.log("Address Search Process:", {
+    selectedAddress: !!selectedAddress,
+    selectedAddressCity,
+    selectedAddressCityType: typeof selectedAddressCity,
+    selectedAddressCityLength: selectedAddressCity?.length || 0,
+  });
+
+  console.log(
+    "Raw Addresses Sample:",
+    rawSenderAddresses.slice(0, 2).map((addr) => ({
+      _id: addr._id,
+      id: addr.id,
+      alias: addr.alias,
+      city: addr.city,
+      city_en: addr.city_en,
+    }))
   );
+
+  console.log("Search Skip Conditions:", {
+    noSelectedSender: !selectedSender,
+    noSelectedAddressCity: !selectedAddressCity,
+    emptyTrimmedCity: selectedAddressCity.trim() === "",
+    willSkip:
+      !selectedSender ||
+      !selectedAddressCity ||
+      selectedAddressCity.trim() === "",
+  });
+  console.log("=== END SHIPPER CITY SEARCH DEBUG ===");
+
+  const { data: cityData } = useSearchCitiesQuery(selectedAddressCity, {
+    skip:
+      !selectedSender ||
+      !selectedAddressCity ||
+      selectedAddressCity.trim() === "",
+  });
 
   // تحديث الاسم الإنجليزي عند العثور على المدينة
   useEffect(() => {
-    if (cityData?.results?.length > 0 && selectedSender && selectedAddressCity) {
-      const selectedAddress = rawSenderAddresses.find(addr => addr.id === selectedSender);
-      if (selectedAddress && selectedAddress.city) {
-        // البحث عن المدينة المطابقة في النتائج باستخدام التشابه
-        let matchedCity = cityData.results.find((city: any) => {
-          const similarityThreshold = 0.7; // 70% تشابه
+    console.log("Shipper City Update Effect:", {
+      hasCityData: !!cityData?.results?.length,
+      selectedSender,
+      selectedAddressCity,
+      cityDataResults: cityData?.results?.length || 0,
+    });
 
-          // مقارنة التشابه مع الاسم العربي
-          if (calculateSimilarity(city.name_ar, selectedAddress.city) >= similarityThreshold) {
-            return true;
-          }
+    if (
+      cityData?.results?.length > 0 &&
+      selectedSender &&
+      selectedAddressCity
+    ) {
+      console.log("=== PROCESSING SHIPPER CITY ===");
+      console.log("City to process:", selectedAddressCity);
+      console.log(
+        "Available city results:",
+        cityData.results.map((city) => ({
+          name_ar: city.name_ar,
+          name_en: city.name_en,
+        }))
+      );
 
-          // مقارنة التشابه مع الاسم الإنجليزي
-          if (calculateSimilarity(city.name_en, selectedAddress.city) >= similarityThreshold) {
-            return true;
-          }
+      // استخدم selectedAddressCity مباشرة بدلاً من البحث عن العنوان مرة أخرى
+      console.log("Processing city directly:", selectedAddressCity);
 
-          // المطابقة الدقيقة كخيار احتياطي
-          return city.name_ar === selectedAddress.city;
-        });
+      // البحث عن المدينة المطابقة في النتائج باستخدام التشابه
+      const matchedCity = cityData.results.find((city: any) => {
+        const similarityThreshold = 0.7; // 70% تشابه
 
-        // إذا لم نجد مطابقة بالتشابه، نبحث بطريقة أكثر مرونة
-        if (!matchedCity) {
-          matchedCity = cityData.results.find((city: any) => {
-            const cityArabic = city.name_ar?.toLowerCase() || "";
-            const cityEnglish = city.name_en?.toLowerCase() || "";
-            const selectedCity = selectedAddress.city.toLowerCase();
-
-            // البحث الجزئي في كلا الاسمين
-            return cityArabic.includes(selectedCity) ||
-                   cityEnglish.includes(selectedCity) ||
-                   selectedCity.includes(cityArabic) ||
-                   selectedCity.includes(cityEnglish);
-          });
+        // مقارنة التشابه مع الاسم العربي
+        if (
+          calculateSimilarity(city.name_ar, selectedAddressCity) >=
+          similarityThreshold
+        ) {
+          return true;
         }
 
-        // إذا وجدنا مطابقة، نحدث الاسم الإنجليزي
-        if (matchedCity) {
-          setValue("shipper_city_en", matchedCity.name_en);
-          console.log("Shipper city found (primary):", {
-            selectedCity: selectedAddress.city,
-            matchedCity: matchedCity.name_ar,
-            englishName: matchedCity.name_en
+        // مقارنة التشابه مع الاسم الإنجليزي
+        if (
+          calculateSimilarity(city.name_en, selectedAddressCity) >=
+          similarityThreshold
+        ) {
+          return true;
+        }
+
+        // المطابقة الدقيقة كخيار احتياطي
+        return city.name_ar === selectedAddressCity;
+      });
+
+      if (matchedCity) {
+        setValue("shipper_city_en", matchedCity.name_en);
+        console.log("Shipper city found (primary):", {
+          selectedCity: selectedAddressCity,
+          matchedCity: matchedCity.name_ar,
+          englishName: matchedCity.name_en,
+        });
+      } else {
+        // إذا لم نجد مطابقة، نحاول استخدام منطق أكثر مرونة
+        const alternativeCity = cityData.results.find((city: any) => {
+          // نستخدم منطق أكثر مرونة: البحث بالتشابه
+          const similarityThreshold = 0.6;
+          return (
+            calculateSimilarity(city.name_ar, selectedAddressCity) >=
+              similarityThreshold ||
+            calculateSimilarity(city.name_en, selectedAddressCity) >=
+              similarityThreshold
+          );
+        });
+
+        if (alternativeCity) {
+          setValue("shipper_city_en", alternativeCity.name_en);
+          console.log("Shipper city found (alternative/fallback):", {
+            selectedCity: selectedAddressCity,
+            matchedCity: alternativeCity.name_ar,
+            englishName: alternativeCity.name_en,
           });
         } else {
-          // إذا لم نجد مطابقة، نحاول استخدام منطق المستلم كبديل
-          // نبحث في جميع المدن المتاحة
-          const alternativeCity = cityData.results.find((city: any) => {
-            // نستخدم نفس منطق المستلم: البحث بالتشابه
-            const similarityThreshold = 0.6;
-            return calculateSimilarity(city.name_ar, selectedAddress.city) >= similarityThreshold ||
-                   calculateSimilarity(city.name_en, selectedAddress.city) >= similarityThreshold;
-          });
-
-          if (alternativeCity) {
-            setValue("shipper_city_en", alternativeCity.name_en);
-            console.log("Shipper city found (alternative/fallback):", {
-              selectedCity: selectedAddress.city,
-              matchedCity: alternativeCity.name_ar,
-              englishName: alternativeCity.name_en
+          // إذا لم نجد أي مطابقة، نحاول استخدام أول نتيجة متاحة كبديل أخير
+          if (cityData.results.length > 0) {
+            const fallbackCity = cityData.results[0];
+            setValue("shipper_city_en", fallbackCity.name_en);
+            console.log("Shipper city fallback to first result:", {
+              selectedCity: selectedAddressCity,
+              fallbackCity: fallbackCity.name_ar,
+              englishName: fallbackCity.name_en,
             });
           } else {
-            // إذا لم نجد أي مطابقة، نترك الحقل فارغاً
+            // إذا لم نجد أي نتائج، نترك الحقل فارغاً
             setValue("shipper_city_en", "");
-            console.log("Shipper city not found:", {
-              selectedCity: selectedAddress.city,
-              availableCities: cityData.results.map((c: any) => ({ ar: c.name_ar, en: c.name_en }))
+            console.log("Shipper city not found - no results:", {
+              selectedCity: selectedAddressCity,
             });
           }
         }
       }
+
+      console.log("=== END PROCESSING SHIPPER CITY ===");
     }
-  }, [cityData, selectedSender, rawSenderAddresses, selectedAddressCity, setValue]);
+  }, [
+    cityData,
+    selectedSender,
+    rawSenderAddresses,
+    selectedAddressCity,
+    setValue,
+  ]);
   const getTime = (obj: any) => {
     const c = obj?.createdAt || obj?.updatedAt;
     if (c) {
@@ -218,23 +286,25 @@ export function SenderAddressSection({
     const id: string | undefined = obj?._id;
     if (typeof id === "string" && id.length >= 8) {
       const ts = parseInt(id.substring(0, 8), 16);
-      return (isNaN(ts) ? 0 : ts * 1000);
+      return isNaN(ts) ? 0 : ts * 1000;
     }
     return 0;
   };
   const sortedSenderAddresses = [...rawSenderAddresses].sort(
     (a, b) => getTime(b) - getTime(a)
   );
-  const senderCards = sortedSenderAddresses.map((address: any, idx: number) => ({
-    id: address._id || idx,
-    _id: address._id,
-    name: address.alias || "-",
-    mobile: address.phone || "-",
-    city: address.city || "-",
-    country: address.country || "-",
-    address: address.location || "-",
-    email: address.email || customerMeData?.data.email || "-",
-  }));
+  const senderCards = sortedSenderAddresses.map(
+    (address: any, idx: number) => ({
+      id: address._id || idx,
+      _id: address._id,
+      name: address.alias || "-",
+      mobile: address.phone || "-",
+      city: address.city || "-",
+      country: address.country || "-",
+      address: address.location || "-",
+      email: address.email || customerMeData?.data.email || "-",
+    })
+  );
 
   const normalize = (str: string) =>
     str

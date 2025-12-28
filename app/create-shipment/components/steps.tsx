@@ -1800,7 +1800,13 @@ function Step4Content({
     const cityEnglishTrimmed = (cityEnglish || "").trim();
 
     // إذا لم يكن هناك لا اسم عربي ولا إنجليزي، نرفض
-    if (!cityArabicTrimmed && !cityEnglishTrimmed) return false;
+    if (!cityArabicTrimmed && !cityEnglishTrimmed) {
+      console.log("matchesCity: No city names provided", {
+        cityArabic,
+        cityEnglish,
+      });
+      return false;
+    }
 
     // تطبيع الأسماء
     const normalizedArabic = normalizeCityName(cityArabicTrimmed);
@@ -1920,47 +1926,71 @@ function Step4Content({
       return true;
     }
 
+    console.log("matchesCity: No match found", {
+      officeCity,
+      primaryCityName,
+      cityArabicTrimmed,
+      cityEnglishTrimmed,
+    });
+
     return false;
   };
 
-  // Filter offices by city (مع مقارنة التشابه وتجاهل الرموز والشرطة)
-  // تطبيق نفس منطق المستلم على المرسل لضمان اتساق البحث عن المكاتب
+  // فلترة مكاتب المرسل منفصلة تماماً
   const shipperOfficesByCity = offices.filter((office: any) => {
-    // استخدم نفس منطق المستلم: إذا كان shipperCityEn فارغ، استخدم shipperCity كبديل
+    // منطق خاص للمرسل فقط
     const effectiveShipperCityEn = shipperCityEn || shipperCity;
-    return matchesCity(office, shipperCity, effectiveShipperCityEn);
+    const result = matchesCity(office, shipperCity, effectiveShipperCityEn);
+
+    if (result) {
+      console.log("Shipper Office Match:", {
+        officeCode: office.code,
+        officeCity: office.cityName,
+        shipperCity,
+        effectiveShipperCityEn,
+      });
+    }
+
+    return result;
   });
 
+  // فلترة مكاتب المستلم منفصلة تماماً
   const recipientOfficesByCity = offices.filter((office: any) => {
-    // استخدم نفس منطق المرسل: إذا كان recipientCityEn فارغ، استخدم recipientCity كبديل
+    // منطق خاص للمستلم فقط
     const effectiveRecipientCityEn = recipientCityEn || recipientCity;
-    return matchesCity(office, recipientCity, effectiveRecipientCityEn);
+    const result = matchesCity(office, recipientCity, effectiveRecipientCityEn);
+
+    if (result) {
+      console.log("Recipient Office Match:", {
+        officeCode: office.code,
+        officeCity: office.cityName,
+        recipientCity,
+        effectiveRecipientCityEn,
+      });
+    }
+
+    return result;
   });
 
-  // إذا لم يجد مكاتب للمرسل لكن وجد للمستلم، استخدم نفس منطق المستلم للمرسل
-  // هذا يحل مشكلة عدم ظهور مكاتب المرسل في بعض الحالات
-  const finalShipperOfficesByCity =
-    shipperOfficesByCity.length === 0 && recipientOfficesByCity.length > 0
-      ? (() => {
-          const fallbackOffices = offices.filter((office: any) => {
-            // استخدم نفس منطق المستلم للمرسل
-            const effectiveRecipientCityEn = recipientCityEn || recipientCity;
-            return matchesCity(office, shipperCity, effectiveRecipientCityEn);
-          });
+  // مقارنة شاملة بين المرسل والمستلم
+  console.log("Shipper vs Recipient Comparison:", {
+    shipperCity,
+    recipientCity,
+    shipperCityEn,
+    recipientCityEn,
+    shipperCityEnType: typeof shipperCityEn,
+    recipientCityEnType: typeof recipientCityEn,
+    shipperOfficesCount: shipperOfficesByCity.length,
+    recipientOfficesCount: recipientOfficesByCity.length,
+    shipperHasCity: !!shipperCity,
+    recipientHasCity: !!recipientCity,
+    shipperHasCityEn: !!shipperCityEn,
+    recipientHasCityEn: !!recipientCityEn,
+    citiesMatch: shipperCity === recipientCity,
+    cityEnMatch: shipperCityEn === recipientCityEn,
+  });
 
-          // Debug للحالات التي يتم فيها استخدام المنطق الاحتياطي
-          console.log("Using fallback logic for shipper offices:", {
-            shipperCity,
-            recipientCity,
-            originalShipperOffices: shipperOfficesByCity.length,
-            recipientOffices: recipientOfficesByCity.length,
-            fallbackOffices: fallbackOffices.length,
-            effectiveRecipientCityEn: recipientCityEn || recipientCity,
-          });
-
-          return fallbackOffices;
-        })()
-      : shipperOfficesByCity;
+  // مكاتب المرسل والمستلم مستقلة تماماً
 
   // دالة للبحث في العنوان
   const matchesSearch = (office: any, searchQuery: string) => {
@@ -1979,7 +2009,7 @@ function Step4Content({
   };
 
   // Filter offices by city AND search query
-  const shipperOffices = finalShipperOfficesByCity.filter((office: any) => {
+  const shipperOffices = shipperOfficesByCity.filter((office: any) => {
     return matchesSearch(office, senderSearchQuery);
   });
 
@@ -2019,13 +2049,11 @@ function Step4Content({
     effectiveShipperCityEn: shipperCityEn || shipperCity,
     effectiveRecipientCityEn: recipientCityEn || recipientCity,
     shipperOfficesByCityCount: shipperOfficesByCity.length,
-    finalShipperOfficesByCityCount: finalShipperOfficesByCity.length,
     recipientOfficesByCityCount: recipientOfficesByCity.length,
     shipperMatches:
       shipperOfficesByCity.length > 0 ? "يوجد مكاتب" : "لا يوجد مكاتب",
     recipientMatches:
       recipientOfficesByCity.length > 0 ? "يوجد مكاتب" : "لا يوجد مكاتب",
-    fallbackUsed: finalShipperOfficesByCity !== shipperOfficesByCity,
   });
 
   return (
@@ -2039,7 +2067,7 @@ function Step4Content({
           </h3>
 
           {/* Search Input for Sender Offices */}
-          {!isLoadingOffices && finalShipperOfficesByCity.length > 0 && (
+          {!isLoadingOffices && shipperOfficesByCity.length > 0 && (
             <div className="relative">
               <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
               <Input
@@ -2057,7 +2085,7 @@ function Step4Content({
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#3498db] mx-auto"></div>
               <p className="mt-2 text-gray-500">جاري جلب المكاتب...</p>
             </div>
-          ) : finalShipperOfficesByCity.length === 0 ? (
+          ) : shipperOfficesByCity.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
               لا توجد مكاتب متاحة في {shipperCity || "هذه المدينة"}
             </div>
