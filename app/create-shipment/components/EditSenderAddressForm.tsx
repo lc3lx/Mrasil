@@ -29,7 +29,7 @@ const schema = yup
       .length(10, "رقم الجوال يجب أن يكون 10 أرقام"),
     city: yup.string().required("المدينة مطلوبة"),
     country: yup.string().required("الدولة مطلوبة"),
-    district: yup.string(),
+    addressDetails: yup.string().required("العنوان الوطني مطلوب"),
   })
   .required();
 
@@ -44,7 +44,7 @@ interface EditSenderAddressFormProps {
     phone: string;
     city: string;
     country: string;
-    district: string;
+    addressDetails: string;
     email: string;
   };
 }
@@ -312,29 +312,30 @@ export function EditSenderAddressForm({
                 </p>
               )}
             </div>
-            {/* الرمز البريدي*/}
+            {/* العنوان الوطني */}
             <div className="space-y-2">
               <Label
-                htmlFor="location"
+                htmlFor="addressDetails"
                 className="sm:text-lg text-base font-medium flex items-center gap-2 text-[#1A5889]"
               >
                 <MapPin className="h-4 w-4 text-[#1A5889]" />
-                الرمز البريدي
+                العنوان الوطني
+                <span className=" text-red-500">*</span>
               </Label>
               <Input
-                id="district"
-                {...register("district")}
-                placeholder="  الرمز البريدي"
+                id="addressDetails"
+                {...register("addressDetails")}
+                placeholder="العنوان الوطني"
                 className={
-                  errors.location
+                  errors.addressDetails
                     ? "v7-neu-input border-red-500 focus:border-red-500"
                     : "v7-neu-input"
                 }
                 style={{ direction: "rtl", fontFamily: "inherit" }}
               />
-              {errors.district && (
+              {errors.addressDetails && (
                 <p className="text-sm text-red-500">
-                  {errors.district.message}
+                  {errors.addressDetails.message}
                 </p>
               )}
             </div>

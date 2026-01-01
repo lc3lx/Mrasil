@@ -73,6 +73,7 @@ interface AddRecipientFormProps {
   initialValues?: {
     clientName?: string;
     clientAddress?: string;
+    addressDetails?: string;
     district?: string;
     city?: string;
     country?: string;
@@ -92,6 +93,7 @@ export function AddRecipientForm({
   const [form, setForm] = useState({
     clientName: initialValues?.clientName || "",
     clientAddress: initialValues?.clientAddress || "",
+    addressDetails: initialValues?.addressDetails || "",
     district: initialValues?.district || "",
     city: initialValues?.city || "",
     country: initialValues?.country || "",
@@ -130,6 +132,7 @@ export function AddRecipientForm({
         city: form.city,
         country: "السعودية",
         clientAddress: form.clientAddress,
+        addressDetails: form.addressDetails,
         district: form.district,
         clientEmail,
       });
@@ -358,6 +361,30 @@ export function AddRecipientForm({
                 )}
                 onFocus={() => setDescFocusedAA(true)}
                 onBlur={() => setDescFocusedAA(false)}
+              />
+            </div>
+            <div className="flex-1 space-y-2">
+              <Label
+                htmlFor="addressDetails"
+                className="sm:text-lg text-base font-medium flex items-center gap-2  text-[#1A5889]"
+              >
+                <MapPin className="h-4 w-4 text-[#1A5889]" />
+                العنوان الوطني
+                <span className=" text-red-500">*</span>
+              </Label>
+
+              <input
+                name="addressDetails"
+                value={form.addressDetails}
+                type="text"
+                required
+                onChange={handleChange}
+                placeholder="العنوان الوطني"
+                className={cn(
+                  "v7-neu-input bg-transparent border-none shadow-none outline-none text-base w-full "
+                )}
+                onFocus={() => setDescFocusedMA(true)}
+                onBlur={() => setDescFocusedMA(false)}
               />
             </div>
             <div className="flex-1 space-y-2">

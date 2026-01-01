@@ -5,6 +5,7 @@ export interface ClientAddress {
   _id: string;
   clientName: string;
   clientAddress: string;
+  addressDetails?: string;
   clientPhone: string;
   clientEmail: string;
   country: string;
@@ -19,6 +20,7 @@ export interface ClientAddress {
 export interface CreateClientAddressRequest {
   clientName: string;
   clientAddress: string;
+  addressDetails: string;
   clientPhone: string;
   clientEmail: string;
   country: string;
@@ -30,6 +32,7 @@ export interface CreateClientAddressRequest {
 export interface UpdateClientAddressRequest {
   clientName?: string;
   clientAddress?: string;
+  addressDetails?: string;
   clientPhone?: string;
   clientEmail?: string;
   country?: string;

@@ -73,7 +73,7 @@ interface AddSenderAddressFormProps {
   initialValues?: {
     clientName?: string;
     clientAddress?: string;
-    district?: string;
+    addressDetails?: string;
     city?: string;
     country?: string;
     clientEmail?: string;
@@ -92,7 +92,7 @@ export function AddSenderAddressForm({
   const [form, setForm] = useState({
     clientName: initialValues?.clientName || "",
     clientAddress: initialValues?.clientAddress || "",
-    district: initialValues?.district || "",
+    addressDetails: initialValues?.addressDetails || "",
     city: initialValues?.city || "",
     country: initialValues?.country || "",
     clientEmail: initialValues?.clientEmail || "",
@@ -115,7 +115,7 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
       country: "السعودية",
       city: "",
       clientEmail: "",
-      district: ""
+      addressDetails: ""
     },
   });
 
@@ -132,8 +132,8 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
   // country: form.country || countrySearch,
   country:"السعودية",
   clientEmail,
-  clientAddress:form.clientAddress,
-  district: form.district,
+  location: form.clientAddress,
+  addressDetails: form.addressDetails,
       });
       setAlertStatus("success");
       setAlertMessage("تمت إضافة العنوان بنجاح");
@@ -359,19 +359,21 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
             </div>
             <div className="flex-1 space-y-2">
               <Label
-                htmlFor="country"
+                htmlFor="addressDetails"
                 className="sm:text-lg text-base font-medium flex items-center gap-2  text-[#1A5889]"
               >
                 <MapPin className="h-4 w-4 text-[#1A5889]" />
-                الرمز البريدي
+                العنوان الوطني
+                <span className=" text-red-500">*</span>
               </Label>
 
               <input
-                name="district"
-                value={form.district}
+                name="addressDetails"
+                value={form.addressDetails}
                 type="text"
+                required
                 onChange={handleChange}
-                placeholder="الرمز البريدي"
+                placeholder="العنوان الوطني"
                 className={cn(
                   "v7-neu-input bg-transparent border-none shadow-none outline-none text-base w-full"
                 )}

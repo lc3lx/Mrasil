@@ -8,6 +8,7 @@ export interface Address {
   city: string;
   phone: string;
   country: string;
+  addressDetails: string;
   email?: string;
   _id: string;
 }

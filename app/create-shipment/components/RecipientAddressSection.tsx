@@ -375,6 +375,7 @@ export function RecipientAddressSection({
     setEditRecipient({
       clientName: card.clientName || "",
       clientAddress: card.clientAddress || "",
+      addressDetails: card.addressDetails || "",
       address: card.address || "",
       city: card.city || "",
       country: card.country || "",
@@ -410,6 +411,7 @@ export function RecipientAddressSection({
         data: {
           ...editRecipient,
           clientAddress: editRecipient.clientAddress || "",
+          addressDetails: (editRecipient as any).addressDetails || "",
         },
       }).unwrap();
       setEditRecipientModalOpen(false);
@@ -833,6 +835,27 @@ export function RecipientAddressSection({
                 placeholder="الحي/المنطقة، الشارع، رقم المبنى"
                 value={editRecipient.clientAddress}
                 onChange={handleEditRecipientChange}
+                className={"v7-neu-input"}
+                style={{ direction: "rtl", fontFamily: "inherit" }}
+              />
+            </div>
+            {/* العنوان الوطني */}
+            <div className="space-y-2">
+              <Label
+                htmlFor="addressDetails"
+                className="sm:text-lg text-base font-medium flex items-center gap-2 text-[#1A5889]"
+              >
+                <User className="h-4 w-4 text-[#1A5889]" />
+                العنوان الوطني
+                <span className=" text-red-500">*</span>
+              </Label>
+              <Input
+                id="addressDetails"
+                name="addressDetails"
+                placeholder="العنوان الوطني"
+                value={(editRecipient as any).addressDetails || ""}
+                onChange={handleEditRecipientChange}
+                required
                 className={"v7-neu-input"}
                 style={{ direction: "rtl", fontFamily: "inherit" }}
               />
