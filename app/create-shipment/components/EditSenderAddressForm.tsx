@@ -29,7 +29,7 @@ const schema = yup
       .length(10, "رقم الجوال يجب أن يكون 10 أرقام"),
     city: yup.string().required("المدينة مطلوبة"),
     country: yup.string().required("الدولة مطلوبة"),
-    addressDetails: yup.string().required("العنوان الوطني مطلوب"),
+    nationalAddress: yup.string(),
   })
   .required();
 
@@ -44,7 +44,7 @@ interface EditSenderAddressFormProps {
     phone: string;
     city: string;
     country: string;
-    addressDetails: string;
+    nationalAddress: string;
     email: string;
   };
 }
@@ -67,7 +67,15 @@ export function EditSenderAddressForm({
   });
   const methods = useForm({
     resolver: yupResolver(schema),
-    defaultValues: initialValues,
+    defaultValues: {
+      alias: initialValues.alias,
+      location: initialValues.location,
+      phone: initialValues.phone,
+      city: initialValues.city,
+      country: initialValues.country,
+      email: initialValues.email,
+      nationalAddress: initialValues.nationalAddress,
+    },
   });
 
   const {
@@ -79,7 +87,15 @@ export function EditSenderAddressForm({
   } = methods;
 
   useEffect(() => {
-    reset(initialValues);
+    reset({
+      alias: initialValues.alias,
+      location: initialValues.location,
+      phone: initialValues.phone,
+      city: initialValues.city,
+      country: initialValues.country,
+      email: initialValues.email,
+      nationalAddress: initialValues.nationalAddress,
+    });
   }, [initialValues, reset]);
 
   const handleFormSubmit = async (data: any) => {
@@ -312,30 +328,29 @@ export function EditSenderAddressForm({
                 </p>
               )}
             </div>
-            {/* العنوان الوطني */}
+            {/* العنوان الوطني*/}
             <div className="space-y-2">
               <Label
-                htmlFor="addressDetails"
+                htmlFor="nationalAddress"
                 className="sm:text-lg text-base font-medium flex items-center gap-2 text-[#1A5889]"
               >
                 <MapPin className="h-4 w-4 text-[#1A5889]" />
                 العنوان الوطني
-                <span className=" text-red-500">*</span>
               </Label>
               <Input
-                id="addressDetails"
-                {...register("addressDetails")}
+                id="nationalAddress"
+                {...register("nationalAddress")}
                 placeholder="العنوان الوطني"
                 className={
-                  errors.addressDetails
+                  errors.nationalAddress
                     ? "v7-neu-input border-red-500 focus:border-red-500"
                     : "v7-neu-input"
                 }
                 style={{ direction: "rtl", fontFamily: "inherit" }}
               />
-              {errors.addressDetails && (
+              {errors.nationalAddress && (
                 <p className="text-sm text-red-500">
-                  {errors.addressDetails.message}
+                  {errors.nationalAddress.message}
                 </p>
               )}
             </div>

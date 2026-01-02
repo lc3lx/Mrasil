@@ -8,8 +8,8 @@ export interface Address {
   city: string;
   phone: string;
   country: string;
-  addressDetails: string;
   email?: string;
+  nationalAddress?: string;
   _id: string;
 }
 

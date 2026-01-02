@@ -73,8 +73,7 @@ interface AddRecipientFormProps {
   initialValues?: {
     clientName?: string;
     clientAddress?: string;
-    addressDetails?: string;
-    district?: string;
+    nationalAddress?: string;
     city?: string;
     country?: string;
     clientEmail?: string;
@@ -93,8 +92,7 @@ export function AddRecipientForm({
   const [form, setForm] = useState({
     clientName: initialValues?.clientName || "",
     clientAddress: initialValues?.clientAddress || "",
-    addressDetails: initialValues?.addressDetails || "",
-    district: initialValues?.district || "",
+    nationalAddress: initialValues?.nationalAddress || "",
     city: initialValues?.city || "",
     country: initialValues?.country || "",
     clientEmail: initialValues?.clientEmail || "",
@@ -117,7 +115,7 @@ export function AddRecipientForm({
       country: "السعودية",
       city: "",
       clientEmail: "",
-      district: "",
+      nationalAddress: "",
     },
   });
 
@@ -132,8 +130,7 @@ export function AddRecipientForm({
         city: form.city,
         country: "السعودية",
         clientAddress: form.clientAddress,
-        addressDetails: form.addressDetails,
-        district: form.district,
+        nationalAddress: form.nationalAddress,
         clientEmail,
       });
 
@@ -365,43 +362,19 @@ export function AddRecipientForm({
             </div>
             <div className="flex-1 space-y-2">
               <Label
-                htmlFor="addressDetails"
+                htmlFor="nationalAddress"
                 className="sm:text-lg text-base font-medium flex items-center gap-2  text-[#1A5889]"
               >
                 <MapPin className="h-4 w-4 text-[#1A5889]" />
                 العنوان الوطني
-                <span className=" text-red-500">*</span>
               </Label>
 
               <input
-                name="addressDetails"
-                value={form.addressDetails}
+                name="nationalAddress"
+                value={form.nationalAddress}
                 type="text"
-                required
                 onChange={handleChange}
                 placeholder="العنوان الوطني"
-                className={cn(
-                  "v7-neu-input bg-transparent border-none shadow-none outline-none text-base w-full "
-                )}
-                onFocus={() => setDescFocusedMA(true)}
-                onBlur={() => setDescFocusedMA(false)}
-              />
-            </div>
-            <div className="flex-1 space-y-2">
-              <Label
-                htmlFor="country"
-                className="sm:text-lg text-base font-medium flex items-center gap-2  text-[#1A5889]"
-              >
-                <MapPin className="h-4 w-4 text-[#1A5889]" />
-                الرمز البريدي
-              </Label>
-
-              <input
-                name="district"
-                value={form.district}
-                type="text"
-                onChange={handleChange}
-                placeholder="الرمز البريدي"
                 className={cn(
                   "v7-neu-input bg-transparent border-none shadow-none outline-none text-base w-full"
                 )}

@@ -117,7 +117,7 @@ export function RecipientAddressSection({
     clientEmail: "",
     clientPhone: "",
     customer: "",
-    district: "",
+    nationalAddress: "",
   });
   const [recipientToDelete, setRecipientToDelete] = useState<string | null>(
     null
@@ -344,7 +344,7 @@ export function RecipientAddressSection({
       setValue("recipient_city_en", "");
       setValue("recipient_address", "");
       setValue("recipient_email", "");
-      setValue("recipient_district", "");
+      setValue("recipient_nationalAddress", "");
     } else {
       setSelectedRecipient(card._id);
       setValue("recipient_full_name", card.clientName || "");
@@ -353,7 +353,7 @@ export function RecipientAddressSection({
       setValue("recipient_city_en", ""); // سيتم تحديده لاحقاً
       setValue("recipient_address", card.clientAddress || "");
       setValue("recipient_email", card.clientEmail || "");
-      setValue("recipient_district", card.district || "");
+      setValue("recipient_nationalAddress", card.nationalAddress || "");
     }
   };
 
@@ -375,15 +375,17 @@ export function RecipientAddressSection({
     setEditRecipient({
       clientName: card.clientName || "",
       clientAddress: card.clientAddress || "",
-      addressDetails: card.addressDetails || "",
       address: card.address || "",
       city: card.city || "",
       country: card.country || "",
       clientEmail: card.clientEmail || "",
       clientPhone: card.clientPhone || "",
       customer: card.customer || "",
-      district: card.district || "",
+      nationalAddress: card.nationalAddress || "",
     });
+    // تعيين قيمة المدينة للبحث
+    setCitySearch(card.city || "");
+    setForm({ ...form, city: card.city || "" });
     setEditRecipientModalOpen(true);
   };
 
@@ -411,7 +413,6 @@ export function RecipientAddressSection({
         data: {
           ...editRecipient,
           clientAddress: editRecipient.clientAddress || "",
-          addressDetails: (editRecipient as any).addressDetails || "",
         },
       }).unwrap();
       setEditRecipientModalOpen(false);
@@ -620,7 +621,7 @@ export function RecipientAddressSection({
           clientEmail: "",
           clientPhone: "",
           customer: "",
-          district: "",
+          nationalAddress: "",
         }}
       />
       <ResponseModal
@@ -670,7 +671,15 @@ export function RecipientAddressSection({
       {/* Edit Recipient Modal */}
       <Dialog
         open={editRecipientModalOpen}
-        onOpenChange={setEditRecipientModalOpen}
+        onOpenChange={(open) => {
+          setEditRecipientModalOpen(open);
+          if (!open) {
+            // إعادة تعيين قيم البحث عند إغلاق النموذج
+            setCitySearch("");
+            setForm({ ...form, city: "" });
+            setRecipientToEdit(null);
+          }
+        }}
       >
         <DialogContent
           className=" border-none overflow-y-auto  max-h-screen  scroll"
@@ -842,38 +851,17 @@ export function RecipientAddressSection({
             {/* العنوان الوطني */}
             <div className="space-y-2">
               <Label
-                htmlFor="addressDetails"
+                htmlFor="nationalAddress"
                 className="sm:text-lg text-base font-medium flex items-center gap-2 text-[#1A5889]"
               >
                 <User className="h-4 w-4 text-[#1A5889]" />
                 العنوان الوطني
-                <span className=" text-red-500">*</span>
               </Label>
               <Input
-                id="addressDetails"
-                name="addressDetails"
+                id="nationalAddress"
+                name="nationalAddress"
                 placeholder="العنوان الوطني"
-                value={(editRecipient as any).addressDetails || ""}
-                onChange={handleEditRecipientChange}
-                required
-                className={"v7-neu-input"}
-                style={{ direction: "rtl", fontFamily: "inherit" }}
-              />
-            </div>
-            {/* الرمز البريدي */}
-            <div className="space-y-2">
-              <Label
-                htmlFor="district"
-                className="sm:text-lg text-base font-medium flex items-center gap-2 text-[#1A5889]"
-              >
-                <User className="h-4 w-4 text-[#1A5889]" />
-                الرمز البريدي
-              </Label>
-              <Input
-                id="district"
-                name="district"
-                placeholder="الرمز البريدي"
-                value={(editRecipient as any).district || ""}
+                value={(editRecipient as any).nationalAddress || ""}
                 onChange={handleEditRecipientChange}
                 className={"v7-neu-input"}
                 style={{ direction: "rtl", fontFamily: "inherit" }}

@@ -73,7 +73,7 @@ interface AddSenderAddressFormProps {
   initialValues?: {
     clientName?: string;
     clientAddress?: string;
-    addressDetails?: string;
+    nationalAddress?: string;
     city?: string;
     country?: string;
     clientEmail?: string;
@@ -92,7 +92,7 @@ export function AddSenderAddressForm({
   const [form, setForm] = useState({
     clientName: initialValues?.clientName || "",
     clientAddress: initialValues?.clientAddress || "",
-    addressDetails: initialValues?.addressDetails || "",
+    nationalAddress: initialValues?.nationalAddress || "",
     city: initialValues?.city || "",
     country: initialValues?.country || "",
     clientEmail: initialValues?.clientEmail || "",
@@ -115,26 +115,28 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
       country: "السعودية",
       city: "",
       clientEmail: "",
-      addressDetails: ""
+      district: "",
+      nationalAddress: ""
     },
   });
 
-  const { register, handleSubmit, reset, watch } = methods;
+  const { register, handleSubmit, reset, watch, setValue } = methods;
 
   const handleFormSubmit = async (data: any) => {
     try {
       const clientAddress = `${data.country}, ${data.city}`;
       const clientEmail = customerMeData?.data?.email || "";
-      await onSubmit({
-  clientName: form.clientName,
-  clientPhone: form.clientPhone,
-  city: form.city,
-  // country: form.country || countrySearch,
-  country:"السعودية",
-  clientEmail,
-  location: form.clientAddress,
-  addressDetails: form.addressDetails,
-      });
+      const submitData = {
+        clientName: data.clientName,
+        clientPhone: data.clientPhone,
+        city: data.city,
+        country: "السعودية",
+        clientEmail,
+        clientAddress: clientAddress,
+        nationalAddress: data.nationalAddress,
+      };
+
+      await onSubmit(submitData);
       setAlertStatus("success");
       setAlertMessage("تمت إضافة العنوان بنجاح");
       setAlertOpen(true);
@@ -156,19 +158,19 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
   };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    
+
     // Phone number validation
     if (name === 'clientPhone') {
       // Only allow digits and limit to 10 characters
       const phoneValue = value.replace(/\D/g, '').slice(0, 10);
-      setForm({ ...form, [name]: phoneValue });
+      setValue(name, phoneValue);
     } else {
-      setForm({ ...form, [name]: value });
+      setValue(name, value);
     }
   };
 
   const handleCityChange = (value: string) => {
-    setForm({ ...form, city: value });
+    setValue("city", value);
   };
 
   const [weightFocused, setWeightFocused] = useState(false);
@@ -205,10 +207,8 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
               </Label>
 
               <input
-                name="clientName"
+                {...register("clientName")}
                 placeholder="الاسم"
-                value={form.clientName}
-                onChange={handleChange}
                 required
                 className={cn(
                   "v7-neu-input bg-transparent border-none shadow-none outline-none text-base w-full "
@@ -231,9 +231,7 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
                 </Label>
 
                 <input
-                  name="clientPhone"
-                  value={form.clientPhone}
-                  onChange={handleChange}
+                  {...register("clientPhone")}
                   required
                   placeholder="05xxxxxxxx"
                   maxLength={10}
@@ -257,9 +255,7 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
               </Label>
 
               <input
-                name="clientEmail"
-                value={form.clientEmail}
-                onChange={handleChange}
+                {...register("clientEmail")}
                 placeholder="example@gmail.com"
                 className={cn(
                   "v7-neu-input bg-transparent border-none shadow-none outline-none text-base w-full"
@@ -344,11 +340,9 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
                 <span className=" text-red-500">*</span>
               </Label>
               <input
-                name="clientAddress"
-                value={form.clientAddress}
+                {...register("clientAddress")}
                 type="text"
                 required
-                onChange={handleChange}
                 placeholder="الحي, الشارع, رقم المبنى"
                 className={cn(
                   "v7-neu-input bg-transparent border-none shadow-none outline-none text-base w-full "
@@ -359,20 +353,16 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
             </div>
             <div className="flex-1 space-y-2">
               <Label
-                htmlFor="addressDetails"
+                htmlFor="nationalAddress"
                 className="sm:text-lg text-base font-medium flex items-center gap-2  text-[#1A5889]"
               >
                 <MapPin className="h-4 w-4 text-[#1A5889]" />
                 العنوان الوطني
-                <span className=" text-red-500">*</span>
               </Label>
 
               <input
-                name="addressDetails"
-                value={form.addressDetails}
+                {...register("nationalAddress")}
                 type="text"
-                required
-                onChange={handleChange}
                 placeholder="العنوان الوطني"
                 className={cn(
                   "v7-neu-input bg-transparent border-none shadow-none outline-none text-base w-full"

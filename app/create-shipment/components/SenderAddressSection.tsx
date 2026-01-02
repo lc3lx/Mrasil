@@ -303,6 +303,7 @@ export function SenderAddressSection({
       country: address.country || "-",
       address: address.location || "-",
       email: address.email || customerMeData?.data.email || "-",
+      nationalAddress: address.nationalAddress || "",
     })
   );
 
@@ -330,6 +331,7 @@ export function SenderAddressSection({
       setValue("shipper_city", "");
       setValue("shipper_city_en", "");
       setValue("shipper_address", "");
+      setValue("shipper_nationalAddress", "");
     } else {
       setSelectedSender(card.id);
       setValue("shipper_full_name", card.name);
@@ -337,6 +339,7 @@ export function SenderAddressSection({
       setValue("shipper_city", card.city);
       setValue("shipper_city_en", ""); // سيتم تحديده تلقائياً من البحث
       setValue("shipper_address", card.address);
+      setValue("shipper_nationalAddress", card.nationalAddress || "");
     }
   };
   const search = normalize(searchSender.trim());
@@ -356,14 +359,27 @@ export function SenderAddressSection({
 
   const handleAddSenderAddress = async (data: any) => {
     try {
-      await createAddress({
+      console.log(
+        "handleAddSenderAddress - data received:",
+        JSON.stringify(data, null, 2)
+      );
+
+      const addressData = {
         alias: data.clientName,
         location: data.clientAddress,
         phone: data.clientPhone,
         city: data.city,
         country: data.country,
         email: data.clientEmail,
-      }).unwrap();
+        nationalAddress: data.nationalAddress,
+      };
+
+      console.log(
+        "handleAddSenderAddress - sending to API:",
+        JSON.stringify(addressData, null, 2)
+      );
+
+      await createAddress(addressData).unwrap();
 
       refetch();
 
@@ -526,6 +542,7 @@ export function SenderAddressSection({
             country: addressToEdit.country || "السعودية",
             email: addressToEdit.email || "",
             district: "",
+            nationalAddress: addressToEdit.nationalAddress || "",
           }}
           isLoading={isUpdating}
           onSubmit={async (data) => {

@@ -144,6 +144,7 @@ const schema = yup
     shipper_city: yup.string(),
     shipper_city_en: yup.string(), // الاسم الإنجليزي للمدينة
     shipper_address: yup.string(),
+    shipper_nationalAddress: yup.string(),
     recipient_full_name: yup.string(),
     recipient_mobile: yup.string(), // no validation
     recipient_city: yup.string(),
@@ -151,6 +152,7 @@ const schema = yup
     recipient_address: yup.string(),
     recipient_email: yup.string(),
     recipient_district: yup.string(),
+    recipient_nationalAddress: yup.string(),
     weight: yup.number().required("الوزن مطلوب").typeError("الوزن مطلوب"),
     Parcels: yup.number(),
     dimension_high: yup.number(),
@@ -194,6 +196,7 @@ export function CreateShipmentSteps() {
       shipper_city: "",
       shipper_city_en: "", // الاسم الإنجليزي للمدينة
       shipper_address: "",
+      shipper_nationalAddress: "",
       recipient_full_name: "",
       recipient_mobile: "",
       recipient_city: "",
@@ -201,6 +204,7 @@ export function CreateShipmentSteps() {
       recipient_address: "",
       recipient_email: "",
       recipient_district: "",
+      recipient_nationalAddress: "",
       weight: undefined,
       Parcels: 1,
       dimension_high: 0,
@@ -302,6 +306,7 @@ export function CreateShipmentSteps() {
             address: data.recipient_address || data.recipient_district || "",
             email: data.recipient_email || "",
             district: data.recipient_district || data.recipient_address || "",
+            nationalAddress: data.recipient_nationalAddress || "",
           },
           total: {
             amount: data.total,
@@ -317,6 +322,7 @@ export function CreateShipmentSteps() {
           city_en: data.shipper_city_en, // الاسم الإنجليزي للمدينة
           country: "sa",
           address: data.shipper_address,
+          nationalAddress: data.shipper_nationalAddress || "",
         },
         weight: Number(data.weight),
         Parcels: Number(data.Parcels) || 1,
