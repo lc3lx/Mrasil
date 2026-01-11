@@ -22,7 +22,7 @@ const INITIAL_ASSISTANT_MESSAGE = `مرحباً! أنا مساعدك الذكي 
 كيف يمكنني مساعدتك اليوم؟ 😊`
 
 const MARASIL_AI_ENDPOINT =
-  process.env.NEXT_PUBLIC_AI_CHAT_ENDPOINT || "https://www.marasil.site/ai/chat"
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"
 
 type ConversationEntry = {
   role: "user" | "assistant"
@@ -93,48 +93,65 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
 
   const getUserContext = () => {
     if (typeof window === "undefined") {
-      return { token: "", userName: "" }
+      return { token: "", userName: "", userId: "" }
     }
 
     const token = localStorage.getItem("token")
     const cleanToken = token ? token.replace(/^Bearer\s+/i, "") : ""
 
     let userName = ""
-    const userDataStr = localStorage.getItem("userData")
+    let userId = ""
+
+    // محاولة استخراج userId من عدة مصادر
+    const userDataStr = localStorage.getItem("userData") || localStorage.getItem("user")
     if (userDataStr) {
       try {
         const userData = JSON.parse(userDataStr)
-        userName = userData.firstName || userData.name || ""
+        userName = userData.firstName || userData.name || userData.username || ""
+        userId = userData._id || userData.id || userData.userId || ""
       } catch (error) {
         console.warn("failed to parse userData", error)
       }
     }
 
-    return { token: cleanToken, userName }
+    return { token: cleanToken, userName, userId }
   }
 
   const requestAIResponse = useCallback(
     async (userInput: string, historyPayload: ConversationEntry[]) => {
-      const { token, userName } = getUserContext()
+      const { token, userId } = getUserContext()
 
-      const response = await fetch(MARASIL_AI_ENDPOINT, {
+      if (!userId) {
+        throw new Error("لم يتم العثور على معرف المستخدم. يرجى تسجيل الدخول مرة أخرى.")
+      }
+
+      const response = await fetch(`${MARASIL_AI_ENDPOINT}/ai/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify({
           message: userInput,
-          history: historyPayload,
-          token,
-          userName,
+          user_id: userId,
+          session_id: "v7_chat_session",
         }),
       })
 
       if (!response.ok) {
-        throw new Error(`فشل الاتصال بالخادم (${response.status})`)
+        const errorText = await response.text();
+        throw new Error(`فشل الاتصال بالخادم (${response.status}): ${errorText}`)
       }
 
-      return response.json()
+      const data = await response.json();
+
+      // تحويل الرد ليطابق التنسيق المتوقع من المكون
+      return {
+        message: data.message,
+        action: data.action,
+        success: data.success,
+        data: data.data
+      }
     },
     [],
   )
@@ -192,7 +209,7 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
     try {
       const backendResponse = await requestAIResponse(userInput, historyPayload)
       const responseText =
-        backendResponse?.response ||
+        backendResponse?.message ||
         "تم استلام سؤالك! لكن لم أحصل على رد من الخدمة، جرب مرة أخرى لو سمحت."
       lastAssistantResponse = responseText
 

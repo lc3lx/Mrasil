@@ -51,6 +51,7 @@ export const routes = {
   advancedShippingConditions: "/shipping/advanced-conditions",
   shippingConditions: "/shipping-conditions",
   salary: "/salary",
+  aiChat: "/ai/chat",
 }
 
 // تحديث نوع RouteKey ليشمل الدوال الجديدة
