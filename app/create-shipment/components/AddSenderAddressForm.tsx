@@ -131,7 +131,7 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
         clientPhone: data.clientPhone,
         city: data.city,
         country: "السعودية",
-        clientEmail,
+  clientEmail,
         clientAddress: clientAddress,
         nationalAddress: data.nationalAddress,
       };
@@ -158,7 +158,7 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
   };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-
+    
     // Phone number validation
     if (name === 'clientPhone') {
       // Only allow digits and limit to 10 characters
