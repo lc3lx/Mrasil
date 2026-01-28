@@ -1134,15 +1134,18 @@ function Step3Content({
   const [loadingPrices, setLoadingPrices] = useState(false);
   const [priceErrors, setPriceErrors] = useState<any[]>([]);
 
-  // إضافة متغيرات لتتبع البيانات المهمة فقط
-  // إضافة الأبعاد إلى priceKey لحساب الوزن البعدي
+  // مفتاح البيانات الأساسية (بدون شركة وبدون أبعاد): عند تغييره نجلّي أسعار كل الشركات
+  const basePriceKey = `${values.recipient_city}-${values.weight}-${values.total}-${values.paymentMethod}`;
+  // مفتاح الأبعاد: عند اختيار شركة + حجم صندوق نعيد حساب سعر تلك الشركة فقط
   const dimensionKey = values.boxSize
     ? `${values.boxSize.length}-${values.boxSize.width}-${values.boxSize.height}`
     : values.dimension_length && values.dimension_width && values.dimension_high
     ? `${values.dimension_length}-${values.dimension_width}-${values.dimension_high}`
     : "";
-  const priceKey = `${values.recipient_city}-${values.weight}-${values.total}-${values.paymentMethod}-${dimensionKey}`;
-  const [lastPriceKey, setLastPriceKey] = useState<string>("");
+
+  const [lastBasePriceKey, setLastBasePriceKey] = useState<string>("");
+  const [lastDimensionKey, setLastDimensionKey] = useState<string>("");
+  const [lastSelectedCompany, setLastSelectedCompany] = useState<string>("");
 
   useEffect(() => {
     // تحقق من وجود البيانات المطلوبة
@@ -1158,32 +1161,72 @@ function Step3Content({
       return;
     }
 
-    // تحقق إذا كانت البيانات المهمة تغيرت
-    if (pricesFetched && priceKey === lastPriceKey) {
-      return;
-    }
+    const selectedCompany = values.company || "";
 
-    const fetchAllPrices = async () => {
-      console.log("بدء جلب الأسعار لـ:", priceKey);
-      setLoadingPrices(true);
-      setPricesFetched(false);
-      setPrices([]);
-      setPriceErrors([]);
+    // بناء قائمة كل الشركات وأنواع الشحن مرة واحدة
+    const companiesWithTypes = companiesData.flatMap((company: any) => {
+      if (!company.shippingTypes || company.shippingTypes.length === 0) {
+        return [];
+      }
+      return company.shippingTypes.map((shippingType: any) => ({
+        ...company,
+        shippingType,
+      }));
+    });
 
-      // إنشاء قائمة الشركات مع أنواع الشحن
-      const companiesWithTypes = companiesData.flatMap((company: any) => {
-        if (!company.shippingTypes || company.shippingTypes.length === 0) {
-          return [];
+    // دالة لبناء الـ payload لطلب سعر واحد
+    const buildPayload = (companyWithType: any, useDimensions: boolean) => {
+      const payload: any = {
+        company: companyWithType.company,
+        shapmentingType: companyWithType.shippingType.type,
+        order: {
+          customer: {
+            full_name: values.recipient_full_name || "",
+            mobile: values.recipient_mobile || "",
+            email: values.recipient_email || "",
+            address: values.recipient_district,
+            city: values.recipient_city || "",
+            district: values.recipient_district,
+            country: "sa",
+          },
+          description: values.orderDescription || "",
+          direction: "straight",
+          paymentMethod: values.paymentMethod,
+          source: "salla",
+          total: { amount: Number(values.total), currency: "SAR" },
+          weight: Number(values.weight) || 1,
+        },
+      };
+      if (useDimensions && (values.boxSize || (values.dimension_length && values.dimension_width && values.dimension_high))) {
+        if (values.boxSize) {
+          payload.dimension = {
+            length: Number(values.boxSize.length || 0),
+            width: Number(values.boxSize.width || 0),
+            high: Number(values.boxSize.height || 0),
+          };
+        } else {
+          payload.dimension = {
+            length: Number(values.dimension_length || 0),
+            width: Number(values.dimension_width || 0),
+            high: Number(values.dimension_high || 0),
+          };
         }
-        return company.shippingTypes.map((shippingType: any) => ({
-          ...company,
-          shippingType,
-        }));
-      });
+      }
+      return payload;
+    };
 
-      console.log(`سيتم جلب أسعار لـ ${companiesWithTypes.length} خيار شحن`);
+    // (1) تغيّر في البيانات الأساسية أو أول مرة: جلب أسعار كل الشركات
+    const baseDataChanged = basePriceKey !== lastBasePriceKey;
+    const isFirstFetch = !pricesFetched;
 
-      // دالة لإعادة المحاولة مع تأخير
+    if (baseDataChanged || isFirstFetch) {
+      const fetchAllPrices = async () => {
+        console.log("جلب أسعار كل الشركات، basePriceKey:", basePriceKey);
+        setLoadingPrices(true);
+        setPricesFetched(false);
+        setPrices([]);
+        setPriceErrors([]);
+
       const retryWithDelay = async (
         fn: () => Promise<any>,
         retries: number = 2,
@@ -1193,9 +1236,6 @@ function Step3Content({
           return await fn();
         } catch (error) {
           if (retries > 0) {
-            console.log(
-              `إعادة المحاولة بعد ${delay}ms... (المحاولات المتبقية: ${retries})`
-            );
             await new Promise((resolve) => setTimeout(resolve, delay));
             return retryWithDelay(fn, retries - 1, delay * 1.5);
           }
@@ -1203,158 +1243,59 @@ function Step3Content({
         }
       };
 
+      const fetchOnePrice = async (companyWithType: any, useDimensions: boolean) => {
+        const payload = buildPayload(companyWithType, useDimensions);
+        const response = await createShipmentOrder(payload).unwrap();
+        return {
+          company: companyWithType.company,
+          companyId: companyWithType._id,
+          type: companyWithType.shippingType.type,
+          typeId: companyWithType.shippingType._id,
+          price: response?.data?.total || null,
+          currency: "SAR",
+          success: true,
+          allowedBoxSizes: companyWithType.allowedBoxSizes || [],
+        };
+      };
+
+      const catchToErrorResult = (companyWithType: any, err: any) => {
+        let errorMessage = err?.data?.message || err?.message || "خطأ غير معروف";
+        if (err?.status === 400) errorMessage = "بيانات الطلب غير صحيحة";
+        else if (err?.status === 401) errorMessage = "غير مصرح بالوصول";
+        else if (err?.status === 404) errorMessage = "الخدمة غير متوفرة";
+        return {
+          company: companyWithType.company,
+          companyId: companyWithType._id,
+          type: companyWithType.shippingType.type,
+          typeId: companyWithType.shippingType._id,
+          error: errorMessage,
+          success: false,
+          allowedBoxSizes: companyWithType.allowedBoxSizes || [],
+        };
+      };
+
       try {
         const pricePromises = companiesWithTypes.map(
           async (companyWithType: any) => {
-            const fetchPrice = async () => {
-              const payload: any = {
-                company: companyWithType.company,
-                shapmentingType: companyWithType.shippingType.type,
-                order: {
-                  customer: {
-                    full_name: values.recipient_full_name || "",
-                    mobile: values.recipient_mobile || "",
-                    email: values.recipient_email || "",
-                    address: values.recipient_district,
-                    city: values.recipient_city || "",
-                    district: values.recipient_district,
-                    country: "sa",
-                  },
-                  description: values.orderDescription || "",
-                  direction: "straight",
-                  paymentMethod: values.paymentMethod,
-                  source: "salla",
-                  total: { amount: Number(values.total), currency: "SAR" },
-                  weight: Number(values.weight) || 1,
-                },
-              };
-
-              // إضافة الأبعاد إذا كانت متوفرة (من boxSize أو dimension_*)
-              if (values.boxSize) {
-                payload.dimension = {
-                  length: Number(values.boxSize.length || 0),
-                  width: Number(values.boxSize.width || 0),
-                  high: Number(values.boxSize.height || 0),
-                };
-              } else if (
-                values.dimension_length &&
-                values.dimension_width &&
-                values.dimension_high
-              ) {
-                payload.dimension = {
-                  length: Number(values.dimension_length || 0),
-                  width: Number(values.dimension_width || 0),
-                  high: Number(values.dimension_high || 0),
-                };
-              }
-
-              console.log(
-                `جلب سعر لـ ${companyWithType.company} - ${companyWithType.shippingType.type}`
-              );
-              return await createShipmentOrder(payload).unwrap();
-            };
-
             try {
-              const response = await retryWithDelay(fetchPrice);
-
-              return {
-                company: companyWithType.company,
-                companyId: companyWithType._id,
-                type: companyWithType.shippingType.type,
-                typeId: companyWithType.shippingType._id,
-                price: response?.data?.total || null,
-                currency: "SAR",
-                success: true,
-                allowedBoxSizes: companyWithType.allowedBoxSizes || [],
-              };
-            } catch (err: any) {
-              console.error(
-                `خطأ في جلب سعر ${companyWithType.company} - ${companyWithType.shippingType.type}:`,
-                {
-                  error: err,
-                  status: err?.status,
-                  data: err?.data,
-                  message: err?.message,
-                  originalError: err?.originalError,
-                  company: companyWithType.company,
-                  type: companyWithType.shippingType.type,
-                }
+              return await retryWithDelay(() =>
+                fetchOnePrice(companyWithType, true)
               );
-
-              // تحديد رسالة الخطأ بشكل أفضل
-              let errorMessage = "خطأ غير معروف";
-              if (err?.data?.message) {
-                errorMessage = err.data.message;
-              } else if (err?.message) {
-                errorMessage = err.message;
-              } else if (err?.status) {
-                switch (err.status) {
-                  case 400:
-                    errorMessage = "بيانات الطلب غير صحيحة";
-                    break;
-                  case 401:
-                    errorMessage = "غير مصرح بالوصول";
-                    break;
-                  case 403:
-                    errorMessage = "ممنوع الوصول";
-                    break;
-                  case 404:
-                    errorMessage = "الخدمة غير متوفرة";
-                    break;
-                  case 429:
-                    errorMessage = "تم تجاوز حد الطلبات";
-                    break;
-                  case 500:
-                    errorMessage = "خطأ في الخادم";
-                    break;
-                  default:
-                    errorMessage = `خطأ HTTP: ${err.status}`;
-                }
-              } else if (err?.name === "NetworkError") {
-                errorMessage = "خطأ في الشبكة";
-              } else if (err?.name === "TimeoutError") {
-                errorMessage = "انتهت مهلة الطلب";
-              }
-
-              return {
-                company: companyWithType.company,
-                companyId: companyWithType._id,
-                type: companyWithType.shippingType.type,
-                typeId: companyWithType.shippingType._id,
-                error: errorMessage,
-                success: false,
-                allowedBoxSizes: companyWithType.allowedBoxSizes || [],
-              };
+            } catch (err: any) {
+              return catchToErrorResult(companyWithType, err);
             }
           }
         );
-
         const results = await Promise.all(pricePromises);
-
-        // فصل النتائج الناجحة عن الأخطاء
-        const successfulPrices = results.filter(
-          (result: any) => result.success
-        );
-        const failedPrices = results.filter((result: any) => !result.success);
-
+        const successfulPrices = results.filter((r: any) => r.success);
+        const failedPrices = results.filter((r: any) => !r.success);
         setPrices(successfulPrices);
         setPriceErrors(failedPrices);
         setPricesFetched(true);
-        setLastPriceKey(priceKey);
-
-        console.log(
-          `تم جلب ${successfulPrices.length} سعر بنجاح، فشل في ${failedPrices.length}`
-        );
-
-        // إظهار ملخص الأسعار في الكونسول
-        if (successfulPrices.length > 0) {
-          console.log("الأسعار المتاحة:");
-          successfulPrices.forEach((price: any) => {
-            console.log(
-              `${price.company} (${price.type}): ${price.price} ${price.currency}`
-            );
-          });
-        }
+        setLastBasePriceKey(basePriceKey);
+        setLastDimensionKey(dimensionKey);
+        setLastSelectedCompany(selectedCompany);
+        console.log(`تم جلب أسعار كل الشركات: ${successfulPrices.length} ناجح`);
       } catch (error) {
         console.error("خطأ عام في جلب الأسعار:", error);
         setPriceErrors([{ error: "فشل في جلب الأسعار" }]);
@@ -1363,9 +1304,99 @@ function Step3Content({
         setLoadingPrices(false);
       }
     };
-
     fetchAllPrices();
-  }, [companiesData, priceKey, createShipmentOrder]);
+    return;
+    }
+
+    // (2) نفس البيانات الأساسية، لكن تغيّر الشركة المختارة أو حجم الصندوق: نحدّث سعر الشركة المختارة فقط ونبقي الباقي
+    const onlyCompanyOrDimensionsChanged =
+      selectedCompany &&
+      (dimensionKey !== lastDimensionKey || selectedCompany !== lastSelectedCompany);
+
+    if (onlyCompanyOrDimensionsChanged && pricesFetched) {
+      const targetList = companiesWithTypes.filter(
+        (c: any) => c.company === selectedCompany
+      );
+      if (targetList.length === 0) return;
+
+      const refetchSelectedCompanyOnly = async () => {
+        const retryWithDelay = async (
+          fn: () => Promise<any>,
+          retries: number = 2,
+          delay: number = 1000
+        ): Promise<any> => {
+          try {
+            return await fn();
+          } catch (error) {
+            if (retries > 0) {
+              await new Promise((resolve) => setTimeout(resolve, delay));
+              return retryWithDelay(fn, retries - 1, delay * 1.5);
+            }
+            throw error;
+          }
+        };
+        const fetchOne = async (companyWithType: any) => {
+          const payload = buildPayload(companyWithType, true);
+          const response = await createShipmentOrder(payload).unwrap();
+          return {
+            company: companyWithType.company,
+            companyId: companyWithType._id,
+            type: companyWithType.shippingType.type,
+            typeId: companyWithType.shippingType._id,
+            price: response?.data?.total || null,
+            currency: "SAR",
+            success: true,
+            allowedBoxSizes: companyWithType.allowedBoxSizes || [],
+          };
+        };
+        const toError = (companyWithType: any, err: any) => ({
+          company: companyWithType.company,
+          companyId: companyWithType._id,
+          type: companyWithType.shippingType.type,
+          typeId: companyWithType.shippingType._id,
+          error: err?.data?.message || err?.message || "خطأ غير معروف",
+          success: false,
+          allowedBoxSizes: companyWithType.allowedBoxSizes || [],
+        });
+        setLoadingPrices(true);
+        try {
+          const newResults = await Promise.all(
+            targetList.map(async (companyWithType: any) => {
+              try {
+                return await retryWithDelay(() => fetchOne(companyWithType));
+              } catch (err: any) {
+                return toError(companyWithType, err);
+              }
+            })
+          );
+          const successfulNew = newResults.filter((r: any) => r.success);
+          setPrices((prev) => {
+            const rest = prev.filter((p: any) => p.company !== selectedCompany);
+            return [...rest, ...successfulNew];
+          });
+          setLastDimensionKey(dimensionKey);
+          setLastSelectedCompany(selectedCompany);
+          console.log(`تم تحديث سعر الشركة المختارة فقط: ${selectedCompany}`);
+        } catch (e) {
+          console.error("خطأ عند تحديث سعر الشركة المختارة:", e);
+        } finally {
+          setLoadingPrices(false);
+        }
+      };
+
+      refetchSelectedCompanyOnly();
+    }
+  }, [
+    companiesData,
+    basePriceKey,
+    dimensionKey,
+    values.company,
+    lastBasePriceKey,
+    lastDimensionKey,
+    lastSelectedCompany,
+    pricesFetched,
+    createShipmentOrder,
+  ]);
   console.log("values", values);
 
   return (
@@ -1447,7 +1478,7 @@ function Step3Content({
                   size="sm"
                   onClick={() => {
                     setPricesFetched(false);
-                    setLastPriceKey("");
+                    setLastBasePriceKey("");
                   }}
                   className="text-xs border-red-300 text-red-600 hover:bg-red-100"
                 >
