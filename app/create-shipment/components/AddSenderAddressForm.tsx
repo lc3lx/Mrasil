@@ -116,7 +116,8 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
       city: "",
       clientEmail: "",
       district: "",
-      nationalAddress: ""
+      nationalAddress: "",
+      clientAddress: ""
     },
   });
 
@@ -124,16 +125,20 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
 
   const handleFormSubmit = async (data: any) => {
     try {
-      const clientAddress = `${data.country}, ${data.city}`;
-      const clientEmail = customerMeData?.data?.email || "";
+      // استخدام form.city بدلاً من data.city لأن المدينة تُحدّث في state
+      // واستخدام "السعودية" مباشرة لأن data.country غير موجود في react-hook-form
+      const city = form.city || data.city || "";
+      const country = "السعودية";
+      const clientAddress = city ? `${country}, ${city}` : country;
+      const clientEmail = data.clientEmail || customerMeData?.data?.email || "";
       const submitData = {
         clientName: data.clientName,
         clientPhone: data.clientPhone,
-        city: data.city,
-        country: "السعودية",
-  clientEmail,
+        city: city,
+        country: country,
+        clientEmail: clientEmail,
         clientAddress: clientAddress,
-        nationalAddress: data.nationalAddress,
+        nationalAddress: data.nationalAddress || "",
       };
 
       await onSubmit(submitData);
@@ -163,9 +168,15 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
     if (name === 'clientPhone') {
       // Only allow digits and limit to 10 characters
       const phoneValue = value.replace(/\D/g, '').slice(0, 10);
-      setValue(name, phoneValue);
-    } else {
-      setValue(name, value);
+      setValue("clientPhone" as any, phoneValue);
+    } else if (name === 'clientName') {
+      setValue("clientName" as any, value);
+    } else if (name === 'clientEmail') {
+      setValue("clientEmail" as any, value);
+    } else if (name === 'nationalAddress') {
+      setValue("nationalAddress" as any, value);
+    } else if (name === 'clientAddress') {
+      setValue("clientAddress" as any, value);
     }
   };
 
@@ -192,7 +203,7 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
             </DialogTitle>
           </DialogHeader>
           <form
-            onSubmit={handleFormSubmit}
+            onSubmit={handleSubmit(handleFormSubmit)}
             className="space-y-2  flex flex-col sm:gap-2 gap-1"
             dir="rtl"
           >
@@ -295,12 +306,14 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
               </Label>
               <div className="relative">
                 <input
+                  {...register("city")}
                   name="city"
                   autoComplete="off"
-                  value={search || form.city}
+                  value={search || form.city || watch("city") || ""}
                   onChange={e => {
                     setSearch(e.target.value);
                     setForm({ ...form, city: "" }); // امسح قيمة المدينة والمنطقة حتى يختار المستخدم من القائمة
+                    setValue("city", ""); // امسح من react-hook-form أيضاً
                   }}
                   required
                   placeholder="المدينة"
@@ -316,11 +329,13 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
                     search={search}
                     onSelect={cityObj => {
                       setForm({ ...form, city: cityObj.name_ar });
+                      setValue("city", cityObj.name_ar); // تحديث react-hook-form أيضاً
                       setSearch("");
                       setDescFocused(false);
                     }}
                     onSelectWithEnglish={(cityObj, setValue) => {
                       setForm({ ...form, city: cityObj.name_ar });
+                      setValue("city", cityObj.name_ar); // تحديث react-hook-form
                       setValue("shipper_city", cityObj.name_ar);
                       setValue("shipper_city_en", cityObj.name_en);
                       setSearch("");
