@@ -24,6 +24,7 @@ import {
   CreditCard,
   Car,
   Check,
+  Loader2,
 } from "lucide-react";
 import ResponseModal from "../../components/ResponseModal";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -187,6 +188,7 @@ export function CreateShipmentSteps() {
   const initialStepParam = searchParams.get("step");
   const initialStep = initialStepParam ? parseInt(initialStepParam) : 1;
   const [step, setStep] = useState(initialStep);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const methods = useForm({
     resolver: yupResolver(schema),
@@ -280,6 +282,7 @@ export function CreateShipmentSteps() {
 
   // Final submit
   const onSubmit = async (data: any) => {
+    // isSubmitting يتم تعيينه قبل استدعاء handleSubmit
     try {
       const payload = {
         company: data.company,
@@ -347,6 +350,8 @@ export function CreateShipmentSteps() {
       setModalStatus("fail");
       setModalMessage(error?.data?.message || "حدث خطأ أثناء إضافة الشحنة");
       setModalOpen(true);
+    } finally {
+      setIsSubmitting(false);
     }
   };
   console.log(errors);
@@ -504,7 +509,7 @@ export function CreateShipmentSteps() {
               <Step3Content
                 prevStep={prevStep}
                 nextStep={nextStep}
-                onSubmit={(e: any) => {
+                onSubmit={async (e: any) => {
                   const company = getValues("company");
                   const shipmentType = getValues("shipmentType");
                   console.log(
@@ -519,13 +524,26 @@ export function CreateShipmentSteps() {
                     e.preventDefault();
                     nextStep();
                   } else {
-                    handleSubmit(onSubmit)(e);
+                    // تعيين isSubmitting قبل استدعاء handleSubmit مباشرة
+                    setIsSubmitting(true);
+                    // handleSubmit يستدعي onSubmit فقط إذا كانت البيانات صحيحة
+                    // وإلا لن يستدعيها، لذلك نحتاج callback للأخطاء
+                    handleSubmit(
+                      async (data) => {
+                        await onSubmit(data);
+                      },
+                      () => {
+                        // في حالة وجود أخطاء validation، reset isSubmitting
+                        setIsSubmitting(false);
+                      }
+                    )(e);
                   }
                 }}
                 selectedProvider={selectedProvider}
                 handleProviderSelect={handleProviderSelect}
                 shipmentType={shipmentType}
                 handleShipmentTypeSelect={handleShipmentTypeSelect}
+                isSubmitting={isSubmitting}
               />
             )}
             {step === 4 &&
@@ -533,7 +551,22 @@ export function CreateShipmentSteps() {
               getValues("shipmentType") === "offices" && (
                 <Step4Content
                   prevStep={prevStep}
-                  onSubmit={handleSubmit(onSubmit)}
+                  onSubmit={async (e: React.FormEvent) => {
+                    // تعيين isSubmitting قبل استدعاء handleSubmit مباشرة
+                    setIsSubmitting(true);
+                    // handleSubmit يستدعي onSubmit فقط إذا كانت البيانات صحيحة
+                    // وإلا لن يستدعيها، لذلك نحتاج callback للأخطاء
+                    handleSubmit(
+                      async (data) => {
+                        await onSubmit(data);
+                      },
+                      () => {
+                        // في حالة وجود أخطاء validation، reset isSubmitting
+                        setIsSubmitting(false);
+                      }
+                    )(e);
+                  }}
+                  isSubmitting={isSubmitting}
                 />
               )}
           </div>
@@ -1020,6 +1053,7 @@ function Step3Content({
   shipmentType,
   handleShipmentTypeSelect,
   nextStep,
+  isSubmitting: parentIsSubmitting = false,
 }: any) {
   const {
     register,
@@ -1035,7 +1069,8 @@ function Step3Content({
   const selectedShipmentType = watch("shipmentType");
   const isSMSAOffices =
     selectedCompany === "smsa" && selectedShipmentType === "offices";
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  // استخدام isSubmitting من الـ parent
+  const isSubmitting = parentIsSubmitting;
   const [boxSizes, setBoxSizes] = useState<any[]>([]);
   const [selectedBoxSize, setSelectedBoxSize] = useState<any>(null);
   const { data: parcelsData, isLoading: isLoadingParcels } =
@@ -1070,12 +1105,8 @@ function Step3Content({
     }
 
     // للشركات الأخرى، أرسل البيانات مباشرة
-    setIsSubmitting(true);
-    try {
-      await onSubmit(e);
-    } finally {
-      setIsSubmitting(false);
-    }
+    // isSubmitting يتم إدارته في CreateShipmentSteps
+    await onSubmit(e);
   };
 
   const companiesWithTypes = (companiesData || [])
@@ -1577,32 +1608,14 @@ function Step3Content({
         <Button
           type={isSMSAOffices ? "button" : "submit"}
           onClick={isSMSAOffices ? nextStep : undefined}
-          className="bg-gradient-to-r from-[#1e3a6c]  text-white  text-lg px-8 py-4 "
+          className="bg-gradient-to-r from-[#1e3a6c]  text-white  text-lg px-8 py-4 flex items-center justify-center gap-2"
           disabled={isSubmitting}
         >
           {isSubmitting ? (
-            <span>
-              <svg
-                className="inline w-4 h-4 mr-2 animate-spin"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                  fill="none"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                ></path>
-              </svg>
-              جاري الإرسال...
-            </span>
+            <>
+              <Loader2 className="w-5 h-5 animate-spin" />
+              <span>جاري إنشاء الشحنة...</span>
+            </>
           ) : isSMSAOffices ? (
             "التالي"
           ) : (
@@ -1707,9 +1720,11 @@ function SelectField({ name, label, error }: any) {
 function Step4Content({
   prevStep,
   onSubmit,
+  isSubmitting: parentIsSubmitting = false,
 }: {
   prevStep: () => void;
   onSubmit: (e: React.FormEvent) => void;
+  isSubmitting?: boolean;
 }) {
   const {
     register,
@@ -1718,6 +1733,8 @@ function Step4Content({
     getValues,
     setValue,
   } = useFormContext();
+  // استخدام isSubmitting من الـ parent
+  const isSubmitting = parentIsSubmitting;
 
   const {
     data: officesData,
@@ -2278,10 +2295,17 @@ function Step4Content({
         </Button>
         <Button
           type="submit"
-          className="bg-gradient-to-r from-[#1e3a6c] text-white text-lg px-8 py-4"
-          disabled={!senderOfficeCode || !recipientOfficeCode}
+          className="bg-gradient-to-r from-[#1e3a6c] text-white text-lg px-8 py-4 flex items-center justify-center gap-2"
+          disabled={!senderOfficeCode || !recipientOfficeCode || isSubmitting}
         >
-          إنشاء الشحنة
+          {isSubmitting ? (
+            <>
+              <Loader2 className="w-5 h-5 animate-spin" />
+              <span>جاري إنشاء الشحنة...</span>
+            </>
+          ) : (
+            "إنشاء الشحنة"
+          )}
         </Button>
       </div>
     </form>

@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, Truck, Printer, Download, XCircle } from "lucide-react";
+import { ChevronDown, Truck, Printer, Download, XCircle, ChevronRight, ChevronLeft } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import ExportToExcel from "./ExportToExcel";
 
@@ -60,6 +60,8 @@ interface ShipmentsGridProps {
   totalPages: number;
   currentPage: number;
   setCurrentPage: (page: number) => void;
+  totalItems?: number;
+  itemsPerPage?: number;
 }
 
 export const ShipmentsGrid: React.FC<ShipmentsGridProps> = ({
@@ -70,7 +72,34 @@ export const ShipmentsGrid: React.FC<ShipmentsGridProps> = ({
   totalPages,
   currentPage,
   setCurrentPage,
+  totalItems = 0,
+  itemsPerPage = 10,
 }) => {
+  const startItem = totalItems === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
+  const endItem = Math.min(currentPage * itemsPerPage, totalItems);
+
+  const getVisiblePages = () => {
+    if (totalPages <= 7) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+    const pages: (number | "...")[] = [];
+    if (currentPage <= 4) {
+      for (let i = 1; i <= 5; i++) pages.push(i);
+      pages.push("...");
+      pages.push(totalPages);
+    } else if (currentPage >= totalPages - 3) {
+      pages.push(1);
+      pages.push("...");
+      for (let i = totalPages - 4; i <= totalPages; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      pages.push("...");
+      for (let i = currentPage - 1; i <= currentPage + 1; i++) pages.push(i);
+      pages.push("...");
+      pages.push(totalPages);
+    }
+    return pages;
+  };
   // Determine if all are selected
   // const allSelected = selectedShipmentId === "all";
 
@@ -245,29 +274,62 @@ export const ShipmentsGrid: React.FC<ShipmentsGridProps> = ({
         })}
       </div>
       {/* Pagination UI */}
-      {totalPages > 1 && (
-        <div className="flex flex-wrap justify-center mt-8 gap-2">
-          <nav
-            className="inline-flex flex-wrap rounded-md shadow-sm"
-            aria-label="Pagination"
-          >
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+      {(totalPages > 1 || totalItems > 0) && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8 pt-6 border-t border-gray-200">
+          <p className="text-sm text-[#6d6a67] order-2 sm:order-1">
+            {totalItems === 0 ? (
+              "لا توجد نتائج"
+            ) : (
+              <>
+                عرض {startItem}-{endItem} من {totalItems}
+                {totalPages > 1 && (
+                  <span className="mr-2"> • صفحة {currentPage} من {totalPages}</span>
+                )}
+              </>
+            )}
+          </p>
+          {totalPages > 1 && (
+            <nav
+              className="inline-flex items-center gap-1 rounded-md shadow-sm order-1 sm:order-2"
+              aria-label="Pagination"
+            >
               <button
-                key={page}
-                onClick={() => setCurrentPage(page)}
-                className={`px-4 py-2 border text-sm font-medium ${
-                  currentPage === page
-                    ? "bg-blue-500 text-white"
-                    : "bg-white text-blue-700 border-blue-200"
-                } ${page === 1 ? "rounded-l-md" : ""} ${
-                  page === totalPages ? "rounded-r-md" : ""
-                }`}
-                style={{ minWidth: 40 }}
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="p-2 border border-blue-200 rounded-r-md bg-white text-blue-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-50"
+                aria-label="السابق"
               >
-                {page}
+                <ChevronRight className="h-4 w-4" />
               </button>
-            ))}
-          </nav>
+              {getVisiblePages().map((page, idx) =>
+                page === "..." ? (
+                  <span key={`ellipsis-${idx}`} className="px-2 text-[#6d6a67]">
+                    ...
+                  </span>
+                ) : (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page as number)}
+                    className={`min-w-[40px] px-3 py-2 border text-sm font-medium ${
+                      currentPage === page
+                        ? "bg-blue-500 text-white border-blue-500"
+                        : "bg-white text-blue-700 border-blue-200 hover:bg-blue-50"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                )
+              )}
+              <button
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="p-2 border border-blue-200 rounded-l-md bg-white text-blue-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-50"
+                aria-label="التالي"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+            </nav>
+          )}
         </div>
       )}
     </>

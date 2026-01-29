@@ -17,6 +17,7 @@ import {
   Store,
   ShoppingCart,
   X,
+  Calendar,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -41,6 +42,10 @@ import { useGetMyShipmentsQuery } from "@/app/api/shipmentApi";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ShipmentsGrid } from "./components/ShipmentsGrid";
 import { useSearchParams } from "next/navigation";
+import { DateRangePicker } from "@/components/ui/date-range-picker";
+import type { DateRange } from "react-day-picker";
+import { format } from "date-fns";
+import { ar } from "date-fns/locale";
 import {
   useGetShipmentStatsQuery,
   useGetHomePageStatisticsQuery,
@@ -116,12 +121,44 @@ export default function ShipmentsPage() {
   const [selectedShipmentId, setSelectedShipmentId] = useState<string[]>([]);
   const [activeFilters, setActiveFilters] = useState<string[]>([]); // لتتبع الفلاتر النشطة
   const [currentPage, setCurrentPage] = useState(1);
-  // Fetch shipments data from API
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
+
+  // الحالة المرسلة للسيرفر: التاب أو فلتر الحالة من القائمة
+  const effectiveStatus =
+    activeTab !== "all" ? activeTab : filterStatus;
+
+  // Fetch shipments data from API (بحث + فلترة من السيرفر)
   const {
     data: shipmentsResponse,
     isLoading,
     error,
-  } = useGetMyShipmentsQuery({ page: currentPage, itemsPerPage: 5 });
+  } = useGetMyShipmentsQuery({
+    page: currentPage,
+    itemsPerPage: 10,
+    search: searchQuery.trim() || undefined,
+    dateFrom: dateRange?.from
+      ? format(dateRange.from, "yyyy-MM-dd")
+      : undefined,
+    dateTo: dateRange?.to
+      ? format(dateRange.to, "yyyy-MM-dd")
+      : undefined,
+    status: effectiveStatus,
+    source: filterSource,
+    carrier: filterCarrier,
+  });
+
+  // إعادة الصفحة إلى 1 عند تغيير البحث أو الفلاتر
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [
+    searchQuery,
+    dateRange?.from,
+    dateRange?.to,
+    activeTab,
+    filterStatus,
+    filterSource,
+    filterCarrier,
+  ]);
 
   // Fetch aggregated stats across ALL shipments (not limited by current page)
   const { data: shipmentStats } = useGetShipmentStatsQuery();
@@ -139,8 +176,17 @@ export default function ShipmentsPage() {
     if (filterSource !== "all") filters.push(`المصدر: ${filterSource}`);
     if (filterCarrier !== "all")
       filters.push(`الناقل: ${getCarrierName(filterCarrier)}`);
+    if (dateRange?.from || dateRange?.to) {
+      const fromStr = dateRange.from
+        ? format(dateRange.from, "dd/MM/yyyy", { locale: ar })
+        : "...";
+      const toStr = dateRange.to
+        ? format(dateRange.to, "dd/MM/yyyy", { locale: ar })
+        : "...";
+      filters.push(`التاريخ: ${fromStr} - ${toStr}`);
+    }
     setActiveFilters(filters);
-  }, [filterStatus, filterSource, filterCarrier]);
+  }, [filterStatus, filterSource, filterCarrier, dateRange]);
 
   // دالة لتحويل حالة الشحنة إلى نص عربي
   const getStatusText = (status: string) => {
@@ -334,6 +380,8 @@ export default function ShipmentsPage() {
       setFilterSource("all");
     } else if (filter.startsWith("الناقل:")) {
       setFilterCarrier("all");
+    } else if (filter.startsWith("التاريخ:")) {
+      setDateRange(undefined);
     }
   };
 
@@ -343,59 +391,11 @@ export default function ShipmentsPage() {
     setFilterSource("all");
     setFilterCarrier("all");
     setSearchQuery("");
+    setDateRange(undefined);
   };
 
-  // Filter shipments
-  const filteredShipments = shipments.filter((shipment) => {
-    const componentStatus = mapApiStatusToComponentStatus(
-      shipment.shipmentstates ?? ""
-    );
-
-    // فلترة حسب التاب
-    if (activeTab === "active" && componentStatus === "delivered") return false;
-    if (activeTab === "delivered" && componentStatus !== "delivered")
-      return false;
-    if (
-      activeTab === "processing" &&
-      componentStatus !== "processing" &&
-      componentStatus !== "ready"
-    )
-      return false;
-
-    // فلترة حسب الحالة
-    if (filterStatus !== "all" && componentStatus !== filterStatus)
-      return false;
-
-    // فلترة حسب المصدر
-    if (filterSource !== "all" && (shipment.source ?? "") !== filterSource)
-      return false;
-
-    // فلترة حسب الناقل
-    if (filterCarrier !== "all" && (shipment.carrier ?? "") !== filterCarrier)
-      return false;
-
-    // فلترة حسب البحث الذكي
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase().trim();
-
-      // البحث برقم الشحنة أو رقم التتبع
-      const shipmentMatch =
-        shipment._id?.toLowerCase().includes(query) ||
-        shipment.trackingNumber?.toLowerCase().includes(query);
-
-      // البحث برقم الموبايل بعد إزالة أي رموز
-      const mobileMatch = shipment.senderAddress?.mobile
-        ?.replace(/\D/g, "")
-        .includes(query.replace(/\D/g, ""));
-
-      return shipmentMatch || mobileMatch;
-    }
-
-    return true;
-  });
-
-  // Sort shipments
-  const sortedShipments = [...filteredShipments].sort((a, b) => {
+  // البيانات مُفلترة من السيرفر؛ الترتيب فقط من الواجهة
+  const sortedShipments = [...shipments].sort((a, b) => {
     if (sortBy === "newest") {
       return b._id.localeCompare(a._id);
     } else if (sortBy === "oldest") {
@@ -440,17 +440,17 @@ export default function ShipmentsPage() {
       (s) => mapApiStatusToComponentStatus(s.shipmentstates) === "cancel"
     ).length;
 
-  // Count shipments by source
-  const sourceCount = availableSources.reduce((acc, source) => {
-    if (source.id === "all") return acc;
-    acc[source.id] = shipments.filter((s) => s.source === source.id).length;
+  // Count shipments by source (من بيانات الصفحة الحالية)
+  const sourceCount = availableSources.reduce((acc, src) => {
+    if (src.id === "all") return acc;
+    acc[src.id] = shipments.filter((s) => (s.orderSou ?? (s as any).source) === src.id).length;
     return acc;
   }, {} as Record<string, number>);
 
   // Count shipments by carrier
-  const carrierCount = availableCarriers.reduce((acc, carrier) => {
-    if (carrier.id === "all") return acc;
-    acc[carrier.id] = shipments.filter((s) => s.carrier === carrier.id).length;
+  const carrierCount = availableCarriers.reduce((acc, car) => {
+    if (car.id === "all") return acc;
+    acc[car.id] = shipments.filter((s) => (s.shapmentCompany ?? (s as any).carrier) === car.id).length;
     return acc;
   }, {} as Record<string, number>);
 
@@ -618,7 +618,7 @@ export default function ShipmentsPage() {
                     <input
                       dir="rtl"
                       type="search"
-                      placeholder="البحث برقم الشحنة ... "
+                      placeholder="رقم التتبع، رقم الشحنة، اسم العميل، الوجهة..."
                       className="v7-neu-input w-full pr-12 pe-4 text-gry  text-sm "
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
@@ -637,8 +637,23 @@ export default function ShipmentsPage() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                       align="end"
-                      className="v7-neu-dropdown"
+                      className="v7-neu-dropdown max-h-[85vh] overflow-y-auto"
                     >
+                      <DropdownMenuLabel className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4" />
+                        تصفية حسب التاريخ
+                      </DropdownMenuLabel>
+                      <div className="px-2 py-1">
+                        <DateRangePicker
+                          dateRange={dateRange}
+                          onDateRangeChange={setDateRange}
+                          variant="compact"
+                          placeholder="من - إلى"
+                          showSaveButton={true}
+                          numberOfMonths={2}
+                        />
+                      </div>
+                      <DropdownMenuSeparator />
                       <DropdownMenuLabel>تصفية حسب الحالة</DropdownMenuLabel>
                       <DropdownMenuRadioGroup
                         value={filterStatus}
@@ -779,6 +794,8 @@ export default function ShipmentsPage() {
                 totalPages={totalPages}
                 currentPage={currentPage}
                 setCurrentPage={setCurrentPage}
+                totalItems={pagination?.totalItems ?? 0}
+                itemsPerPage={pagination?.itemsPerPage ?? 10}
               />
             </Tabs>
           </div>

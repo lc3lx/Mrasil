@@ -74,13 +74,19 @@ export function ModernHeader() {
               window.scrollTo({ top: 0, behavior: "smooth" });
             }
           }}
-          className="sm:w-[12rem] sm:h-[6rem] md:w-[8rem] md:h-[4rem] xl:w-[14rem] xl:h-[7rem] w-[6rem] h-[3rem] hover:opacity-80 transition-opacity block"
+          className="
+          w-[8rem] h-[4rem]
+          sm:w-[12rem] sm:h-[6rem]
+          md:w-[16rem] md:h-[8rem]
+          xl:w-[20rem] xl:h-[10rem]
+          hover:opacity-80 transition-opacity block
+        "
         >
           <Image
             src="/logo.png"
             alt="MARASIL Logo"
-            width={120}
-            height={60}
+            width={400}
+            height={200}
             className=" w-full h-full object-contain"
           />
         </Link>

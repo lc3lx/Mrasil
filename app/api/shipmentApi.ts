@@ -152,13 +152,42 @@ export const shipmentApi = createApi({
   endpoints: (builder) => ({
     getMyShipments: builder.query<
       GetMyShipmentsResponse,
-      { page?: number; itemsPerPage?: number }
+      {
+        page?: number;
+        itemsPerPage?: number;
+        search?: string;
+        dateFrom?: string;
+        dateTo?: string;
+        status?: string;
+        source?: string;
+        carrier?: string;
+      }
     >({
-      query: ({ page = 1, itemsPerPage = 5 } = {}) => ({
-        url: `/shipment/my-shipments?page=${page}&itemsPerPage=${itemsPerPage}`,
-        method: "GET",
-        credentials: "include",
-      }),
+      query: ({
+        page = 1,
+        itemsPerPage = 5,
+        search,
+        dateFrom,
+        dateTo,
+        status,
+        source,
+        carrier,
+      } = {}) => {
+        const params = new URLSearchParams();
+        params.set("page", String(page));
+        params.set("itemsPerPage", String(itemsPerPage));
+        if (search?.trim()) params.set("search", search.trim());
+        if (dateFrom) params.set("dateFrom", dateFrom);
+        if (dateTo) params.set("dateTo", dateTo);
+        if (status && status !== "all") params.set("status", status);
+        if (source && source !== "all") params.set("source", source);
+        if (carrier && carrier !== "all") params.set("carrier", carrier);
+        return {
+          url: `/shipment/my-shipments?${params.toString()}`,
+          method: "GET",
+          credentials: "include",
+        };
+      },
       providesTags: ["Shipment"],
     }),
 

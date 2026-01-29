@@ -123,6 +123,14 @@ export function AddRecipientForm({
 
   const handleFormSubmit = async (data: any) => {
     try {
+      // التحقق من أن العنوان الوطني مملوء
+      if (!form.nationalAddress || form.nationalAddress.trim() === "") {
+        setAlertStatus("fail");
+        setAlertMessage("العنوان الوطني مطلوب");
+        setAlertOpen(true);
+        return;
+      }
+
       const clientEmail = customerMeData?.data?.email || "";
       await onSubmit({
         clientName: form.clientName,
@@ -367,12 +375,14 @@ export function AddRecipientForm({
               >
                 <MapPin className="h-4 w-4 text-[#1A5889]" />
                 العنوان الوطني
+                <span className=" text-red-500">*</span>
               </Label>
 
               <input
                 name="nationalAddress"
                 value={form.nationalAddress}
                 type="text"
+                required
                 onChange={handleChange}
                 placeholder="العنوان الوطني"
                 className={cn(
