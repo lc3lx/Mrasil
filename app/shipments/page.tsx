@@ -17,7 +17,6 @@ import {
   Store,
   ShoppingCart,
   X,
-  Calendar,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -529,7 +528,16 @@ export default function ShipmentsPage() {
                 إدارة ومتابعة جميع شحناتك
               </p>
             </div>
-            <div className="flex gap-2 ">
+            <div className="flex flex-wrap items-center gap-2 justify-end" dir="rtl">
+              <DateRangePicker
+                dateRange={dateRange}
+                onDateRangeChange={setDateRange}
+                variant="compact"
+                placeholder="التاريخ: من - إلى"
+                showSaveButton={true}
+                numberOfMonths={2}
+                buttonClassName="v7-neu-button-sm border border-[#E4E9F2] bg-[#EFF2F7] hover:bg-[#e4e9f2]"
+              />
               <Link href="/create-shipment">
                 <Button className="v7-neu-button text-base">
                   <Plus className="ml-2 h-4 w-4" />
@@ -639,21 +647,6 @@ export default function ShipmentsPage() {
                       align="end"
                       className="v7-neu-dropdown max-h-[85vh] overflow-y-auto"
                     >
-                      <DropdownMenuLabel className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4" />
-                        تصفية حسب التاريخ
-                      </DropdownMenuLabel>
-                      <div className="px-2 py-1">
-                        <DateRangePicker
-                          dateRange={dateRange}
-                          onDateRangeChange={setDateRange}
-                          variant="compact"
-                          placeholder="من - إلى"
-                          showSaveButton={true}
-                          numberOfMonths={2}
-                        />
-                      </div>
-                      <DropdownMenuSeparator />
                       <DropdownMenuLabel>تصفية حسب الحالة</DropdownMenuLabel>
                       <DropdownMenuRadioGroup
                         value={filterStatus}
