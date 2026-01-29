@@ -41,9 +41,7 @@ import { useGetMyShipmentsQuery } from "@/app/api/shipmentApi";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ShipmentsGrid } from "./components/ShipmentsGrid";
 import { useSearchParams } from "next/navigation";
-import { DateRangePicker } from "@/components/ui/date-range-picker";
-import type { DateRange } from "react-day-picker";
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
 import { ar } from "date-fns/locale";
 import {
   useGetShipmentStatsQuery,
@@ -120,7 +118,8 @@ export default function ShipmentsPage() {
   const [selectedShipmentId, setSelectedShipmentId] = useState<string[]>([]);
   const [activeFilters, setActiveFilters] = useState<string[]>([]); // لتتبع الفلاتر النشطة
   const [currentPage, setCurrentPage] = useState(1);
-  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
 
   // الحالة المرسلة للسيرفر: التاب أو فلتر الحالة من القائمة
   const effectiveStatus =
@@ -135,12 +134,8 @@ export default function ShipmentsPage() {
     page: currentPage,
     itemsPerPage: 10,
     search: searchQuery.trim() || undefined,
-    dateFrom: dateRange?.from
-      ? format(dateRange.from, "yyyy-MM-dd")
-      : undefined,
-    dateTo: dateRange?.to
-      ? format(dateRange.to, "yyyy-MM-dd")
-      : undefined,
+    dateFrom: dateFrom.trim() || undefined,
+    dateTo: dateTo.trim() || undefined,
     status: effectiveStatus,
     source: filterSource,
     carrier: filterCarrier,
@@ -151,8 +146,8 @@ export default function ShipmentsPage() {
     setCurrentPage(1);
   }, [
     searchQuery,
-    dateRange?.from,
-    dateRange?.to,
+    dateFrom,
+    dateTo,
     activeTab,
     filterStatus,
     filterSource,
@@ -175,17 +170,17 @@ export default function ShipmentsPage() {
     if (filterSource !== "all") filters.push(`المصدر: ${filterSource}`);
     if (filterCarrier !== "all")
       filters.push(`الناقل: ${getCarrierName(filterCarrier)}`);
-    if (dateRange?.from || dateRange?.to) {
-      const fromStr = dateRange.from
-        ? format(dateRange.from, "dd/MM/yyyy", { locale: ar })
+    if (dateFrom || dateTo) {
+      const fromStr = dateFrom
+        ? format(parse(dateFrom, "yyyy-MM-dd", new Date()), "dd/MM/yyyy", { locale: ar })
         : "...";
-      const toStr = dateRange.to
-        ? format(dateRange.to, "dd/MM/yyyy", { locale: ar })
+      const toStr = dateTo
+        ? format(parse(dateTo, "yyyy-MM-dd", new Date()), "dd/MM/yyyy", { locale: ar })
         : "...";
-      filters.push(`التاريخ: ${fromStr} - ${toStr}`);
+      filters.push(`التاريخ: من ${fromStr} إلى ${toStr}`);
     }
     setActiveFilters(filters);
-  }, [filterStatus, filterSource, filterCarrier, dateRange]);
+  }, [filterStatus, filterSource, filterCarrier, dateFrom, dateTo]);
 
   // دالة لتحويل حالة الشحنة إلى نص عربي
   const getStatusText = (status: string) => {
@@ -380,7 +375,8 @@ export default function ShipmentsPage() {
     } else if (filter.startsWith("الناقل:")) {
       setFilterCarrier("all");
     } else if (filter.startsWith("التاريخ:")) {
-      setDateRange(undefined);
+      setDateFrom("");
+      setDateTo("");
     }
   };
 
@@ -390,7 +386,8 @@ export default function ShipmentsPage() {
     setFilterSource("all");
     setFilterCarrier("all");
     setSearchQuery("");
-    setDateRange(undefined);
+    setDateFrom("");
+    setDateTo("");
   };
 
   // البيانات مُفلترة من السيرفر؛ الترتيب فقط من الواجهة
@@ -529,16 +526,26 @@ export default function ShipmentsPage() {
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2 justify-end" dir="rtl">
-              <DateRangePicker
-                dateRange={dateRange}
-                onDateRangeChange={setDateRange}
-                variant="compact"
-                placeholder="التاريخ: من - إلى"
-                showSaveButton={true}
-                numberOfMonths={2}
-                buttonClassName="v7-neu-button-sm text-[#294D8B] min-w-[180px]"
-                contentClassName="rounded-xl border-[#E4E9F2] bg-[#f0f4f8]"
-              />
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-sm text-[#294D8B] font-medium shrink-0">من:</span>
+                <input
+                  type="date"
+                  value={dateFrom}
+                  onChange={(e) => setDateFrom(e.target.value)}
+                  className="h-9 px-3 rounded-lg border border-[#E4E9F2] bg-[#f0f4f8] text-[#294D8B] text-sm min-w-[140px] focus:outline-none focus:ring-2 focus:ring-[#294D8B]/30 focus:border-[#294D8B]"
+                  dir="ltr"
+                  title="اختر يوم وشهر وسنة - من"
+                />
+                <span className="text-sm text-[#294D8B] font-medium shrink-0">إلى:</span>
+                <input
+                  type="date"
+                  value={dateTo}
+                  onChange={(e) => setDateTo(e.target.value)}
+                  className="h-9 px-3 rounded-lg border border-[#E4E9F2] bg-[#f0f4f8] text-[#294D8B] text-sm min-w-[140px] focus:outline-none focus:ring-2 focus:ring-[#294D8B]/30 focus:border-[#294D8B]"
+                  dir="ltr"
+                  title="اختر يوم وشهر وسنة - إلى"
+                />
+              </div>
               <Link href="/create-shipment">
                 <Button className="v7-neu-button text-base">
                   <Plus className="ml-2 h-4 w-4" />
