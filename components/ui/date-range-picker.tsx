@@ -21,6 +21,7 @@ interface DatePickerWithRangeProps extends React.HTMLAttributes<HTMLDivElement> 
   placeholder?: string
   buttonClassName?: string
   calendarClassName?: string
+  contentClassName?: string
   showSaveButton?: boolean
   numberOfMonths?: number
   isInFilters?: boolean
@@ -36,6 +37,7 @@ export function DateRangePicker({
   placeholder = "اختر تاريخ",
   buttonClassName,
   calendarClassName,
+  contentClassName,
   showSaveButton = true,
   numberOfMonths = 2,
   isInFilters = false,
@@ -188,7 +190,12 @@ export function DateRangePicker({
           <Button
             id="date"
             variant={"outline"}
-            className={cn(getButtonStyles(), !date && "text-muted-foreground", "!bg-[#EFF2F7]", buttonClassName)}
+            className={cn(
+              getButtonStyles(),
+              !date && "text-[#6d6a67]",
+              !buttonClassName && "!bg-[#EFF2F7]",
+              buttonClassName
+            )}
           >
             <CalendarIcon className={cn("ml-2 h-4 w-4", variant === "sidebar" && "ml-0 mr-2")} />
             {date?.from ? (
@@ -205,7 +212,11 @@ export function DateRangePicker({
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          className={cn("w-auto p-0", variant === "sidebar" && "w-[280px]")}
+          className={cn(
+            "w-auto p-0 rounded-xl border border-[#E4E9F2] bg-[#f0f4f8] shadow-lg",
+            variant === "sidebar" && "w-[280px]",
+            contentClassName
+          )}
           align={align}
           sideOffset={sideOffset}
         >
@@ -231,14 +242,14 @@ export function DateRangePicker({
               onSelect={handleDateChange}
               numberOfMonths={getMonthsCount()}
               locale={ar}
-              className={calendarClassName}
+              className={cn("rounded-xl", calendarClassName)}
             />
             {showSaveButton && (
-              <div className="flex items-center justify-end gap-2 border-t p-3">
-                <Button variant="outline" size="sm" onClick={() => setOpen(false)}>
+              <div className="flex items-center justify-end gap-2 border-t border-[#E4E9F2] p-3 bg-[#f0f4f8]">
+                <Button variant="outline" size="sm" onClick={() => setOpen(false)} className="border-[#E4E9F2] text-[#294D8B] hover:bg-[#E8EDF2]">
                   إلغاء
                 </Button>
-                <Button size="sm" onClick={handleSave} className="v7-neu-button">
+                <Button size="sm" onClick={handleSave} className="v7-neu-button bg-[#294D8B] text-white hover:opacity-90">
                   حفظ
                 </Button>
               </div>

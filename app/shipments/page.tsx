@@ -536,7 +536,8 @@ export default function ShipmentsPage() {
                 placeholder="التاريخ: من - إلى"
                 showSaveButton={true}
                 numberOfMonths={2}
-                buttonClassName="v7-neu-button-sm border border-[#E4E9F2] bg-[#EFF2F7] hover:bg-[#e4e9f2]"
+                buttonClassName="v7-neu-button-sm text-[#294D8B] min-w-[180px]"
+                contentClassName="rounded-xl border-[#E4E9F2] bg-[#f0f4f8]"
               />
               <Link href="/create-shipment">
                 <Button className="v7-neu-button text-base">
