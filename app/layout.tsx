@@ -12,17 +12,23 @@ const cairo = Cairo({
   weight: ['400', '700'], // حسب الحاجة
 });
 
+const SITE_URL = "https://www.marasil.site";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "Marasil",
   description: "منصة مراسل ججد للشحن واللوجستيات - حلول شحن متقدمة وخدمات لوجستية شاملة للشركات والأفراد",
   keywords: ["شحن", "لوجستيات", "توصيل", "مراسل ججد", "شحن سريع", "خدمات الشحن"],
   authors: [{ name: "Marasil Jogd Team" }],
   creator: "Marasil ",
   publisher: "Marasil ",
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     title: "Marasil  - خدمات الشحن المتطورة",
     description: "منصة مراسل ججد للشحن واللوجستيات - حلول شحن متقدمة وخدمات لوجستية شاملة للشركات والأفراد",
-    url: "https://www.marasil.site",
+    url: SITE_URL,
     siteName: "Marasil ",
     images: [
       {
