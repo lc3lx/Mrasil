@@ -1,24 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  async redirects() {
-    return [
-      // مسار خاطئ قد يُفهرس من جوجل: /order -> الصفحة الرئيسية
-      { source: '/order', destination: '/', permanent: true },
-      // نطاق خاطئ (marasill بلامين): توجيه إلى النطاق الصحيح
-      {
-        source: '/:path*',
-        has: [{ type: 'host', value: 'www.marasill.site' }],
-        destination: 'https://www.marasil.site/:path*',
-        permanent: true,
-      },
-      {
-        source: '/:path*',
-        has: [{ type: 'host', value: 'marasill.site' }],
-        destination: 'https://www.marasil.site/:path*',
-        permanent: true,
-      },
-    ];
-  },
   eslint: {
     ignoreDuringBuilds: true,
   },

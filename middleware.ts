@@ -1,27 +1,19 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-const CORRECT_HOST = 'www.marasil.site'
-const WRONG_HOSTS = ['www.marasill.site', 'marasill.site']
-
 export function middleware(request: NextRequest) {
+  // Get the pathname of the request
   const path = request.nextUrl.pathname
-  const host = request.nextUrl.hostname
 
-  // توجيه النطاق الخاطئ (marasill) إلى النطاق الصحيح (marasil)
-  if (WRONG_HOSTS.includes(host)) {
-    const url = new URL(request.url)
-    url.host = CORRECT_HOST
-    url.protocol = 'https:'
-    return NextResponse.redirect(url, 301)
-  }
-
-  // مسار /order (مفرد) قد يُفهرس من جوجل -> توجيه للصفحة الرئيسية
-  if (path === '/order' || path === '/order/') {
-    return NextResponse.redirect(new URL('/', request.url), 301)
-  }
-
+  // Since tokens are stored in localStorage (client-side), 
+  // we can't reliably check authentication on the server side.
+  // We'll let the client-side handle authentication checks.
+  
+  // Only redirect from root if we're certain there's no authentication
+  // For now, we'll let the client-side page component handle the redirect
+  
   // If user visits login or signup page, we can check if they have a token in cookies
+  // (some auth systems store tokens in cookies as well)
   if ((path === '/login' || path === '/signup')) {
     const token = request.cookies.get('token')?.value || 
                   request.headers.get('authorization')?.replace('Bearer ', '')
