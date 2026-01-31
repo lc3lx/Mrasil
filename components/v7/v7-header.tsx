@@ -32,6 +32,7 @@ import { useGetProfileQuery } from "@/app/api/profileApi";
 import { V7FloatingAssistant } from "./v7-floating-assistant";
 import Image from "next/image";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { getImageUrl } from "@/lib/constants";
 
 interface V7HeaderProps {
   onMenuClick: () => void;
@@ -525,12 +526,7 @@ const handleSearch = (e: React.FormEvent) => {
                 className="object-cover"
                 src={
                   profileData?.data.profileImage
-                    ? profileData.data.profileImage.startsWith("http")
-                      ? `${profileData.data.profileImage}?t=${Date.now()}`
-                      : `${
-                          process.env.NEXT_PUBLIC_API_URL ||
-                          "https://www.marasil.site"
-                        }${profileData.data.profileImage}?t=${Date.now()}`
+                    ? `${getImageUrl(profileData.data.profileImage)}?t=${Date.now()}`
                     : "/homePageImages/user.jpg"
                 }
                 alt="صورة الحساب"

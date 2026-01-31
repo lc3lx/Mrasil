@@ -42,6 +42,7 @@ import {
 import { useGetShipmentStatsQuery } from "@/app/api/homePageApi";
 import ProfileUpLoad from "../parcels/components/ProfileUpLoad";
 import Link from "next/link";
+import { getImageUrl } from "@/lib/constants";
 
 export default function ProfilePage() {
   const { data: profileData, isLoading } = useGetProfileQuery();
@@ -502,14 +503,7 @@ export default function ProfilePage() {
                           />
                         ) : customerData?.data.brand_logo ? (
                           <img
-                            src={
-                              customerData.data.brand_logo.startsWith("http")
-                                ? customerData.data.brand_logo
-                                : `${
-                                    process.env.NEXT_PUBLIC_API_URL ||
-                                    "https://www.marasil.site"
-                                  }${customerData.data.brand_logo}`
-                            }
+                            src={getImageUrl(customerData.data.brand_logo)}
                             alt="شعار الشركة"
                             className="max-w-full max-h-full object-contain"
                           />
@@ -733,19 +727,9 @@ export default function ProfilePage() {
                 onFileSelect={handelImageUpload}
                 initialImage={
                   image
-                    ? image.startsWith("http")
-                      ? `${image}?t=${Date.now()}`
-                      : `${
-                          process.env.NEXT_PUBLIC_API_URL ||
-                          "https://www.marasil.site"
-                        }${image}?t=${Date.now()}`
+                    ? `${getImageUrl(image)}?t=${Date.now()}`
                     : customerData?.data.profileImage
-                    ? customerData.data.profileImage.startsWith("http")
-                      ? `${customerData.data.profileImage}?t=${Date.now()}`
-                      : `${
-                          process.env.NEXT_PUBLIC_API_URL ||
-                          "https://www.marasil.site"
-                        }${customerData.data.profileImage}?t=${Date.now()}`
+                    ? `${getImageUrl(customerData.data.profileImage)}?t=${Date.now()}`
                     : "/homePageImages/user.jpg"
                 }
               />

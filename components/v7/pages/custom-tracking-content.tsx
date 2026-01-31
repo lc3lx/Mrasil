@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useGetCustomerMeQuery, useUpdateTrackingSettingsMutation, TrackingSettings } from "@/app/api/customerApi";
+import { getImageUrl } from "@/lib/constants";
 
 export function CustomTrackingContent() {
   const { toast } = useToast();
@@ -85,7 +86,7 @@ export function CustomTrackingContent() {
   };
 
   const handleCopyCode = () => {
-    navigator.clipboard.writeText(trackingSettings.embedCode);
+    navigator.clipboard.writeText(trackingSettings.embedCode ?? "");
     setCopied(true);
     toast({
       title: "تم النسخ",
@@ -245,7 +246,7 @@ export function CustomTrackingContent() {
                 <div className="flex items-center space-x-3 space-x-reverse p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
                   <div className="h-20 w-20 rounded-lg border-2 border-gray-300 dark:border-gray-600 overflow-hidden shadow-sm bg-white">
                     <img
-                      src={trackingSettings.logo || "/placeholder.svg"}
+                      src={getImageUrl(trackingSettings.logo ?? "") || "/placeholder.svg"}
                       alt="شعار الشركة"
                       className="w-full h-full object-contain p-2"
                     />
@@ -419,7 +420,7 @@ export function CustomTrackingContent() {
                             <div className="h-6 w-6 rounded-sm overflow-hidden">
                               <img
                                 src={
-                                  trackingSettings.logo || "/placeholder.svg"
+                                  getImageUrl(trackingSettings.logo ?? "") || "/placeholder.svg"
                                 }
                                 alt="Logo"
                                 className="w-full h-full object-contain"
