@@ -55,7 +55,7 @@ export interface ConversationStats {
 export const aiApi = createApi({
   reducerPath: "aiApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api",
+    baseUrl: "https://www.marasil.sa/api",
     prepareHeaders: (headers, { getState }) => {
       // Get token from Redux state or localStorage
       const token =
