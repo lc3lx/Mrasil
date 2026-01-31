@@ -168,7 +168,7 @@ export const V7Layout = ({ children, theme = "light" }: V7LayoutProps) => {
   }
 
   // التحقق مما إذا كان المسار الحالي هو الصفحة الرئيسية
-  const isHomePage = pathname === "/"
+  const isHomePage = pathname === "/home"
 
   // التحقق مما إذا كان المسار الحالي هو صفحة تخصيص التتبع
   const isCustomTrackingPage = pathname === "/custom-tracking" || pathname?.includes("/custom-tracking")

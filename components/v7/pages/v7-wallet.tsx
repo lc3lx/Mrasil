@@ -238,7 +238,7 @@ export default function V7Wallet({
                 );
 
                 // الانتقال للصفحة الرئيسية
-                router.push("/");
+                router.push("/home");
               }
             } catch (error: any) {
               console.error("خطأ في الدفع:", error);
@@ -424,7 +424,7 @@ export default function V7Wallet({
             );
 
             // الانتقال للصفحة الرئيسية
-            router.push("/");
+            router.push("/home");
           })
           .catch((error) => {
             setError(error.message || "حدث خطأ أثناء معالجة الدفع");
@@ -609,7 +609,7 @@ export default function V7Wallet({
             );
 
             // الانتقال للصفحة الرئيسية
-            router.push("/");
+            router.push("/home");
           })
           .catch((error) => {
             setError(error.message || "حدث خطأ أثناء معالجة الدفع");
@@ -763,7 +763,7 @@ export default function V7Wallet({
         );
         setTimeout(() => {
           handleClose();
-          router.push("/");
+          router.push("/home");
         }, 2000);
         setIsSubmitting(false);
       }

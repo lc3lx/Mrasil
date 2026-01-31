@@ -1,5 +1,5 @@
 export const routes = {
-  home: "/",
+  home: "/home",
   orders: "/orders",
   shipments: "/shipments",
   tracking: "/tracking",
@@ -12,7 +12,7 @@ export const routes = {
   createShipment: "/create-shipment",
   history: "/history",
   payments: "/payments",
-  invoices: "/invoices",
+  invoices: "/",
   taxInvoices: "/tax-invoices", // إضافة مسار الفواتير الضريبية
   zakatInvoices: "/zakat-invoices", // إضافة مسار فواتير الزكاة
   help: "/help",
@@ -70,7 +70,10 @@ export type RouteKey =
 
 // تحسين دالة التحقق من المسار النشط
 export function isActiveRoute(currentPath: string, route: string): boolean {
-  // للصفحة الرئيسية، نتحقق من التطابق التام
+  // للصفحة الرئيسية (الرئيسية/اللوحة)، نتحقق من التطابق التام
+  if (route === "/home") {
+    return currentPath === "/home"
+  }
   if (route === "/") {
     return currentPath === "/"
   }

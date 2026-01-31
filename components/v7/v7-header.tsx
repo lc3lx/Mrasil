@@ -192,7 +192,7 @@ const handleSearch = (e: React.FormEvent) => {
           >
             <Menu className="h-5 w-5 text-[#294D8B]" />
           </Button>
-          <Link href="/">
+          <Link href="/home">
             <div>
               <Image src="/logo.png" alt="شعار الشركة" className="h-8 w-auto" width={50} height={50} />
             </div>
@@ -228,7 +228,7 @@ const handleSearch = (e: React.FormEvent) => {
           <Menu className="h-5 w-5 text-[#294D8B]" />
           <span className="sr-only">فتح القائمة</span>
         </Button>
-        <Link href="/" className="">
+        <Link href="/home" className="">
 
             <Image src="/logo.png" alt="شعار الشركة" className="h-12 w-auto" width={50} height={50}/>
  

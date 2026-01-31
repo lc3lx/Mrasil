@@ -31,7 +31,7 @@ export function ModernHeader() {
 
   return (
     <nav
-      className={`v7-neu-header-home fixed inset-x-0 top-0 z-50 w-full bg-[#ccd5dd] border-b border-white/30 md:border-white/20 backdrop-blur-md transform transition-all duration-700 ease-in-out py-4 px-6 sm:px-8 md:px-10 lg:px-16 xl:px-20
+      className={`v7-neu-header-home fixed inset-x-0 top-0 z-50 w-full bg-[#ccd5dd] border-b border-white/30 md:border-white/20 backdrop-blur-md transform transition-all duration-700 ease-in-out py-2 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16
       ${isSmall ? "lg:min-w-[65rem] lg:top-4 lg:rounded-full" : "top-0"}
     `}
       style={{
@@ -40,7 +40,7 @@ export function ModernHeader() {
       }}
     >
       <div
-        className={`relative max-w-screen-xl mx-auto flex items-center justify-center xl:justify-between transition-all duration-500 min-h-[60px] md:min-h-[70px]`}
+        className={`relative max-w-screen-xl mx-auto flex items-center justify-center xl:justify-between transition-all duration-500 min-h-[44px] md:min-h-[52px]`}
       >
         {/* Right side: Navigation / Hamburger */}
         <div className="flex items-center gap-3 absolute right-3 top-1/2 -translate-y-1/2 xl:left-3 xl:static xl:translate-y-0 xl:order-0 xl:flex-1 xl:justify-start">
@@ -65,28 +65,28 @@ export function ModernHeader() {
 
         {/* Center: Logo */}
         <Link
-          href="/invoices"
+          href="/"
           onClick={(e) => {
-            // منع السلوك الافتراضي إذا كنا بالفعل في صفحة invoices
-            if (pathname === "/invoices") {
+            // منع السلوك الافتراضي إذا كنا بالفعل في الصفحة الرئيسية
+            if (pathname === "/") {
               e.preventDefault();
               // إعادة تحميل الصفحة بدون redirect
               window.scrollTo({ top: 0, behavior: "smooth" });
             }
           }}
           className="
-          w-[8rem] h-[4rem]
-          sm:w-[12rem] sm:h-[6rem]
-          md:w-[16rem] md:h-[8rem]
-          xl:w-[20rem] xl:h-[10rem]
+          w-[6rem] h-[3rem]
+          sm:w-[7rem] sm:h-[4rem]
+          md:w-[9rem] md:h-[5rem]
+          xl:w-[11rem] xl:h-[6rem]
           hover:opacity-80 transition-opacity block
         "
         >
           <Image
             src="/logo.png"
             alt="MARASIL Logo"
-            width={400}
-            height={200}
+            width={160}
+            height={120}
             className=" w-full h-full object-contain"
           />
         </Link>

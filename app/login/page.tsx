@@ -25,7 +25,7 @@ export default function LoginPage() {
   // Redirect to home if already authenticated
   useEffect(() => {
     if (isAuthenticated && user) {
-        router.push('/');
+        router.replace('/home');
     }
   }, [isAuthenticated, user, router]);
 
@@ -62,7 +62,7 @@ export default function LoginPage() {
         <div className="w-full flex justify-center items-center">
           <div className="w-full max-w-md mx-auto bg-white/20 backdrop-blur-xl border border-white/30 rounded-2xl shadow-2xl p-10 flex flex-col items-center">
             {/* Title */}
-            <Link href="/invoices" className="mb-5 hover:opacity-80 transition-opacity">
+            <Link href="/" className="mb-5 hover:opacity-80 transition-opacity">
               <Image src="/logo.png" alt="شعار الشركة" className="h-36 w-auto sm:h-44" width={220} height={220} />
             </Link>
             <h2 className="text-3xl font-bold text-white mb-9 tracking-wide text-center drop-shadow-lg">تسجيل دخول</h2>

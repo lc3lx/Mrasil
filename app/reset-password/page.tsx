@@ -101,7 +101,7 @@ export default function ResetPasswordPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8" dir="rtl">
       <div className="max-w-md w-full space-y-8">
         <div className="flex flex-col items-center">
-          <Link href="/invoices" className="mb-6 hover:opacity-80 transition-opacity">
+          <Link href="/" className="mb-6 hover:opacity-80 transition-opacity">
             <Image src="/logo.png" alt="شعار الشركة" className="h-40 w-auto sm:h-48" width={240} height={240} />
           </Link>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">

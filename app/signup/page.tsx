@@ -158,7 +158,7 @@ export default function SignupPage() {
           <div className="w-full max-w-xl mx-auto bg-white/20 backdrop-blur-xl border border-white/30 rounded-2xl shadow-2xl p-6 sm:p-8 flex flex-col items-center max-h-[95vh] overflow-y-auto">
             {/* Title */}
             <Link
-              href="/invoices"
+              href="/"
               className="mb-4 hover:opacity-80 transition-opacity"
             >
               <Image

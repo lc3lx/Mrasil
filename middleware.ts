@@ -19,7 +19,7 @@ export function middleware(request: NextRequest) {
                   request.headers.get('authorization')?.replace('Bearer ', '')
     
     if (token) {
-      return NextResponse.redirect(new URL('/', request.url))
+      return NextResponse.redirect(new URL('/home', request.url))
     }
   }
 
@@ -34,7 +34,7 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
-     * - invoices (the landing page)
+     * - $ (root - landing page)
      * - dashboard (admin dashboard - handled client-side)
      */
     '/((?!api|_next/static|_next/image|favicon.ico|invoices|dashboard).*)',

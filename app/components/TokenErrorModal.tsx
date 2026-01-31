@@ -27,7 +27,7 @@ export default function TokenErrorModal({ message, isOpen }: TokenErrorModalProp
       const redirectTimer = setTimeout(() => {
         localStorage.removeItem('token')
         localStorage.removeItem('user')
-        router.push('/invoices')
+        router.push('/')
       }, 6000)
 
       return () => {

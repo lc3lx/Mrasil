@@ -61,8 +61,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(userData);
     setIsAuthenticated(true);
     
-    // توجيه جميع المستخدمين للصفحة الرئيسية
-        router.push('/');
+    // توجيه جميع المستخدمين للوحة التحكم
+    router.push('/home');
   };
 
   const logout = () => {
@@ -72,7 +72,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setToken(null);
     setUser(null);
     setIsAuthenticated(false);
-    router.push('/invoices');
+    router.push('/');
   };
 
   return (

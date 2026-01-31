@@ -410,7 +410,7 @@ export function V7Sidebar({ open, onClose, them,onThemeToggle, onMenuClick  }: S
   const handleSignOut = () => {
     logout(); // This will clear auth state and redirect to login page
     onClose(); // Close the sidebar if it's open
-    router.push("/invoices")
+    router.push("/")
   };
     const currentTheme = resolvedTheme || theme || "light";
 
