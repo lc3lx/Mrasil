@@ -50,9 +50,9 @@ export default function V7Wallet({
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [transferImage, setTransferImage] = useState<File | null>(null);
-  const [transferImagePreview, setTransferImagePreview] = useState<string | null>(
-    null,
-  );
+  const [transferImagePreview, setTransferImagePreview] = useState<
+    string | null
+  >(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const [processedPayments, setProcessedPayments] = useState<Set<string>>(
@@ -191,7 +191,7 @@ export default function V7Wallet({
               }
 
               const response = await fetch(
-                "https://www.marasil.site/api/wallet/rechargeWallet",
+                "https://www.marasil.sa/api/wallet/rechargeWallet",
                 {
                   method: "POST",
                   headers: {
@@ -291,7 +291,7 @@ export default function V7Wallet({
               console.log(
                 "📤 Sending failed Moyasar payment to backend for logging"
               );
-              fetch("https://www.marasil.site/api/wallet/rechargeWallet", {
+              fetch("https://www.marasil.sa/api/wallet/rechargeWallet", {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
@@ -375,7 +375,7 @@ export default function V7Wallet({
           return newSet;
         });
         setIsSubmitting(true);
-        fetch("https://www.marasil.site/api/wallet/rechargeWallet", {
+        fetch("https://www.marasil.sa/api/wallet/rechargeWallet", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -493,7 +493,7 @@ export default function V7Wallet({
       const userToken = localStorage.getItem("token");
       if (userToken) {
         console.log("📤 Sending failed payment to backend for logging");
-        fetch("https://www.marasil.site/api/wallet/rechargeWallet", {
+        fetch("https://www.marasil.sa/api/wallet/rechargeWallet", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -560,7 +560,7 @@ export default function V7Wallet({
         });
         setIsSubmitting(true);
 
-        fetch("https://www.marasil.site/api/wallet/rechargeWallet", {
+        fetch("https://www.marasil.sa/api/wallet/rechargeWallet", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -656,30 +656,30 @@ export default function V7Wallet({
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+    const file = e.target.files?.[0];
+    if (!file) return;
 
     if (file.size > 5 * 1024 * 1024) {
-      setError("حجم الملف يجب أن يكون أقل من 5MB")
-      return
+      setError("حجم الملف يجب أن يكون أقل من 5MB");
+      return;
     }
 
-    const isImage = file.type.startsWith("image/")
-    const isPdf = file.type === "application/pdf"
+    const isImage = file.type.startsWith("image/");
+    const isPdf = file.type === "application/pdf";
 
     if (!isImage && !isPdf) {
-      setError("الملف يجب أن يكون صورة أو PDF")
-      return
+      setError("الملف يجب أن يكون صورة أو PDF");
+      return;
     }
 
     if (transferImagePreview) {
-      URL.revokeObjectURL(transferImagePreview)
+      URL.revokeObjectURL(transferImagePreview);
     }
 
-    setTransferImage(file)
-    setTransferImagePreview(isImage ? URL.createObjectURL(file) : null)
-    setError("")
-  }
+    setTransferImage(file);
+    setTransferImagePreview(isImage ? URL.createObjectURL(file) : null);
+    setError("");
+  };
 
   const removeImage = () => {
     if (transferImagePreview) {
@@ -735,12 +735,12 @@ export default function V7Wallet({
         }
 
         const formData = new FormData();
-        formData.append("amount", paymentAmount.toString())
-        formData.append("bankReceipt", transferImage)
+        formData.append("amount", paymentAmount.toString());
+        formData.append("bankReceipt", transferImage);
         const userToken = localStorage.getItem("token");
 
         const response = await fetch(
-          "https://www.marasil.site/api/wallet/rechargeWalletbyBank",
+          "https://www.marasil.sa/api/wallet/rechargeWalletbyBank",
           {
             method: "POST",
             headers: {
