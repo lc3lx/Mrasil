@@ -19,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Filter } from "lucide-react";
 
 interface PaymentLineChartProps {
   data?: any[];
@@ -123,24 +124,33 @@ export function PaymentLineChart({
 
   return (
     <div className="space-y-4">
-      {/* فلتر الفترة الزمنية */}
-      <div className="flex justify-end">
-        <Select value={timeRange} onValueChange={setTimeRange}>
-          <SelectTrigger className="w-[180px] bg-white dark:bg-gray-800">
-            <SelectValue placeholder="اختر الفترة" />
-          </SelectTrigger>
-          <SelectContent className="dark:bg-gray-800">
-            <SelectItem value="week" className="dark:text-gray-200">
-              أسبوعي
-            </SelectItem>
-            <SelectItem value="month" className="dark:text-gray-200">
-              شهري
-            </SelectItem>
-            <SelectItem value="year" className="dark:text-gray-200">
-              سنوي
-            </SelectItem>
-          </SelectContent>
-        </Select>
+      {/* فلتر الفترة الزمنية - نفس تصميم المعاملات المالية */}
+      <div className="flex flex-col md:flex-row justify-end items-stretch md:items-center gap-4" dir="rtl">
+        <div className="flex gap-2 w-full md:w-auto justify-start">
+          <Select value={timeRange} onValueChange={setTimeRange}>
+            <SelectTrigger
+              className="w-full md:w-[180px] v7-neu-input pe-4 flex items-center justify-between bg-white dark:bg-gray-800 text-[#294D8B] dark:text-blue-400 font-medium shadow-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors border-2 border-[#294D8B] dark:border-blue-500"
+              dir="rtl"
+            >
+              <SelectValue placeholder="اختر الفترة" />
+              <Filter className="h-4 w-4 ml-2" />
+            </SelectTrigger>
+            <SelectContent
+              className="dark:bg-gray-800 bg-[#f0f4f8] border-none"
+              dir="rtl"
+            >
+              <SelectItem value="week" className="dark:text-gray-200">
+                أسبوعي
+              </SelectItem>
+              <SelectItem value="month" className="dark:text-gray-200">
+                شهري
+              </SelectItem>
+              <SelectItem value="year" className="dark:text-gray-200">
+                سنوي
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <ResponsiveContainer width="100%" height={height}>

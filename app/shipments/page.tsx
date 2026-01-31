@@ -9,6 +9,7 @@ import {
   Search,
   Filter,
   ArrowUpDown,
+  ArrowRight,
   Download,
   Plus,
   ChevronDown,
@@ -17,6 +18,7 @@ import {
   Store,
   ShoppingCart,
   X,
+  Calendar,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -525,26 +527,49 @@ export default function ShipmentsPage() {
                 إدارة ومتابعة جميع شحناتك
               </p>
             </div>
-            <div className="flex flex-wrap items-center gap-2 justify-end" dir="rtl">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-sm text-[#294D8B] font-medium shrink-0">من:</span>
-                <input
-                  type="date"
-                  value={dateFrom}
-                  onChange={(e) => setDateFrom(e.target.value)}
-                  className="h-9 px-3 rounded-lg border border-[#E4E9F2] bg-[#f0f4f8] text-[#294D8B] text-sm min-w-[140px] focus:outline-none focus:ring-2 focus:ring-[#294D8B]/30 focus:border-[#294D8B]"
-                  dir="ltr"
-                  title="اختر يوم وشهر وسنة - من"
-                />
-                <span className="text-sm text-[#294D8B] font-medium shrink-0">إلى:</span>
-                <input
-                  type="date"
-                  value={dateTo}
-                  onChange={(e) => setDateTo(e.target.value)}
-                  className="h-9 px-3 rounded-lg border border-[#E4E9F2] bg-[#f0f4f8] text-[#294D8B] text-sm min-w-[140px] focus:outline-none focus:ring-2 focus:ring-[#294D8B]/30 focus:border-[#294D8B]"
-                  dir="ltr"
-                  title="اختر يوم وشهر وسنة - إلى"
-                />
+            <div className="flex flex-wrap items-center gap-3 justify-end" dir="rtl">
+              <div className="flex items-center gap-2 flex-wrap px-4 py-2 rounded-xl bg-[#f0f4f8] border border-[#E4E9F2] shadow-inner v7-neu-inset">
+                <div className="flex items-center gap-1.5 text-[#294D8B]">
+                  <Calendar className="h-4 w-4" />
+                  <span className="text-sm font-semibold">التاريخ:</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <label className="text-xs text-[#6d6a67] font-medium">من</label>
+                  <input
+                    type="date"
+                    value={dateFrom}
+                    onChange={(e) => setDateFrom(e.target.value)}
+                    className="h-9 px-3 rounded-lg border border-[#E4E9F2] bg-white text-[#294D8B] text-sm min-w-[145px] focus:outline-none focus:ring-2 focus:ring-[#294D8B]/40 focus:border-[#294D8B] transition-shadow"
+                    dir="ltr"
+                    title="اختر تاريخ البداية"
+                    aria-label="تاريخ من"
+                  />
+                  <ArrowRight className="h-4 w-4 text-[#6d6a67] rotate-180" />
+                  <label className="text-xs text-[#6d6a67] font-medium">إلى</label>
+                  <input
+                    type="date"
+                    value={dateTo}
+                    onChange={(e) => setDateTo(e.target.value)}
+                    className="h-9 px-3 rounded-lg border border-[#E4E9F2] bg-white text-[#294D8B] text-sm min-w-[145px] focus:outline-none focus:ring-2 focus:ring-[#294D8B]/40 focus:border-[#294D8B] transition-shadow"
+                    dir="ltr"
+                    title="اختر تاريخ النهاية"
+                    aria-label="تاريخ إلى"
+                  />
+                </div>
+                {(dateFrom || dateTo) && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDateFrom("");
+                      setDateTo("");
+                    }}
+                    className="p-1.5 rounded-lg hover:bg-red-50 text-[#6d6a67] hover:text-red-600 transition-colors"
+                    title="مسح التاريخ"
+                    aria-label="مسح فلتر التاريخ"
+                  >
+                    <XCircle className="h-4 w-4" />
+                  </button>
+                )}
               </div>
               <Link href="/create-shipment">
                 <Button className="v7-neu-button text-base">

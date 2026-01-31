@@ -130,10 +130,10 @@ export default function LocationsPage() {
     if (addressToDelete) {
       try {
         await deleteAddress(addressToDelete._id).unwrap();
-        toast.success("Address deleted successfully!");
+        toast.success("تم حذف العنوان بنجاح!");
         setAddressToDelete(null);
       } catch (err) {
-        toast.error("Failed to delete address.");
+        toast.error("فشل في حذف العنوان.");
         console.error("Failed to delete the address: ", err);
       }
     }
@@ -237,21 +237,40 @@ export default function LocationsPage() {
         open={!!addressToDelete}
         onOpenChange={(open) => !open && setAddressToDelete(null)}
       >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the
-              address.
-            </AlertDialogDescription>
+        <AlertDialogContent
+          className="bg-white border-[#E4E9F2] shadow-xl rounded-xl max-w-md dir-rtl"
+          dir="rtl"
+        >
+          <AlertDialogHeader className="text-right gap-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-red-100">
+                <Trash2 className="h-6 w-6 text-red-600" />
+              </div>
+              <div>
+                <AlertDialogTitle className="text-xl font-bold text-[#294D8B]">
+                  تأكيد الحذف
+                </AlertDialogTitle>
+                <AlertDialogDescription className="text-[#6d6a67] mt-1">
+                  هل أنت متأكد من حذف العنوان؟ لا يمكن التراجع عن هذا الإجراء.
+                  {addressToDelete && (
+                    <span className="block mt-3 p-3 rounded-lg bg-[#f0f4f8] text-[#294D8B] font-medium">
+                      {addressToDelete.alias}
+                    </span>
+                  )}
+                </AlertDialogDescription>
+              </div>
+            </div>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogFooter className="flex-row-reverse gap-2 sm:gap-2 mt-6">
+            <AlertDialogCancel className="v7-neu-button-sm m-0">
+              إلغاء
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteConfirm}
               disabled={isDeleting}
+              className="bg-red-600 hover:bg-red-700 text-white m-0"
             >
-              {isDeleting ? "Deleting..." : "Continue"}
+              {isDeleting ? "جاري الحذف..." : "حذف"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -125,11 +125,11 @@ const [focused, setFocused] = useState<"" | "country" | "city">("");
 
   const handleFormSubmit = async (data: any) => {
     try {
-      // استخدام form.city بدلاً من data.city لأن المدينة تُحدّث في state
-      // واستخدام "السعودية" مباشرة لأن data.country غير موجود في react-hook-form
+      // استخدام القيم التي أدخلها المستخدم كما هي دون إضافة تلقائية
       const city = form.city || data.city || "";
-      const country = "السعودية";
-      const clientAddress = city ? `${country}, ${city}` : country;
+      const country = data.country || "السعودية";
+      // حفظ العنوان التفصيلي كما أدخله المستخدم دون إضافة "السعودية" أو غيره
+      const clientAddress = (data.clientAddress || "").trim();
       const clientEmail = data.clientEmail || customerMeData?.data?.email || "";
       const submitData = {
         clientName: data.clientName,

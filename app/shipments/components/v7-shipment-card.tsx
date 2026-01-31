@@ -24,6 +24,7 @@ import {
   Trash,
   Redo,
   X,
+  Lock,
 } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import moment from "moment";
@@ -424,7 +425,11 @@ export function V7ShipmentCard({
     logo: carrierLogo,
     color: "text-gray-600",
   };
-  console.log(shipment);
+
+  const isCancelled =
+    shipment?.shipmentstates === "CANCELLED" ||
+    shipment?.shipmentstates === "Canceled" ||
+    shipment?.shipmentstates === "CANCELED";
 
   // Helper: Get label URL for printing
   const getLabelUrl = () => {
@@ -657,9 +662,20 @@ export function V7ShipmentCard({
   };
   return (
     <div
-      className={`v7-neu-card-inner rounded-xl border border-gray-100 w-full bg-white`}
+      className={`v7-neu-card-inner rounded-xl border border-gray-100 w-full bg-white relative ${
+        isCancelled ? "pointer-events-none select-none opacity-75" : ""
+      }`}
       dir="rtl"
     >
+      {isCancelled && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-gray-900/40 backdrop-blur-[1px]">
+          <div className="flex flex-col items-center gap-2 rounded-lg bg-white/95 px-6 py-4 shadow-lg">
+            <Lock className="h-10 w-10 text-red-600" />
+            <span className="text-sm font-bold text-red-700">الشحنة ملغاة</span>
+            <span className="text-xs text-gray-600">لا يمكن طباعة البوليصة أو تتبع الشحنة</span>
+          </div>
+        </div>
+      )}
       {/* Main Card Content - Always visible */}
       <div className="p-6 flex    w-full  gap-4">
         <div className="flex flex-col md:flex-row items-start gap-6  w-full ">

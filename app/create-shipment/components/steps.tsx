@@ -1816,6 +1816,458 @@ function Step4Content({
     return matrix[str2.length][str1.length];
   };
 
+  // قاموس تحويل أسماء المدن إلى الأسماء المستخدمة في SMSA
+  // يشمل الأسماء العربية والإنجليزية المختلفة
+  const cityNameToSMSA: { [key: string]: string } = {
+    // الرياض
+    "الرياض": "Riyadh", "riyadh": "Riyadh", "الریاض": "Riyadh",
+    // جدة
+    "جدة": "Jeddah", "جده": "Jeddah", "jeddah": "Jeddah", "jedda": "Jeddah", "jiddah": "Jeddah",
+    // مكة
+    "مكة": "Makkah", "مكه": "Makkah", "مكة المكرمة": "Makkah", "makkah": "Makkah", "mecca": "Makkah",
+    // المدينة
+    "المدينة": "Madinah", "المدينة المنورة": "Madinah", "المدينه": "Madinah", "madinah": "Madinah", "medina": "Madinah",
+    // الدمام
+    "الدمام": "Dammam", "dammam": "Dammam",
+    // الخبر
+    "الخبر": "Khubar", "khobar": "Khubar", "al-khobar": "Khubar", "alkhobar": "Khubar", "al khobar": "Khubar", "khubar": "Khubar",
+    // الظهران
+    "الظهران": "Dhahran", "dhahran": "Dhahran",
+    // الجبيل
+    "الجبيل": "Jubail", "jubail": "Jubail", "al jubail": "Jubail",
+    // الهفوف / الأحساء
+    "الهفوف": "Hufuf", "الاحساء": "Hufuf", "الأحساء": "Hufuf", "hufuf": "Hufuf", "hofuf": "Hufuf", "al-ahsa": "Hufuf", "ahsa": "Hufuf",
+    // المبرز
+    "المبرز": "Mubarraz", "mubarraz": "Mubarraz",
+    // الطائف
+    "الطائف": "Taif", "taif": "Taif", "ta'if": "Taif",
+    // تبوك
+    "تبوك": "Tabuk", "tabuk": "Tabuk",
+    // بريدة
+    "بريدة": "Buraydah", "بریده": "Buraydah", "buraydah": "Buraydah", "buraidah": "Buraydah",
+    // عنيزة
+    "عنيزة": "Unayzah", "unayzah": "Unayzah", "unizah": "Unayzah",
+    // حائل
+    "حائل": "Hail", "hail": "Hail",
+    // خميس مشيط
+    "خميس مشيط": "Khamis Mushayt", "khamis mushait": "Khamis Mushayt", "khamis mushayt": "Khamis Mushayt",
+    // أبها
+    "أبها": "Abha", "ابها": "Abha", "abha": "Abha",
+    // نجران
+    "نجران": "Najran", "najran": "Najran",
+    // جازان / جيزان
+    "جازان": "Gizan", "جيزان": "Gizan", "gizan": "Gizan", "jazan": "Gizan", "jizan": "Gizan",
+    // ينبع
+    "ينبع": "Yanbu", "yanbu": "Yanbu",
+    // الخرج
+    "الخرج": "Kharj", "kharj": "Kharj", "al-kharj": "Kharj",
+    // القطيف
+    "القطيف": "Qatif", "qatif": "Qatif",
+    // حفر الباطن (الاسم الشائع: حفر)
+    "حفر الباطن": "Hafar Al Baten", "hafar al baten": "Hafar Al Baten", "hafr al batin": "Hafar Al Baten",
+    "حفر": "Hafar Al Baten",
+    // عرعر
+    "عرعر": "Arar", "arar": "Arar",
+    // سكاكا
+    "سكاكا": "Skakah", "sakaka": "Skakah", "skakah": "Skakah",
+    // القنفذة
+    "القنفذة": "Qunfudhah", "qunfudhah": "Qunfudhah",
+    // الباحة
+    "الباحة": "Baha", "baha": "Baha", "albaha": "Baha",
+    // بيشة
+    "بيشة": "Bishah", "bishah": "Bishah", "bisha": "Bishah",
+    // رابغ
+    "رابغ": "Rabigh", "rabigh": "Rabigh",
+    // الزلفي
+    "الزلفي": "Zulfi", "zulfi": "Zulfi",
+    // المجمعة
+    "المجمعة": "Majmaah", "majmaah": "Majmaah",
+    // شقراء
+    "شقراء": "Shaqra", "shaqra": "Shaqra",
+    // الدوادمي
+    "الدوادمي": "Duwadimi", "duwadimi": "Duwadimi", "dawadmi": "Duwadimi",
+    // القويعية
+    "القويعية": "Quwayiyah", "quwayiyah": "Quwayiyah",
+    // الرس
+    "الرس": "Rass", "rass": "Rass",
+    // الخفجي
+    "الخفجي": "Khafji", "khafji": "Khafji",
+    // رفحاء
+    "رفحاء": "Rafha", "rafha": "Rafha",
+    // القريات
+    "القريات": "Qurayyat", "qurayyat": "Qurayyat",
+    // صبياء
+    "صبيا": "Sabya", "sabya": "Sabya",
+    // محايل عسير
+    "محايل": "Muhayil", "محايل عسير": "Muhayil", "muhayil": "Muhayil",
+    // أحد رفيدة
+    "أحد رفيدة": "Ahad Rafidah", "ahad rafidah": "Ahad Rafidah",
+    // النماص
+    "النماص": "Namas", "namas": "Namas",
+    // رأس تنورة (الاسم الشائع: رأس تنورة أو تنورة)
+    "رأس تنورة": "Ras Tannurah", "ras tanura": "Ras Tannurah", "ras tannurah": "Ras Tannurah",
+    "تنورة": "Ras Tannurah",
+    // سيهات
+    "سيهات": "Sayhat", "sayhat": "Sayhat",
+    // صفوى
+    "صفوى": "Safwa", "safwa": "Safwa",
+    // العلا
+    "العلا": "Ula", "ula": "Ula", "alula": "Ula",
+    // تيماء
+    "تيماء": "Taima", "taima": "Taima",
+    // ضباء
+    "ضباء": "Dhuba", "duba": "Dhuba", "dhuba": "Dhuba",
+    // أملج
+    "أملج": "Ummlujj", "umluj": "Ummlujj",
+    // الوجه
+    "الوجه": "Wajh", "wajh": "Wajh",
+    // حقل
+    "حقل": "Haql", "haql": "Haql",
+    // شرورة
+    "شرورة": "Sharourah", "sharourah": "Sharourah",
+    // طريف
+    "طريف": "Turayf", "turayf": "Turayf",
+    // وادي الدواسر (الاسم الشائع: الدواسر)
+    "وادي الدواسر": "Wadi Al Dawasir", "wadi al dawasir": "Wadi Al Dawasir",
+    "الدواسر": "Wadi Al Dawasir", "دواسر": "Wadi Al Dawasir",
+    // السليل
+    "السليل": "Sulayyil", "sulayyil": "Sulayyil",
+    // الأفلاج
+    "الأفلاج": "Aflaj", "aflaj": "Aflaj",
+    // عفيف
+    "عفيف": "Afif", "afif": "Afif",
+    // بلجرشي
+    "بلجرشي": "Biljurashi", "biljurashi": "Biljurashi",
+    // المذنب
+    "المذنب": "Midhnab", "midhnab": "Midhnab",
+    // البكيرية
+    "البكيرية": "Bikeryah", "bukayriyah": "Bikeryah",
+    // بدر
+    "بدر": "Badr", "badr": "Badr",
+    // خليص
+    "خليص": "Khulais", "khulais": "Khulais",
+    // الليث
+    "الليث": "Lith", "lith": "Lith",
+    // رنية
+    "رنية": "Ranyah", "ranyah": "Ranyah",
+    // تربة
+    "تربة": "Turbah", "turbah": "Turbah",
+    // الخرمة
+    "الخرمة": "Khurmah", "khurmah": "Khurmah",
+    // أبو عريش
+    "أبو عريش": "Abu Arish", "abu arish": "Abu Arish",
+    // صامطة
+    "صامطة": "Samtah", "samtah": "Samtah",
+    // ضمد
+    "ضمد": "Dhamad", "dhamad": "Dhamad",
+    // المخواة
+    "المخواة": "Mukhwah", "mukhwah": "Mukhwah",
+    // المجاردة
+    "المجاردة": "Majardah", "majardah": "Majardah",
+    // تنومة
+    "تنومة": "Tanumah", "tanumah": "Tanumah",
+    // النعيرية
+    "النعيرية": "Nairiyah", "nairiyah": "Nairiyah",
+    // بقيق
+    "بقيق": "Buqaiq", "buqaiq": "Buqaiq",
+    // دومة الجندل (الاسم الشائع: دومة)
+    "دومة الجندل": "Dawmat Al Jandal", "dawmat al jandal": "Dawmat Al Jandal",
+    "دومة": "Dawmat Al Jandal",
+    // طبرجل
+    "طبرجل": "Tabarjal", "tabarjal": "Tabarjal",
+    // القيصومة
+    "القيصومة": "Qaysumah", "qaysumah": "Qaysumah",
+    // عويقيلة
+    "عويقيلة": "Uwayqilah", "uwayqilah": "Uwayqilah",
+    // ظهران الجنوب (الاسم الشائع: ظهران)
+    "ظهران الجنوب": "Dhahran Aljanoub", "dhahran aljanoub": "Dhahran Aljanoub",
+    "ظهران": "Dhahran Aljanoub",
+    // سراة عبيدة (الاسم الشائع: سراة أو عبيدة)
+    "سراة عبيدة": "Sarat Abida", "sarat abida": "Sarat Abida",
+    "سراة": "Sarat Abida", "عبيدة": "Sarat Abida",
+    // رجال ألمع (الاسم الشائع: رجال أو ألمع)
+    "رجال ألمع": "Rijal Alma", "rijal alma": "Rijal Alma",
+    "رجال": "Rijal Alma", "ألمع": "Rijal Alma",
+    // الدرب
+    "الدرب": "Darb", "darb": "Darb",
+    // الداير
+    "الداير": "Dayer", "dayer": "Dayer",
+    // بارق
+    "بارق": "Bariq", "bariq": "Bariq",
+    // العيدابي
+    "العيدابي": "Edabi", "edabi": "Edabi",
+    // فرسان
+    "فرسان": "Farasan", "farasan": "Farasan",
+    // الحناكية
+    "الحناكية": "Hanakiyah", "hanakiyah": "Hanakiyah",
+    // خيبر
+    "خيبر": "Khayber", "khayber": "Khayber",
+    // المزاحمية
+    "المزاحمية": "Muzamiyah", "muzamiyah": "Muzamiyah",
+    // حريملاء
+    "حريملاء": "Huraymila", "huraymila": "Huraymila",
+    // ضرما
+    "ضرما": "Dhurma", "dhurma": "Dhurma",
+    // ثادق
+    "ثادق": "Thadiq", "thadiq": "Thadiq",
+    // رماح
+    "رماح": "Remah", "remah": "Remah",
+    // حوطة بني تميم (الاسم الشائع: حوطة)
+    "حوطة بني تميم": "Hawtat Bani Tamim", "hawtat bani tamim": "Hawtat Bani Tamim",
+    "حوطة": "Hawtat Bani Tamim",
+    // الحريق
+    "الحريق": "Hariq", "hariq": "Hariq",
+    // الدلم
+    "الدلم": "Dilam", "dilam": "Dilam",
+    // ساجر
+    "ساجر": "Sajir", "sajir": "Sajir",
+    // البدائع
+    "البدائع": "Badaya", "badaya": "Badaya",
+    // عيون الجواء (الاسم الشائع: عيون)
+    "عيون الجواء": "Uyun Al Jiwa", "uyun al jiwa": "Uyun Al Jiwa",
+    "عيون": "Uyun Al Jiwa",
+    // القلوة
+    "القلوة": "Qilwah", "qilwah": "Qilwah",
+    // العقيق
+    "العقيق": "Aqiq", "aqiq": "Aqiq",
+    // المندق
+    "المندق": "Mandaq", "mandaq": "Mandaq",
+    // الجموم
+    "الجموم": "Jamoum", "jamoum": "Jamoum",
+    // أسفان
+    "أسفان": "Asfan", "asfan": "Asfan",
+    // ثول
+    "ثول": "Thuwal, KAUST", "thuwal": "Thuwal, KAUST",
+    // البرك
+    "البرك": "Albirk", "albirk": "Albirk",
+    // ينبع النخل (ينبع موجودة بشكل منفصل)
+    "ينبع النخل": "Yanbu Al Nakhal", "yanbu al nakhal": "Yanbu Al Nakhal",
+    "النخل": "Yanbu Al Nakhal",
+    // مهد الذهب (الاسم الشائع: مهد)
+    "مهد الذهب": "Mahd Ad Dhahab", "mahd ad dhahab": "Mahd Ad Dhahab",
+    "مهد": "Mahd Ad Dhahab",
+    // الدرعية
+    "الدرعية": "Dariyah", "dariyah": "Dariyah",
+    // التمير
+    "التمير": "Tumair", "tumair": "Tumair",
+    // حوطة سدير (تعارض مع حوطة بني تميم - نبقيها كاملة)
+    "حوطة سدير": "Hawtat Sudayr", "hawtat sudayr": "Hawtat Sudayr",
+    // العيينة
+    "العيينة": "Al Uyaynah", "al uyaynah": "Al Uyaynah",
+    // عقلة الصقور (الاسم الشائع: عقلة)
+    "عقلة الصقور": "Uqlat As Suqur", "uqlat as suqur": "Uqlat As Suqur",
+    "عقلة": "Uqlat As Suqur",
+    // تاروت
+    "تاروت": "Tarut", "tarut": "Tarut",
+    // مدن إضافية من ملف SMSA
+    // الآيس
+    "الآيس": "Al Ais", "al ais": "Al Ais",
+    // السر
+    "السر": "Al Sir", "al sir": "Al Sir",
+    // الرويضة
+    "الرويضة": "Ruwaydah", "ruwaydah": "Ruwaydah",
+    // الغزالة
+    "الغزالة": "Ghazalah", "ghazalah": "Ghazalah",
+    // الهيت
+    "الهيت": "Al Hait", "al hait": "Al Hait",
+    // الوادين
+    "الوادين": "Al Wadeen", "al wadeen": "Al Wadeen",
+    // الأسياح
+    "الأسياح": "alasyah", "alasyah": "alasyah",
+    // الأرضة
+    "الأرضة": "Alardhah", "alardhah": "Alardhah",
+    // الأرطاوية
+    "الأرطاوية": "Artawiyah", "artawiyah": "Artawiyah",
+    // الأطاولة
+    "الأطاولة": "Atawlah", "atawlah": "Atawlah",
+    // الأعشاش
+    "الأعشاش": "Anak", "anak": "Anak",
+    // الأيون
+    "الأيون": "Ayun", "ayun": "Ayun",
+    // البجادية
+    "البجادية": "Bijadiyah", "bijadiyah": "Bijadiyah",
+    // البشائر
+    "البشائر": "Bashayer", "bashayer": "Bashayer",
+    // البطحاء
+    "البطحاء": "Batha", "batha": "Batha",
+    // البقعاء
+    "البقعاء": "Baqaa", "baqaa": "Baqaa",
+    // البلسمر
+    "البلسمر": "Balasmar", "balasmar": "Balasmar",
+    // التثليث
+    "التثليث": "Tathleeth", "tathleeth": "Tathleeth",
+    // التندحة
+    "التندحة": "Tendaha", "tendaha": "Tendaha",
+    // الجوف
+    "الجوف": "Jouf", "jouf": "Jouf",
+    // الحبونة
+    "الحبونة": "Habona", "habona": "Habona",
+    // الحرجة
+    "الحرجة": "Harajah", "harajah": "Harajah",
+    // الحرث
+    "الحرث": "Haradh", "haradh": "Haradh",
+    // الدلي رشيد
+    "دلي رشيد": "Dulay Rasheed", "dulay rasheed": "Dulay Rasheed",
+    // الذليم
+    "الذليم": "Dhalim", "dhalim": "Dhalim",
+    // الرافعة
+    "الرافعة": "Rafiah", "rafiah": "Rafiah",
+    // الرافعية الجمش (الاسم الشائع: الجمش)
+    "الرافعية الجمش": "Rafaya AlGimsh", "rafaya algimsh": "Rafaya AlGimsh",
+    "الجمش": "Rafaya AlGimsh", "جمش": "Rafaya AlGimsh",
+    // الرين
+    "الرين": "Ar Rayn", "ar rayn": "Ar Rayn",
+    // الريث
+    "الريث": "Rayth", "rayth": "Rayth",
+    // الشملي
+    "الشملي": "Ash Shamli", "ash shamli": "Ash Shamli",
+    // الشنان
+    "الشنان": "Ash Shinan", "ash shinan": "Ash Shinan",
+    // الصرار
+    "الصرار": "SARRAR", "sarrar": "SARRAR",
+    // الغاط
+    "الغاط": "Ghat", "ghat": "Ghat",
+    // القحمة
+    "القحمة": "Qahma", "qahma": "Qahma",
+    // القيد
+    "القيد": "Qaid", "qaid": "Qaid",
+    // المحاني
+    "المحاني": "Mahani", "mahani": "Mahani",
+    // المحلة
+    "المحلة": "Mahalah", "mahalah": "Mahalah",
+    // المدركة
+    "المدركة": "Medrekah", "medrekah": "Medrekah",
+    // المضيليف
+    "المضيليف": "Mudhaylif", "mudhaylif": "Mudhaylif",
+    // المويه
+    "المويه": "Muwayh", "muwayh": "Muwayh",
+    // النبهانية
+    "النبهانية": "Nabhaniah", "nabhaniah": "Nabhaniah",
+    // النعمة
+    "النعمة": "Namerah", "namerah": "Namerah",
+    // النفي
+    "النفي": "NIFI", "nifi": "NIFI",
+    // الوسقة
+    "الوسقة": "Wasqah", "wasqah": "Wasqah",
+    // اليدامة
+    "اليدامة": "Yadamah", "yadamah": "Yadamah",
+    // أدم
+    "أدم": "Adham", "adham": "Adham",
+    // أحد المسارحة (الاسم الشائع: المسارحة)
+    "أحد المسارحة": "Ahad Al Masarhah", "ahad al masarhah": "Ahad Al Masarhah",
+    "المسارحة": "Ahad Al Masarhah", "مسارحة": "Ahad Al Masarhah",
+    // أم الساهك
+    "أم الساهك": "Umm As Sahik", "umm as sahik": "Umm As Sahik",
+    // بحرة
+    "بحرة": "Bahrah", "bahrah": "Bahrah",
+    // بحر أبو سكينة (الاسم الشائع: أبو سكينة)
+    "بحر أبو سكينة": "Bahr Abu Sukaynah", "bahr abu sukaynah": "Bahr Abu Sukaynah",
+    "أبو سكينة": "Bahr Abu Sukaynah", "سكينة": "Bahr Abu Sukaynah",
+    // بدر الجنوب (الاسم الشائع: بدر - لكن بدر موجودة منفصلة)
+    "بدر الجنوب": "Badr Al Janoub", "badr al janoub": "Badr Al Janoub",
+    "جنوب": "Badr Al Janoub",
+    // بني عمرو
+    "بني عمرو": "Bani Amro", "bani amro": "Bani Amro",
+    // بيش
+    "بيش": "Baysh", "baysh": "Baysh",
+    // تريب
+    "تريب": "Tareeb", "tareeb": "Tareeb",
+    // رياض الخبراء (الاسم الشائع: الخبراء)
+    "رياض الخبراء": "Riyadh Al Khabra", "riyadh al khabra": "Riyadh Al Khabra",
+    "الخبراء": "Riyadh Al Khabra", "خبراء": "Riyadh Al Khabra",
+    // سبت العلايا (الاسم الشائع: سبت أو العلايا)
+    "سبت العلايا": "Sabt Al Alaya", "sabt al alaya": "Sabt Al Alaya",
+    "سبت": "Sabt Al Alaya", "العلايا": "Sabt Al Alaya",
+    // سبت شمران (الاسم الشائع: شمران)
+    "سبت شمران": "Sabt Shumran", "sabt shumran": "Sabt Shumran",
+    "شمران": "Sabt Shumran",
+    // شقيق
+    "شقيق": "Shuqaiq", "shuqaiq": "Shuqaiq",
+    // فيفا
+    "فيفا": "Fayfa", 
+    "fayfa": "Fayfa",
+    // قرية العليا (الاسم الشائع: العليا)
+    "قرية العليا": "Qaryat Al Ulya", "qaryat al ulya": "Qaryat Al Ulya",
+    "العليا": "Qaryat Al Ulya",
+    // قوز
+    "قوز": "Qawz", "qawz": "Qawz",
+    // مدينة الملك خالد العسكرية (الاسم الشائع: الملك خالد)
+    "مدينة الملك خالد العسكرية": "King Khalid Military City", "king khalid military city": "King Khalid Military City",
+    "الملك خالد": "King Khalid Military City", "ملك خالد": "King Khalid Military City",
+    // مركز أبحاث جامعة البترول
+    "مركز أبحاث جامعة البترول": "RSC KFUPM", "rsc kfupm": "RSC KFUPM",
+    // وادي الفرع (الاسم الشائع: الفرع)
+    "وادي الفرع": "Wadi Al Foraa", "wadi al foraa": "Wadi Al Foraa",
+    "الفرع": "Wadi Al Foraa",
+    // وادي بن هشبل (الاسم الشائع: هشبل)
+    "وادي بن هشبل": "Wadi Bin Hashbal", "wadi bin hashbal": "Wadi Bin Hashbal",
+    "هشبل": "Wadi Bin Hashbal", "بن هشبل": "Wadi Bin Hashbal",
+    // وادي حلي (الاسم الشائع: حلي)
+    "وادي حلي": "Wadi Hali", "wadi hali": "Wadi Hali",
+    "حلي": "Wadi Hali",
+    // === أسماء SMSA كما هي (لضمان تطابق كل المكاتب داخل السعودية) ===
+    "Riyadh": "Riyadh", "Jeddah": "Jeddah", "Dammam": "Dammam", "Khubar": "Khubar",
+    "Makkah": "Makkah", "Madinah": "Madinah", "Duwadimi": "Duwadimi", "Hafar Al Baten": "Hafar Al Baten",
+    "Afif": "Afif", "Aflaj": "Aflaj", "Kharj": "Kharj", "Rass": "Rass", "Buraydah": "Buraydah",
+    "Hail": "Hail", "Majmaah": "Majmaah", "Sajir": "Sajir", "Shaqra": "Shaqra", "Unayzah": "Unayzah",
+    "Zulfi": "Zulfi", "Dhahran": "Dhahran", "Mubarraz": "Mubarraz", "Jubail": "Jubail", "Khafji": "Khafji",
+    "Nairiyah": "Nairiyah", "Buqaiq": "Buqaiq", "Rafha": "Rafha", "Qurayyat": "Qurayyat", "Arar": "Arar",
+    "Dawmat Al Jandal": "Dawmat Al Jandal", "Dhuba": "Dhuba", "Skakah": "Skakah", "Tabarjal": "Tabarjal",
+    "Tabuk": "Tabuk", "Turayf": "Turayf", "Abha": "Abha", "Baha": "Baha", "Namas": "Namas",
+    "Sulayyil": "Sulayyil", "Biljurashi": "Biljurashi", "Khamis Mushayt": "Khamis Mushayt", "Muhayil": "Muhayil",
+    "Najran": "Najran", "Sabya": "Sabya", "Sharourah": "Sharourah", "Majardah": "Majardah", "Khurmah": "Khurmah",
+    "Ula": "Ula", "Taif": "Taif", "Rabigh": "Rabigh", "Ranyah": "Ranyah", "Turbah": "Turbah",
+    "Yanbu": "Yanbu", "Wadi Al Dawasir": "Wadi Al Dawasir", "Bikeryah": "Bikeryah", "Qatif": "Qatif",
+    "Tathleeth": "Tathleeth", "Midhnab": "Midhnab", "Quwayiyah": "Quwayiyah", "Hufuf": "Hufuf",
+    "Ras Tannurah": "Ras Tannurah", "Dhahran Aljanoub": "Dhahran Aljanoub", "Sayhat": "Sayhat", "Gizan": "Gizan",
+    "Abu Arish": "Abu Arish", "Sarat Abida": "Sarat Abida", "Taima": "Taima", "Samtah": "Samtah",
+    "Mukhwah": "Mukhwah", "Sabt Al Alaya": "Sabt Al Alaya", "Tanumah": "Tanumah", "Ummlujj": "Ummlujj",
+    "Badaya": "Badaya", "Anak": "Anak", "Hawtat Bani Tamim": "Hawtat Bani Tamim", "Remah": "Remah",
+    "Baysh": "Baysh", "Mahd Ad Dhahab": "Mahd Ad Dhahab", "Badr": "Badr", "Hanakiyah": "Hanakiyah",
+    "Lith": "Lith", "Uyun Al Jiwa": "Uyun Al Jiwa", "Ahad Rafidah": "Ahad Rafidah", "Tareeb": "Tareeb",
+    "Khulais": "Khulais", "Qilwah": "Qilwah", "Aqiq": "Aqiq", "Mandaq": "Mandaq", "Rafaya AlGimsh": "Rafaya AlGimsh",
+    "Haql": "Haql", "Qunfudhah": "Qunfudhah", "Namerah": "Namerah", "Alardhah": "Alardhah", "Khayber": "Khayber",
+    "Batha": "Batha", "Habona": "Habona", "Wadi Hali": "Wadi Hali", "Ahad Al Masarhah": "Ahad Al Masarhah",
+    "Baqaa": "Baqaa", "Dhamad": "Dhamad", "Huraymila": "Huraymila", "Dhurma": "Dhurma", "Muwayh": "Muwayh",
+    "Tumair": "Tumair", "Uqlat As Suqur": "Uqlat As Suqur", "Hawtat Sudayr": "Hawtat Sudayr", "Adham": "Adham",
+    "SARRAR": "SARRAR", "Wadi Bin Hashbal": "Wadi Bin Hashbal", "Edabi": "Edabi",
+    "Ash Shamli": "Ash Shamli", "Bishah": "Bishah", "Ayun": "Ayun", "RSC KFUPM": "RSC KFUPM",
+    "Thuwal, KAUST": "Thuwal, KAUST", "Bariq": "Bariq", "Jamoum": "Jamoum", "Al Wadeen": "Al Wadeen",
+    "Al Hait": "Al Hait", "Ruwaydah": "Ruwaydah", "Thadiq": "Thadiq", "Ghat": "Ghat", "Artawiyah": "Artawiyah",
+    "Rafiah": "Rafiah", "Ar Rayn": "Ar Rayn", "Dariyah": "Dariyah", "Mudhaylif": "Mudhaylif",
+    "Ash Shinan": "Ash Shinan", "Uwayqilah": "Uwayqilah", "Farasan": "Farasan", "Balasmar": "Balasmar",
+    "Tendaha": "Tendaha", "Bashayer": "Bashayer", "Medrekah": "Medrekah", "Atawlah": "Atawlah", "Tarut": "Tarut",
+    "Dhalim": "Dhalim", "Badr Al Janoub": "Badr Al Janoub", "Wasqah": "Wasqah", "Bahrah": "Bahrah",
+    "Qawz": "Qawz", "Mahalah": "Mahalah", "Ghazalah": "Ghazalah", "Al Uyaynah": "Al Uyaynah", "Rayth": "Rayth",
+    "Dulay Rasheed": "Dulay Rasheed", "NIFI": "NIFI", "Wadi Al Foraa": "Wadi Al Foraa", "Albirk": "Albirk",
+    "Nabhaniah": "Nabhaniah", "Sabt Shumran": "Sabt Shumran", "King Khalid Military City": "King Khalid Military City",
+    "Qaryat Al Ulya": "Qaryat Al Ulya", "Riyadh Al Khabra": "Riyadh Al Khabra", "Wajh": "Wajh",
+    "Yadamah": "Yadamah", "Al Ais": "Al Ais", "Al Sir": "Al Sir", "Bijadiyah": "Bijadiyah",
+    "Harajah": "Harajah", "Haradh": "Haradh", "Qahma": "Qahma", "Qaid": "Qaid", "Mahani": "Mahani",
+  };
+
+  // دالة للحصول على اسم المدينة المستخدم في SMSA
+  const getSMSACityName = (cityName: string): string => {
+    if (!cityName) return "";
+    const trimmed = cityName.trim();
+    const lower = trimmed.toLowerCase();
+    
+    // البحث المباشر
+    if (cityNameToSMSA[trimmed]) return cityNameToSMSA[trimmed];
+    if (cityNameToSMSA[lower]) return cityNameToSMSA[lower];
+    
+    // البحث بدون "ال" التعريف
+    const withoutAl = trimmed.replace(/^ال/, "");
+    if (cityNameToSMSA[withoutAl]) return cityNameToSMSA[withoutAl];
+    
+    // البحث مع إضافة "ال" التعريف
+    const withAl = "ال" + trimmed;
+    if (cityNameToSMSA[withAl]) return cityNameToSMSA[withAl];
+    
+    // إرجاع الاسم الأصلي إذا لم يوجد في القاموس
+    return trimmed;
+  };
+
   // دالة لتطبيع أسماء المدن (إزالة الكلمات الشائعة)
   const normalizeCityName = (cityName: string): string => {
     if (!cityName) return "";
@@ -1862,10 +2314,36 @@ function Step4Content({
       return false;
     }
 
+    // *** الخطوة الأولى والأهم: استخدام قاموس التحويل ***
+    // تحويل الاسم العربي إلى اسم SMSA
+    const smsaFromArabic = getSMSACityName(cityArabicTrimmed);
+    // تحويل الاسم الإنجليزي إلى اسم SMSA
+    const smsaFromEnglish = cityEnglishTrimmed ? getSMSACityName(cityEnglishTrimmed) : "";
+    
+    // المقارنة المباشرة مع اسم SMSA المحول
+    if (smsaFromArabic && officeCity.toLowerCase() === smsaFromArabic.toLowerCase()) {
+      return true;
+    }
+    if (smsaFromEnglish && officeCity.toLowerCase() === smsaFromEnglish.toLowerCase()) {
+      return true;
+    }
+
     // تطبيع الأسماء
     const normalizedArabic = normalizeCityName(cityArabicTrimmed);
     const normalizedEnglish = normalizeCityName(cityEnglishTrimmed);
     const normalizedOfficeCity = normalizeCityName(officeCity);
+
+    // تحويل الأسماء المطبعة أيضاً
+    const smsaFromNormalizedArabic = getSMSACityName(normalizedArabic);
+    const smsaFromNormalizedEnglish = normalizedEnglish ? getSMSACityName(normalizedEnglish) : "";
+    
+    // المقارنة مع الأسماء المطبعة والمحولة
+    if (smsaFromNormalizedArabic && officeCity.toLowerCase() === smsaFromNormalizedArabic.toLowerCase()) {
+      return true;
+    }
+    if (smsaFromNormalizedEnglish && officeCity.toLowerCase() === smsaFromNormalizedEnglish.toLowerCase()) {
+      return true;
+    }
 
     // الأولوية للاسم الإنجليزي إذا كان متوفراً
     const primaryCityName = cityEnglishTrimmed || cityArabicTrimmed;
@@ -1931,7 +2409,15 @@ function Step4Content({
       return true;
     }
 
-    // 9. معالجة حالات خاصة
+    // 9. البحث الجزئي مع أسماء SMSA المحولة
+    if (smsaFromArabic && officeCity.toLowerCase().includes(smsaFromArabic.toLowerCase())) {
+      return true;
+    }
+    if (smsaFromEnglish && officeCity.toLowerCase().includes(smsaFromEnglish.toLowerCase())) {
+      return true;
+    }
+
+    // 10. معالجة حالات خاصة
     // مكة = Makkah
     if (
       (cityArabicTrimmed === "مكة" ||
@@ -1954,7 +2440,7 @@ function Step4Content({
       return true;
     }
 
-    // 10. مقارنة التشابه مع الاسم الأساسي (60%)
+    // 11. مقارنة التشابه مع الاسم الأساسي (60%)
     const similarityThreshold = 0.6;
     if (
       calculateSimilarity(primaryCityName, officeCity) >= similarityThreshold
@@ -1962,7 +2448,7 @@ function Step4Content({
       return true;
     }
 
-    // 11. مقارنة التشابه مع الاسم العربي إذا كان مختلفاً
+    // 12. مقارنة التشابه مع الاسم العربي إذا كان مختلفاً
     if (
       cityArabicTrimmed &&
       cityArabicTrimmed !== primaryCityName &&
@@ -1971,11 +2457,19 @@ function Step4Content({
       return true;
     }
 
-    // 12. مقارنة التشابه مع الاسم الإنجليزي إذا كان مختلفاً
+    // 13. مقارنة التشابه مع الاسم الإنجليزي إذا كان مختلفاً
     if (
       cityEnglishTrimmed &&
       cityEnglishTrimmed !== primaryCityName &&
       calculateSimilarity(cityEnglishTrimmed, officeCity) >= similarityThreshold
+    ) {
+      return true;
+    }
+
+    // 14. مقارنة التشابه مع أسماء SMSA المحولة
+    if (
+      smsaFromArabic &&
+      calculateSimilarity(smsaFromArabic, officeCity) >= similarityThreshold
     ) {
       return true;
     }
@@ -1985,6 +2479,8 @@ function Step4Content({
       primaryCityName,
       cityArabicTrimmed,
       cityEnglishTrimmed,
+      smsaFromArabic,
+      smsaFromEnglish,
     });
 
     return false;
