@@ -42,6 +42,34 @@ export interface TrackingSettings {
   embedCode?: string;
 }
 
+/** تخصيص صفحة الاسترجاع أو الاستبدال للعميل (شكل ومحتوى) */
+export interface ReturnOrReplacementPageSettings {
+  primaryColor?: string;
+  secondaryColor?: string;
+  textColor?: string;
+  logoUrl?: string;
+  headerText?: string;
+  subheaderText?: string;
+  buttonText?: string;
+  successMessage?: string;
+  showOrderNumber?: boolean;
+  showProductSelection?: boolean;
+  showReasonField?: boolean;
+  showAttachments?: boolean;
+  showContactInfo?: boolean;
+  showReturnAddress?: boolean;
+  language?: string;
+  template?: string;
+  showEmailTemplates?: boolean;
+  showReturnFees?: boolean;
+  confirmationEmailSubject?: string;
+  confirmationEmailBody?: string;
+  approvalEmailSubject?: string;
+  approvalEmailBody?: string;
+  rejectionEmailSubject?: string;
+  rejectionEmailBody?: string;
+}
+
 export interface Customer {
   _id: string;
   firstName: string;
@@ -72,6 +100,8 @@ export interface Customer {
   notificationPreferences?: NotificationPreferences;
   securitySettings?: SecuritySettings;
   trackingSettings?: TrackingSettings;
+  returnPageSettings?: ReturnOrReplacementPageSettings;
+  replacementPageSettings?: ReturnOrReplacementPageSettings;
 }
 
 export interface CustomerResponse {
@@ -179,6 +209,36 @@ export const customerApi = createApi({
       }),
       invalidatesTags: ["Customer"],
     }),
+    updateReturnPageSettings: builder.mutation<
+      CustomerResponse,
+      ReturnOrReplacementPageSettings
+    >({
+      query: (settings) => ({
+        url: "/customer/updateMe",
+        method: "PUT",
+        body: JSON.stringify({ returnPageSettings: settings }),
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+      invalidatesTags: ["Customer"],
+    }),
+    updateReplacementPageSettings: builder.mutation<
+      CustomerResponse,
+      ReturnOrReplacementPageSettings
+    >({
+      query: (settings) => ({
+        url: "/customer/updateMe",
+        method: "PUT",
+        body: JSON.stringify({ replacementPageSettings: settings }),
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+      invalidatesTags: ["Customer"],
+    }),
   }),
 });
 
@@ -189,4 +249,6 @@ export const {
   useUpdateNotificationPreferencesMutation,
   useUpdateSecuritySettingsMutation,
   useUpdateTrackingSettingsMutation,
+  useUpdateReturnPageSettingsMutation,
+  useUpdateReplacementPageSettingsMutation,
 } = customerApi;

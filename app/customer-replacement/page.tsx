@@ -17,7 +17,7 @@ type PageConfig = {
   secondaryColor?: string
 } | null
 
-export default function CustomerReturn() {
+export default function CustomerReplacement() {
   const searchParams = useSearchParams()
   const token = searchParams.get("token")
   const themeParam = searchParams.get("theme")
@@ -27,7 +27,7 @@ export default function CustomerReturn() {
 
   useEffect(() => {
     if (!token?.trim()) return
-    fetch(`/api/public/returns/page-config?token=${encodeURIComponent(token)}`)
+    fetch(`/api/public/replacements/page-config?token=${encodeURIComponent(token)}`)
       .then((r) => r.json())
       .then((res) => res.success && res.data && setPageConfig(res.data))
       .catch(() => {})
@@ -49,7 +49,7 @@ export default function CustomerReturn() {
                 M
               </div>
             )}
-            <h1 className="text-xl font-bold text-gray-800">{pageConfig?.headerText || "صفحة إرجاع المنتجات"}</h1>
+            <h1 className="text-xl font-bold text-gray-800">{pageConfig?.headerText || "صفحة استبدال المنتجات"}</h1>
           </div>
           <Link href="/" className="text-sm font-medium hover:opacity-80 transition-opacity" style={{ color: theme }}>
             العودة للرئيسية
@@ -60,14 +60,14 @@ export default function CustomerReturn() {
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold mb-2" style={{ color: theme }}>{pageConfig?.headerText || "نظام إرجاع المنتجات والبوالص"}</h2>
-            <p className="text-gray-600">{pageConfig?.subheaderText || "قم بتعبئة النموذج التالي لطلب إرجاع المنتجات أو بوليصة الشحن"}</p>
+            <h2 className="text-2xl font-bold mb-2" style={{ color: theme }}>{pageConfig?.headerText || "نظام استبدال المنتجات والبوالص"}</h2>
+            <p className="text-gray-600">{pageConfig?.subheaderText || "قم بتعبئة النموذج التالي لطلب استبدال المنتجات أو بوليصة الشحن"}</p>
             {isPreview && (
               <p className="text-sm text-amber-600 mt-2">وضع المعاينة — لن يتم إرسال الطلبات فعلياً بدون رمز التاجر (token)</p>
             )}
           </div>
 
-          <CustomerReturnForm merchantToken={token} />
+          <CustomerReturnForm mode="replacement" merchantToken={token} />
 
           <div className="mt-8 v7-neu-card p-4 rounded-xl bg-blue-50/30">
             <h3 className="font-medium mb-2 flex items-center gap-2">
@@ -77,7 +77,7 @@ export default function CustomerReturn() {
               هل تحتاج للمساعدة؟
             </h3>
             <p className="text-sm text-gray-600">
-              إذا كنت تواجه أي مشكلة في عملية الإرجاع، يرجى التواصل مع فريق خدمة العملاء على الرقم
+              إذا كنت تواجه أي مشكلة في عملية الاستبدال، يرجى التواصل مع فريق خدمة العملاء على الرقم
               <a href="tel:920001234" className="text-blue-600 mx-1 font-medium">
                 920001234
               </a>
@@ -94,26 +94,26 @@ export default function CustomerReturn() {
                 <span className="text-blue-600">
                   <Info className="w-5 h-5" />
                 </span>
-                دليل إرجاع المنتجات
+                دليل استبدال المنتجات
               </h3>
               <div className="space-y-3 text-sm text-gray-600">
-                <p className="font-medium text-gray-700">شروط إرجاع المنتجات:</p>
+                <p className="font-medium text-gray-700">شروط استبدال المنتجات:</p>
                 <ul className="list-disc list-inside space-y-1 pr-4">
                   <li>يجب أن يكون المنتج في حالته الأصلية وبدون استخدام</li>
                   <li>يجب الاحتفاظ بجميع الملصقات والعلامات الأصلية</li>
                   <li>يجب إرفاق فاتورة الشراء أو إثبات الشراء</li>
-                  <li>يجب تقديم طلب الإرجاع خلال 14 يوم من تاريخ الاستلام</li>
-                  <li>لا يمكن إرجاع المنتجات المخصصة أو المصنوعة حسب الطلب</li>
+                  <li>يجب تقديم طلب الاستبدال خلال 14 يوم من تاريخ الاستلام</li>
+                  <li>لا يمكن استبدال المنتجات المخصصة أو المصنوعة حسب الطلب</li>
                 </ul>
 
-                <p className="font-medium text-gray-700 mt-4">خطوات إرجاع المنتج:</p>
+                <p className="font-medium text-gray-700 mt-4">خطوات استبدال المنتج:</p>
                 <ol className="list-decimal list-inside space-y-1 pr-4">
-                  <li>تعبئة نموذج طلب الإرجاع</li>
-                  <li>انتظار الموافقة على طلب الإرجاع</li>
-                  <li>تغليف المنتج بشكل آمن مع إرفاق ملصق الإرجاع</li>
-                  <li>إرسال المنتج عبر إحدى طرق الإرجاع المتاحة</li>
-                  <li>استلام تأكيد استلام المنتج المرتجع</li>
-                  <li>استرداد المبلغ أو استبدال المنتج حسب الاختيار</li>
+                  <li>تعبئة نموذج طلب الاستبدال</li>
+                  <li>انتظار الموافقة على طلب الاستبدال</li>
+                  <li>تغليف المنتج بشكل آمن مع إرفاق ملصق الاستبدال</li>
+                  <li>إرسال المنتج عبر إحدى طرق الاستبدال المتاحة</li>
+                  <li>استلام تأكيد استلام المنتج المستبدَل</li>
+                  <li>استلام المنتج البديل حسب الاختيار</li>
                 </ol>
               </div>
             </div>
@@ -127,27 +127,27 @@ export default function CustomerReturn() {
               </h3>
               <div className="space-y-3">
                 <div>
-                  <p className="font-medium text-gray-700">كم تستغرق عملية الإرجاع؟</p>
+                  <p className="font-medium text-gray-700">كم تستغرق عملية الاستبدال؟</p>
                   <p className="text-sm text-gray-600">
-                    تستغرق عملية الإرجاع عادة من 5-7 أيام عمل من تاريخ استلام المنتج المرتجع.
+                    تستغرق عملية الاستبدال عادة من 5-7 أيام عمل من تاريخ استلام المنتج المستبدَل.
                   </p>
                 </div>
                 <div>
-                  <p className="font-medium text-gray-700">هل هناك رسوم على إرجاع المنتجات؟</p>
+                  <p className="font-medium text-gray-700">هل هناك رسوم على استبدال المنتجات؟</p>
                   <p className="text-sm text-gray-600">
-                    لا توجد رسوم على إرجاع المنتجات في حالة وجود عيب مصنعي أو خطأ في الشحن. في الحالات الأخرى، قد تطبق
-                    رسوم شحن الإرجاع.
+                    لا توجد رسوم على استبدال المنتجات في حالة وجود عيب مصنعي أو خطأ في الشحن. في الحالات الأخرى، قد تطبق
+                    رسوم شحن الاستبدال.
                   </p>
                 </div>
                 <div>
-                  <p className="font-medium text-gray-700">كيف يمكنني تتبع حالة طلب الإرجاع؟</p>
+                  <p className="font-medium text-gray-700">كيف يمكنني تتبع حالة طلب الاستبدال؟</p>
                   <p className="text-sm text-gray-600">
-                    يمكنك تتبع حالة طلب الإرجاع من خلال رقم طلب الإرجاع الذي سيتم إرساله إليك بعد تقديم الطلب.
+                    يمكنك تتبع حالة طلب الاستبدال من خلال رقم طلب الاستبدال الذي سيتم إرساله إليك بعد تقديم الطلب.
                   </p>
                 </div>
                 <div>
-                  <p className="font-medium text-gray-700">هل يمكنني إرجاع جزء من الطلب فقط؟</p>
-                  <p className="text-sm text-gray-600">نعم، يمكنك اختيار المنتجات التي ترغب في إرجاعها من الطلب.</p>
+                  <p className="font-medium text-gray-700">هل يمكنني استبدال جزء من الطلب فقط؟</p>
+                  <p className="text-sm text-gray-600">نعم، يمكنك اختيار المنتجات التي ترغب في استبدالها من الطلب.</p>
                 </div>
               </div>
             </div>

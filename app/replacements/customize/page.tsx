@@ -13,9 +13,14 @@ import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ArrowLeft, Check, Copy, Download, Eye, Globe, Layout, Palette, Save, Upload } from "lucide-react"
+import { useGetCustomerMeQuery, useUpdateReplacementPageSettingsMutation } from "@/app/api/customerApi"
+import { useToast } from "@/hooks/use-toast"
 
 export default function CustomizeReplacementPage() {
   const router = useRouter()
+  const { toast } = useToast()
+  const { data: customerData, isLoading: isLoadingCustomer } = useGetCustomerMeQuery()
+  const [updateReplacementPageSettings, { isLoading: isSaving }] = useUpdateReplacementPageSettingsMutation()
   const [activeTab, setActiveTab] = useState("design")
   const [primaryColor, setPrimaryColor] = useState("#294D8B")
   const [secondaryColor, setSecondaryColor] = useState("#f5f5f5")
@@ -65,6 +70,36 @@ export default function CustomizeReplacementPage() {
   const customer_name = "اسم العميل"; // Declared customer_name variable
   const [embedCode, setEmbedCode] = useState("")
 
+  // تحميل إعدادات التخصيص من الباكند
+  useEffect(() => {
+    const s = customerData?.data?.replacementPageSettings
+    if (!s) return
+    if (s.primaryColor != null) setPrimaryColor(s.primaryColor)
+    if (s.secondaryColor != null) setSecondaryColor(s.secondaryColor)
+    if (s.textColor != null) setTextColor(s.textColor)
+    if (s.logoUrl != null) setLogoUrl(s.logoUrl)
+    if (s.headerText != null) setHeaderText(s.headerText)
+    if (s.subheaderText != null) setSubheaderText(s.subheaderText)
+    if (s.buttonText != null) setButtonText(s.buttonText)
+    if (s.successMessage != null) setSuccessMessage(s.successMessage)
+    if (s.showOrderNumber != null) setShowOrderNumber(s.showOrderNumber)
+    if (s.showProductSelection != null) setShowProductSelection(s.showProductSelection)
+    if (s.showReasonField != null) setShowReasonField(s.showReasonField)
+    if (s.showAttachments != null) setShowAttachments(s.showAttachments)
+    if (s.showContactInfo != null) setShowContactInfo(s.showContactInfo)
+    if (s.showReturnAddress != null) setShowReplacementAddress(s.showReturnAddress)
+    if (s.language != null) setLanguage(s.language)
+    if (s.template != null) setTemplate(s.template)
+    if (s.showEmailTemplates != null) setShowEmailTemplates(s.showEmailTemplates)
+    if (s.showReturnFees != null) setShowReplacementFees(s.showReturnFees)
+    if (s.confirmationEmailSubject != null) setConfirmationEmailSubject(s.confirmationEmailSubject)
+    if (s.confirmationEmailBody != null) setConfirmationEmailBody(s.confirmationEmailBody)
+    if (s.approvalEmailSubject != null) setApprovalEmailSubject(s.approvalEmailSubject)
+    if (s.approvalEmailBody != null) setApprovalEmailBody(s.approvalEmailBody)
+    if (s.rejectionEmailSubject != null) setRejectionEmailSubject(s.rejectionEmailSubject)
+    if (s.rejectionEmailBody != null) setRejectionEmailBody(s.rejectionEmailBody)
+  }, [customerData?.data?.replacementPageSettings])
+
   // بيانات عناوين الالتقاط من صفحة إنشاء الشحنة
   const pickupAddresses = [
     {
@@ -96,10 +131,43 @@ export default function CustomizeReplacementPage() {
     },
   ]
 
-  // حفظ التغييرات
-  const handleSave = () => {
-    setIsSaved(true)
-    setTimeout(() => setIsSaved(false), 3000)
+  // حفظ التغييرات في الباكند
+  const handleSave = async () => {
+    try {
+      const settings = {
+        primaryColor,
+        secondaryColor,
+        textColor,
+        logoUrl,
+        headerText,
+        subheaderText,
+        buttonText,
+        successMessage,
+        showOrderNumber,
+        showProductSelection,
+        showReasonField,
+        showAttachments,
+        showContactInfo,
+        showReturnAddress: showReplacementAddress,
+        language,
+        template,
+        showEmailTemplates,
+        showReturnFees: showReplacementFees,
+        confirmationEmailSubject,
+        confirmationEmailBody,
+        approvalEmailSubject,
+        approvalEmailBody,
+        rejectionEmailSubject,
+        rejectionEmailBody,
+      }
+      await updateReplacementPageSettings(settings).unwrap()
+      setIsSaved(true)
+      setTimeout(() => setIsSaved(false), 3000)
+      toast({ title: "تم الحفظ بنجاح", description: "تم حفظ تخصيص صفحة الاستبدال" })
+    } catch (err: unknown) {
+      const message = (err as { data?: { message?: string } })?.data?.message || "فشل حفظ الإعدادات"
+      toast({ title: "خطأ في الحفظ", description: message, variant: "destructive" })
+    }
   }
 
   // Update embed code when primaryColor changes
@@ -150,9 +218,9 @@ export default function CustomizeReplacementPage() {
                 <Eye className="h-4 w-4" />
                 <span>معاينة</span>
               </Button>
-              <Button className="v7-neu-button-active gap-1 text-sm" onClick={handleSave}>
+              <Button className="v7-neu-button-active gap-1 text-sm" onClick={handleSave} disabled={isSaving}>
                 {isSaved ? <Check className="h-4 w-4" /> : <Save className="h-4 w-4" />}
-                <span>{isSaved ? "تم الحفظ" : "حفظ التغييرات"}</span>
+                <span>{isSaving ? "جاري الحفظ..." : isSaved ? "تم الحفظ" : "حفظ التغييرات"}</span>
               </Button>
             </div>
           </div>

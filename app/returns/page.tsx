@@ -53,6 +53,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useGetShipmentsQuery } from '../api/getReturnOrExchangeShipmentsApi';
 import { useHandleApprovalMutation } from '../api/handleReturnApprovalApi';
+import { useGetCustomerMeQuery, useUpdateReturnPageSettingsMutation } from '@/app/api/customerApi';
+import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogAction } from '@/components/ui/alert-dialog';
 import ReturnsTable from './ReturnsTable';
@@ -198,6 +200,9 @@ const getStatusBadgeClass = (status: string) => {
 }
 
 export default function Returns() {
+  const { toast } = useToast();
+  const { data: customerData } = useGetCustomerMeQuery();
+  const [updateReturnPageSettings, { isLoading: isSavingReturn }] = useUpdateReturnPageSettingsMutation();
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const { data: shipmentsData, isLoading: isShipmentsLoading, error: shipmentsError } = useGetShipmentsQuery({
@@ -335,10 +340,72 @@ export default function Returns() {
     },
   ]
 
-  // حفظ التغييرات
-  const handleSave = () => {
-    setIsSaved(true)
-    setTimeout(() => setIsSaved(false), 3000)
+  // تحميل إعدادات تخصيص صفحة الإرجاع من الباكند
+  React.useEffect(() => {
+    const s = customerData?.data?.returnPageSettings
+    if (!s) return
+    if (s.primaryColor != null) setPrimaryColor(s.primaryColor)
+    if (s.secondaryColor != null) setSecondaryColor(s.secondaryColor)
+    if (s.textColor != null) setTextColor(s.textColor)
+    if (s.logoUrl != null) setLogoUrl(s.logoUrl)
+    if (s.headerText != null) setHeaderText(s.headerText)
+    if (s.subheaderText != null) setSubheaderText(s.subheaderText)
+    if (s.buttonText != null) setButtonText(s.buttonText)
+    if (s.successMessage != null) setSuccessMessage(s.successMessage)
+    if (s.showOrderNumber != null) setShowOrderNumber(s.showOrderNumber)
+    if (s.showProductSelection != null) setShowProductSelection(s.showProductSelection)
+    if (s.showReasonField != null) setShowReasonField(s.showReasonField)
+    if (s.showAttachments != null) setShowAttachments(s.showAttachments)
+    if (s.showContactInfo != null) setShowContactInfo(s.showContactInfo)
+    if (s.showReturnAddress != null) setShowReturnAddress(s.showReturnAddress)
+    if (s.language != null) setLanguage(s.language)
+    if (s.template != null) setTemplate(s.template)
+    if (s.showEmailTemplates != null) setShowEmailTemplates(s.showEmailTemplates)
+    if (s.showReturnFees != null) setShowReturnFees(s.showReturnFees)
+    if (s.confirmationEmailSubject != null) setConfirmationEmailSubject(s.confirmationEmailSubject)
+    if (s.confirmationEmailBody != null) setConfirmationEmailBody(s.confirmationEmailBody)
+    if (s.approvalEmailSubject != null) setApprovalEmailSubject(s.approvalEmailSubject)
+    if (s.approvalEmailBody != null) setApprovalEmailBody(s.approvalEmailBody)
+    if (s.rejectionEmailSubject != null) setRejectionEmailSubject(s.rejectionEmailSubject)
+    if (s.rejectionEmailBody != null) setRejectionEmailBody(s.rejectionEmailBody)
+  }, [customerData?.data?.returnPageSettings])
+
+  // حفظ التغييرات في الباكند
+  const handleSave = async () => {
+    try {
+      await updateReturnPageSettings({
+        primaryColor,
+        secondaryColor,
+        textColor,
+        logoUrl,
+        headerText,
+        subheaderText,
+        buttonText,
+        successMessage,
+        showOrderNumber,
+        showProductSelection,
+        showReasonField,
+        showAttachments,
+        showContactInfo,
+        showReturnAddress,
+        language,
+        template,
+        showEmailTemplates,
+        showReturnFees,
+        confirmationEmailSubject,
+        confirmationEmailBody,
+        approvalEmailSubject,
+        approvalEmailBody,
+        rejectionEmailSubject,
+        rejectionEmailBody,
+      }).unwrap()
+      setIsSaved(true)
+      setTimeout(() => setIsSaved(false), 3000)
+      toast({ title: "تم الحفظ بنجاح", description: "تم حفظ تخصيص صفحة الإرجاع" })
+    } catch (err: unknown) {
+      const message = (err as { data?: { message?: string } })?.data?.message || "فشل حفظ الإعدادات"
+      toast({ title: "خطأ في الحفظ", description: message, variant: "destructive" })
+    }
   }
 
   // نسخ كود التضمين
@@ -483,9 +550,9 @@ export default function Returns() {
                   <Eye className="h-4 w-4" />
                   <span>معاينة</span>
                 </Button>
-                <Button className="v7-neu-button-active gap-1 text-sm" onClick={handleSave}>
+                <Button className="v7-neu-button-active gap-1 text-sm" onClick={handleSave} disabled={isSavingReturn}>
                   {isSaved ? <Check className="h-4 w-4" /> : <Save className="h-4 w-4" />}
-                  <span>{isSaved ? "تم الحفظ" : "حفظ التغييرات"}</span>
+                  <span>{isSavingReturn ? "جاري الحفظ..." : isSaved ? "تم الحفظ" : "حفظ التغييرات"}</span>
                 </Button>
               </div>
             </div>

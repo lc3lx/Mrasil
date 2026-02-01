@@ -24,6 +24,7 @@ export const routes = {
   api: "/api-docs",
   createReturn: "/returns/create",
   customerReturnLink: "/customer-return",
+  customerReplacementLink: "/customer-replacement",
   customTracking: "/custom-tracking",
   replacements: "/replacements",
   // مسارات العملاء

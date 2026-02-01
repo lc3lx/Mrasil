@@ -165,7 +165,7 @@ export default function V7Wallet({
           description: `شحن المحفظة - ${paymentAmount} ريال سعودي`,
           publishable_api_key:
             "pk_live_yvEP28tLV8sHaWY1WTKuD9Fs47WX9qpVsE1gbnAF",
-          callback_url: `${window.location.origin}/`,
+          callback_url: `${window.location.origin}/home`,
           methods: ["creditcard"],
           on_completed: async (payment: any) => {
             // تحقق من أن هذه الدفعة لم تتم معالجتها مسبقاً

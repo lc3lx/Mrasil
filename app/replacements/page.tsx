@@ -373,7 +373,7 @@ export default function Returns() {
   const copyEmbedCode = () => {
     const code = `<iframe src="${
       window.location.origin
-    }/customer-return?token=YOUR_TOKEN&theme=${encodeURIComponent(
+    }/customer-replacement?token=YOUR_TOKEN&theme=${encodeURIComponent(
       primaryColor
     )}" width="100%" height="600" frameborder="0"></iframe>`;
     navigator.clipboard.writeText(code);
@@ -515,7 +515,7 @@ export default function Returns() {
                 <Button
                   className="v7-neu-button gap-1 text-sm"
                   onClick={() =>
-                    window.open("/customer-return?preview=true", "_blank")
+                    window.open("/customer-replacement?preview=true", "_blank")
                   }
                 >
                   <Eye className="h-4 w-4" />
@@ -1693,7 +1693,7 @@ export default function Returns() {
                             className="w-full h-24 text-xs p-2 bg-slate-50 rounded border font-mono"
                             value={`<iframe src="${
                               window.location.origin
-                            }/customer-return?token=YOUR_TOKEN&theme=${encodeURIComponent(
+                            }/customer-replacement?token=YOUR_TOKEN&theme=${encodeURIComponent(
                               primaryColor
                             )}" width="100%" height="600" frameborder="0"></iframe>`}
                           />
@@ -1712,7 +1712,7 @@ export default function Returns() {
                             <Input
                               readOnly
                               className="w-80 text-xs"
-                              value={`${window.location.origin}/customer-return?token=YOUR_TOKEN`}
+                              value={`${window.location.origin}/customer-replacement?token=YOUR_TOKEN`}
                             />
                             <Button
                               variant="outline"
@@ -1985,7 +1985,7 @@ export default function Returns() {
                       <Button
                         className="bg-gradient-to-r from-[#294D8B] to-[#3a6fc7] hover:from-[#1a3c6f] hover:to-[#294D8B] text-white shadow-md hover:shadow-lg transition-all duration-300 gap-2 px-5 py-2 rounded-lg text-sm"
                         onClick={() =>
-                          window.open("/customer-return?preview=true", "_blank")
+                          window.open("/customer-replacement?preview=true", "_blank")
                         }
                       >
                         <Eye className="h-4 w-4" />
