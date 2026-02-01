@@ -41,16 +41,27 @@ interface ErrorResponse {
   message: string;
 }
 
+export type GetAllOrdersParams = {
+  dateFrom?: string;
+  dateTo?: string;
+};
+
 export const ordersApi = createApi({
   reducerPath: 'ordersApi',
   baseQuery: baseQueryWithTokenErrorHandling,
   endpoints: (builder) => ({
-    getAllOrders: builder.query<OrdersResponse, void>({
-      query: () => ({
-        url: '/orderManually',
-        method: 'GET',
-        credentials: 'include'
-      }),
+    getAllOrders: builder.query<OrdersResponse, GetAllOrdersParams | void>({
+      query: (params) => {
+        const searchParams = new URLSearchParams();
+        if (params?.dateFrom) searchParams.set('dateFrom', params.dateFrom);
+        if (params?.dateTo) searchParams.set('dateTo', params.dateTo);
+        const query = searchParams.toString();
+        return {
+          url: query ? `/orderManually?${query}` : '/orderManually',
+          method: 'GET',
+          credentials: 'include'
+        };
+      },
       transformErrorResponse: (response: { status: number; data: ErrorResponse }) => {
         if (response.data?.message?.includes('Invalid token') ||
             response.data?.status === 'fail' ||

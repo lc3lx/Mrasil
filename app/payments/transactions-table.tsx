@@ -94,14 +94,41 @@ function getMethodLabel(method: string) {
   }
 }
 
-export function TransactionsTable() {
+interface TransactionsTableProps {
+  dateFrom?: string;
+  dateTo?: string;
+}
+
+export function TransactionsTable({ dateFrom = "", dateTo = "" }: TransactionsTableProps) {
   const { data, isLoading, isError } = useGetMyTransactionsQuery();
 
-  // ترتيب المعاملات من الأحدث إلى الأقدم
-  const sortedTransactions =
-    data?.data?.slice().sort((a: any, b: any) => {
+  // ترتيب المعاملات من الأحدث إلى الأقدم مع فلترة حسب التاريخ
+  const sortedTransactions = (() => {
+    const list = data?.data?.slice() || [];
+    let filtered = list;
+
+    if (dateFrom.trim() || dateTo.trim()) {
+      filtered = list.filter((trx: any) => {
+        const trxDate = new Date(trx.createdAt);
+        trxDate.setHours(0, 0, 0, 0);
+        if (dateFrom.trim()) {
+          const from = new Date(dateFrom);
+          from.setHours(0, 0, 0, 0);
+          if (trxDate < from) return false;
+        }
+        if (dateTo.trim()) {
+          const to = new Date(dateTo);
+          to.setHours(23, 59, 59, 999);
+          if (trxDate > to) return false;
+        }
+        return true;
+      });
+    }
+
+    return filtered.sort((a: any, b: any) => {
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-    }) || [];
+    });
+  })();
   const [updateTransactionStatus] = useUpdateTransactionStatusMutation();
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMsg, setModalMsg] = useState("");

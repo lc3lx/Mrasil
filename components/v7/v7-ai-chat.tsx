@@ -1,15 +1,25 @@
-"use client"
+"use client";
 
-import { useState, useRef, useEffect, useCallback } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { X, Send, Loader2, Minimize2, Maximize2, MessageSquare, CheckCircle, XCircle, AlertCircle } from "lucide-react"
-import { useTheme } from "next-themes"
-import { TutorialImage } from "./v7-tutorial-image"
-import { MarasilAtomLogo } from "@/app/invoices/components/MarasilAtomLogo"
-import { motion } from "framer-motion"
- 
-const INITIAL_ASSISTANT_MESSAGE = `مرحباً! أنا مساعدك الذكي في مراسل 🤖
+import { useState, useRef, useEffect, useCallback } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  X,
+  Send,
+  Loader2,
+  Minimize2,
+  Maximize2,
+  MessageSquare,
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+} from "lucide-react";
+import { useTheme } from "next-themes";
+import { TutorialImage } from "./v7-tutorial-image";
+import { MarasilAtomLogo } from "@/app/invoices/components/MarasilAtomLogo";
+import { motion } from "framer-motion";
+
+const INITIAL_ASSISTANT_MESSAGE = `مرحباً! أنا مساعدك الذكي في مراسيل 🤖
 
 يمكنني مساعدتك في:
 ✅ إنشاء شحنة جديدة
@@ -19,41 +29,41 @@ const INITIAL_ASSISTANT_MESSAGE = `مرحباً! أنا مساعدك الذكي 
 ✅ البحث عن معلومات
 ✅ معلومات حسابك
 
-كيف يمكنني مساعدتك اليوم؟`
+كيف يمكنني مساعدتك اليوم؟`;
 
 const MARASIL_AI_ENDPOINT =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
 type ConversationEntry = {
-  role: "user" | "assistant"
-  content: string
-}
+  role: "user" | "assistant";
+  content: string;
+};
 
 interface Message {
-  id: string
-  content: string
-  role: "user" | "assistant"
-  timestamp: Date
-  image?: string
-  imageCaption?: string
+  id: string;
+  content: string;
+  role: "user" | "assistant";
+  timestamp: Date;
+  image?: string;
+  imageCaption?: string;
   action?: {
-    type: string
-    status: "pending" | "processing" | "success" | "error"
-    result?: any
-    error?: string
-  }
+    type: string;
+    status: "pending" | "processing" | "success" | "error";
+    result?: any;
+    error?: string;
+  };
 }
 
 interface V7AIChatProps {
-  isOpen: boolean
-  onClose: () => void
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
-      content: `مرحباً! أنا مساعدك الذكي في مراسل 🤖
+      content: `مرحباً! أنا مساعدك الذكي في مراسيل 🤖
 
 يمكنني مساعدتك في:
 ✅ إنشاء شحنة جديدة
@@ -67,80 +77,86 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
       role: "assistant",
       timestamp: new Date(),
     },
-  ])
-  const [input, setInput] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const [isMinimized, setIsMinimized] = useState(false)
-  const [unreadCount, setUnreadCount] = useState(0)
-  const [conversationHistory, setConversationHistory] = useState<ConversationEntry[]>([
-    { role: "assistant", content: INITIAL_ASSISTANT_MESSAGE },
-  ])
-  const messagesEndRef = useRef<HTMLDivElement>(null)
-  const { resolvedTheme } = useTheme()
-  const currentTheme = resolvedTheme || "light"
-  const isDark = currentTheme === "dark"
+  ]);
+  const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [conversationHistory, setConversationHistory] = useState<
+    ConversationEntry[]
+  >([{ role: "assistant", content: INITIAL_ASSISTANT_MESSAGE }]);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { resolvedTheme } = useTheme();
+  const currentTheme = resolvedTheme || "light";
+  const isDark = currentTheme === "dark";
   const [suggestions, setSuggestions] = useState<string[]>([
     "عرض شحناتي",
     "تتبع شحنة",
     "إنشاء شحنة جديدة",
     "عرض طلباتي",
-  ])
-  const conversationHistoryRef = useRef(conversationHistory)
+  ]);
+  const conversationHistoryRef = useRef(conversationHistory);
 
   useEffect(() => {
-    conversationHistoryRef.current = conversationHistory
-  }, [conversationHistory])
+    conversationHistoryRef.current = conversationHistory;
+  }, [conversationHistory]);
 
   const getUserContext = () => {
     if (typeof window === "undefined") {
-      return { token: "", userName: "", userId: "" }
+      return { token: "", userName: "", userId: "" };
     }
 
-    const token = localStorage.getItem("token")
-    const cleanToken = token ? token.replace(/^Bearer\s+/i, "") : ""
+    const token = localStorage.getItem("token");
+    const cleanToken = token ? token.replace(/^Bearer\s+/i, "") : "";
 
-    let userName = ""
-    let userId = ""
+    let userName = "";
+    let userId = "";
 
     // محاولة استخراج userId من عدة مصادر
-    const userDataStr = localStorage.getItem("userData") || localStorage.getItem("user")
+    const userDataStr =
+      localStorage.getItem("userData") || localStorage.getItem("user");
     if (userDataStr) {
       try {
-        const userData = JSON.parse(userDataStr)
-        userName = userData.firstName || userData.name || userData.username || ""
-        userId = userData._id || userData.id || userData.userId || ""
+        const userData = JSON.parse(userDataStr);
+        userName =
+          userData.firstName || userData.name || userData.username || "";
+        userId = userData._id || userData.id || userData.userId || "";
       } catch (error) {
-        console.warn("failed to parse userData", error)
+        console.warn("failed to parse userData", error);
       }
     }
 
-    return { token: cleanToken, userName, userId }
-  }
+    return { token: cleanToken, userName, userId };
+  };
 
   const requestAIResponse = useCallback(
     async (userInput: string, historyPayload: ConversationEntry[]) => {
-      const { token, userId } = getUserContext()
+      const { token, userId } = getUserContext();
 
       if (!userId) {
-        throw new Error("لم يتم العثور على معرف المستخدم. يرجى تسجيل الدخول مرة أخرى.")
+        throw new Error(
+          "لم يتم العثور على معرف المستخدم. يرجى تسجيل الدخول مرة أخرى."
+        );
       }
 
       const response = await fetch(`${MARASIL_AI_ENDPOINT}/ai/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           message: userInput,
           user_id: userId,
           session_id: "v7_chat_session",
         }),
-      })
+      });
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`فشل الاتصال بالخادم (${response.status}): ${errorText}`)
+        throw new Error(
+          `فشل الاتصال بالخادم (${response.status}): ${errorText}`
+        );
       }
 
       const data = await response.json();
@@ -150,80 +166,96 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
         message: data.message,
         action: data.action,
         success: data.success,
-        data: data.data
-      }
+        data: data.data,
+      };
     },
-    [],
-  )
+    []
+  );
 
   // تمرير إلى آخر رسالة عند إضافة رسالة جديدة
   useEffect(() => {
     if (!isMinimized) {
-      scrollToBottom()
-      setUnreadCount(0)
+      scrollToBottom();
+      setUnreadCount(0);
     }
-  }, [messages, isMinimized])
+  }, [messages, isMinimized]);
 
   // زيادة عدد الرسائل غير المقروءة عند استلام رسالة جديدة وتصغير النافذة
   useEffect(() => {
-    if (isMinimized && messages.length > 0 && messages[messages.length - 1].role === "assistant") {
-      setUnreadCount((prev) => prev + 1)
+    if (
+      isMinimized &&
+      messages.length > 0 &&
+      messages[messages.length - 1].role === "assistant"
+    ) {
+      setUnreadCount((prev) => prev + 1);
     }
-  }, [messages, isMinimized])
+  }, [messages, isMinimized]);
 
   // تحديث الاقتراحات بناءً على آخر رسالة
   useEffect(() => {
     if (messages.length > 0) {
-      setSuggestions(generateSuggestions(messages))
+      setSuggestions(generateSuggestions(messages));
     }
-  }, [messages])
+  }, [messages]);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   const handleSendMessage = async () => {
-    if (!input.trim()) return
+    if (!input.trim()) return;
 
-    const userInput = input.trim()
-    const timestamp = new Date()
+    const userInput = input.trim();
+    const timestamp = new Date();
 
     const userMessage: Message = {
       id: `user-${timestamp.getTime()}`,
       content: userInput,
       role: "user",
       timestamp,
-    }
+    };
 
-    setMessages((prev) => [...prev, userMessage])
-    setConversationHistory((prev) => [...prev, { role: "user", content: userInput }])
-    setInput("")
-    setIsLoading(true)
+    setMessages((prev) => [...prev, userMessage]);
+    setConversationHistory((prev) => [
+      ...prev,
+      { role: "user", content: userInput },
+    ]);
+    setInput("");
+    setIsLoading(true);
 
-    const historyPayload: ConversationEntry[] = [...conversationHistoryRef.current, {
-      role: "user",
-      content: userInput,
-    }]
+    const historyPayload: ConversationEntry[] = [
+      ...conversationHistoryRef.current,
+      {
+        role: "user",
+        content: userInput,
+      },
+    ];
 
-    let lastAssistantResponse = ""
+    let lastAssistantResponse = "";
     try {
-      const backendResponse = await requestAIResponse(userInput, historyPayload)
+      const backendResponse = await requestAIResponse(
+        userInput,
+        historyPayload
+      );
       const responseText =
         backendResponse?.message ||
-        "تم استلام سؤالك! لكن لم أحصل على رد من الخدمة، جرب مرة أخرى لو سمحت."
-      lastAssistantResponse = responseText
+        "تم استلام سؤالك! لكن لم أحصل على رد من الخدمة، جرب مرة أخرى لو سمحت.";
+      lastAssistantResponse = responseText;
 
       const assistantMessage: Message = {
         id: `assistant-${Date.now()}`,
         content: responseText,
         role: "assistant",
         timestamp: new Date(),
-      }
+      };
 
-      setMessages((prev) => [...prev, assistantMessage])
-      setConversationHistory((prev) => [...prev, { role: "assistant", content: responseText }])
+      setMessages((prev) => [...prev, assistantMessage]);
+      setConversationHistory((prev) => [
+        ...prev,
+        { role: "assistant", content: responseText },
+      ]);
     } catch (error: any) {
-      console.error("AI Error:", error)
+      console.error("AI Error:", error);
       const assistantMessage: Message = {
         id: `assistant-error-${Date.now()}`,
         content:
@@ -232,18 +264,27 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
             : "عذراً، صار عندي خطأ أثناء المعالجة. جرب مرة ثانية لو سمحت.",
         role: "assistant",
         timestamp: new Date(),
-      }
-      setMessages((prev) => [...prev, assistantMessage])
-      setConversationHistory((prev) => [...prev, { role: "assistant", content: assistantMessage.content }])
-      lastAssistantResponse = assistantMessage.content
+      };
+      setMessages((prev) => [...prev, assistantMessage]);
+      setConversationHistory((prev) => [
+        ...prev,
+        { role: "assistant", content: assistantMessage.content },
+      ]);
+      lastAssistantResponse = assistantMessage.content;
     } finally {
       conversationHistoryRef.current = [
         ...historyPayload,
-        { role: "assistant", content: lastAssistantResponse || messages[messages.length - 1]?.content || "" },
-      ]
-      setIsLoading(false)
+        {
+          role: "assistant",
+          content:
+            lastAssistantResponse ||
+            messages[messages.length - 1]?.content ||
+            "",
+        },
+      ];
+      setIsLoading(false);
     }
-  }
+  };
 
   // وظيفة بسيطة لمحاكاة استجابات المساعد الذكي
   const formatMessageContent = (content: string = "") => {
@@ -252,7 +293,7 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
 
     // التعامل مع الأوامر المباشرة
     if (input.startsWith("/")) {
-      const command = input.substring(1).split(" ")[0]
+      const command = input.substring(1).split(" ")[0];
 
       switch (command) {
         case "مساعدة":
@@ -263,10 +304,10 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
           /فروع - لعرض قائمة الفروع
           /اتصال - للحصول على معلومات الاتصال
           /حالة - لمعرفة حالة الحساب
-          /مساعدة - لعرض قائمة الأوامر`
+          /مساعدة - لعرض قائمة الأوامر`;
 
         case "تتبع":
-          const trackingNumber = input.substring(6).trim()
+          const trackingNumber = input.substring(6).trim();
           if (trackingNumber) {
             return `جاري تتبع الشحنة رقم ${trackingNumber}... 
             
@@ -274,9 +315,9 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
             الموقع الحالي: مركز التوزيع - الرياض
             الوقت المتوقع للتسليم: اليوم، 4-6 مساءً
             
-            لمزيد من التفاصيل، يمكنك زيارة صفحة التتبع.`
+            لمزيد من التفاصيل، يمكنك زيارة صفحة التتبع.`;
           } else {
-            return "الرجاء إدخال رقم الشحنة بعد الأمر /تتبع"
+            return "الرجاء إدخال رقم الشحنة بعد الأمر /تتبع";
           }
 
         case "سعر":
@@ -286,7 +327,7 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
           - مدينة المستلم
           - نوع الخدمة (عادي/سريع)
           
-          يمكنك استخدام حاسبة الأسعار في صفحة إنشاء شحنة جديدة للحصول على تقدير دقيق.`
+          يمكنك استخدام حاسبة الأسعار في صفحة إنشاء شحنة جديدة للحصول على تقدير دقيق.`;
 
         case "فروع":
           return `فروع شيب إكسبرس:
@@ -296,7 +337,7 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
           - مكة: شارع إبراهيم الخليل، بالقرب من الحرم
           - المدينة: شارع سلطانة، المنطقة المركزية
           
-          لمزيد من التفاصيل وساعات العمل، يرجى زيارة صفحة الفروع.`
+          لمزيد من التفاصيل وساعات العمل، يرجى زيارة صفحة الفروع.`;
 
         case "اتصال":
           return `يمكنك التواصل معنا عبر:
@@ -305,7 +346,7 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
           - واتساب: +966501234567
           - تويتر: @ShipExpressSA
           
-          خدمة العملاء متاحة على مدار الساعة طوال أيام الأسبوع.`
+          خدمة العملاء متاحة على مدار الساعة طوال أيام الأسبوع.`;
 
         case "حالة":
           return `معلومات الحساب:
@@ -314,15 +355,20 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
           - الشحنات النشطة: 7
           - الشحنات المكتملة هذا الشهر: 23
           
-          لمزيد من التفاصيل، يرجى زيارة صفحة الحساب.`
+          لمزيد من التفاصيل، يرجى زيارة صفحة الحساب.`;
 
         default:
-          return `الأمر "${command}" غير معروف. استخدم /مساعدة لعرض قائمة الأوامر المتاحة.`
+          return `الأمر "${command}" غير معروف. استخدم /مساعدة لعرض قائمة الأوامر المتاحة.`;
       }
     }
 
     // التعامل مع الاستفسارات العامة
-    if (input.includes("سعر") || input.includes("تكلفة") || input.includes("كم سعر") || input.includes("اسعار")) {
+    if (
+      input.includes("سعر") ||
+      input.includes("تكلفة") ||
+      input.includes("كم سعر") ||
+      input.includes("اسعار")
+    ) {
       return `تختلف أسعار الشحن حسب الوزن والوجهة والخدمة المختارة:
       
       - الشحن المحلي داخل المدينة: من 15 ريال
@@ -330,7 +376,7 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
       - الشحن للمناطق النائية: من 40 ريال
       - الشحن الدولي: يبدأ من 70 ريال
       
-      للحصول على سعر دقيق، يمكنك استخدام حاسبة الأسعار في صفحة إنشاء شحنة جديدة أو استخدام الأمر /سعر`
+      للحصول على سعر دقيق، يمكنك استخدام حاسبة الأسعار في صفحة إنشاء شحنة جديدة أو استخدام الأمر /سعر`;
     }
 
     if (
@@ -347,10 +393,15 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
       - الشحن للمناطق النائية: 2-4 أيام عمل
       - الشحن الدولي: 3-7 أيام عمل حسب الوجهة
       
-      يمكنك تتبع شحنتك في أي وقت من خلال رقم التتبع أو استخدام الأمر /تتبع [رقم الشحنة]`
+      يمكنك تتبع شحنتك في أي وقت من خلال رقم التتبع أو استخدام الأمر /تتبع [رقم الشحنة]`;
     }
 
-    if (input.includes("تتبع") || input.includes("أين") || input.includes("شحنتي") || input.includes("شحنة")) {
+    if (
+      input.includes("تتبع") ||
+      input.includes("أين") ||
+      input.includes("شحنتي") ||
+      input.includes("شحنة")
+    ) {
       return `لتتبع شحنتك، يمكنك:
       
       1. استخدام الأمر /تتبع متبوعًا برقم الشحنة
@@ -358,10 +409,15 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
       3. فحص بريدك الإلكتروني للحصول على تحديثات تلقائية
       4. تفعيل الإشعارات في تطبيق الجوال
       
-      هل تريد مساعدة في تتبع شحنة معينة؟ يمكنك كتابة /تتبع متبوعًا برقم الشحنة.`
+      هل تريد مساعدة في تتبع شحنة معينة؟ يمكنك كتابة /تتبع متبوعًا برقم الشحنة.`;
     }
 
-    if (input.includes("إلغاء") || input.includes("استرجاع") || input.includes("إرجاع") || input.includes("الغاء")) {
+    if (
+      input.includes("إلغاء") ||
+      input.includes("استرجاع") ||
+      input.includes("إرجاع") ||
+      input.includes("الغاء")
+    ) {
       return `سياسة الإلغاء والإرجاع:
       
       - يمكن إلغاء الشحنة مجانًا قبل استلامها من قبل مندوبنا
@@ -374,10 +430,15 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
       3. حدد سبب الإرجاع
       4. اتبع التعليمات لطباعة ملصق الإرجاع
       
-      هل تحتاج مساعدة في إلغاء أو إرجاع شحنة معينة؟`
+      هل تحتاج مساعدة في إلغاء أو إرجاع شحنة معينة؟`;
     }
 
-    if (input.includes("دفع") || input.includes("فاتورة") || input.includes("طرق الدفع") || input.includes("بطاقة")) {
+    if (
+      input.includes("دفع") ||
+      input.includes("فاتورة") ||
+      input.includes("طرق الدفع") ||
+      input.includes("بطاقة")
+    ) {
       return `طرق الدفع المتاحة:
       
       - البطاقات الائتمانية (فيزا، ماستركارد)
@@ -389,10 +450,15 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
       
       لإدارة طرق الدفع الخاصة بك، يمكنك زيارة صفحة الإعدادات > طرق الدفع.
       
-      هل تواجه مشكلة في الدفع؟ يمكنني مساعدتك!`
+      هل تواجه مشكلة في الدفع؟ يمكنني مساعدتك!`;
     }
 
-    if (input.includes("فرع") || input.includes("فروع") || input.includes("مكتب") || input.includes("مكاتب")) {
+    if (
+      input.includes("فرع") ||
+      input.includes("فروع") ||
+      input.includes("مكتب") ||
+      input.includes("مكاتب")
+    ) {
       return `فروع شيب إكسبرس متاحة في المدن الرئيسية:
       
       - الرياض: 5 فروع
@@ -401,10 +467,14 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
       - مكة والمدينة: فرع في كل مدينة
       - أبها وتبوك والقصيم: فرع في كل مدينة
       
-      للحصول على قائمة كاملة بالفروع وعناوينها، استخدم الأمر /فروع أو قم بزيارة صفحة "الفروع" في موقعنا.`
+      للحصول على قائمة كاملة بالفروع وعناوينها، استخدم الأمر /فروع أو قم بزيارة صفحة "الفروع" في موقعنا.`;
     }
 
-    if (input.includes("حساب") || input.includes("تسجيل") || input.includes("اشتراك")) {
+    if (
+      input.includes("حساب") ||
+      input.includes("تسجيل") ||
+      input.includes("اشتراك")
+    ) {
       return `أنواع الحسابات في شيب إكسبرس:
       
       - الحساب الأساسي: مجاني، مناسب للاستخدام الشخصي
@@ -412,10 +482,14 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
       - الحساب المتميز: للشركات الكبيرة، يبدأ من 299 ريال شهريًا
       
       لإنشاء حساب جديد، انتقل إلى صفحة التسجيل واتبع الخطوات.
-      لمعرفة تفاصيل حسابك الحالي، استخدم الأمر /حالة`
+      لمعرفة تفاصيل حسابك الحالي، استخدم الأمر /حالة`;
     }
 
-    if (input.includes("خدمات") || input.includes("عروض") || input.includes("مميزات")) {
+    if (
+      input.includes("خدمات") ||
+      input.includes("عروض") ||
+      input.includes("مميزات")
+    ) {
       return `خدمات شيب إكسبرس:
       
       - الشحن المحلي السريع (توصيل في نفس اليوم)
@@ -430,10 +504,15 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
       - خصم 15% على الشحنات الدولية حتى نهاية الشهر
       - اشحن 5 طرود واحصل على السادس مجانًا
       
-      لمزيد من المعلومات، يرجى زيارة صفحة "الخدمات" في موقعنا.`
+      لمزيد من المعلومات، يرجى زيارة صفحة "الخدمات" في موقعنا.`;
     }
 
-    if (input.includes("مشكلة") || input.includes("شكوى") || input.includes("مساعدة") || input.includes("دعم")) {
+    if (
+      input.includes("مشكلة") ||
+      input.includes("شكوى") ||
+      input.includes("مساعدة") ||
+      input.includes("دعم")
+    ) {
       return `نأسف لسماع ذلك. يمكننا مساعدتك في حل المشكلة:
       
       1. لتقديم شكوى: انتقل إلى صفحة "الدعم" > "تقديم شكوى"
@@ -442,19 +521,27 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
       
       فريق خدمة العملاء متاح على مدار الساعة لمساعدتك.
       
-      هل يمكنك إخباري بمزيد من التفاصيل عن المشكلة التي تواجهها؟`
+      هل يمكنك إخباري بمزيد من التفاصيل عن المشكلة التي تواجهها؟`;
     }
 
     if (input.includes("شكرا") || input.includes("شكراً")) {
-      return "العفو! سعيد بمساعدتك. هل هناك أي شيء آخر يمكنني مساعدتك به؟"
+      return "العفو! سعيد بمساعدتك. هل هناك أي شيء آخر يمكنني مساعدتك به؟";
     }
 
-    if (input.includes("سلام") || input.includes("وداعا") || input.includes("باي")) {
-      return "شكراً لتواصلك معنا! أتمنى لك يوماً سعيداً. يمكنك العودة في أي وقت إذا احتجت للمساعدة."
+    if (
+      input.includes("سلام") ||
+      input.includes("وداعا") ||
+      input.includes("باي")
+    ) {
+      return "شكراً لتواصلك معنا! أتمنى لك يوماً سعيداً. يمكنك العودة في أي وقت إذا احتجت للمساعدة.";
     }
 
     // إضافة شرح مصور لإنشاء شحنة جديدة
-    if (input.includes("جديدة") || input.includes("إنشاء شحنة") || input.includes("طريقة الشحن")) {
+    if (
+      input.includes("جديدة") ||
+      input.includes("إنشاء شحنة") ||
+      input.includes("طريقة الشحن")
+    ) {
       return {
         text: `لإنشاء شحنة جديدة، اتبع الخطوات التالية:
         
@@ -465,9 +552,10 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
         5. أكمل عملية الدفع
         
         انظر للصور التوضيحية المرفقة للمساعدة.`,
-        image: "https://placehold.co/600x400/e6f7ff/3498db?text=إنشاء+شحنة+جديدة",
+        image:
+          "https://placehold.co/600x400/e6f7ff/3498db?text=إنشاء+شحنة+جديدة",
         imageCaption: "شاشة إنشاء شحنة جديدة",
-      }
+      };
     }
 
     // إضافة شرح مصور لتتبع الشحنات
@@ -482,11 +570,15 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
         يمكنك أيضاً تفعيل الإشعارات لتلقي تحديثات فورية عن حالة شحناتك.`,
         image: "https://placehold.co/600x400/e6f7ff/3498db?text=تتبع+الشحنات",
         imageCaption: "صفحة تتبع الشحنات مع عرض مسار الشحنة",
-      }
+      };
     }
 
     // إضافة شرح مصور للإعدادات
-    if (input.includes("إعدادات") || input.includes("ضبط") || input.includes("تخصيص")) {
+    if (
+      input.includes("إعدادات") ||
+      input.includes("ضبط") ||
+      input.includes("تخصيص")
+    ) {
       return {
         text: `في صفحة الإعدادات، يمكنك:
         
@@ -499,7 +591,7 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
         انظر للصورة التوضيحية المرفقة.`,
         image: "https://placehold.co/600x400/e6f7ff/3498db?text=صفحة+الإعدادات",
         imageCaption: "صفحة الإعدادات بخياراتها المتنوعة",
-      }
+      };
     }
 
     // إضافة شرح مصور لنظام الفواتير
@@ -516,11 +608,15 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
         يمكنك الوصول للفواتير من خلال قسم "المالية" في القائمة الجانبية.`,
         image: "https://placehold.co/600x400/e6f7ff/3498db?text=نظام+الفواتير",
         imageCaption: "نظام إدارة الفواتير في المنصة",
-      }
+      };
     }
 
     // إضافة شرح مصور لطرق الدفع
-    if (input.includes("طرق الدفع") || input.includes("بطاقة") || input.includes("دفع")) {
+    if (
+      input.includes("طرق الدفع") ||
+      input.includes("بطاقة") ||
+      input.includes("دفع")
+    ) {
       return {
         text: `لإدارة طرق الدفع في شيب إكسبرس:
         
@@ -533,11 +629,15 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
         جميع معلومات الدفع مشفرة ومحمية وفق أعلى معايير الأمان.`,
         image: "https://placehold.co/600x400/e6f7ff/3498db?text=طرق+الدفع",
         imageCaption: "إدارة طرق الدفع في المنصة",
-      }
+      };
     }
 
     // إضافة شرح مصور للتقارير
-    if (input.includes("تقارير") || input.includes("إحصائيات") || input.includes("أداء")) {
+    if (
+      input.includes("تقارير") ||
+      input.includes("إحصائيات") ||
+      input.includes("أداء")
+    ) {
       return {
         text: `نظام التقارير في منصة شيب إكسبرس يوفر لك:
         
@@ -550,11 +650,15 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
         يمكنك تخصيص التقارير حسب الفترة الزمنية والمناطق الجغرافية.`,
         image: "https://placehold.co/600x400/e6f7ff/3498db?text=نظام+التقارير",
         imageCaption: "لوحة التقارير والإحصائيات",
-      }
+      };
     }
 
     // Añadir explicación para informes de rendimiento
-    if (input.includes("تقارير الأداء") || input.includes("أداء") || input.includes("تحليل")) {
+    if (
+      input.includes("تقارير الأداء") ||
+      input.includes("أداء") ||
+      input.includes("تحليل")
+    ) {
       return {
         text: `تقارير الأداء في منصة شيب إكسبرس توفر لك رؤية شاملة لأداء شحناتك:
     
@@ -567,11 +671,15 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
     يمكنك الوصول إلى هذه التقارير من خلال قسم "التقارير" في القائمة الجانبية.`,
         image: "https://placehold.co/600x400/e6f7ff/3498db?text=تقارير+الأداء",
         imageCaption: "تقارير الأداء التفصيلية للشحنات",
-      }
+      };
     }
 
     // Añadir explicación para إحصائيات الشحن
-    if (input.includes("إحصائيات") || input.includes("تحليلات") || input.includes("بيانات")) {
+    if (
+      input.includes("إحصائيات") ||
+      input.includes("تحليلات") ||
+      input.includes("بيانات")
+    ) {
       return {
         text: `إحصائيات الشحن في منصة شيب إكسبرس تقدم لك:
     
@@ -584,11 +692,16 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
     هذه الإحصائيات تساعدك على اتخاذ قرارات أفضل لتحسين عمليات الشحن الخاصة بك.`,
         image: "https://placehold.co/600x400/e6f7ff/3498db?text=إحصائيات+الشحن",
         imageCaption: "إحصائيات وتحليلات الشحن",
-      }
+      };
     }
 
     // Añadir explicación para التطبيق الجوال
-    if (input.includes("تطبيق") || input.includes("جوال") || input.includes("موبايل") || input.includes("هاتف")) {
+    if (
+      input.includes("تطبيق") ||
+      input.includes("جوال") ||
+      input.includes("موبايل") ||
+      input.includes("هاتف")
+    ) {
       return {
         text: `تطبيق شيب إكسبرس للجوال يوفر لك جميع الميزات الأساسية في متناول يدك:
     
@@ -601,11 +714,14 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
     التطبيق متاح للتحميل على متجر آبل وجوجل بلاي.`,
         image: "https://placehold.co/600x400/e6f7ff/3498db?text=تطبيق+الجوال",
         imageCaption: "الشاشة الرئيسية لتطبيق شيب إكسبرس للجوال",
-      }
+      };
     }
 
     // Añadir explicación para تتبع الشحنات في التطبيق
-    if ((input.includes("تتبع") || input.includes("متابعة")) && (input.includes("تطبيق") || input.includes("جوال"))) {
+    if (
+      (input.includes("تتبع") || input.includes("متابعة")) &&
+      (input.includes("تطبيق") || input.includes("جوال"))
+    ) {
       return {
         text: `لتتبع شحناتك من خلال تطبيق شيب إكسبرس للجوال:
     
@@ -616,13 +732,17 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
     5. اضغط على "تفاصيل" لمعرفة جميع مراحل الشحنة
     
     يمكنك أيضاً مسح رمز QR الخاص بالشحنة للوصول إلى معلوماتها بسرعة.`,
-        image: "https://placehold.co/600x400/e6f7ff/3498db?text=تتبع+الشحنات+في+التطبيق",
+        image:
+          "https://placehold.co/600x400/e6f7ff/3498db?text=تتبع+الشحنات+في+التطبيق",
         imageCaption: "تتبع الشحنات في تطبيق الجوال",
-      }
+      };
     }
 
     // Añadir explicación para إشعارات التطبيق
-    if (input.includes("إشعارات") && (input.includes("تطبيق") || input.includes("جوال"))) {
+    if (
+      input.includes("إشعارات") &&
+      (input.includes("تطبيق") || input.includes("جوال"))
+    ) {
       return {
         text: `إشعارات تطبيق شيب إكسبرس تبقيك على اطلاع دائم بحالة شحناتك:
     
@@ -633,13 +753,19 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
     5. إشعارات تذكيرية للشحنات المجدولة
     
     يمكنك تخصيص إعدادات الإشعارات من قائمة "الإعدادات" في التطبيق.`,
-        image: "https://placehold.co/600x400/e6f7ff/3498db?text=إشعارات+التطبيق",
+        image:
+          "https://placehold.co/600x400/e6f7ff/3498db?text=إشعارات+التطبيق",
         imageCaption: "إشعارات التطبيق للبقاء على اطلاع بحالة الشحنات",
-      }
+      };
     }
 
     // Añadir explicación para مسح رمز QR
-    if (input.includes("مسح") || input.includes("qr") || input.includes("كيو آر") || input.includes("باركود")) {
+    if (
+      input.includes("مسح") ||
+      input.includes("qr") ||
+      input.includes("كيو آر") ||
+      input.includes("باركود")
+    ) {
       return {
         text: `ميزة مسح رمز QR في تطبيق شيب إكسبرس تسهل عليك تتبع الشحنات:
     
@@ -652,7 +778,7 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
     هذه الميزة توفر الوقت وتجنب الأخطاء في إدخال أرقام التتبع يدوياً.`,
         image: "https://placehold.co/600x400/e6f7ff/3498db?text=مسح+رمز+QR",
         imageCaption: "مسح رمز QR لتتبع الشحنات بسهولة",
-      }
+      };
     }
 
     // Añadir explicación para خدمة العملاء
@@ -674,11 +800,15 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
     فريق خدمة العملاء مدرب للرد على استفساراتك وحل المشكلات بسرعة وكفاءة.`,
         image: "https://placehold.co/600x400/e6f7ff/3498db?text=خدمة+العملاء",
         imageCaption: "خيارات التواصل مع خدمة العملاء",
-      }
+      };
     }
 
     // Añadir explicación para إدارة المرتجعات
-    if (input.includes("مرتجعات") || input.includes("إرجاع") || input.includes("استرجاع")) {
+    if (
+      input.includes("مرتجعات") ||
+      input.includes("إرجاع") ||
+      input.includes("استرجاع")
+    ) {
       return {
         text: `نظام إدارة المرتجعات في شيب إكسبرس يسهل عليك عملية إرجاع الشحنات:
     
@@ -689,9 +819,10 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
     5. اطبع ملصق الإرجاع واستخدمه لإعادة الشحنة
     
     يمكنك متابعة حالة طلب الإرجاع وتتبع الشحنة المرتجعة بنفس طريقة تتبع الشحنات العادية.`,
-        image: "https://placehold.co/600x400/e6f7ff/3498db?text=إدارة+المرتجعات",
+        image:
+          "https://placehold.co/600x400/e6f7ff/3498db?text=إدارة+المرتجعات",
         imageCaption: "نظام إدارة المرتجعات",
-      }
+      };
     }
 
     // Modificar la parte final de getBotResponse para manejar objetos de respuesta con imágenes
@@ -717,87 +848,105 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
       - تطبيق الجوال وميزاته
       - خدمة العملاء
       - إدارة المرتجعات`,
-      image: "https://placehold.co/600x400/e6f7ff/3498db?text=المواضيع+المتوفرة",
+      image:
+        "https://placehold.co/600x400/e6f7ff/3498db?text=المواضيع+المتوفرة",
       imageCaption: "المواضيع المتوفرة للمساعدة المصورة",
-    }
-  }
+    };
+  };
 
   // دالة لإنشاء اقتراحات سريعة بناءً على سياق المحادثة
   const generateSuggestions = (messages: Message[]): string[] => {
-    if (messages.length === 0) return []
+    if (messages.length === 0) return [];
 
-    const lastMessage = messages[messages.length - 1]
+    const lastMessage = messages[messages.length - 1];
 
     // إذا كانت آخر رسالة من المساعد، قم بإنشاء اقتراحات مناسبة
     if (lastMessage.role === "assistant") {
-      const content = lastMessage.content.toLowerCase()
+      const content = lastMessage.content.toLowerCase();
 
       if (content.includes("تتبع")) {
-        return ["كيف أتتبع شحنتي؟", "/تتبع ABC123456", "أين فروعكم؟"]
+        return ["كيف أتتبع شحنتي؟", "/تتبع ABC123456", "أين فروعكم؟"];
       }
 
       if (content.includes("سعر") || content.includes("تكلفة")) {
-        return ["كم تكلفة الشحن للرياض؟", "/سعر", "ما هي طرق الدفع؟"]
+        return ["كم تكلفة الشحن للرياض؟", "/سعر", "ما هي طرق الدفع؟"];
       }
 
       if (content.includes("إلغاء") || content.includes("إرجاع")) {
-        return ["كيف ألغي شحنة؟", "سياسة الاسترجاع", "أريد إرجاع شحنة"]
+        return ["كيف ألغي شحنة؟", "سياسة الاسترجاع", "أريد إرجاع شحنة"];
       }
 
       if (content.includes("دفع") || content.includes("فاتورة")) {
-        return ["طرق الدفع المتاحة", "كيف أضيف بطاقة جديدة؟", "الدفع عند الاستلام"]
+        return [
+          "طرق الدفع المتاحة",
+          "كيف أضيف بطاقة جديدة؟",
+          "الدفع عند الاستلام",
+        ];
       }
 
       if (content.includes("فرع") || content.includes("مكتب")) {
-        return ["أقرب فرع لي", "ساعات عمل الفروع", "/فروع"]
+        return ["أقرب فرع لي", "ساعات عمل الفروع", "/فروع"];
       }
 
       if (content.includes("مشكلة") || content.includes("شكوى")) {
-        return ["كيف أقدم شكوى؟", "تأخرت شحنتي", "شحنة تالفة"]
+        return ["كيف أقدم شكوى؟", "تأخرت شحنتي", "شحنة تالفة"];
       }
 
       // Añadir después de las condiciones existentes y antes del return de las sugerencias por defecto:
 
-      if (content.includes("تطبيق") || content.includes("جوال") || content.includes("موبايل")) {
-        return ["كيف أتتبع شحنة في التطبيق؟", "إشعارات التطبيق", "مسح رمز QR"]
+      if (
+        content.includes("تطبيق") ||
+        content.includes("جوال") ||
+        content.includes("موبايل")
+      ) {
+        return ["كيف أتتبع شحنة في التطبيق؟", "إشعارات التطبيق", "مسح رمز QR"];
       }
 
-      if (content.includes("تقارير") || content.includes("إحصائيات") || content.includes("أداء")) {
-        return ["عرض تقارير الأداء", "تحليل البيانات", "إحصائيات الشحن"]
+      if (
+        content.includes("تقارير") ||
+        content.includes("إحصائيات") ||
+        content.includes("أداء")
+      ) {
+        return ["عرض تقارير الأداء", "تحليل البيانات", "إحصائيات الشحن"];
       }
 
       if (content.includes("مرتجعات") || content.includes("إرجاع")) {
-        return ["كيف أرجع شحنة؟", "سياسة الإرجاع", "تتبع المرتجعات"]
+        return ["كيف أرجع شحنة؟", "سياسة الإرجاع", "تتبع المرتجعات"];
       }
 
       if (content.includes("خدمة العملاء") || content.includes("دعم")) {
-        return ["كيف أتواصل مع خدمة العملاء؟", "تقديم شكوى", "الأسئلة الشائعة"]
+        return ["كيف أتواصل مع خدمة العملاء؟", "تقديم شكوى", "الأسئلة الشائعة"];
       }
 
       // اقتراحات افتراضية
-      return ["/مساعدة", "كيف أنشئ شحنة جديدة؟", "ما هي خدماتكم؟", "أسعار الشحن"]
+      return [
+        "/مساعدة",
+        "كيف أنشئ شحنة جديدة؟",
+        "ما هي خدماتكم؟",
+        "أسعار الشحن",
+      ];
     }
 
     // إذا كانت آخر رسالة من المستخدم، عد قائمة فارغة
-    return []
-  }
+    return [];
+  };
 
   const toggleMinimize = () => {
-    setIsMinimized(!isMinimized)
+    setIsMinimized(!isMinimized);
     if (isMinimized) {
-      setUnreadCount(0)
+      setUnreadCount(0);
     }
-  }
+  };
 
   const handleSuggestionClick = (suggestion: string) => {
-    setInput(suggestion)
+    setInput(suggestion);
     if (suggestion.startsWith("/")) {
       // إذا كان الاقتراح أمرًا، قم بإرساله مباشرة
-      setTimeout(() => handleSendMessage(), 100)
+      setTimeout(() => handleSendMessage(), 100);
     }
-  }
+  };
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   // عرض النافذة المصغرة
   if (isMinimized) {
@@ -809,7 +958,9 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
           boxShadow: isDark
             ? "0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 10px rgba(59, 130, 246, 0.3)"
             : "5px 5px 10px rgba(197, 204, 211, 0.5), -5px -5px 10px rgba(255, 255, 255, 0.8), 0 0 10px rgba(52, 152, 219, 0.3)",
-          border: isDark ? "2px solid rgba(59, 130, 246, 0.3)" : "2px solid rgba(52, 152, 219, 0.3)",
+          border: isDark
+            ? "2px solid rgba(59, 130, 246, 0.3)"
+            : "2px solid rgba(52, 152, 219, 0.3)",
         }}
         onClick={toggleMinimize}
       >
@@ -830,7 +981,7 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
           <Maximize2 className="w-5 h-5 text-gray-500" />
         </div>
       </div>
-    )
+    );
   }
 
   // عرض النافذة الكاملة
@@ -846,14 +997,18 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
         boxShadow: isDark
           ? "0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 15px rgba(59, 130, 246, 0.3)"
           : "8px 8px 16px rgba(197, 204, 211, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.8), 0 0 15px rgba(52, 152, 219, 0.3)",
-        border: isDark ? "2px solid rgba(59, 130, 246, 0.2)" : "2px solid rgba(52, 152, 219, 0.2)",
+        border: isDark
+          ? "2px solid rgba(59, 130, 246, 0.2)"
+          : "2px solid rgba(52, 152, 219, 0.2)",
       }}
     >
       {/* رأس المحادثة */}
       <div
         className="flex items-center justify-between  p-4 border-b v7-neu-header"
         style={{
-          borderColor: isDark ? "rgba(59, 130, 246, 0.2)" : "rgba(52, 152, 219, 0.2)",
+          borderColor: isDark
+            ? "rgba(59, 130, 246, 0.2)"
+            : "rgba(52, 152, 219, 0.2)",
           backgroundColor: isDark ? "#0f172a" : "#f0f4f8",
           borderRadius: "1rem 1rem 0 0",
           boxShadow: isDark
@@ -862,34 +1017,44 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
         }}
       >
         <div className="flex items-center gap-3   ">
-              <motion.div
-          className="relative   mx-auto  bg-transparent "
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.7, delay: 0.2 }}
-        >
-          {/* Updated 3D Rotating Atom Logo with individually rotating rings */}
-          <div className="flex justify-center ">
-            <MarasilAtomLogo
-              size={40}
-              animated={true}
-              className=" w-full h-auto"
-            />
-          </div>
+          <motion.div
+            className="relative   mx-auto  bg-transparent "
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.7, delay: 0.2 }}
+          >
+            {/* Updated 3D Rotating Atom Logo with individually rotating rings */}
+            <div className="flex justify-center ">
+              <MarasilAtomLogo
+                size={40}
+                animated={true}
+                className=" w-full h-auto"
+              />
+            </div>
 
-          {/* Enhanced glow effect around the 3D atom */}
-          <div className="absolute inset-0 -m-6 rounded-full pointer-events-none">
-            <motion.div
-              className=" absolute inset-0"
-            />
-          </div>
-        </motion.div>
+            {/* Enhanced glow effect around the 3D atom */}
+            <div className="absolute inset-0 -m-6 rounded-full pointer-events-none">
+              <motion.div className=" absolute inset-0" />
+            </div>
+          </motion.div>
           <div>
             <div className="flex items-center ">
-              <h3 className={`font-bold text-base ${isDark ? "text-white" : "text-[#294D8B]"}`}>مراسيل بوت</h3>
+              <h3
+                className={`font-bold text-base ${
+                  isDark ? "text-white" : "text-[#294D8B]"
+                }`}
+              >
+                مراسيل بوت
+              </h3>
               {/* <span className={`text-sm font-bold ${isDark ? "text-[#3b82f6]" : "text-[#3498db]"}`}>مراسيل</span> */}
             </div>
-            <p className={`text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}>متصل الآن</p>
+            <p
+              className={`text-sm ${
+                isDark ? "text-gray-400" : "text-gray-500"
+              }`}
+            >
+              متصل الآن
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -923,9 +1088,17 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
       </div>
 
       {/* محتوى المحادثة */}
-      <div className="flex-1 overflow-y-auto p-5 space-y-5" style={{ backgroundColor: isDark ? "#1e293b" : "#f0f4f8" }}>
+      <div
+        className="flex-1 overflow-y-auto p-5 space-y-5"
+        style={{ backgroundColor: isDark ? "#1e293b" : "#f0f4f8" }}
+      >
         {messages.map((message) => (
-          <div key={message.id} className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>
+          <div
+            key={message.id}
+            className={`flex ${
+              message.role === "user" ? "justify-end" : "justify-start"
+            }`}
+          >
             <div
               className={`max-w-[85%] rounded-2xl p-4 ${
                 message.role === "user"
@@ -933,8 +1106,8 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
                     ? "bg-[#3b82f6] text-white"
                     : "bg-[#3498db] text-white"
                   : isDark
-                    ? "bg-[#334155] text-gray-100"
-                    : "bg-white text-gray-800 border border-[#e6f7ff]"
+                  ? "bg-[#334155] text-gray-100"
+                  : "bg-white text-gray-800 border border-[#e6f7ff]"
               }`}
               style={{
                 boxShadow:
@@ -953,7 +1126,9 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
                   <span className="text-sm font-bold">مراسيل بوت</span>
                 </div>
               )} */}
-              <p className="text-base leading-relaxed whitespace-pre-line">{message.content}</p>
+              <p className="text-base leading-relaxed whitespace-pre-line">
+                {message.content}
+              </p>
 
               {/* عرض حالة الإجراء */}
               {message.action && message.role === "assistant" && (
@@ -961,19 +1136,25 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
                   {message.action.status === "success" && (
                     <>
                       <CheckCircle className="w-4 h-4 text-green-500" />
-                      <span className="text-green-600 dark:text-green-400">تم بنجاح</span>
+                      <span className="text-green-600 dark:text-green-400">
+                        تم بنجاح
+                      </span>
                     </>
                   )}
                   {message.action.status === "error" && (
                     <>
                       <XCircle className="w-4 h-4 text-red-500" />
-                      <span className="text-red-600 dark:text-red-400">فشل</span>
+                      <span className="text-red-600 dark:text-red-400">
+                        فشل
+                      </span>
                     </>
                   )}
                   {message.action.status === "processing" && (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin text-blue-500" />
-                      <span className="text-blue-600 dark:text-blue-400">جاري المعالجة...</span>
+                      <span className="text-blue-600 dark:text-blue-400">
+                        جاري المعالجة...
+                      </span>
                     </>
                   )}
                 </div>
@@ -1003,10 +1184,14 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
           <div className="flex justify-start">
             <div
               className={`max-w-[85%] rounded-2xl p-4 ${
-                isDark ? "bg-[#334155] text-gray-100" : "bg-white text-gray-800 border border-[#e6f7ff]"
+                isDark
+                  ? "bg-[#334155] text-gray-100"
+                  : "bg-white text-gray-800 border border-[#e6f7ff]"
               }`}
               style={{
-                boxShadow: isDark ? "0 4px 8px rgba(0, 0, 0, 0.2)" : "0 4px 8px rgba(0, 0, 0, 0.05)",
+                boxShadow: isDark
+                  ? "0 4px 8px rgba(0, 0, 0, 0.2)"
+                  : "0 4px 8px rgba(0, 0, 0, 0.05)",
               }}
             >
               <div className="flex items-center gap-2 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700">
@@ -1047,12 +1232,16 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
       {/* مربع إدخال الرسائل */}
       <div
         className="p-4 border-t"
-        style={{ borderColor: isDark ? "rgba(59, 130, 246, 0.2)" : "rgba(52, 152, 219, 0.2)" }}
+        style={{
+          borderColor: isDark
+            ? "rgba(59, 130, 246, 0.2)"
+            : "rgba(52, 152, 219, 0.2)",
+        }}
       >
         <form
           onSubmit={(e) => {
-            e.preventDefault()
-            handleSendMessage()
+            e.preventDefault();
+            handleSendMessage();
           }}
           className="flex items-center gap-2"
         >
@@ -1061,7 +1250,9 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
             onChange={(e) => setInput(e.target.value)}
             placeholder="اكتب رسالتك هنا..."
             className={`flex-1 rounded-full text-base py-6 ${
-              isDark ? "bg-[#0f172a] border-[#334155]" : "bg-white border-gray-200"
+              isDark
+                ? "bg-[#0f172a] border-[#334155]"
+                : "bg-white border-gray-200"
             }`}
           />
           <Button
@@ -1069,7 +1260,9 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
             size="icon"
             disabled={!input.trim() || isLoading}
             className={`rounded-full w-12 h-12 ${
-              isDark ? "bg-[#3b82f6] hover:bg-[#2563eb]" : "bg-[#3498db] hover:bg-[#2980b9]"
+              isDark
+                ? "bg-[#3b82f6] hover:bg-[#2563eb]"
+                : "bg-[#3498db] hover:bg-[#2980b9]"
             }`}
           >
             <Send className="w-5 h-5" />
@@ -1083,5 +1276,5 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }

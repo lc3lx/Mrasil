@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Download, Filter, Plus, Search, Wallet } from "lucide-react";
+import { Download, Filter, Plus, Search, Wallet, Calendar, ArrowRight, XCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { PaymentLineChart } from "@/components/v7/charts/payment-line-chart";
 import { monthlyPaymentData } from "@/lib/chart-data";
@@ -163,6 +163,8 @@ export function PaymentsContent() {
     error: paymentStatusError,
   } = useGetPaymentStatusQuery(submittedId, { skip: !submittedId });
   const [openAddSenderModal, setOpenAddSenderModal] = useState(false);
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -188,7 +190,50 @@ export function PaymentsContent() {
               إدارة المحفظة والمعاملات المالية
             </p>
           </div>
-          <div className="flex flex-row w-full md:w-auto gap-2 justify-end">
+          <div className="flex flex-row flex-wrap w-full md:w-auto gap-2 justify-end items-center" dir="rtl">
+            <div className="flex items-center gap-2 flex-wrap px-4 py-2 rounded-xl bg-[#f0f4f8] border border-[#E4E9F2] shadow-inner v7-neu-inset">
+              <div className="flex items-center gap-1.5 text-[#294D8B]">
+                <Calendar className="h-4 w-4" />
+                <span className="text-sm font-semibold">التاريخ:</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <label className="text-xs text-[#6d6a67] font-medium">من</label>
+                <input
+                  type="date"
+                  value={dateFrom}
+                  onChange={(e) => setDateFrom(e.target.value)}
+                  className="h-9 px-3 rounded-lg border border-[#E4E9F2] bg-white text-[#294D8B] text-sm min-w-[130px] focus:outline-none focus:ring-2 focus:ring-[#294D8B]/40 focus:border-[#294D8B] transition-shadow"
+                  dir="ltr"
+                  title="اختر تاريخ البداية"
+                  aria-label="تاريخ من"
+                />
+                <ArrowRight className="h-4 w-4 text-[#6d6a67] rotate-180" />
+                <label className="text-xs text-[#6d6a67] font-medium">إلى</label>
+                <input
+                  type="date"
+                  value={dateTo}
+                  onChange={(e) => setDateTo(e.target.value)}
+                  className="h-9 px-3 rounded-lg border border-[#E4E9F2] bg-white text-[#294D8B] text-sm min-w-[130px] focus:outline-none focus:ring-2 focus:ring-[#294D8B]/40 focus:border-[#294D8B] transition-shadow"
+                  dir="ltr"
+                  title="اختر تاريخ النهاية"
+                  aria-label="تاريخ إلى"
+                />
+              </div>
+              {(dateFrom || dateTo) && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDateFrom("");
+                    setDateTo("");
+                  }}
+                  className="p-1.5 rounded-lg hover:bg-red-50 text-[#6d6a67] hover:text-red-600 transition-colors"
+                  title="مسح التاريخ"
+                  aria-label="مسح فلتر التاريخ"
+                >
+                  <XCircle className="h-4 w-4" />
+                </button>
+              )}
+            </div>
             <Button
               onClick={() => setOpenAddSenderModal(true)}
               variant="outline"
@@ -282,7 +327,7 @@ export function PaymentsContent() {
               </TabsTrigger>
             </TabsList>
             <TabsContent value="transactions" className="mt-6">
-              <TransactionsTable />
+              <TransactionsTable dateFrom={dateFrom} dateTo={dateTo} />
             </TabsContent>
           </Tabs>
 

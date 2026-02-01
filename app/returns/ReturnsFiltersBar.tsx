@@ -17,6 +17,8 @@ interface ReturnsFiltersBarProps {
   setShowCustomizeOptions: (v: boolean) => void;
   value: string;
   onTabChange: (v: string) => void;
+  /** نص placeholder لمربع البحث (اختياري، الافتراضي: بحث عن رقم الرجيع أو المنتج) */
+  searchPlaceholder?: string;
 }
 
 const ReturnsFiltersBar: React.FC<ReturnsFiltersBarProps> = ({
@@ -31,6 +33,7 @@ const ReturnsFiltersBar: React.FC<ReturnsFiltersBarProps> = ({
   setShowCustomizeOptions,
   value,
   onTabChange,
+  searchPlaceholder = "بحث عن رقم الرجيع أو المنتج...",
 }) => (
   <div className="mb-6">
     <Tabs dir="rtl" value={value} onValueChange={onTabChange} className="w-full">
@@ -44,12 +47,12 @@ const ReturnsFiltersBar: React.FC<ReturnsFiltersBarProps> = ({
         </TabsList>
         <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
           {/* Search filter */}
-          <div className="relative flex-1 min-w-[200px] v7-neu-input-container">
-            <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gry" />
+          <div className="relative flex-1 min-w-[240px] sm:min-w-[280px] w-full max-w-[360px] v7-neu-input-container">
+            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gry pointer-events-none" />
             <input
               type="text"
-              placeholder="بحث عن رقم الرجيع أو المنتج..."
-              className="v7-neu-input pl-8 text-base w-full"
+              placeholder={searchPlaceholder}
+              className="v7-neu-input w-full h-10 sm:h-11 pl-3 pr-10 text-base rounded-lg border border-[#E4E9F2] bg-white text-[#294D8B] placeholder:text-[#6d6a67] focus:outline-none focus:ring-2 focus:ring-[#294D8B]/30 focus:border-[#294D8B] transition-shadow"
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
             />

@@ -34,6 +34,7 @@ import {
   ChevronDown,
   Printer,
   Download,
+  ArrowRight,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -77,7 +78,12 @@ interface Order {
 export default function OrdersContent() {
   const router = useRouter();
   const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
-  const { data, isLoading, refetch } = useGetAllOrdersQuery();
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  const { data, isLoading, refetch } = useGetAllOrdersQuery({
+    dateFrom: dateFrom.trim() || undefined,
+    dateTo: dateTo.trim() || undefined,
+  });
   const [deleteOrder] = useDeleteOrderMutation();
   const [updateOrderStatus] = useUpdateOrderStatusMutation();
   const { toast } = useToast();
@@ -287,7 +293,50 @@ export default function OrdersContent() {
                   ملغاة
                 </TabsTrigger>
               </TabsList>
-              <div className="flex gap-2 dirc" dir="rtl">
+              <div className="flex flex-wrap items-center gap-2 dirc" dir="rtl">
+                <div className="flex items-center gap-2 flex-wrap px-4 py-2 rounded-xl bg-[#f0f4f8] border border-[#E4E9F2] shadow-inner v7-neu-inset">
+                  <div className="flex items-center gap-1.5 text-[#294D8B]">
+                    <Calendar className="h-4 w-4" />
+                    <span className="text-sm font-semibold">التاريخ:</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <label className="text-xs text-[#6d6a67] font-medium">من</label>
+                    <input
+                      type="date"
+                      value={dateFrom}
+                      onChange={(e) => setDateFrom(e.target.value)}
+                      className="h-9 px-3 rounded-lg border border-[#E4E9F2] bg-white text-[#294D8B] text-sm min-w-[130px] focus:outline-none focus:ring-2 focus:ring-[#294D8B]/40 focus:border-[#294D8B] transition-shadow"
+                      dir="ltr"
+                      title="اختر تاريخ البداية"
+                      aria-label="تاريخ من"
+                    />
+                    <ArrowRight className="h-4 w-4 text-[#6d6a67] rotate-180" />
+                    <label className="text-xs text-[#6d6a67] font-medium">إلى</label>
+                    <input
+                      type="date"
+                      value={dateTo}
+                      onChange={(e) => setDateTo(e.target.value)}
+                      className="h-9 px-3 rounded-lg border border-[#E4E9F2] bg-white text-[#294D8B] text-sm min-w-[130px] focus:outline-none focus:ring-2 focus:ring-[#294D8B]/40 focus:border-[#294D8B] transition-shadow"
+                      dir="ltr"
+                      title="اختر تاريخ النهاية"
+                      aria-label="تاريخ إلى"
+                    />
+                  </div>
+                  {(dateFrom || dateTo) && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setDateFrom("");
+                        setDateTo("");
+                      }}
+                      className="p-1.5 rounded-lg hover:bg-red-50 text-[#6d6a67] hover:text-red-600 transition-colors"
+                      title="مسح التاريخ"
+                      aria-label="مسح فلتر التاريخ"
+                    >
+                      <XCircle className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
                 <div className="relative v7-neu-input-container flex-1 sm:min-w-[240px] w-full">
                   <Search className="absolute right-4 top-1/2 h-8 w-4 -translate-y-1/2 text-gry" />
                   <Input

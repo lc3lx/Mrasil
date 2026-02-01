@@ -40,6 +40,8 @@ import {
   Trash2,
   Sliders,
   FileText,
+  Calendar,
+  ArrowRight,
 } from "lucide-react"
 import React from "react"
 import {
@@ -196,7 +198,13 @@ const getStatusBadgeClass = (status: string) => {
 }
 
 export default function Returns() {
-  const { data: shipmentsData, isLoading: isShipmentsLoading, error: shipmentsError } = useGetShipmentsQuery({ type: 'return' });
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  const { data: shipmentsData, isLoading: isShipmentsLoading, error: shipmentsError } = useGetShipmentsQuery({
+    type: "return",
+    dateFrom: dateFrom.trim() || undefined,
+    dateTo: dateTo.trim() || undefined,
+  });
   const [handleApproval, { isLoading: isApproving }] = useHandleApprovalMutation();
   const [approvalResult, setApprovalResult] = useState<{ status: 'success' | 'error', message: string } | null>(null);
 
@@ -1651,16 +1659,61 @@ export default function Returns() {
     <V7Layout>
       <V7Content title="إدارة الاسترجاع" description="إدارة طلبات الاسترجاع وتتبع حالتها">
         <div className="container mx-auto p-4 md:p-6 my-16">
-          {/* Header with title and action button */}
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
-             <div>
-            <h1 className="text-3xl font-bold text-[#294D8B]">إدارة المرتجعات</h1>
-            <p className="text-base text-gry">تتبع وإدارة طلبات الرجيع والمرتجعات</p>
-          </div>
-          <Button className="v7-neu-button gap-1 text-base" onClick={() => setShowCustomizeOptions(true)}>
-            <Share2 className="h-5 w-5" />
-            <span className="hidden sm:inline-block">تخصيص صفحة الإرجاع</span>
-          </Button>
+          {/* Header with title, date filter and action button */}
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6" dir="rtl">
+            <div>
+              <h1 className="text-3xl font-bold text-[#294D8B]">إدارة المرتجعات</h1>
+              <p className="text-base text-gry">تتبع وإدارة طلبات الرجيع والمرتجعات</p>
+            </div>
+            <div className="flex flex-wrap items-center gap-3 justify-end">
+              <div className="flex items-center gap-2 flex-wrap px-4 py-2 rounded-xl bg-[#f0f4f8] border border-[#E4E9F2] shadow-inner v7-neu-inset">
+                <div className="flex items-center gap-1.5 text-[#294D8B]">
+                  <Calendar className="h-4 w-4" />
+                  <span className="text-sm font-semibold">التاريخ:</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <label className="text-xs text-[#6d6a67] font-medium">من</label>
+                  <input
+                    type="date"
+                    value={dateFrom}
+                    onChange={(e) => setDateFrom(e.target.value)}
+                    className="h-9 px-3 rounded-lg border border-[#E4E9F2] bg-white text-[#294D8B] text-sm min-w-[130px] focus:outline-none focus:ring-2 focus:ring-[#294D8B]/40 focus:border-[#294D8B] transition-shadow"
+                    dir="ltr"
+                    title="اختر تاريخ البداية"
+                    aria-label="تاريخ من"
+                  />
+                  <ArrowRight className="h-4 w-4 text-[#6d6a67] rotate-180" />
+                  <label className="text-xs text-[#6d6a67] font-medium">إلى</label>
+                  <input
+                    type="date"
+                    value={dateTo}
+                    onChange={(e) => setDateTo(e.target.value)}
+                    className="h-9 px-3 rounded-lg border border-[#E4E9F2] bg-white text-[#294D8B] text-sm min-w-[130px] focus:outline-none focus:ring-2 focus:ring-[#294D8B]/40 focus:border-[#294D8B] transition-shadow"
+                    dir="ltr"
+                    title="اختر تاريخ النهاية"
+                    aria-label="تاريخ إلى"
+                  />
+                </div>
+                {(dateFrom || dateTo) && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDateFrom("");
+                      setDateTo("");
+                    }}
+                    className="p-1.5 rounded-lg hover:bg-red-50 text-[#6d6a67] hover:text-red-600 transition-colors"
+                    title="مسح التاريخ"
+                    aria-label="مسح فلتر التاريخ"
+                  >
+                    <XCircle className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+              <Button className="v7-neu-button gap-1 text-base" onClick={() => setShowCustomizeOptions(true)}>
+                <Share2 className="h-5 w-5" />
+                <span className="hidden sm:inline-block">تخصيص صفحة الإرجاع</span>
+              </Button>
+            </div>
           </div>
           <div className="mb-6">
             <div className="mb-8">

@@ -1,18 +1,24 @@
-"use client"
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import Image from "next/image"
-import V7Layout from "@/components/v7/v7-layout"
-import { V7Content } from "@/components/v7/v7-content"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
-import { Textarea } from "@/components/ui/textarea"
-import { Checkbox } from "@/components/ui/checkbox"
-import type { DateRange } from "react-day-picker"
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import V7Layout from "@/components/v7/v7-layout";
+import { V7Content } from "@/components/v7/v7-content";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import type { DateRange } from "react-day-picker";
 import {
   Search,
   ChevronLeft,
@@ -40,21 +46,29 @@ import {
   Trash2,
   Sliders,
   FileText,
-} from "lucide-react"
-import React from "react"
+  Calendar,
+  ArrowRight,
+} from "lucide-react";
+import React from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { useGetShipmentsQuery } from '../api/getReturnOrExchangeShipmentsApi';
-import { useHandleApprovalMutation } from '../api/handleReturnApprovalApi';
+} from "@/components/ui/dropdown-menu";
+import { useGetShipmentsQuery } from "../api/getReturnOrExchangeShipmentsApi";
+import { useHandleApprovalMutation } from "../api/handleReturnApprovalApi";
 import { Card, CardContent } from "@/components/ui/card";
-import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogAction } from '@/components/ui/alert-dialog';
-import ReturnsTable from '../returns/ReturnsTable';
-import ReturnsFiltersBar from '../returns/ReturnsFiltersBar';
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
+import ReturnsTable from "../returns/ReturnsTable";
+import ReturnsFiltersBar from "../returns/ReturnsFiltersBar";
 const animationStyles = `
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
@@ -63,7 +77,7 @@ const animationStyles = `
   .animate-fadeIn {
     animation: fadeIn 0.3s ease-out forwards;
   }
-`
+`;
 const returnsData = [
   {
     id: "RTN-001245",
@@ -135,19 +149,19 @@ const returnsData = [
     trackingNumber: "SHP-564888",
     returnType: "waybill",
   },
-]
+];
 
 // بيانات وهمية للإحصائيات
 const statsData = [
   {
-    title: "إجمالي الرجيع",
+    title: "إجمالي الاستبدالات",
     value: 58,
     change: "+12%",
     icon: PackageX,
     trend: "up",
   },
   {
-    title: "الرجيع المقبول",
+    title: "الاستبدالات المقبولة",
     value: 42,
     change: "+8%",
     icon: PackageCheck,
@@ -161,13 +175,13 @@ const statsData = [
     trend: "down",
   },
   {
-    title: "معد الرجيع",
+    title: "معدل الاستبدال",
     value: "5.2%",
     change: "-2.1%",
     icon: TrendingUp,
     trend: "down",
   },
-]
+];
 
 const statusMap: { [key: string]: string } = {
   pending: "قيد المراجعة",
@@ -175,33 +189,47 @@ const statusMap: { [key: string]: string } = {
   rejected: "مرفوض",
   received: "تم الاستلام",
   processed: "تمت المعالجة",
-}
+};
 
 // تحديث دالة getStatusBadgeClass لتستخدم نظام الألوان الموحد
 const getStatusBadgeClass = (status: string) => {
   switch (status) {
     case "تم الموافقة":
-      return "bg-emerald-50 text-emerald-700 border border-emerald-200"
+      return "bg-emerald-50 text-emerald-700 border border-emerald-200";
     case "مرفوض":
-      return "bg-rose-50 text-rose-700 border border-rose-200"
+      return "bg-rose-50 text-rose-700 border border-rose-200";
     case "قيد المراجعة":
-      return "bg-indigo-50 text-indigo-700 border border-indigo-200"
+      return "bg-indigo-50 text-indigo-700 border border-indigo-200";
     case "تم الاستلام":
-      return "bg-sky-50 text-sky-700 border border-sky-200"
+      return "bg-sky-50 text-sky-700 border border-sky-200";
     case "تمت المعالجة":
-      return "bg-violet-50 text-violet-700 border border-violet-200"
+      return "bg-violet-50 text-violet-700 border border-violet-200";
     default:
-      return "bg-slate-50 text-slate-700 border border-slate-200"
+      return "bg-slate-50 text-slate-700 border border-slate-200";
   }
-}
+};
 
 export default function Returns() {
-  const { data: shipmentsData, isLoading: isShipmentsLoading, error: shipmentsError } = useGetShipmentsQuery({ type: 'return' });
-  const [handleApproval, { isLoading: isApproving }] = useHandleApprovalMutation();
-  const [approvalResult, setApprovalResult] = useState<{ status: 'success' | 'error', message: string } | null>(null);
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  const {
+    data: shipmentsData,
+    isLoading: isShipmentsLoading,
+    error: shipmentsError,
+  } = useGetShipmentsQuery({
+    type: "exchange",
+    dateFrom: dateFrom.trim() || undefined,
+    dateTo: dateTo.trim() || undefined,
+  });
+  const [handleApproval, { isLoading: isApproving }] =
+    useHandleApprovalMutation();
+  const [approvalResult, setApprovalResult] = useState<{
+    status: "success" | "error";
+    message: string;
+  } | null>(null);
 
   // Log API data to verify status field
-  console.log('shipmentsData', shipmentsData?.data);
+  console.log("shipmentsData", shipmentsData?.data);
 
   // Calculate stats for cards dynamically from API data
   const total = shipmentsData?.data?.length ?? 0;
@@ -214,87 +242,95 @@ export default function Returns() {
   const handleBulkAction = (action: string) => {
     switch (action) {
       case "approve":
-        alert(`تمت الموافقة على ${selectedReturns.length} مرتجع`)
-        break
+        alert(`تمت الموافقة على ${selectedReturns.length} استبدال`);
+        break;
       case "reject":
-        alert(`تم رفض ${selectedReturns.length} مرتجع`)
-        break
+        alert(`تم رفض ${selectedReturns.length} استبدال`);
+        break;
       case "export":
-        alert(`تم تصدير بيانات ${selectedReturns.length} مرتجع`)
-        break
+        alert(`تم تصدير بيانات ${selectedReturns.length} استبدال`);
+        break;
       case "delete":
-        alert(`تم حذف ${selectedReturns.length} مرتجع`)
+        alert(`تم حذف ${selectedReturns.length} استبدال`);
         // Aquí puedes implementar la lógica real para eliminar los elementos
         // setSelectedReturns([]);
-        break
+        break;
       default:
-        break
+        break;
     }
-  }
+  };
   // Añadir el estilo de animación
   React.useEffect(() => {
-    const style = document.createElement("style")
-    style.innerHTML = animationStyles
-    document.head.appendChild(style)
+    const style = document.createElement("style");
+    style.innerHTML = animationStyles;
+    document.head.appendChild(style);
     return () => {
-      document.head.removeChild(style)
-    }
-  }, [])
+      document.head.removeChild(style);
+    };
+  }, []);
 
   // إضافة استدعاء لـ router
-  const router = useRouter()
+  const router = useRouter();
   // حالة الفلاتر
   const [date, setDate] = useState<DateRange | undefined>({
     from: new Date(2024, 3, 1),
     to: new Date(),
-  })
+  });
   // حالة مؤقتة للتاريخ المحدد
-  const [tempDate, setTempDate] = useState<DateRange | undefined>(date)
+  const [tempDate, setTempDate] = useState<DateRange | undefined>(date);
   // حالة فتح/إغلاق القائمة المنسدلة
-  const [open, setOpen] = useState(false)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [statusFilter, setStatusFilter] = useState("all")
-  const [returnTypeFilter, setReturnTypeFilter] = useState("all")
-  const [activeTab, setActiveTab] = useState("all")
-  const [showCustomizeOptions, setShowCustomizeOptions] = useState(false)
-  const [selectedReturns, setSelectedReturns] = useState<string[]>([])
+  const [open, setOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [returnTypeFilter, setReturnTypeFilter] = useState("all");
+  const [activeTab, setActiveTab] = useState("all");
+  const [showCustomizeOptions, setShowCustomizeOptions] = useState(false);
+  const [selectedReturns, setSelectedReturns] = useState<string[]>([]);
 
-  // حالات تخصيص صفحة الإرجاع
-  const [primaryColor, setPrimaryColor] = useState("#294D8B")
-  const [secondaryColor, setSecondaryColor] = useState("#f5f5f5")
-  const [textColor, setTextColor] = useState("#333333")
-  const [logoUrl, setLogoUrl] = useState("/company-logo.png")
-  const [headerText, setHeaderText] = useState("إرجاع المنتجات")
+  // حالات تخصيص صفحة الاستبدال
+  const [primaryColor, setPrimaryColor] = useState("#294D8B");
+  const [secondaryColor, setSecondaryColor] = useState("#f5f5f5");
+  const [textColor, setTextColor] = useState("#333333");
+  const [logoUrl, setLogoUrl] = useState("/company-logo.png");
+  const [headerText, setHeaderText] = useState("استبدال المنتجات");
   const [subheaderText, setSubheaderText] = useState(
-    "يمكنك إرجاع المنتجات التي اشتريتها خلال 14 يومًا من تاريخ الاستلام",
-  )
-  const [buttonText, setButtonText] = useState("إرسال طلب الإرجاع")
-  const [successMessage, setSuccessMessage] = useState("تم استلام طلب الإرجاع بنجاح. سنتواصل معك قريبًا.")
-  const [showOrderNumber, setShowOrderNumber] = useState(true)
-  const [showProductSelection, setShowProductSelection] = useState(true)
-  const [showReasonField, setShowReasonField] = useState(true)
-  const [showAttachments, setShowAttachments] = useState(true)
-  const [showContactInfo, setShowContactInfo] = useState(true)
-  const [showReturnAddress, setShowReturnAddress] = useState(true)
-  const [template, setTemplate] = useState("modern")
-  const [language, setLanguage] = useState("ar")
-  const [isSaved, setIsSaved] = useState(false)
-  const [showEmailTemplates, setShowEmailTemplates] = useState(true)
-  const [confirmationEmailSubject, setConfirmationEmailSubject] = useState("تأكيد استلام طلب الإرجاع")
+    "يمكنك استبدال المنتجات التي اشتريتها خلال 14 يومًا من تاريخ الاستلام"
+  );
+  const [buttonText, setButtonText] = useState("إرسال طلب الاستبدال");
+  const [successMessage, setSuccessMessage] = useState(
+    "تم استلام طلب الاستبدال بنجاح. سنتواصل معك قريبًا."
+  );
+  const [showOrderNumber, setShowOrderNumber] = useState(true);
+  const [showProductSelection, setShowProductSelection] = useState(true);
+  const [showReasonField, setShowReasonField] = useState(true);
+  const [showAttachments, setShowAttachments] = useState(true);
+  const [showContactInfo, setShowContactInfo] = useState(true);
+  const [showReturnAddress, setShowReturnAddress] = useState(true);
+  const [template, setTemplate] = useState("modern");
+  const [language, setLanguage] = useState("ar");
+  const [isSaved, setIsSaved] = useState(false);
+  const [showEmailTemplates, setShowEmailTemplates] = useState(true);
+  const [confirmationEmailSubject, setConfirmationEmailSubject] = useState(
+    "تأكيد استلام طلب الاستبدال"
+  );
   const [confirmationEmailBody, setConfirmationEmailBody] = useState(
-    "عزيزي العميل،\n\nتم استلام طلب الإرجاع الخاص بك بنجاح. رقم الطلب: {{order_number}}.\n\nسنقوم بمراجعة طلبك والرد عليك في أقرب وقت ممكن.\n\nشكراً لتعاملك معنا،\nفريق خدمة العملاء",
-  )
-  const [approvalEmailSubject, setApprovalEmailSubject] = useState("الموافقة على طلب الإرجاع")
+    "عزيزي العميل،\n\nتم استلام طلب الاستبدال الخاص بك بنجاح. رقم الطلب: {{order_number}}.\n\nسنقوم بمراجعة طلبك والرد عليك في أقرب وقت ممكن.\n\nشكراً لتعاملك معنا،\nفريق خدمة العملاء"
+  );
+  const [approvalEmailSubject, setApprovalEmailSubject] = useState(
+    "الموافقة على طلب الاستبدال"
+  );
   const [approvalEmailBody, setApprovalEmailBody] = useState(
-    "عزيزي العميل،\n\nيسعدنا إبلاغك بالموافقة على طلب الإرجاع الخاص بك رقم {{return_number}}.\n\nسيتم استرداد المبلغ خلال {{refund_days}} أيام عمل.\n\nشكراً لتعاملك معنا،\nفريق خدمة العملاء",
-  )
-  const [rejectionEmailSubject, setRejectionEmailSubject] = useState("تحديث بخصوص طلب الإرجاع")
+    "عزيزي العميل،\n\nيسعدنا إبلاغك بالموافقة على طلب الاستبدال الخاص بك رقم {{return_number}}.\n\nسيتم إرسال المنتج البديل خلال {{refund_days}} أيام عمل.\n\nشكراً لتعاملك معنا،\nفريق خدمة العملاء"
+  );
+  const [rejectionEmailSubject, setRejectionEmailSubject] = useState(
+    "تحديث بخصوص طلب الاستبدال"
+  );
   const [rejectionEmailBody, setRejectionEmailBody] = useState(
-    "عزيزي العميل،\n\nنأسف لإبلاغك بأنه لم تتم الموافقة على طلب الإرجاع الخاص بك رقم {{return_number}} للسبب التالي:\n\n{{rejection_reason}}\n\nيرجى التواصل مع خدمة العملاء للمزيد من المعلومات.\n\nشكراً لتعاملك معنا،\nفريق خدمة العملاء",
-  )
-  const [showReturnFees, setShowReturnFees] = useState(true)
-  const [showEmailPreview, setShowEmailPreview] = useState(false)
-  const [previewEmailType, setPreviewEmailType] = useState("confirmation")
+    "عزيزي العميل،\n\nنأسف لإبلاغك بأنه لم تتم الموافقة على طلب الاستبدال الخاص بك رقم {{return_number}} للسبب التالي:\n\n{{rejection_reason}}\n\nيرجى التواصل مع خدمة العملاء للمزيد من المعلومات.\n\nشكراً لتعاملك معنا،\nفريق خدمة العملاء"
+  );
+  const [showReturnFees, setShowReturnFees] = useState(true);
+  const [showEmailPreview, setShowEmailPreview] = useState(false);
+  const [previewEmailType, setPreviewEmailType] = useState("confirmation");
 
   // بيانات عناوين الالتقاط من صفحة إنشاء الشحنة
   const pickupAddresses = [
@@ -325,53 +361,55 @@ export default function Returns() {
       address: "",
       email: "semstry@gmail.com",
     },
-  ]
+  ];
 
   // حفظ التغييرات
   const handleSave = () => {
-    setIsSaved(true)
-    setTimeout(() => setIsSaved(false), 3000)
-  }
+    setIsSaved(true);
+    setTimeout(() => setIsSaved(false), 3000);
+  };
 
   // نسخ كود التضمين
   const copyEmbedCode = () => {
-    const code = `<iframe src="${window.location.origin}/customer-return?token=YOUR_TOKEN&theme=${encodeURIComponent(
-      primaryColor,
-    )}" width="100%" height="600" frameborder="0"></iframe>`
-    navigator.clipboard.writeText(code)
-  }
+    const code = `<iframe src="${
+      window.location.origin
+    }/customer-return?token=YOUR_TOKEN&theme=${encodeURIComponent(
+      primaryColor
+    )}" width="100%" height="600" frameborder="0"></iframe>`;
+    navigator.clipboard.writeText(code);
+  };
 
   // نسخ كود API
   const copyApiCode = () => {
     const code = `curl -X POST ${window.location.origin}/api/returns/create \\
 -H "Authorization: Bearer YOUR_API_KEY" \\
 -H "Content-Type: application/json" \\
--d '{"customer_id": "123", "order_id": "456", "reason": "damaged", "product_id": "789"}'`
-    navigator.clipboard.writeText(code)
-  }
+-d '{"customer_id": "123", "order_id": "456", "reason": "damaged", "product_id": "789"}'`;
+    navigator.clipboard.writeText(code);
+  };
 
   // Toggle select all returns
   const toggleSelectAll = () => {
     if (selectedReturns.length === filteredReturns.length) {
-      setSelectedReturns([])
+      setSelectedReturns([]);
     } else {
-      setSelectedReturns(filteredReturns.map((item) => item.id))
+      setSelectedReturns(filteredReturns.map((item) => item.id));
     }
-  }
+  };
 
   // Toggle select single return
   const toggleSelectReturn = (id: string) => {
     if (selectedReturns.includes(id)) {
-      setSelectedReturns(selectedReturns.filter((returnId) => returnId !== id))
+      setSelectedReturns(selectedReturns.filter((returnId) => returnId !== id));
     } else {
-      setSelectedReturns([...selectedReturns, id])
+      setSelectedReturns([...selectedReturns, id]);
     }
-  }
+  };
 
   // الإحصائيات
   const renderStats = () => (
     <div className="grid gap-4 md:grid-cols-4">
-      {/* Card 1: إجمالي المرتجعات */}
+      {/* Card 1: إجمالي الاستبدالات */}
       <div className="v7-neu-card">
         <div className="p-6">
           <div className="flex items-center justify-between">
@@ -385,7 +423,7 @@ export default function Returns() {
           </div>
         </div>
       </div>
-      {/* Card 2: المرتجعات المقبولة */}
+      {/* Card 2: الاستبدالات المقبولة */}
       <div className="v7-neu-card">
         <div className="p-6">
           <div className="flex items-center justify-between">
@@ -428,23 +466,25 @@ export default function Returns() {
         </div>
       </div>
     </div>
-  )
+  );
 
   // تصفية البيانات بناءً على البحث والفلاتر
   const filteredReturns = returnsData.filter((item) => {
     const matchesSearch =
       item.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.product.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.trackingNumber.toLowerCase().includes(searchTerm.toLowerCase())
+      item.trackingNumber.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesStatus = statusFilter === "all" ? true : item.status === statusMap[statusFilter]
+    const matchesStatus =
+      statusFilter === "all" ? true : item.status === statusMap[statusFilter];
 
-    const matchesType = returnTypeFilter === "all" ? true : item.returnType === returnTypeFilter
+    const matchesType =
+      returnTypeFilter === "all" ? true : item.returnType === returnTypeFilter;
 
-    return matchesSearch && matchesStatus && matchesType
-  })
+    return matchesSearch && matchesStatus && matchesType;
+  });
 
-  // عرض صفحة تخصيص الإرجاع
+  // عرض صفحة تخصيص الاستبدال
   if (showCustomizeOptions) {
     return (
       <V7Layout>
@@ -463,27 +503,45 @@ export default function Returns() {
                     <ChevronRight className="h-4 w-4" />
                     <span className="sr-only">العودة</span>
                   </Button>
-                  <h1 className="text-2xl font-bold text-[#294D8B]">تخصيص صفحة الإرجاع للعميل</h1>
+                  <h1 className="text-2xl font-bold text-[#294D8B]">
+                    تخصيص صفحة الاستبدال للعميل
+                  </h1>
                 </div>
-                <p className="text-sm text-gry">قم بتخصيص صفحة الإرجاع التي سيراها عملاؤك</p>
+                <p className="text-sm text-gry">
+                  قم بتخصيص صفحة الاستبدال التي سيراها عملاؤك
+                </p>
               </div>
               <div className="flex items-center gap-2">
                 <Button
                   className="v7-neu-button gap-1 text-sm"
-                  onClick={() => window.open("/customer-return?preview=true", "_blank")}
+                  onClick={() =>
+                    window.open("/customer-return?preview=true", "_blank")
+                  }
                 >
                   <Eye className="h-4 w-4" />
                   <span>معاينة</span>
                 </Button>
-                <Button className="v7-neu-button-active gap-1 text-sm" onClick={handleSave}>
-                  {isSaved ? <Check className="h-4 w-4" /> : <Save className="h-4 w-4" />}
+                <Button
+                  className="v7-neu-button-active gap-1 text-sm"
+                  onClick={handleSave}
+                >
+                  {isSaved ? (
+                    <Check className="h-4 w-4" />
+                  ) : (
+                    <Save className="h-4 w-4" />
+                  )}
                   <span>{isSaved ? "تم الحفظ" : "حفظ التغييرات"}</span>
                 </Button>
               </div>
             </div>
 
             {/* تبويبات التخصيص */}
-            <Tabs dir="rtl" value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <Tabs
+              dir="rtl"
+              value={activeTab}
+              onValueChange={setActiveTab}
+              className="w-full"
+            >
               <TabsList className="v7-neu-tabs mb-6">
                 <TabsTrigger value="design" className="text-sm">
                   <Palette className="h-4 w-4 ml-2" />
@@ -550,7 +608,10 @@ export default function Returns() {
                             لون النص
                           </Label>
                           <div className="flex items-center gap-2">
-                            <div className="w-10 h-10 rounded-md border" style={{ backgroundColor: textColor }}></div>
+                            <div
+                              className="w-10 h-10 rounded-md border"
+                              style={{ backgroundColor: textColor }}
+                            ></div>
                             <Input
                               id="textColor"
                               type="color"
@@ -580,7 +641,10 @@ export default function Returns() {
                             <Upload className="h-4 w-4" />
                             <span>تحميل شعار</span>
                           </Button>
-                          <Button variant="outline" className="v7-neu-button-flat gap-1 text-sm">
+                          <Button
+                            variant="outline"
+                            className="v7-neu-button-flat gap-1 text-sm"
+                          >
                             إزالة
                           </Button>
                         </div>
@@ -588,7 +652,9 @@ export default function Returns() {
                     </div>
 
                     <div className="v7-neu-card p-6 rounded-xl">
-                      <h3 className="text-lg font-medium mb-4">إعدادات إضافية</h3>
+                      <h3 className="text-lg font-medium mb-4">
+                        إعدادات إضافية
+                      </h3>
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
                           <Label htmlFor="language" className="text-sm">
@@ -622,7 +688,11 @@ export default function Returns() {
                           <Label htmlFor="rtl" className="text-sm">
                             اتجاه الصفحة من اليمين إلى اليسار
                           </Label>
-                          <Switch id="rtl" checked={language === "ar" || language === "both"} disabled />
+                          <Switch
+                            id="rtl"
+                            checked={language === "ar" || language === "both"}
+                            disabled
+                          />
                         </div>
                       </div>
                     </div>
@@ -681,10 +751,13 @@ export default function Returns() {
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
                             <Label htmlFor="returnFees" className="text-sm">
-                              رسوم الإرجاع
+                              رسوم الاستبدال
                             </Label>
                             <div className="flex items-center gap-2">
-                              <Label htmlFor="showReturnFees" className="text-xs">
+                              <Label
+                                htmlFor="showReturnFees"
+                                className="text-xs"
+                              >
                                 تفعيل
                               </Label>
                               <Switch
@@ -733,22 +806,24 @@ export default function Returns() {
                     </div>
 
                     <div className="v7-neu-card p-6 rounded-xl">
-                      <h3 className="text-lg font-medium mb-4">سياسة الإرجاع</h3>
+                      <h3 className="text-lg font-medium mb-4">
+                        سياسة الاستبدال
+                      </h3>
                       <div className="space-y-4">
                         <div className="space-y-2">
                           <Label htmlFor="returnPolicy" className="text-sm">
-                            نص سياسة الإرجاع
+                            نص سياسة الاستبدال
                           </Label>
                           <Textarea
                             id="returnPolicy"
                             className="w-full"
                             rows={6}
-                            defaultValue="يمكن إرجاع المنتجات خلال 14 يومًا من تاريخ الاستلام في حالة وجود عيوب مصنعية أو عدم مطابقة المنتج للوصف. يجب أن يكون المنتج في حالته الأصلية مع جميع الملحقات والتغليف. لا يمكن إرجاع المنتجات المخصصة أو التي تم فتحها إلا في حالة وجود عيوب."
+                            defaultValue="يمكن استبدال المنتجات خلال 14 يومًا من تاريخ الاستلام في حالة وجود عيوب مصنعية أو عدم مطابقة المنتج للوصف. يجب أن يكون المنتج في حالته الأصلية مع جميع الملحقات والتغليف. لا يمكن استبدال المنتجات المخصصة أو التي تم فتحها إلا في حالة وجود عيوب."
                           />
                         </div>
                         <div className="flex items-center justify-between">
                           <Label htmlFor="showPolicy" className="text-sm">
-                            عرض سياسة الإرجاع في الصفحة
+                            عرض سياسة الاستبدال في الصفحة
                           </Label>
                           <Switch id="showPolicy" defaultChecked />
                         </div>
@@ -756,7 +831,9 @@ export default function Returns() {
                     </div>
 
                     <div className="v7-neu-card p-6 rounded-xl">
-                      <h3 className="text-lg font-medium mb-4">معلومات الاتصال</h3>
+                      <h3 className="text-lg font-medium mb-4">
+                        معلومات الاتصال
+                      </h3>
                       <div className="space-y-4">
                         <div className="space-y-2">
                           <Label htmlFor="contactEmail" className="text-sm">
@@ -773,7 +850,11 @@ export default function Returns() {
                           <Label htmlFor="contactPhone" className="text-sm">
                             رقم هاتف الدعم
                           </Label>
-                          <Input id="contactPhone" className="w-full" defaultValue="+966 55 555 5555" />
+                          <Input
+                            id="contactPhone"
+                            className="w-full"
+                            defaultValue="+966 55 555 5555"
+                          />
                         </div>
                         <div className="flex items-center justify-between">
                           <Label htmlFor="showContact" className="text-sm">
@@ -786,9 +867,14 @@ export default function Returns() {
 
                     <div className="v7-neu-card p-6 rounded-xl">
                       <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg font-medium">رسائل البريد الإلكتروني</h3>
+                        <h3 className="text-lg font-medium">
+                          رسائل البريد الإلكتروني
+                        </h3>
                         <div className="flex items-center gap-2">
-                          <Label htmlFor="showEmailTemplates" className="text-sm">
+                          <Label
+                            htmlFor="showEmailTemplates"
+                            className="text-sm"
+                          >
                             تفعيل إشعارات البريد الإلكتروني
                           </Label>
                           <Switch
@@ -801,7 +887,11 @@ export default function Returns() {
 
                       {showEmailTemplates && (
                         <div className="space-y-6">
-                          <Tabs defaultValue="customer" dir="rtl" className="w-full">
+                          <Tabs
+                            defaultValue="customer"
+                            dir="rtl"
+                            className="w-full"
+                          >
                             <TabsList className="mb-4 bg-[#294D8B]/10 text-[#294D8B] border border-[#294D8B]/20 rounded-lg p-1">
                               <TabsTrigger
                                 value="customer"
@@ -818,45 +908,74 @@ export default function Returns() {
                             </TabsList>
 
                             <TabsContent value="customer" className="space-y-4">
-                              <Tabs defaultValue="confirmation" dir="rtl" className="w-full">
+                              <Tabs
+                                defaultValue="confirmation"
+                                dir="rtl"
+                                className="w-full"
+                              >
                                 <TabsList className="mb-4">
-                                  <TabsTrigger value="confirmation" className="text-xs">
+                                  <TabsTrigger
+                                    value="confirmation"
+                                    className="text-xs"
+                                  >
                                     تأكيد الاستلام
                                   </TabsTrigger>
-                                  <TabsTrigger value="approval" className="text-xs">
+                                  <TabsTrigger
+                                    value="approval"
+                                    className="text-xs"
+                                  >
                                     الموافقة
                                   </TabsTrigger>
-                                  <TabsTrigger value="rejection" className="text-xs">
+                                  <TabsTrigger
+                                    value="rejection"
+                                    className="text-xs"
+                                  >
                                     الرفض
                                   </TabsTrigger>
                                 </TabsList>
 
-                                <TabsContent value="confirmation" className="space-y-4">
+                                <TabsContent
+                                  value="confirmation"
+                                  className="space-y-4"
+                                >
                                   <div className="space-y-2">
-                                    <Label htmlFor="confirmationEmailSubject" className="text-sm">
+                                    <Label
+                                      htmlFor="confirmationEmailSubject"
+                                      className="text-sm"
+                                    >
                                       عنوان البريد الإلكتروني
                                     </Label>
                                     <Input
                                       id="confirmationEmailSubject"
                                       value={confirmationEmailSubject}
-                                      onChange={(e) => setConfirmationEmailSubject(e.target.value)}
+                                      onChange={(e) =>
+                                        setConfirmationEmailSubject(
+                                          e.target.value
+                                        )
+                                      }
                                       className="w-full"
                                     />
                                   </div>
                                   <div className="space-y-2">
                                     <div className="flex items-center justify-between">
-                                      <Label htmlFor="confirmationEmailBody" className="text-sm">
+                                      <Label
+                                        htmlFor="confirmationEmailBody"
+                                        className="text-sm"
+                                      >
                                         نص البريد الإلكتروني
                                       </Label>
                                       <div className="text-xs text-gray-500">
-                                        المتغيرات المتاحة: {"{{order_number}}"}, {"{{customer_name}}"},{" "}
+                                        المتغيرات المتاحة: {"{{order_number}}"},{" "}
+                                        {"{{customer_name}}"},{" "}
                                         {"{{product_name}}"}
                                       </div>
                                     </div>
                                     <Textarea
                                       id="confirmationEmailBody"
                                       value={confirmationEmailBody}
-                                      onChange={(e) => setConfirmationEmailBody(e.target.value)}
+                                      onChange={(e) =>
+                                        setConfirmationEmailBody(e.target.value)
+                                      }
                                       className="w-full font-mono text-sm"
                                       dir="rtl"
                                       rows={8}
@@ -864,32 +983,46 @@ export default function Returns() {
                                   </div>
                                 </TabsContent>
 
-                                <TabsContent value="approval" className="space-y-4">
+                                <TabsContent
+                                  value="approval"
+                                  className="space-y-4"
+                                >
                                   <div className="space-y-2">
-                                    <Label htmlFor="approvalEmailSubject" className="text-sm">
+                                    <Label
+                                      htmlFor="approvalEmailSubject"
+                                      className="text-sm"
+                                    >
                                       عنوان البريد الإلكتروني
                                     </Label>
                                     <Input
                                       id="approvalEmailSubject"
                                       value={approvalEmailSubject}
-                                      onChange={(e) => setApprovalEmailSubject(e.target.value)}
+                                      onChange={(e) =>
+                                        setApprovalEmailSubject(e.target.value)
+                                      }
                                       className="w-full"
                                     />
                                   </div>
                                   <div className="space-y-2">
                                     <div className="flex items-center justify-between">
-                                      <Label htmlFor="approvalEmailBody" className="text-sm">
+                                      <Label
+                                        htmlFor="approvalEmailBody"
+                                        className="text-sm"
+                                      >
                                         نص البريد الإلكتروني
                                       </Label>
                                       <div className="text-xs text-gray-500">
-                                        المتغيرات المتاحة: {"{{return_number}}"}, {"{{customer_name}}"},{" "}
+                                        المتغيرات المتاحة: {"{{return_number}}"}
+                                        , {"{{customer_name}}"},{" "}
                                         {"{{refund_days}}"}
                                       </div>
                                     </div>
                                     <Textarea
                                       id="approvalEmailBody"
                                       value={approvalEmailBody}
-                                      onChange={(e) => setApprovalEmailBody(e.target.value)}
+                                      onChange={(e) =>
+                                        setApprovalEmailBody(e.target.value)
+                                      }
                                       className="w-full font-mono text-sm"
                                       dir="rtl"
                                       rows={8}
@@ -897,32 +1030,46 @@ export default function Returns() {
                                   </div>
                                 </TabsContent>
 
-                                <TabsContent value="rejection" className="space-y-4">
+                                <TabsContent
+                                  value="rejection"
+                                  className="space-y-4"
+                                >
                                   <div className="space-y-2">
-                                    <Label htmlFor="rejectionEmailSubject" className="text-sm">
+                                    <Label
+                                      htmlFor="rejectionEmailSubject"
+                                      className="text-sm"
+                                    >
                                       عنوان البريد الإلكتروني
                                     </Label>
                                     <Input
                                       id="rejectionEmailSubject"
                                       value={rejectionEmailSubject}
-                                      onChange={(e) => setRejectionEmailSubject(e.target.value)}
+                                      onChange={(e) =>
+                                        setRejectionEmailSubject(e.target.value)
+                                      }
                                       className="w-full"
                                     />
                                   </div>
                                   <div className="space-y-2">
                                     <div className="flex items-center justify-between">
-                                      <Label htmlFor="rejectionEmailBody" className="text-sm">
+                                      <Label
+                                        htmlFor="rejectionEmailBody"
+                                        className="text-sm"
+                                      >
                                         نص البريد الإلكتروني
                                       </Label>
                                       <div className="text-xs text-gray-500">
-                                        المتغيرات المتاحة: {"{{return_number}}"}, {"{{customer_name}}"},{" "}
+                                        المتغيرات المتاحة: {"{{return_number}}"}
+                                        , {"{{customer_name}}"},{" "}
                                         {"{{rejection_reason}}"}
                                       </div>
                                     </div>
                                     <Textarea
                                       id="rejectionEmailBody"
                                       value={rejectionEmailBody}
-                                      onChange={(e) => setRejectionEmailBody(e.target.value)}
+                                      onChange={(e) =>
+                                        setRejectionEmailBody(e.target.value)
+                                      }
                                       className="w-full font-mono text-sm"
                                       dir="rtl"
                                       rows={8}
@@ -933,7 +1080,11 @@ export default function Returns() {
                             </TabsContent>
 
                             <TabsContent value="merchant" className="space-y-4">
-                              <Tabs defaultValue="confirmation_receipt" dir="rtl" className="w-full">
+                              <Tabs
+                                defaultValue="confirmation_receipt"
+                                dir="rtl"
+                                className="w-full"
+                              >
                                 <TabsList className="mb-4 bg-[#294D8B]/10 text-[#294D8B] border border-[#294D8B]/20 rounded-lg p-1">
                                   <TabsTrigger
                                     value="confirmation_receipt"
@@ -942,42 +1093,53 @@ export default function Returns() {
                                     تأكيد الإستلام
                                   </TabsTrigger>
                                 </TabsList>
-                                <TabsContent value="confirmation_receipt" className="space-y-4">
+                                <TabsContent
+                                  value="confirmation_receipt"
+                                  className="space-y-4"
+                                >
                                   <div className="space-y-2">
-                                    <Label htmlFor="merchantConfirmationSubject" className="text-sm">
+                                    <Label
+                                      htmlFor="merchantConfirmationSubject"
+                                      className="text-sm"
+                                    >
                                       عنوان البريد الإلكتروني
                                     </Label>
                                     <Input
                                       id="merchantConfirmationSubject"
-                                      defaultValue="تأكيد استلام طلب الإرجاع - {{return_number}}"
+                                      defaultValue="تأكيد استلام طلب الاستبدال - {{return_number}}"
                                       className="w-full"
                                     />
                                   </div>
                                   <div className="space-y-2">
                                     <div className="flex items-center justify-between">
-                                      <Label htmlFor="merchantConfirmationBody" className="text-sm">
+                                      <Label
+                                        htmlFor="merchantConfirmationBody"
+                                        className="text-sm"
+                                      >
                                         نص البريد الإلكتروني
                                       </Label>
                                       <div className="text-xs text-gray-500">
-                                        المتغيرات المتاحة: {"{{return_number}}"}, {"{{customer_name}}"},{" "}
-                                        {"{{product_name}}"}, {"{{order_number}}"}
+                                        المتغيرات المتاحة: {"{{return_number}}"}
+                                        , {"{{customer_name}}"},{" "}
+                                        {"{{product_name}}"},{" "}
+                                        {"{{order_number}}"}
                                       </div>
                                     </div>
                                     <Textarea
                                       id="merchantConfirmationBody"
                                       defaultValue={`مرحباً،
 
-تم استلام طلب الإرجاع رقم {{return_number}} من العميل {{customer_name}}.
+تم استلام طلب الاستبدال رقم {{return_number}} من العميل {{customer_name}}.
 
 تفاصيل الطلب:
 - رقم الطلب الأصلي: {{order_number}}
-- المنتج المطلوب إرجاعه: {{product_name}}
-- سبب الإرجاع: {{return_reason}}
+- المنتج المطلوب استبداله: {{product_name}}
+- سبب الاستبدال: {{return_reason}}
 
 يرجى مراجعة الطلب في أقرب وقت ممكن.
 
 مع التحية،
-نظام إدارة الإرجاعات`}
+نظام إدارة الاستبدالات`}
                                       className="w-full font-mono text-sm"
                                       dir="rtl"
                                       rows={12}
@@ -990,30 +1152,43 @@ export default function Returns() {
 
                           <div className="pt-4 border-t">
                             <div className="flex items-center justify-between mb-4">
-                              <h4 className="text-sm font-medium">إعدادات إضافية</h4>
+                              <h4 className="text-sm font-medium">
+                                إعدادات إضافية
+                              </h4>
                             </div>
                             <div className="space-y-3">
                               <div className="flex items-center justify-between">
-                                <Label className="text-sm">إرسال نسخة إلى المدير</Label>
+                                <Label className="text-sm">
+                                  إرسال نسخة إلى المدير
+                                </Label>
                                 <Switch defaultChecked />
                               </div>
                               <div className="flex items-center justify-between">
-                                <Label className="text-sm">تضمين شعار الشركة في البريد الإلكتروني</Label>
+                                <Label className="text-sm">
+                                  تضمين شعار الشركة في البريد الإلكتروني
+                                </Label>
                                 <Switch defaultChecked />
                               </div>
                               <div className="flex items-center justify-between">
-                                <Label className="text-sm">تضمين روابط وسائل التواصل الاجتماعي</Label>
+                                <Label className="text-sm">
+                                  تضمين روابط وسائل التواصل الاجتماعي
+                                </Label>
                                 <Switch defaultChecked />
                               </div>
                               <div className="flex items-center justify-between">
-                                <Label className="text-sm">تضمين تذييل قانوني</Label>
+                                <Label className="text-sm">
+                                  تضمين تذييل قانوني
+                                </Label>
                                 <Switch defaultChecked />
                               </div>
                             </div>
                           </div>
 
                           <div className="flex justify-end">
-                            <Button className="v7-neu-button gap-1 text-sm" onClick={() => setShowEmailPreview(true)}>
+                            <Button
+                              className="v7-neu-button gap-1 text-sm"
+                              onClick={() => setShowEmailPreview(true)}
+                            >
                               <Eye className="h-4 w-4" />
                               معاينة البريد الإلكتروني
                             </Button>
@@ -1025,7 +1200,9 @@ export default function Returns() {
                       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
                         <div className="bg-white rounded-lg shadow-lg w-full max-w-3xl max-h-[80vh] overflow-auto">
                           <div className="p-4 border-b flex items-center justify-between">
-                            <h3 className="text-lg font-medium">معاينة البريد الإلكتروني</h3>
+                            <h3 className="text-lg font-medium">
+                              معاينة البريد الإلكتروني
+                            </h3>
                             <Button
                               variant="ghost"
                               size="sm"
@@ -1050,18 +1227,26 @@ export default function Returns() {
                                   </div>
                                   <div>
                                     <div className="text-sm font-medium">
-                                      {previewEmailType === "confirmation" && confirmationEmailSubject}
-                                      {previewEmailType === "approval" && approvalEmailSubject}
-                                      {previewEmailType === "rejection" && rejectionEmailSubject}
+                                      {previewEmailType === "confirmation" &&
+                                        confirmationEmailSubject}
+                                      {previewEmailType === "approval" &&
+                                        approvalEmailSubject}
+                                      {previewEmailType === "rejection" &&
+                                        rejectionEmailSubject}
                                     </div>
-                                    <div className="text-xs text-gray-500">support@yourcompany.com</div>
+                                    <div className="text-xs text-gray-500">
+                                      support@yourcompany.com
+                                    </div>
                                   </div>
                                 </div>
                                 <div className="whitespace-pre-wrap text-sm">
                                   {previewEmailType === "confirmation" &&
                                     confirmationEmailBody
                                       .replace("{{order_number}}", "ORD-12345")
-                                      .replace("{{customer_name}}", "محمد أحمد")}
+                                      .replace(
+                                        "{{customer_name}}",
+                                        "محمد أحمد"
+                                      )}
                                   {previewEmailType === "approval" &&
                                     approvalEmailBody
                                       .replace("{{return_number}}", "RTN-12345")
@@ -1071,37 +1256,62 @@ export default function Returns() {
                                     rejectionEmailBody
                                       .replace("{{return_number}}", "RTN-12345")
                                       .replace("{{customer_name}}", "محمد أحمد")
-                                      .replace("{{rejection_reason}}", "المنتج غير متوفر للإرجاع")}
+                                      .replace(
+                                        "{{rejection_reason}}",
+                                        "المنتج غير متوفر للاستبدال"
+                                      )}
                                 </div>
                               </div>
                               <div className="flex items-center justify-between">
                                 <div className="space-x-2 rtl:space-x-reverse">
                                   <Button
-                                    variant={previewEmailType === "confirmation" ? "default" : "outline"}
+                                    variant={
+                                      previewEmailType === "confirmation"
+                                        ? "default"
+                                        : "outline"
+                                    }
                                     size="sm"
-                                    onClick={() => setPreviewEmailType("confirmation")}
+                                    onClick={() =>
+                                      setPreviewEmailType("confirmation")
+                                    }
                                     className="text-xs"
                                   >
                                     تأكيد الاستلام
                                   </Button>
                                   <Button
-                                    variant={previewEmailType === "approval" ? "default" : "outline"}
+                                    variant={
+                                      previewEmailType === "approval"
+                                        ? "default"
+                                        : "outline"
+                                    }
                                     size="sm"
-                                    onClick={() => setPreviewEmailType("approval")}
+                                    onClick={() =>
+                                      setPreviewEmailType("approval")
+                                    }
                                     className="text-xs"
                                   >
                                     الموافقة
                                   </Button>
                                   <Button
-                                    variant={previewEmailType === "rejection" ? "default" : "outline"}
+                                    variant={
+                                      previewEmailType === "rejection"
+                                        ? "default"
+                                        : "outline"
+                                    }
                                     size="sm"
-                                    onClick={() => setPreviewEmailType("rejection")}
+                                    onClick={() =>
+                                      setPreviewEmailType("rejection")
+                                    }
                                     className="text-xs"
                                   >
                                     الرفض
                                   </Button>
                                 </div>
-                                <Button variant="outline" size="sm" className="text-xs">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="text-xs"
+                                >
                                   <Download className="h-3 w-3 mr-1" />
                                   تصدير HTML
                                 </Button>
@@ -1119,15 +1329,22 @@ export default function Returns() {
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
                           <div>
-                            <Label className="text-sm font-medium">رقم الطلب</Label>
-                            <p className="text-xs text-gry">السماح للعميل بإدخال رقم الطلب</p>
+                            <Label className="text-sm font-medium">
+                              رقم الطلب
+                            </Label>
+                            <p className="text-xs text-gry">
+                              السماح للعميل بإدخال رقم الطلب
+                            </p>
                           </div>
                           <div className="flex items-center gap-4">
                             <Label htmlFor="orderRequired" className="text-xs">
                               مطلوب
                             </Label>
                             <Switch id="orderRequired" defaultChecked />
-                            <Label htmlFor="showOrderNumber" className="text-xs">
+                            <Label
+                              htmlFor="showOrderNumber"
+                              className="text-xs"
+                            >
                               تفعيل
                             </Label>
                             <Switch
@@ -1139,15 +1356,25 @@ export default function Returns() {
                         </div>
                         <div className="flex items-center justify-between">
                           <div>
-                            <Label className="text-sm font-medium">اختيار المنتج</Label>
-                            <p className="text-xs text-gry">السماح للعميل باختيار المنتج المراد إرجاعه</p>
+                            <Label className="text-sm font-medium">
+                              اختيار المنتج
+                            </Label>
+                            <p className="text-xs text-gry">
+                              السماح للعميل باختيار المنتج المراد استبداله
+                            </p>
                           </div>
                           <div className="flex items-center gap-4">
-                            <Label htmlFor="productRequired" className="text-xs">
+                            <Label
+                              htmlFor="productRequired"
+                              className="text-xs"
+                            >
                               مطلوب
                             </Label>
                             <Switch id="productRequired" defaultChecked />
-                            <Label htmlFor="showProductSelection" className="text-xs">
+                            <Label
+                              htmlFor="showProductSelection"
+                              className="text-xs"
+                            >
                               تفعيل
                             </Label>
                             <Switch
@@ -1159,15 +1386,22 @@ export default function Returns() {
                         </div>
                         <div className="flex items-center justify-between">
                           <div>
-                            <Label className="text-sm font-medium">سبب الإرجاع</Label>
-                            <p className="text-xs text-gry">السماح للعميل بتحديد سبب الإرجاع</p>
+                            <Label className="text-sm font-medium">
+                              سبب الاستبدال
+                            </Label>
+                            <p className="text-xs text-gry">
+                              السماح للعميل بتحديد سبب الاستبدال
+                            </p>
                           </div>
                           <div className="flex items-center gap-4">
                             <Label htmlFor="reasonRequired" className="text-xs">
                               مطلوب
                             </Label>
                             <Switch id="reasonRequired" defaultChecked />
-                            <Label htmlFor="showReasonField" className="text-xs">
+                            <Label
+                              htmlFor="showReasonField"
+                              className="text-xs"
+                            >
                               تفعيل
                             </Label>
                             <Switch
@@ -1179,15 +1413,25 @@ export default function Returns() {
                         </div>
                         <div className="flex items-center justify-between">
                           <div>
-                            <Label className="text-sm font-medium">المرفقات</Label>
-                            <p className="text-xs text-gry">السماح للعميل بإرفاق صور للمنتج</p>
+                            <Label className="text-sm font-medium">
+                              المرفقات
+                            </Label>
+                            <p className="text-xs text-gry">
+                              السماح للعميل بإرفاق صور للمنتج
+                            </p>
                           </div>
                           <div className="flex items-center gap-4">
-                            <Label htmlFor="attachmentsRequired" className="text-xs">
+                            <Label
+                              htmlFor="attachmentsRequired"
+                              className="text-xs"
+                            >
                               مطلوب
                             </Label>
                             <Switch id="attachmentsRequired" />
-                            <Label htmlFor="showAttachments" className="text-xs">
+                            <Label
+                              htmlFor="showAttachments"
+                              className="text-xs"
+                            >
                               تفعيل
                             </Label>
                             <Switch
@@ -1199,15 +1443,25 @@ export default function Returns() {
                         </div>
                         <div className="flex items-center justify-between">
                           <div>
-                            <Label className="text-sm font-medium">معلومات الاتصال</Label>
-                            <p className="text-xs text-gry">السماح للعميل بإدخال معلومات الاتصال</p>
+                            <Label className="text-sm font-medium">
+                              معلومات الاتصال
+                            </Label>
+                            <p className="text-xs text-gry">
+                              السماح للعميل بإدخال معلومات الاتصال
+                            </p>
                           </div>
                           <div className="flex items-center gap-4">
-                            <Label htmlFor="contactInfoRequired" className="text-xs">
+                            <Label
+                              htmlFor="contactInfoRequired"
+                              className="text-xs"
+                            >
                               مطلوب
                             </Label>
                             <Switch id="contactInfoRequired" defaultChecked />
-                            <Label htmlFor="showContactInfo" className="text-xs">
+                            <Label
+                              htmlFor="showContactInfo"
+                              className="text-xs"
+                            >
                               تفعيل
                             </Label>
                             <Switch
@@ -1219,15 +1473,25 @@ export default function Returns() {
                         </div>
                         <div className="flex items-center justify-between">
                           <div>
-                            <Label className="text-sm font-medium">عنوان الإرجاع</Label>
-                            <p className="text-xs text-gry">السماح للعميل باختيار عنوان إرجاع المنتج</p>
+                            <Label className="text-sm font-medium">
+                              عنوان الاستبدال
+                            </Label>
+                            <p className="text-xs text-gry">
+                              السماح للعميل باختيار عنوان استبدال المنتج
+                            </p>
                           </div>
                           <div className="flex items-center gap-4">
-                            <Label htmlFor="returnAddressRequired" className="text-xs">
+                            <Label
+                              htmlFor="returnAddressRequired"
+                              className="text-xs"
+                            >
                               مطلوب
                             </Label>
                             <Switch id="returnAddressRequired" defaultChecked />
-                            <Label htmlFor="showReturnAddress" className="text-xs">
+                            <Label
+                              htmlFor="showReturnAddress"
+                              className="text-xs"
+                            >
                               تفعيل
                             </Label>
                             <Switch
@@ -1241,49 +1505,76 @@ export default function Returns() {
                     </div>
 
                     <div className="v7-neu-card p-6 rounded-xl">
-                      <h3 className="text-lg font-medium mb-4">أسباب الإرجاع</h3>
+                      <h3 className="text-lg font-medium mb-4">
+                        أسباب الاستبدال
+                      </h3>
                       <div className="space-y-4">
                         <div className="space-y-2">
-                          <Label className="text-sm">أسباب الإرجاع المتاحة</Label>
+                          <Label className="text-sm">
+                            أسباب الاستبدال المتاحة
+                          </Label>
                           <div className="border rounded-md p-2 space-y-2">
                             <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
                               <span className="text-sm">منتج تالف</span>
-                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0"
+                              >
                                 ×
                               </Button>
                             </div>
                             <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
                               <span className="text-sm">غير مطابق للوصف</span>
-                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0"
+                              >
                                 ×
                               </Button>
                             </div>
                             <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
                               <span className="text-sm">الحجم غير مناسب</span>
-                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0"
+                              >
                                 ×
                               </Button>
                             </div>
                             <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
                               <span className="text-sm">اللون غير مناسب</span>
-                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0"
+                              >
                                 ×
                               </Button>
                             </div>
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Input placeholder="أضف سبب إرجاع جديد" className="flex-1" />
+                          <Input
+                            placeholder="أضف سبب استبدال جديد"
+                            className="flex-1"
+                          />
                           <Button className="v7-neu-button-flat">إضافة</Button>
                         </div>
                       </div>
                     </div>
 
                     <div className="v7-neu-card p-6 rounded-xl">
-                      <h3 className="text-lg font-medium mb-4">عناوين الإرجاع</h3>
+                      <h3 className="text-lg font-medium mb-4">
+                        عناوين الاستبدال
+                      </h3>
                       <div className="space-y-4">
                         <div className="space-y-2">
-                          <Label className="text-sm">عناوين الإرجاع المتاحة</Label>
+                          <Label className="text-sm">
+                            عناوين الاستبدال المتاحة
+                          </Label>
                           <div className="border rounded-md p-2 space-y-2">
                             {pickupAddresses.map((address) => (
                               <div
@@ -1291,16 +1582,26 @@ export default function Returns() {
                                 className="flex items-center justify-between p-2 bg-gray-50 rounded"
                               >
                                 <div className="flex flex-col">
-                                  <span className="text-sm font-medium">{address.name}</span>
+                                  <span className="text-sm font-medium">
+                                    {address.name}
+                                  </span>
                                   <span className="text-xs text-gray-500">
                                     {address.city} - {address.district}
                                   </span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <Button variant="outline" size="sm" className="h-8 text-xs">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-8 text-xs"
+                                  >
                                     تعديل
                                   </Button>
-                                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-8 w-8 p-0"
+                                  >
                                     ×
                                   </Button>
                                 </div>
@@ -1309,8 +1610,13 @@ export default function Returns() {
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Button className="v7-neu-button-flat">إضافة عنوان جديد</Button>
-                          <Button variant="outline" className="v7-neu-button-flat text-xs">
+                          <Button className="v7-neu-button-flat">
+                            إضافة عنوان جديد
+                          </Button>
+                          <Button
+                            variant="outline"
+                            className="v7-neu-button-flat text-xs"
+                          >
                             استيراد من العناوين الحالية
                           </Button>
                         </div>
@@ -1318,38 +1624,53 @@ export default function Returns() {
                     </div>
 
                     <div className="v7-neu-card p-6 rounded-xl">
-                      <h3 className="text-lg font-medium mb-4">الإعدادات المتقدمة</h3>
+                      <h3 className="text-lg font-medium mb-4">
+                        الإعدادات المتقدمة
+                      </h3>
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
                           <div>
-                            <Label className="text-sm font-medium">التحقق من رقم الطلب</Label>
-                            <p className="text-xs text-gry">التحقق من صحة رقم الطلب قبل السماح بالإرجاع</p>
-                          </div>
-                          <Switch defaultChecked />
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <Label className="text-sm font-medium">التحقق من فترة الإرجاع</Label>
+                            <Label className="text-sm font-medium">
+                              التحقق من رقم الطلب
+                            </Label>
                             <p className="text-xs text-gry">
-                              التحقق من أن المنتج ضمن فترة الإرجاع المسموحة (14 يوم)
+                              التحقق من صحة رقم الطلب قبل السماح بالاستبدال
                             </p>
                           </div>
                           <Switch defaultChecked />
                         </div>
                         <div className="flex items-center justify-between">
                           <div>
-                            <Label className="text-sm font-medium">إشعارات البريد الإلكتروني</Label>
+                            <Label className="text-sm font-medium">
+                              التحقق من فترة الاستبدال
+                            </Label>
                             <p className="text-xs text-gry">
-                              إرسال إشعار بالبريد الإلكتروني للعميل عند استلام طلب الإرجاع
+                              التحقق من أن المنتج ضمن فترة الاستبدال المسموحة (14
+                              يوم)
                             </p>
                           </div>
                           <Switch defaultChecked />
                         </div>
                         <div className="flex items-center justify-between">
                           <div>
-                            <Label className="text-sm font-medium">إشعارات الرسائل النصية</Label>
+                            <Label className="text-sm font-medium">
+                              إشعارات البريد الإلكتروني
+                            </Label>
                             <p className="text-xs text-gry">
-                              إرسال إشعار برسالة نصية للعميل عند استلام طلب الإرجاع
+                              إرسال إشعار بالبريد الإلكتروني للعميل عند استلام
+                              طلب الاستبدال
+                            </p>
+                          </div>
+                          <Switch defaultChecked />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <Label className="text-sm font-medium">
+                              إشعارات الرسائل النصية
+                            </Label>
+                            <p className="text-xs text-gry">
+                              إرسال إشعار برسالة نصية للعميل عند استلام طلب
+                              الاستبدال
                             </p>
                           </div>
                           <Switch />
@@ -1363,14 +1684,17 @@ export default function Returns() {
                       <h3 className="text-lg font-medium mb-4">تضمين الصفحة</h3>
                       <div className="space-y-4">
                         <p className="text-sm text-gry">
-                          يمكنك تضمين صفحة الإرجاع في موقعك الإلكتروني باستخدام الكود التالي
+                          يمكنك تضمين صفحة الاستبدال في موقعك الإلكتروني باستخدام
+                          الكود التالي
                         </p>
                         <div className="relative">
                           <Textarea
                             readOnly
                             className="w-full h-24 text-xs p-2 bg-slate-50 rounded border font-mono"
-                            value={`<iframe src="${window.location.origin}/customer-return?token=YOUR_TOKEN&theme=${encodeURIComponent(
-                              primaryColor,
+                            value={`<iframe src="${
+                              window.location.origin
+                            }/customer-return?token=YOUR_TOKEN&theme=${encodeURIComponent(
+                              primaryColor
                             )}" width="100%" height="600" frameborder="0"></iframe>`}
                           />
                           <Button
@@ -1390,7 +1714,12 @@ export default function Returns() {
                               className="w-80 text-xs"
                               value={`${window.location.origin}/customer-return?token=YOUR_TOKEN`}
                             />
-                            <Button variant="outline" size="sm" className="h-8 w-8 p-0" onClick={copyEmbedCode}>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-8 w-8 p-0"
+                              onClick={copyEmbedCode}
+                            >
                               <Copy className="h-4 w-4" />
                             </Button>
                           </div>
@@ -1399,10 +1728,13 @@ export default function Returns() {
                     </div>
 
                     <div className="v7-neu-card p-6 rounded-xl">
-                      <h3 className="text-lg font-medium mb-4">واجهة برمجة التطبيقات (API)</h3>
+                      <h3 className="text-lg font-medium mb-4">
+                        واجهة برمجة التطبيقات (API)
+                      </h3>
                       <div className="space-y-4">
                         <p className="text-sm text-gry">
-                          يمكنك استخدام واجهة برمجة التطبيقات (API) للتكامل مع أنظمتك الأخرى
+                          يمكنك استخدام واجهة برمجة التطبيقات (API) للتكامل مع
+                          أنظمتك الأخرى
                         </p>
                         <div className="relative">
                           <Textarea
@@ -1431,10 +1763,18 @@ export default function Returns() {
                               type="password"
                               value="sk_live_51NxXXXXXXXXXXXXXXXXXXXXXX"
                             />
-                            <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-8 w-8 p-0"
+                            >
                               <Eye className="h-4 w-4" />
                             </Button>
-                            <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-8 w-8 p-0"
+                            >
                               <Copy className="h-4 w-4" />
                             </Button>
                           </div>
@@ -1449,7 +1789,9 @@ export default function Returns() {
                     </div>
 
                     <div className="v7-neu-card p-6 rounded-xl">
-                      <h3 className="text-lg font-medium mb-4">تكامل مع المنصات الأخرى</h3>
+                      <h3 className="text-lg font-medium mb-4">
+                        تكامل مع المنصات الأخرى
+                      </h3>
                       <div className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <div className="border rounded-lg p-4 flex flex-col items-center justify-center gap-2">
@@ -1471,7 +1813,9 @@ export default function Returns() {
                               </svg>
                             </div>
                             <div className="text-sm font-medium">شوبيفاي</div>
-                            <Button className="v7-neu-button-flat text-xs w-full">ربط</Button>
+                            <Button className="v7-neu-button-flat text-xs w-full">
+                              ربط
+                            </Button>
                           </div>
                           <div className="border rounded-lg p-4 flex flex-col items-center justify-center gap-2">
                             <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
@@ -1493,7 +1837,9 @@ export default function Returns() {
                               </svg>
                             </div>
                             <div className="text-sm font-medium">ووكومرس</div>
-                            <Button className="v7-neu-button-flat text-xs w-full">ربط</Button>
+                            <Button className="v7-neu-button-flat text-xs w-full">
+                              ربط
+                            </Button>
                           </div>
                           <div className="border rounded-lg p-4 flex flex-col items-center justify-center gap-2">
                             <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
@@ -1508,17 +1854,27 @@ export default function Returns() {
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                               >
-                                <rect width="18" height="18" x="3" y="3" rx="2" />
+                                <rect
+                                  width="18"
+                                  height="18"
+                                  x="3"
+                                  y="3"
+                                  rx="2"
+                                />
                                 <path d="M12 8v8" />
                                 <path d="M8 12h8" />
                               </svg>
                             </div>
                             <div className="text-sm font-medium">ماجنتو</div>
-                            <Button className="v7-neu-button-flat text-xs w-full">ربط</Button>
+                            <Button className="v7-neu-button-flat text-xs w-full">
+                              ربط
+                            </Button>
                           </div>
                         </div>
                         <div className="flex justify-end">
-                          <Button className="v7-neu-button text-sm">عرض جميع التكاملات</Button>
+                          <Button className="v7-neu-button text-sm">
+                            عرض جميع التكاملات
+                          </Button>
                         </div>
                       </div>
                     </div>
@@ -1534,7 +1890,10 @@ export default function Returns() {
                     </h3>
                     <div
                       className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shadow-md transition-all duration-300 transform hover:scale-[1.01]"
-                      style={{ backgroundColor: secondaryColor, color: textColor }}
+                      style={{
+                        backgroundColor: secondaryColor,
+                        color: textColor,
+                      }}
                     >
                       <div
                         className="relative overflow-hidden bg-gradient-to-r border-b rounded-t-lg shadow-sm"
@@ -1584,7 +1943,7 @@ export default function Returns() {
 
                         {showReasonField && (
                           <div className="space-y-1">
-                            <Label className="text-xs">سبب الإرجاع</Label>
+                            <Label className="text-xs">سبب الاستبدال</Label>
                             <div className="h-8 bg-white rounded border"></div>
                           </div>
                         )}
@@ -1598,7 +1957,7 @@ export default function Returns() {
 
                         {showReturnAddress && (
                           <div className="space-y-1">
-                            <Label className="text-xs">عنوان الإرجاع</Label>
+                            <Label className="text-xs">عنوان الاستبدال</Label>
                             <div className="h-8 bg-white rounded border"></div>
                           </div>
                         )}
@@ -1625,7 +1984,9 @@ export default function Returns() {
                     <div className="mt-6 flex justify-center">
                       <Button
                         className="bg-gradient-to-r from-[#294D8B] to-[#3a6fc7] hover:from-[#1a3c6f] hover:to-[#294D8B] text-white shadow-md hover:shadow-lg transition-all duration-300 gap-2 px-5 py-2 rounded-lg text-sm"
-                        onClick={() => window.open("/customer-return?preview=true", "_blank")}
+                        onClick={() =>
+                          window.open("/customer-return?preview=true", "_blank")
+                        }
                       >
                         <Eye className="h-4 w-4" />
                         معاينة بالحجم الكامل
@@ -1643,29 +2004,85 @@ export default function Returns() {
           </div>
         </V7Content>
       </V7Layout>
-    )
+    );
   }
-
 
   return (
     <V7Layout>
-      <V7Content title="إدارة الاسترجاع" description="إدارة طلبات الاسترجاع وتتبع حالتها">
+      <V7Content title="إدارة الاسترجاع" description="إدارة طلبات الاسترجاع">
         <div className="container mx-auto p-4 md:p-6 my-16">
-          {/* Header with title and action button */}
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
-             <div>
-            <h1 className="text-3xl font-bold text-[#294D8B]">ادارة الأستبدال</h1>
-            <p className="text-base text-gry">تتبع وإدارة طلبات الرجيع والمرتجعات</p>
-          </div>
-          <Button className="v7-neu-button gap-1 text-base" onClick={() => setShowCustomizeOptions(true)}>
-            <Share2 className="h-5 w-5" />
-            <span className="hidden sm:inline-block">إدارة طلبات الاستبدال وتتبع حالتها</span>
-          </Button>
+          {/* Header with title, date filter and action button */}
+          <div
+            className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6"
+            dir="rtl"
+          >
+            <div>
+              <h1 className="text-3xl font-bold text-[#294D8B]">
+                ادارة الأستبدال
+              </h1>
+              <p className="text-base text-gry">تتبع وإدارة طلبات الاستبدال</p>
+            </div>
+            <div className="flex flex-wrap items-center gap-3 justify-end">
+              <div className="flex items-center gap-2 flex-wrap px-4 py-2 rounded-xl bg-[#f0f4f8] border border-[#E4E9F2] shadow-inner v7-neu-inset">
+                <div className="flex items-center gap-1.5 text-[#294D8B]">
+                  <Calendar className="h-4 w-4" />
+                  <span className="text-sm font-semibold">التاريخ:</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <label className="text-xs text-[#6d6a67] font-medium">
+                    من
+                  </label>
+                  <input
+                    type="date"
+                    value={dateFrom}
+                    onChange={(e) => setDateFrom(e.target.value)}
+                    className="h-9 px-3 rounded-lg border border-[#E4E9F2] bg-white text-[#294D8B] text-sm min-w-[130px] focus:outline-none focus:ring-2 focus:ring-[#294D8B]/40 focus:border-[#294D8B] transition-shadow"
+                    dir="ltr"
+                    title="اختر تاريخ البداية"
+                    aria-label="تاريخ من"
+                  />
+                  <ArrowRight className="h-4 w-4 text-[#6d6a67] rotate-180" />
+                  <label className="text-xs text-[#6d6a67] font-medium">
+                    إلى
+                  </label>
+                  <input
+                    type="date"
+                    value={dateTo}
+                    onChange={(e) => setDateTo(e.target.value)}
+                    className="h-9 px-3 rounded-lg border border-[#E4E9F2] bg-white text-[#294D8B] text-sm min-w-[130px] focus:outline-none focus:ring-2 focus:ring-[#294D8B]/40 focus:border-[#294D8B] transition-shadow"
+                    dir="ltr"
+                    title="اختر تاريخ النهاية"
+                    aria-label="تاريخ إلى"
+                  />
+                </div>
+                {(dateFrom || dateTo) && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDateFrom("");
+                      setDateTo("");
+                    }}
+                    className="p-1.5 rounded-lg hover:bg-red-50 text-[#6d6a67] hover:text-red-600 transition-colors"
+                    title="مسح التاريخ"
+                    aria-label="مسح فلتر التاريخ"
+                  >
+                    <XCircle className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+              <Button
+                className="v7-neu-button gap-1 text-base"
+                onClick={() => setShowCustomizeOptions(true)}
+              >
+                <Share2 className="h-5 w-5" />
+                <span className="hidden sm:inline-block">
+                  تخصيص صفحة الاستبدال
+                </span>
+              </Button>
+            </div>
           </div>
           <div className="mb-6">
-            <div className="mb-8">
-              {renderStats()}
-            </div>
+            <div className="mb-8">{renderStats()}</div>
             <ReturnsFiltersBar
               searchTerm={searchTerm}
               setSearchTerm={setSearchTerm}
@@ -1678,6 +2095,7 @@ export default function Returns() {
               setShowCustomizeOptions={setShowCustomizeOptions}
               value={activeTab}
               onTabChange={setActiveTab}
+              searchPlaceholder="البحث باستخدام رقم الاستبدال"
             />
           </div>
           <ReturnsTable
@@ -1692,5 +2110,5 @@ export default function Returns() {
         </div>
       </V7Content>
     </V7Layout>
-  )
+  );
 }

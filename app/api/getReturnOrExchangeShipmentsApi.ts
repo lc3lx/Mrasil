@@ -21,16 +21,28 @@ export interface GetReturnOrExchangeShipmentsResponse {
   data: ReturnOrExchangeData[];
 }
 
+export type GetReturnOrExchangeShipmentsParams = {
+  type: string;
+  dateFrom?: string;
+  dateTo?: string;
+};
+
 export const getReturnOrExchangeShipmentsApi = createApi({
   reducerPath: 'getReturnOrExchangeShipmentsApi',
   baseQuery: baseQueryWithTokenErrorHandling,
   endpoints: (builder) => ({
-    getShipments: builder.query<GetReturnOrExchangeShipmentsResponse, { type: string }>({
-      query: ({ type }) => ({
-        url: `/shipment/return/my-returns?type=${type}`,
-        method: 'GET',
-        credentials: 'include',
-      }),
+    getShipments: builder.query<GetReturnOrExchangeShipmentsResponse, GetReturnOrExchangeShipmentsParams>({
+      query: ({ type, dateFrom, dateTo }) => {
+        const params = new URLSearchParams();
+        params.set('type', type);
+        if (dateFrom) params.set('dateFrom', dateFrom);
+        if (dateTo) params.set('dateTo', dateTo);
+        return {
+          url: `/shipment/return/my-returns?${params.toString()}`,
+          method: 'GET',
+          credentials: 'include',
+        };
+      },
     }),
   }),
 });
