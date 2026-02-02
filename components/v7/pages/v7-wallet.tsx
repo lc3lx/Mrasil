@@ -166,7 +166,7 @@ export default function V7Wallet({
           publishable_api_key:
             "pk_live_yvEP28tLV8sHaWY1WTKuD9Fs47WX9qpVsE1gbnAF",
           callback_url: `${window.location.origin}/home`,
-          methods: ["creditcard"],
+          methods: ["creditcard", "applepay"],
           on_completed: async (payment: any) => {
             // تحقق من أن هذه الدفعة لم تتم معالجتها مسبقاً
             if (processedPayments.has(payment.id)) {
