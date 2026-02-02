@@ -153,7 +153,9 @@ const schema = yup
     recipient_address: yup.string(),
     recipient_email: yup.string(),
     recipient_district: yup.string(),
-    recipient_nationalAddress: yup.string(),
+    recipient_nationalAddress: yup
+      .string()
+      .required("العنوان الوطني للمستلم مطلوب"),
     weight: yup.number().required("الوزن مطلوب").typeError("الوزن مطلوب"),
     Parcels: yup.number(),
     dimension_high: yup.number(),
@@ -615,6 +617,7 @@ function Step1Content({ nextStep }: { nextStep: () => void }) {
         "recipient_city_en",
         "recipient_address",
         "recipient_email",
+        "recipient_nationalAddress",
       ])
     )
       nextStep();
@@ -643,6 +646,11 @@ function Step1Content({ nextStep }: { nextStep: () => void }) {
           email: "",
         }}
       />
+      {errors.recipient_nationalAddress && (
+        <p className="text-red-500 text-sm mt-2" role="alert">
+          {errors.recipient_nationalAddress.message as string}
+        </p>
+      )}
       <div className="flex justify-end mt-8">
         <button
           className="ring-offset-background focus-visible:outline-hidden focus-visible:ring-ring inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 text-primary-foreground hover:bg-primary/90 h-10 v7-neu-button-accent bg-gradient-to-r from-[#3498db] to-[#2980b9] px-8 py-6 text-lg relative overflow-hidden group"

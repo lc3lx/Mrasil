@@ -354,6 +354,17 @@ export function RecipientAddressSection({
       setValue("recipient_address", card.clientAddress || "");
       setValue("recipient_email", card.clientEmail || "");
       setValue("recipient_nationalAddress", card.nationalAddress || "");
+      // تحذير عند اختيار مستلم بدون عنوان وطني
+      const hasNationalAddress =
+        card.nationalAddress != null &&
+        String(card.nationalAddress).trim() !== "";
+      if (!hasNationalAddress) {
+        setAlertStatus("fail");
+        setAlertMessage(
+          "قم باضافة العنوان الوطني لتجنب مشكلة عدم استلام الشحنة"
+        );
+        setAlertOpen(true);
+      }
     }
   };
 
