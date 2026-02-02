@@ -157,16 +157,22 @@ export default function V7Wallet({
           metadata: {
             customerId: customerId,
             source: "wallet_recharge",
-            amount: paymentAmount,
+            amount: Number(paymentAmount),
             timestamp: new Date().toISOString(),
           },
-          amount: paymentAmount * 100, // المبلغ بالهللة (SAR * 100)
+          amount: Math.round(Number(paymentAmount) * 100),
           currency: "SAR",
           description: `شحن المحفظة - ${paymentAmount} ريال سعودي`,
           publishable_api_key:
             "pk_live_yvEP28tLV8sHaWY1WTKuD9Fs47WX9qpVsE1gbnAF",
           callback_url: `${window.location.origin}/home`,
           methods: ["creditcard", "applepay"],
+          apple_pay: {
+            country: "SA",
+            label: "Marasil",
+            validate_merchant_url:
+              "https://api.moyasar.com/v1/applepay/initiate",
+          },
           on_completed: async (payment: any) => {
             // تحقق من أن هذه الدفعة لم تتم معالجتها مسبقاً
             if (processedPayments.has(payment.id)) {
