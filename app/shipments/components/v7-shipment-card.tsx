@@ -283,6 +283,7 @@ interface V7ShipmentCardProps {
     shapmentingType?: string;
     shapmentCompany?: string;
     shapmentType?: string;
+    isReturnShipment?: boolean;
     shapmentPrice?: number;
     orderSou?: string;
     priceaddedtax?: number;
@@ -704,6 +705,11 @@ export function V7ShipmentCard({
                     {" "}
                     {displayName}
                   </span>
+                  {(shipment?.shapmentType === "reverse" || shipment?.isReturnShipment) && (
+                    <span className="mr-2 inline-flex items-center rounded-md bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
+                      شحنة عكسية
+                    </span>
+                  )}
                 </span>
               </div>
               <div className="flex items-center gap-3">

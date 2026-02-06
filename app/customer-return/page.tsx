@@ -35,27 +35,55 @@ export default function CustomerReturn() {
   const themeParam = searchParams.get("theme")
   const isPreview = searchParams.get("preview") === "true"
   const [pageConfig, setPageConfig] = useState<PageConfig>(null)
+  const [logoSrcFailed, setLogoSrcFailed] = useState(false)
   const theme = pageConfig?.primaryColor || themeParam || DEFAULT_PRIMARY
+  const showLogo = pageConfig?.logoUrl && !logoSrcFailed
 
   useEffect(() => {
+    // معاينة بدون token: جلب إعدادات التاجر المسجّل من API مصادق
+    if (isPreview && !token?.trim()) {
+      const authToken =
+        typeof window !== "undefined" ? localStorage.getItem("token") : null
+      if (!authToken) return
+      fetch("/api/returns/preview-config", {
+        headers: { Authorization: `Bearer ${authToken.replace(/^Bearer\s+/i, "").trim()}` },
+        credentials: "include",
+      })
+        .then((r) => r.json())
+        .then((res) => res.success && res.data && setPageConfig(res.data))
+        .catch(() => {})
+      return
+    }
+    // مع token (رابط العميل أو معاينة مع slug): جلب من page-config العام
     if (!token?.trim()) return
     fetch(`/api/public/returns/page-config?token=${encodeURIComponent(token)}`)
       .then((r) => r.json())
       .then((res) => res.success && res.data && setPageConfig(res.data))
       .catch(() => {})
-  }, [token])
+  }, [token, isPreview])
+  // إعادة تعيين فشل الشعار عند تغيير التكوين
+  useEffect(() => {
+    setLogoSrcFailed(false)
+  }, [pageConfig?.logoUrl])
 
   return (
     <div className="bg-gray-50 min-h-screen rtl" dir="rtl" style={{ color: pageConfig?.textColor }}>
       <header className="bg-white shadow-sm" style={{ borderBottomColor: theme }}>
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            {pageConfig?.logoUrl ? (
+            {showLogo ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={getImageUrl(pageConfig.logoUrl) || pageConfig.logoUrl} alt="" width={40} height={40} className="object-contain rounded-full w-10 h-10" />
+              <img
+                src={getImageUrl(pageConfig.logoUrl) || pageConfig.logoUrl}
+                alt="شعار"
+                width={64}
+                height={64}
+                className="object-contain rounded-lg w-16 h-16 bg-white min-w-[64px] min-h-[64px]"
+                onError={() => setLogoSrcFailed(true)}
+              />
             ) : (
               <div
-                className="h-10 w-10 rounded-full flex items-center justify-center text-white text-lg font-bold"
+                className="w-16 h-16 min-w-[64px] min-h-[64px] rounded-lg flex items-center justify-center text-white text-xl font-bold"
                 style={{ background: `linear-gradient(135deg, ${theme}, ${theme}dd)` }}
               >
                 M

@@ -455,6 +455,7 @@ export function SenderAddressSection({
             {/* Delete icon */}
             <div className="absolute top-3 left-3">
               <Button
+                type="button"
                 variant="ghost"
                 size="icon"
                 className="h-7 w-7 rounded-full hover:bg-blue-100"
@@ -470,6 +471,7 @@ export function SenderAddressSection({
             {/* Edit icon */}
             <div className="absolute top-3 left-12">
               <Button
+                type="button"
                 variant="ghost"
                 size="icon"
                 className="h-7 w-7 rounded-full hover:bg-blue-100"

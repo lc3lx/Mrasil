@@ -127,6 +127,8 @@ export interface Customer {
   replacementPageSettings?: ReturnOrReplacementPageSettings;
   /** رابط فريد لصفحة الاسترجاع للعملاء غير المسجلين */
   returnPageSlug?: string | null;
+  /** رابط فريد لصفحة الاستبدال للعملاء غير المسجلين */
+  replacementPageSlug?: string | null;
 }
 
 export interface CustomerResponse {

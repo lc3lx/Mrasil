@@ -134,10 +134,10 @@ export function CustomerReturnForm({ mode = "return", merchantToken, pageConfig,
   const successMsg = pageConfig?.successMessage ?? t.successDesc
   const reasonOptions = returnReasons && returnReasons.length > 0 ? returnReasons : DEFAULT_REASON_OPTIONS
 
-  const [returnType, setReturnType] = useState("product")
   const [formStep, setFormStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [searchError, setSearchError] = useState("")
+  const [waybillInput, setWaybillInput] = useState("")
   const [products, setProducts] = useState(
     mockProducts.map((product) => ({
       ...product,
@@ -180,14 +180,15 @@ export function CustomerReturnForm({ mode = "return", merchantToken, pageConfig,
 
   const onSearchOrder = async () => {
     if (usePublicApi) {
-      if (!phone?.trim() && !email?.trim()) {
-        setSearchError("يرجى إدخال رقم الهاتف أو البريد الإلكتروني")
+      if (!waybillInput?.trim() && !phone?.trim() && !email?.trim()) {
+        setSearchError("يرجى إدخال رقم البوليصة أو رقم التتبع أو رقم الهاتف أو البريد الإلكتروني")
         return
       }
       setSearchError("")
       setLoading(true)
       try {
         const params = new URLSearchParams({ token: merchantToken! })
+        if (waybillInput?.trim()) params.set("awb", waybillInput.trim())
         if (phone?.trim()) params.set("phone", phone.trim())
         if (email?.trim()) params.set("email", email.trim())
         const res = await fetch(`/api/public/returns/shipments?${params.toString()}`)
@@ -200,9 +201,9 @@ export function CustomerReturnForm({ mode = "return", merchantToken, pageConfig,
         const list = Array.isArray(data?.data) ? data.data : data?.shipments ?? []
         setShipments(list)
         if (list.length === 0) {
-          setSearchError("لم يتم العثور على شحنات لهذا الرقم. تحقق من رقم الهاتف أو البريد الإلكتروني.")
+          setSearchError(data?.message || "لم يتم العثور على شحنات. تحقق من رقم البوليصة أو رقم التتبع أو رقم الهاتف أو البريد الإلكتروني.")
         } else {
-          setSelectedShipmentId(null)
+          setSelectedShipmentId(list.length === 1 ? list[0]._id : null)
           setFormStep(2)
         }
       } catch {
@@ -216,7 +217,7 @@ export function CustomerReturnForm({ mode = "return", merchantToken, pageConfig,
     setLoading(true)
     setTimeout(() => {
       setLoading(false)
-      setFormStep(2)
+      setFormStep(3)
     }, 1500)
   }
 
@@ -230,10 +231,7 @@ export function CustomerReturnForm({ mode = "return", merchantToken, pageConfig,
         setLoading(false)
         return
       }
-      const requestNote =
-        returnType === "product"
-          ? [reason, description].filter(Boolean).join(" | ")
-          : [waybillReason, waybillDetails].filter(Boolean).join(" | ")
+      const requestNote = [reason, description].filter(Boolean).join(" | ") || "طلب من صفحة العميل"
       try {
         const res = await fetch("/api/public/returns/create-request", {
           method: "POST",
@@ -260,27 +258,17 @@ export function CustomerReturnForm({ mode = "return", merchantToken, pageConfig,
       return
     }
 
-    const submitData =
-      returnType === "product"
-        ? {
-            orderNumber,
-            email,
-            phone,
-            reason,
-            description,
-            address,
-            products: products
-              .filter((p) => p.selected)
-              .map((p) => ({ id: p.id, name: p.name, quantity: p.returnQuantity })),
-          }
-        : {
-            orderNumber,
-            email,
-            phone,
-            waybillNumber,
-            waybillReason,
-            waybillDetails,
-          }
+    const submitData = {
+      orderNumber,
+      email,
+      phone,
+      reason,
+      description,
+      address,
+      products: products
+        .filter((p) => p.selected)
+        .map((p) => ({ id: p.id, name: p.name, quantity: p.returnQuantity })),
+    }
     console.log("تم تقديم طلب:", submitData)
     setTimeout(() => {
       setLoading(false)
@@ -315,7 +303,7 @@ export function CustomerReturnForm({ mode = "return", merchantToken, pageConfig,
 
   return (
     <div>
-      {/* خطوات العملية */}
+      {/* خطوات العملية (لصفحة العميل: بحث → اختيار شحنة → تقديم) */}
       <div className="flex justify-between items-center mb-6 px-2">
         <div className={`flex items-center gap-2 ${formStep >= 1 ? "text-blue-600" : "text-gray-400"}`}>
           <div
@@ -323,7 +311,7 @@ export function CustomerReturnForm({ mode = "return", merchantToken, pageConfig,
           >
             1
           </div>
-          <span className="hidden sm:block text-sm font-medium">بيانات الطلب</span>
+          <span className="hidden sm:block text-sm font-medium">{usePublicApi ? "البحث عن الشحنة" : "بيانات الطلب"}</span>
         </div>
         <div className="flex-1 mx-2 border-t-2 border-dashed"></div>
         <div className={`flex items-center gap-2 ${formStep >= 2 ? "text-blue-600" : "text-gray-400"}`}>
@@ -332,7 +320,7 @@ export function CustomerReturnForm({ mode = "return", merchantToken, pageConfig,
           >
             2
           </div>
-          <span className="hidden sm:block text-sm font-medium">اختيار المنتجات</span>
+          <span className="hidden sm:block text-sm font-medium">اختيار الشحنة</span>
         </div>
         <div className="flex-1 mx-2 border-t-2 border-dashed"></div>
         <div className={`flex items-center gap-2 ${formStep >= 3 ? "text-blue-600" : "text-gray-400"}`}>
@@ -341,67 +329,20 @@ export function CustomerReturnForm({ mode = "return", merchantToken, pageConfig,
           >
             3
           </div>
-          <span className="hidden sm:block text-sm font-medium">{t.stepDetails}</span>
+          <span className="hidden sm:block text-sm font-medium">تقديم الطلب</span>
         </div>
       </div>
 
-      {formStep === 1 && (
-        <div className="v7-neu-card p-6 rounded-xl mb-6">
-          <h3 className="text-lg font-semibold mb-4">نوع {t.typeFull}</h3>
-          <p className="text-gray-600 mb-6">يرجى اختيار نوع {t.typeFull} الذي ترغب به</p>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div
-              className={`border rounded-lg p-4 cursor-pointer transition-all ${
-                returnType === "product" ? "border-blue-300 bg-blue-50" : "border-gray-200"
-              }`}
-              onClick={() => setReturnType("product")}
-            >
-              <div className="flex items-center gap-3 mb-2">
-                <div
-                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                    returnType === "product" ? "border-blue-500" : "border-gray-300"
-                  }`}
-                >
-                  {returnType === "product" && <div className="w-3 h-3 rounded-full bg-blue-500"></div>}
-                </div>
-                <h4 className="font-medium">{t.products}</h4>
-              </div>
-              <p className="text-sm text-gray-600 pr-8">اختر هذا الخيار إذا كنت ترغب في {t.type === "إرجاع" ? "إرجاع" : "استبدال"} منتج أو أكثر من طلبك</p>
-            </div>
-
-            <div
-              className={`border rounded-lg p-4 cursor-pointer transition-all ${
-                returnType === "waybill" ? "border-blue-300 bg-blue-50" : "border-gray-200"
-              }`}
-              onClick={() => setReturnType("waybill")}
-            >
-              <div className="flex items-center gap-3 mb-2">
-                <div
-                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                    returnType === "waybill" ? "border-blue-500" : "border-gray-300"
-                  }`}
-                >
-                  {returnType === "waybill" && <div className="w-3 h-3 rounded-full bg-blue-500"></div>}
-                </div>
-                <h4 className="font-medium">{t.waybill}</h4>
-              </div>
-              <p className="text-sm text-gray-600 pr-8">
-                اختر هذا الخيار إذا كنت ترغب في {t.type === "إرجاع" ? "إرجاع" : "استبدال"} بوليصة الشحن فقط (مثل تصحيح العنوان أو معلومات المستلم)
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
       <form onSubmit={handleSubmit}>
-        {/* الخطوة 1: بيانات الطلب */}
+        {/* الخطوة 1: رقم البوليصة أو الجوال أو الإيميل */}
         {formStep === 1 && (
           <div className="v7-neu-card p-6 rounded-xl">
-            <h3 className="text-lg font-semibold mb-4">بيانات الطلب</h3>
+            <h3 className="text-lg font-semibold mb-4">
+              {usePublicApi ? "البحث عن الشحنة" : "بيانات الطلب"}
+            </h3>
             <p className="text-gray-600 mb-6">
               {usePublicApi
-                ? `أدخل رقم هاتفك أو بريدك الإلكتروني للبحث عن شحناتك واستكمال عملية ${t.typeFull}`
+                ? "أدخل رقم البوليصة أو رقم التتبع أو رقم هاتفك أو بريدك الإلكتروني للبحث عن شحنتك"
                 : `يرجى إدخال بيانات الطلب الأصلي لاستكمال عملية ${t.typeFull}`}
             </p>
 
@@ -409,8 +350,21 @@ export function CustomerReturnForm({ mode = "return", merchantToken, pageConfig,
               {usePublicApi && (
                 <>
                   <div>
+                    <label htmlFor="waybillInput" className="block text-sm font-medium mb-1">
+                      رقم البوليصة أو رقم التتبع
+                    </label>
+                    <input
+                      type="text"
+                      id="waybillInput"
+                      placeholder="رقم البوليصة أو رقم التتبع - مثال: SHP-123456"
+                      className="v7-neu-input w-full rounded-md border border-gray-300 p-2"
+                      value={waybillInput}
+                      onChange={(e) => setWaybillInput(e.target.value)}
+                    />
+                  </div>
+                  <div>
                     <label htmlFor="phone" className="block text-sm font-medium mb-1">
-                      رقم الهاتف
+                      أو رقم الهاتف
                     </label>
                     <input
                       type="tel"
@@ -423,7 +377,7 @@ export function CustomerReturnForm({ mode = "return", merchantToken, pageConfig,
                   </div>
                   <div>
                     <label htmlFor="email" className="block text-sm font-medium mb-1">
-                      البريد الإلكتروني (اختياري)
+                      أو البريد الإلكتروني
                     </label>
                     <input
                       type="email"
@@ -441,10 +395,10 @@ export function CustomerReturnForm({ mode = "return", merchantToken, pageConfig,
                     <button
                       type="button"
                       onClick={onSearchOrder}
-                      disabled={(!phone?.trim() && !email?.trim()) || loading}
+                      disabled={(!waybillInput?.trim() && !phone?.trim() && !email?.trim()) || loading}
                       className="v7-neu-button-active px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors disabled:opacity-50"
                     >
-                      {loading ? "جاري البحث..." : "بحث عن شحناتي"}
+                      {loading ? "جاري البحث..." : "عرض الشحنات"}
                     </button>
                   </div>
                 </>
@@ -512,8 +466,8 @@ export function CustomerReturnForm({ mode = "return", merchantToken, pageConfig,
                       {selectedShipmentId === s._id && <div className="w-2 h-2 rounded-full bg-white" />}
                     </div>
                     <div>
-                      <div className="font-medium">{s.receiver?.name || "—"} · {s.awb || s._id}</div>
-                      <div className="text-sm text-gray-500">{s.receiver?.phone || s.receiver?.email || ""}</div>
+                      <div className="font-medium">{(s.receiver?.name ?? s.receiverAddress?.name) || "—"} · {s.awb || s.trackingId || s._id}</div>
+                      <div className="text-sm text-gray-500">{(s.receiver?.phone ?? s.receiverAddress?.phone) || (s.receiver?.email ?? s.receiverAddress?.email) || ""}</div>
                     </div>
                   </div>
                 </div>
@@ -535,320 +489,103 @@ export function CustomerReturnForm({ mode = "return", merchantToken, pageConfig,
           </div>
         )}
 
-        {/* الخطوة 2: اختيار المنتجات (وضع المعاينة فقط) */}
-        {formStep === 2 && returnType === "product" && !usePublicApi && (
-          <>
-            <div className="v7-neu-card p-6 rounded-xl mb-6">
-              <h3 className="text-lg font-semibold mb-4">{t.selectProducts}</h3>
-              <p className="text-gray-600 mb-6">{t.selectProductsDesc}</p>
-
-              <div className="space-y-4">
-                {products.map((product) => (
-                  <div
-                    key={product.id}
-                    className={`border rounded-lg p-3 flex items-center gap-4 transition-colors ${
-                      product.selected ? "border-blue-200 bg-blue-50/50" : "border-gray-200"
-                    }`}
-                  >
-                    <div className="flex-shrink-0">
-                      <input
-                        type="checkbox"
-                        id={`product-${product.id}`}
-                        checked={product.selected}
-                        onChange={() => toggleProductSelection(product.id)}
-                        className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div className="h-16 w-16 bg-gray-100 rounded overflow-hidden flex-shrink-0">
-                      <Image
-                        src={product.image || "/placeholder.svg"}
-                        alt={product.name}
-                        width={64}
-                        height={64}
-                        className="object-cover"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <div className="font-medium">{product.name}</div>
-                      <div className="text-sm text-gray-500">{product.price.toLocaleString()} ر.س</div>
-                    </div>
-                    <div>
-                      <select
-                        disabled={!product.selected}
-                        className="w-20 v7-neu-input rounded-md border border-gray-300 p-2"
-                        value={product.returnQuantity.toString()}
-                        onChange={(e) => updateProductReturnQuantity(product.id, Number.parseInt(e.target.value))}
-                      >
-                        {Array.from({ length: product.quantity }, (_, i) => (
-                          <option key={i + 1} value={(i + 1).toString()}>
-                            {i + 1}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {selectedProductsCount > 0 && (
-                <div className="mt-4 p-3 border border-blue-200 bg-blue-50/50 rounded-lg">
-                  <div className="flex justify-between items-center">
-                    <div className="font-medium">{t.totalRefund}:</div>
-                    <div className="font-bold text-lg">{totalRefundAmount.toLocaleString()} ر.س</div>
-                  </div>
-                </div>
-              )}
-
-              <div className="flex justify-between mt-6">
-                <button 
-                  type="button" 
-                  onClick={() => setFormStep(1)} 
-                  className="v7-neu-button-flat px-4 py-2 rounded-md border border-gray-300 bg-white text-gray-800 hover:bg-gray-50 transition-colors"
-                >
-                  رجوع
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setFormStep(3)}
-                  disabled={selectedProductsCount === 0}
-                  className="v7-neu-button-active px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  متابعة
-                </button>
-              </div>
-            </div>
-          </>
-        )}
-
-        {formStep === 2 && returnType === "waybill" && !usePublicApi && (
-          <div className="v7-neu-card p-6 rounded-xl mb-6">
-            <h3 className="text-lg font-semibold mb-4">{t.waybillDetails}</h3>
-            <p className="text-gray-600 mb-6">يرجى تقديم معلومات عن بوليصة الشحن التي ترغب في {t.type === "إرجاع" ? "إرجاعها" : "استبدالها"}</p>
-
+        {/* الخطوة 3: تقديم طلب الإرجاع */}
+        {formStep === 3 && usePublicApi && (
+          <div className="v7-neu-card p-6 rounded-xl">
+            <h3 className="text-lg font-semibold mb-4">تقديم طلب الإرجاع</h3>
+            <p className="text-gray-600 mb-6">مراجعة الشحنة المختارة وتقديم الطلب</p>
             <div className="grid gap-4">
-              <div className="space-y-2">
-                <label htmlFor="waybillNumber" className="block text-sm font-medium mb-1">
-                  رقم بوليصة الشحن
-                </label>
-                <input
-                  type="text"
-                  id="waybillNumber"
-                  placeholder="مثال: SHP-123456"
-                  className="v7-neu-input w-full rounded-md border border-gray-300 p-2"
-                  value={waybillNumber}
-                  onChange={(e) => setWaybillNumber(e.target.value)}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label htmlFor="waybillReason" className="block text-sm font-medium mb-1">
-                  {t.waybillReason}
+              <div>
+                <label htmlFor="reason" className="block text-sm font-medium mb-1">
+                  سبب الإرجاع (اختياري)
                 </label>
                 <select
-                  id="waybillReason"
+                  id="reason"
                   className="w-full v7-neu-input rounded-md border border-gray-300 p-2"
-                  value={waybillReason}
-                  onChange={(e) => setWaybillReason(e.target.value)}
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
                 >
-                  <option value="" disabled>
-                    اختر {t.reason}
-                  </option>
-                  <option value="wrong_address">عنوان خاطئ</option>
-                  <option value="wrong_recipient">معلومات المستلم غير صحيحة</option>
-                  <option value="shipping_error">خطأ في معلومات الشحن</option>
-                  <option value="duplicate">بوليصة مكررة</option>
-                  <option value="other">سبب آخر</option>
+                  <option value="">— اختر السبب —</option>
+                  {reasonOptions.map((opt) => (
+                    <option key={opt} value={opt}>{opt}</option>
+                  ))}
                 </select>
               </div>
-
-              <div className="space-y-2">
-                <label htmlFor="waybillDetails" className="block text-sm font-medium mb-1">
-                  تفاصيل إضافية
-                </label>
-                <textarea
-                  id="waybillDetails"
-                  placeholder={`يرجى شرح سبب ${t.type === "إرجاع" ? "إرجاع" : "استبدال"} البوليصة بالتفصيل...`}
-                  className="v7-neu-input w-full rounded-md border border-gray-300 p-2 min-h-[100px]"
-                  value={waybillDetails}
-                  onChange={(e) => setWaybillDetails(e.target.value)}
-                />
-              </div>
-
               <div className="flex justify-between mt-6">
-                <button 
-                  type="button" 
-                  onClick={() => setFormStep(1)} 
-                  className="v7-neu-button-flat px-4 py-2 rounded-md border border-gray-300 bg-white text-gray-800 hover:bg-gray-50 transition-colors"
+                <button
+                  type="button"
+                  onClick={() => setFormStep(2)}
+                  className="v7-neu-button-flat px-4 py-2 rounded-md border border-gray-300 bg-white text-gray-800 hover:bg-gray-50"
                 >
                   رجوع
                 </button>
                 <button
-                  type="button"
-                  onClick={() => setFormStep(3)}
-                  disabled={!waybillNumber || !waybillReason}
-                  className="v7-neu-button-active px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  type="submit"
+                  className="v7-neu-button-active px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700"
+                  disabled={loading}
                 >
-                  متابعة
+                  {loading ? "جاري التقديم..." : (pageConfig?.buttonText ?? t.submitWaybill)}
                 </button>
               </div>
             </div>
           </div>
         )}
 
-        {/* الخطوة 3: تفاصيل الإرجاع */}
-        {formStep === 3 && (
+        {/* الخطوة 3: تفاصيل الإرجاع (وضع غير API عامة) */}
+        {formStep === 3 && !usePublicApi && (
           <div className="v7-neu-card p-6 rounded-xl">
-            <h3 className="text-lg font-semibold mb-4">
-              {returnType === "product" ? t.details : t.waybillDetails}
-            </h3>
+            <h3 className="text-lg font-semibold mb-4">{t.details}</h3>
             <p className="text-gray-600 mb-6">
-              {returnType === "product"
-                ? `يرجى تقديم معلومات إضافية عن سبب ${t.typeFull} وتفاصيل الاستلام`
-                : `يرجى تقديم معلومات الاتصال لمتابعة طلب ${t.type === "إرجاع" ? "إرجاع" : "استبدال"} البوليصة`}
+              يرجى تقديم معلومات إضافية عن سبب {t.typeFull} وتفاصيل الاستلام
             </p>
 
             <div className="grid gap-4">
-              {returnType === "product" ? (
-                // محتوى الخطوة 3 الحالي للمنتجات
-                <>
-                  <div>
-                    <label htmlFor="reason" className="block text-sm font-medium mb-1">
-                      {t.reason}
-                    </label>
+              <>
+                <div>
+                  <label htmlFor="reasonNonApi" className="block text-sm font-medium mb-1">
+                    {t.reason}
+                  </label>
                     <select
-                      id="reason"
+                      id="reasonNonApi"
                       className="w-full v7-neu-input rounded-md border border-gray-300 p-2"
                       value={reason}
                       onChange={(e) => setReason(e.target.value)}
                     >
-                      <option value="" disabled>
-                        اختر {t.reason}
-                      </option>
+                      <option value="" disabled>اختر {t.reason}</option>
                       {reasonOptions.map((opt) => (
-                        <option key={opt} value={opt}>
-                          {opt}
-                        </option>
+                        <option key={opt} value={opt}>{opt}</option>
                       ))}
                     </select>
-                  </div>
-
-                  <div>
-                    <label htmlFor="description" className="block text-sm font-medium mb-1">
-                      وصف المشكلة (اختياري)
-                    </label>
-                    <textarea
-                      id="description"
-                      placeholder={`يرجى وصف المشكلة أو سبب ${t.typeFull} بشكل مفصل...`}
-                      className="v7-neu-input w-full rounded-md border border-gray-300 p-2 min-h-[100px]"
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="address" className="block text-sm font-medium mb-1">
-                      {t.addressLabel}
-                    </label>
-                    <textarea
-                      id="address"
-                      placeholder={t.addressPlaceholder}
-                      className="v7-neu-input w-full rounded-md border border-gray-300 p-2"
-                      value={address}
-                      onChange={(e) => setAddress(e.target.value)}
-                    />
-                  </div>
-
-                  {/* ملخص الإرجاع */}
-                  <div className="p-4 border rounded-lg bg-gray-50/50 my-2">
-                    <h4 className="font-medium mb-2">{t.summaryTitle}</h4>
-                    <div className="text-sm space-y-1">
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">عدد المنتجات:</span>
-                        <span className="font-medium">{selectedProductsCount}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">المبلغ المسترد:</span>
-                        <span className="font-medium">{totalRefundAmount.toLocaleString()} ر.س</span>
-                      </div>
-                    </div>
-                  </div>
-                </>
-              ) : (
-                // محتوى جديد لإرجاع البوليصة
-                <>
-                  <div className="space-y-2">
-                    <label htmlFor="email" className="block text-sm font-medium mb-1">
-                      البريد الإلكتروني
-                    </label>
-                    <input
-                      type="email"
-                      id="email"
-                      placeholder="example@mail.com"
-                      className="v7-neu-input w-full rounded-md border border-gray-300 p-2"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label htmlFor="phone" className="block text-sm font-medium mb-1">
-                      رقم الهاتف
-                    </label>
-                    <input
-                      type="tel"
-                      id="phone"
-                      placeholder="05xxxxxxxx"
-                      className="v7-neu-input w-full rounded-md border border-gray-300 p-2"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                    />
-                  </div>
-
-                  {/* ملخص إرجاع البوليصة */}
-                  <div className="p-4 border rounded-lg bg-blue-50/50 my-2">
-                    <h4 className="font-medium mb-2">{t.waybillSummary}</h4>
-                    <div className="text-sm space-y-1">
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">رقم البوليصة:</span>
-                        <span className="font-medium">{waybillNumber}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">{t.reason}:</span>
-                        <span className="font-medium">
-                          {waybillReason === "wrong_address"
-                            ? "عنوان خاطئ"
-                            : waybillReason === "wrong_recipient"
-                              ? "معلومات المستلم غير صحيحة"
-                              : waybillReason === "shipping_error"
-                                ? "خطأ في معلومات الشحن"
-                                : waybillReason === "duplicate"
-                                  ? "بوليصة مكررة"
-                                  : "سبب آخر"}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </>
-              )}
-
-              <div className="flex justify-between mt-6">
-                <button 
-                  type="button" 
-                  onClick={() => setFormStep(2)} 
-                  className="v7-neu-button-flat px-4 py-2 rounded-md border border-gray-300 bg-white text-gray-800 hover:bg-gray-50 transition-colors"
-                >
-                  رجوع
-                </button>
-                <button 
-                  type="submit" 
-                  className="v7-neu-button-active px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors" 
-                  disabled={loading}
-                >
-                  {loading
-                    ? "جاري التقديم..."
-                    : (pageConfig?.buttonText ?? (returnType === "product" ? t.submitProduct : t.submitWaybill))}
-                </button>
-              </div>
+                </div>
+                <div>
+                  <label htmlFor="description" className="block text-sm font-medium mb-1">وصف المشكلة (اختياري)</label>
+                  <textarea
+                    id="description"
+                    placeholder={`يرجى وصف المشكلة أو سبب ${t.typeFull} بشكل مفصل...`}
+                    className="v7-neu-input w-full rounded-md border border-gray-300 p-2 min-h-[100px]"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="address" className="block text-sm font-medium mb-1">{t.addressLabel}</label>
+                  <textarea
+                    id="address"
+                    placeholder={t.addressPlaceholder}
+                    className="v7-neu-input w-full rounded-md border border-gray-300 p-2"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                  />
+                </div>
+                <div className="flex justify-between mt-6">
+                  <button type="button" onClick={() => setFormStep(1)} className="v7-neu-button-flat px-4 py-2 rounded-md border border-gray-300 bg-white text-gray-800 hover:bg-gray-50">
+                    رجوع
+                  </button>
+                  <button type="submit" className="v7-neu-button-active px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700" disabled={loading}>
+                    {loading ? "جاري التقديم..." : (pageConfig?.buttonText ?? t.submitProduct)}
+                  </button>
+                </div>
+              </>
             </div>
           </div>
         )}

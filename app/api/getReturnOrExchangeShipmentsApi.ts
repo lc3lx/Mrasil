@@ -12,6 +12,7 @@ export interface ReturnOrExchangeData {
   type: string;
   requestNote: string;
   createdAt: string;
+  reqstatus?: 'pending' | 'yes' | 'no';
   shipment: Shipment;
 }
 
@@ -30,6 +31,7 @@ export type GetReturnOrExchangeShipmentsParams = {
 export const getReturnOrExchangeShipmentsApi = createApi({
   reducerPath: 'getReturnOrExchangeShipmentsApi',
   baseQuery: baseQueryWithTokenErrorHandling,
+  tagTypes: ['ReturnShipments'],
   endpoints: (builder) => ({
     getShipments: builder.query<GetReturnOrExchangeShipmentsResponse, GetReturnOrExchangeShipmentsParams>({
       query: ({ type, dateFrom, dateTo }) => {
@@ -43,6 +45,7 @@ export const getReturnOrExchangeShipmentsApi = createApi({
           credentials: 'include',
         };
       },
+      providesTags: ['ReturnShipments'],
     }),
   }),
 });

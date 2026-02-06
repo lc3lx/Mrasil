@@ -12,6 +12,7 @@ export async function GET(request: NextRequest) {
     const token = searchParams.get("token");
     const phone = searchParams.get("phone");
     const email = searchParams.get("email");
+    const awb = searchParams.get("awb") || searchParams.get("tracking");
 
     if (!token) {
       return NextResponse.json(
@@ -20,16 +21,19 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const identifier = phone || email;
-    if (!identifier) {
+    const identifier = awb || phone || email;
+    if (!identifier?.trim()) {
       return NextResponse.json(
-        { success: false, message: "رقم الهاتف أو البريد الإلكتروني مطلوب" },
+        { success: false, message: "رقم البوليصة أو رقم التتبع أو رقم الهاتف أو البريد الإلكتروني مطلوب" },
         { status: 400 }
       );
     }
 
-    const param = phone ? `phone=${encodeURIComponent(phone)}` : `email=${encodeURIComponent(email!)}`;
-    const url = `${API_BASE_URL}/shipment/return/shipments?${param}`;
+    const params = new URLSearchParams();
+    if (awb?.trim()) params.set("awb", awb.trim());
+    if (phone?.trim()) params.set("phone", phone.trim());
+    if (email?.trim()) params.set("email", email.trim());
+    const url = `${API_BASE_URL}/shipment/return/shipments?${params.toString()}`;
     const res = await fetch(url, {
       method: "GET",
       headers: {

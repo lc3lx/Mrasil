@@ -58,7 +58,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useGetShipmentsQuery } from "../api/getReturnOrExchangeShipmentsApi";
+import type { ReturnOrExchangeData } from "../api/getReturnOrExchangeShipmentsApi";
 import { useHandleApprovalMutation } from "../api/handleReturnApprovalApi";
+import { useGetCustomerMeQuery, useUpdateReplacementPageSettingsMutation, useUpdateCustomerMeMutation } from "@/app/api/customerApi";
+import { getImageUrl } from "@/lib/constants";
+import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   AlertDialog,
@@ -228,15 +232,12 @@ export default function Returns() {
     message: string;
   } | null>(null);
 
-  // Log API data to verify status field
-  console.log("shipmentsData", shipmentsData?.data);
-
-  // Calculate stats for cards dynamically from API data
-  const total = shipmentsData?.data?.length ?? 0;
-  // The API data does not include status, so we cannot calculate pending/approved/rejected counts
-  const pending = 0;
-  const approved = 0;
-  const rejected = 0;
+  // Calculate stats for cards dynamically from API data (reqstatus: pending | yes | no)
+  const list: ReturnOrExchangeData[] = shipmentsData?.data ?? [];
+  const total = list.length;
+  const pending = list.filter((r) => r.reqstatus === "pending").length;
+  const approved = list.filter((r) => r.reqstatus === "yes").length;
+  const rejected = list.filter((r) => r.reqstatus === "no").length;
 
   // Función para manejar acciones في مجموعة
   const handleBulkAction = (action: string) => {
@@ -329,8 +330,59 @@ export default function Returns() {
     "عزيزي العميل،\n\nنأسف لإبلاغك بأنه لم تتم الموافقة على طلب الاستبدال الخاص بك رقم {{return_number}} للسبب التالي:\n\n{{rejection_reason}}\n\nيرجى التواصل مع خدمة العملاء للمزيد من المعلومات.\n\nشكراً لتعاملك معنا،\nفريق خدمة العملاء"
   );
   const [showReturnFees, setShowReturnFees] = useState(true);
+  const [returnFeesAmount, setReturnFeesAmount] = useState<number>(0);
+  const [returnFeesCurrency, setReturnFeesCurrency] = useState("SAR");
+  const [returnPolicyText, setReturnPolicyText] = useState("");
+  const [showReturnPolicy, setShowReturnPolicy] = useState(true);
+  const [contactEmail, setContactEmail] = useState("");
+  const [contactPhone, setContactPhone] = useState("");
+  const [showContactInPage, setShowContactInPage] = useState(true);
   const [showEmailPreview, setShowEmailPreview] = useState(false);
   const [previewEmailType, setPreviewEmailType] = useState("confirmation");
+
+  const logoFileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const { data: customerData, isLoading: isReplacementSettingsLoading } = useGetCustomerMeQuery();
+  const [updateReplacementPageSettings, { isLoading: isSavingReplacement }] = useUpdateReplacementPageSettingsMutation();
+  const [updateCustomerMe, { isLoading: isUploadingLogo }] = useUpdateCustomerMeMutation();
+  const replacementPageSlug = customerData?.data?.replacementPageSlug ?? null;
+
+  // تحميل إعدادات تخصيص صفحة الاستبدال من الباكند
+  React.useEffect(() => {
+    const s = customerData?.data?.replacementPageSettings;
+    if (!s) return;
+    if (s.primaryColor != null) setPrimaryColor(s.primaryColor);
+    if (s.secondaryColor != null) setSecondaryColor(s.secondaryColor);
+    if (s.textColor != null) setTextColor(s.textColor);
+    if (s.logoUrl != null) setLogoUrl(s.logoUrl);
+    if (s.headerText != null) setHeaderText(s.headerText);
+    if (s.subheaderText != null) setSubheaderText(s.subheaderText);
+    if (s.buttonText != null) setButtonText(s.buttonText);
+    if (s.successMessage != null) setSuccessMessage(s.successMessage);
+    if (s.showOrderNumber != null) setShowOrderNumber(s.showOrderNumber);
+    if (s.showProductSelection != null) setShowProductSelection(s.showProductSelection);
+    if (s.showReasonField != null) setShowReasonField(s.showReasonField);
+    if (s.showAttachments != null) setShowAttachments(s.showAttachments);
+    if (s.showContactInfo != null) setShowContactInfo(s.showContactInfo);
+    if (s.showReturnAddress != null) setShowReturnAddress(s.showReturnAddress);
+    if (s.language != null) setLanguage(s.language);
+    if (s.template != null) setTemplate(s.template);
+    if (s.showEmailTemplates != null) setShowEmailTemplates(s.showEmailTemplates);
+    if (s.showReturnFees != null) setShowReturnFees(s.showReturnFees);
+    if (s.returnFeesAmount != null) setReturnFeesAmount(Number(s.returnFeesAmount));
+    if (s.returnFeesCurrency != null) setReturnFeesCurrency(s.returnFeesCurrency);
+    if (s.returnPolicyText != null) setReturnPolicyText(s.returnPolicyText);
+    if (s.showReturnPolicy != null) setShowReturnPolicy(s.showReturnPolicy);
+    if (s.contactEmail != null) setContactEmail(s.contactEmail);
+    if (s.contactPhone != null) setContactPhone(s.contactPhone);
+    if (s.showContactInPage != null) setShowContactInPage(s.showContactInPage);
+    if (s.confirmationEmailSubject != null) setConfirmationEmailSubject(s.confirmationEmailSubject);
+    if (s.confirmationEmailBody != null) setConfirmationEmailBody(s.confirmationEmailBody);
+    if (s.approvalEmailSubject != null) setApprovalEmailSubject(s.approvalEmailSubject);
+    if (s.approvalEmailBody != null) setApprovalEmailBody(s.approvalEmailBody);
+    if (s.rejectionEmailSubject != null) setRejectionEmailSubject(s.rejectionEmailSubject);
+    if (s.rejectionEmailBody != null) setRejectionEmailBody(s.rejectionEmailBody);
+  }, [customerData?.data?.replacementPageSettings]);
 
   // بيانات عناوين الالتقاط من صفحة إنشاء الشحنة
   const pickupAddresses = [
@@ -363,20 +415,132 @@ export default function Returns() {
     },
   ];
 
-  // حفظ التغييرات
-  const handleSave = () => {
-    setIsSaved(true);
-    setTimeout(() => setIsSaved(false), 3000);
+  const { toast } = useToast();
+
+  // حفظ التغييرات في الباكند
+  const handleSave = async () => {
+    try {
+      await updateReplacementPageSettings({
+        primaryColor,
+        secondaryColor,
+        textColor,
+        logoUrl,
+        headerText,
+        subheaderText,
+        buttonText,
+        successMessage,
+        showOrderNumber,
+        showProductSelection,
+        showReasonField,
+        showAttachments,
+        showContactInfo,
+        showReturnAddress,
+        language,
+        template,
+        showEmailTemplates,
+        showReturnFees,
+        returnFeesAmount,
+        returnFeesCurrency,
+        returnPolicyText,
+        showReturnPolicy,
+        contactEmail,
+        contactPhone,
+        showContactInPage,
+        confirmationEmailSubject,
+        confirmationEmailBody,
+        approvalEmailSubject,
+        approvalEmailBody,
+        rejectionEmailSubject,
+        rejectionEmailBody,
+      }).unwrap();
+      setIsSaved(true);
+      setTimeout(() => setIsSaved(false), 3000);
+      toast({ title: "تم الحفظ بنجاح", description: "تم حفظ تخصيص صفحة الاستبدال" });
+    } catch (err: unknown) {
+      const message = (err as { data?: { message?: string } })?.data?.message || "فشل حفظ الإعدادات";
+      toast({ title: "خطأ في الحفظ", description: message, variant: "destructive" });
+    }
   };
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "خطأ", description: "يرجى اختيار ملف صورة صالح", variant: "destructive" });
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "خطأ", description: "حجم الصورة كبير جداً (الحد 5 ميجا)", variant: "destructive" });
+      return;
+    }
+    const formData = new FormData();
+    formData.append("replacementPageLogo", file);
+    try {
+      const res = await updateCustomerMe(formData).unwrap();
+      const newLogoUrl = res?.data?.replacementPageSettings?.logoUrl;
+      if (newLogoUrl) setLogoUrl(newLogoUrl);
+      toast({ title: "تم رفع الشعار", description: "تم حفظ شعار صفحة الاستبدال" });
+    } catch (err: unknown) {
+      const msg = (err as { data?: { message?: string } })?.data?.message;
+      toast({ title: "خطأ", description: msg || "فشل رفع الشعار", variant: "destructive" });
+    }
+    e.target.value = "";
+  };
+
+  const handleRemoveLogo = async () => {
+    setLogoUrl("");
+    try {
+      await updateReplacementPageSettings({
+        primaryColor,
+        secondaryColor,
+        textColor,
+        logoUrl: "",
+        headerText,
+        subheaderText,
+        buttonText,
+        successMessage,
+        showOrderNumber,
+        showProductSelection,
+        showReasonField,
+        showAttachments,
+        showContactInfo,
+        showReturnAddress,
+        language,
+        template,
+        showEmailTemplates,
+        showReturnFees,
+        returnFeesAmount,
+        returnFeesCurrency,
+        returnPolicyText,
+        showReturnPolicy,
+        contactEmail,
+        contactPhone,
+        showContactInPage,
+        confirmationEmailSubject,
+        confirmationEmailBody,
+        approvalEmailSubject,
+        approvalEmailBody,
+        rejectionEmailSubject,
+        rejectionEmailBody,
+      }).unwrap();
+      toast({ title: "تم إزالة الشعار", description: "تم حذف شعار صفحة الاستبدال" });
+    } catch {
+      toast({ title: "خطأ", description: "فشل إزالة الشعار", variant: "destructive" });
+    }
+  };
+
+  const publicReplacementUrl = replacementPageSlug
+    ? `${typeof window !== "undefined" ? window.location.origin : ""}/customer-replacement?token=${replacementPageSlug}`
+    : "";
 
   // نسخ كود التضمين
   const copyEmbedCode = () => {
-    const code = `<iframe src="${
-      window.location.origin
-    }/customer-replacement?token=YOUR_TOKEN&theme=${encodeURIComponent(
+    const tokenOrSlug = replacementPageSlug || "YOUR_TOKEN";
+    const code = `<iframe src="${window.location.origin}/customer-replacement?token=${tokenOrSlug}&theme=${encodeURIComponent(
       primaryColor
     )}" width="100%" height="600" frameborder="0"></iframe>`;
     navigator.clipboard.writeText(code);
+    toast({ title: "تم النسخ", description: "تم نسخ كود التضمين" });
   };
 
   // نسخ كود API
@@ -414,7 +578,7 @@ export default function Returns() {
         <div className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-base text-gry">إجمالي الأستبدالات</p>
+              <p className="text-base text-gry">إجمالي الاستبدالات</p>
               <h3 className="text-3xl font-bold text-[#294D8B]">{total}</h3>
             </div>
             <div className="v7-neu-icon-lg">
@@ -428,7 +592,7 @@ export default function Returns() {
         <div className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-base text-gry"> قيد المراجعة</p>
+              <p className="text-base text-gry">الاستبدالات المقبولة</p>
               <h3 className="text-3xl font-bold text-[#2ecc71]">{approved}</h3>
             </div>
             <div className="v7-neu-icon-lg">
@@ -442,7 +606,7 @@ export default function Returns() {
         <div className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-base text-gry"> تمت الموافقة</p>
+              <p className="text-base text-gry">قيد المراجعة</p>
               <h3 className="text-3xl font-bold text-[#f39c12]">{pending}</h3>
             </div>
             <div className="v7-neu-icon-lg">
@@ -484,12 +648,17 @@ export default function Returns() {
     return matchesSearch && matchesStatus && matchesType;
   });
 
-  // عرض صفحة تخصيص الاستبدال
+  // عرض صفحة تخصيص الاستبدال (مرتبطة بالباكند: تحميل من replacementPageSettings وحفظ عبر updateReplacementPageSettings)
   if (showCustomizeOptions) {
     return (
       <V7Layout>
         <V7Content>
           <div className="space-y-6 pb-20">
+            {isReplacementSettingsLoading && (
+              <div className="flex items-center justify-center py-8 text-sm text-gray-500">
+                جاري تحميل إعدادات صفحة الاستبدال...
+              </div>
+            )}
             {/* رأس الصفحة */}
             <div className="flex items-center justify-between">
               <div>
@@ -514,9 +683,12 @@ export default function Returns() {
               <div className="flex items-center gap-2">
                 <Button
                   className="v7-neu-button gap-1 text-sm"
-                  onClick={() =>
-                    window.open("/customer-replacement?preview=true", "_blank")
-                  }
+                  onClick={() => {
+                    const params = new URLSearchParams();
+                    params.set("preview", "true");
+                    if (replacementPageSlug) params.set("token", replacementPageSlug);
+                    window.open(`/customer-replacement?${params.toString()}`, "_blank");
+                  }}
                 >
                   <Eye className="h-4 w-4" />
                   <span>معاينة</span>
@@ -524,13 +696,14 @@ export default function Returns() {
                 <Button
                   className="v7-neu-button-active gap-1 text-sm"
                   onClick={handleSave}
+                  disabled={isSavingReplacement}
                 >
                   {isSaved ? (
                     <Check className="h-4 w-4" />
                   ) : (
                     <Save className="h-4 w-4" />
                   )}
-                  <span>{isSaved ? "تم الحفظ" : "حفظ التغييرات"}</span>
+                  <span>{isSavingReplacement ? "جاري الحفظ..." : isSaved ? "تم الحفظ" : "حفظ التغييرات"}</span>
                 </Button>
               </div>
             </div>
@@ -627,23 +800,39 @@ export default function Returns() {
                     <div className="v7-neu-card p-6 rounded-xl">
                       <h3 className="text-lg font-medium mb-4">الشعار</h3>
                       <div className="space-y-4">
+                        <input
+                          ref={logoFileInputRef}
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={handleLogoUpload}
+                        />
                         <div className="border rounded-lg p-4 flex items-center justify-center">
                           <Image
-                            src={logoUrl || "/placeholder.svg"}
+                            src={getImageUrl(logoUrl) || "/placeholder.svg"}
                             alt="شعار الشركة"
                             width={200}
                             height={60}
                             className="max-h-16 object-contain"
+                            unoptimized={logoUrl?.startsWith("http") || logoUrl?.startsWith("blob")}
                           />
                         </div>
                         <div className="flex items-center gap-2">
-                          <Button className="v7-neu-button gap-1 text-sm">
+                          <Button
+                            type="button"
+                            className="v7-neu-button gap-1 text-sm"
+                            onClick={() => logoFileInputRef.current?.click()}
+                            disabled={isUploadingLogo}
+                          >
                             <Upload className="h-4 w-4" />
-                            <span>تحميل شعار</span>
+                            <span>{isUploadingLogo ? "جاري الرفع..." : "تحميل شعار"}</span>
                           </Button>
                           <Button
+                            type="button"
                             variant="outline"
                             className="v7-neu-button-flat gap-1 text-sm"
+                            onClick={handleRemoveLogo}
+                            disabled={!logoUrl || isSavingReplacement}
                           >
                             إزالة
                           </Button>
@@ -774,9 +963,10 @@ export default function Returns() {
                                 type="number"
                                 placeholder="0.00"
                                 className="w-full"
-                                defaultValue="0"
+                                value={returnFeesAmount || ""}
+                                onChange={(e) => setReturnFeesAmount(Number(e.target.value) || 0)}
                               />
-                              <Select defaultValue="SAR">
+                              <Select value={returnFeesCurrency} onValueChange={setReturnFeesCurrency}>
                                 <SelectTrigger className="w-24 flex items-center gap-2">
                                   <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -818,14 +1008,20 @@ export default function Returns() {
                             id="returnPolicy"
                             className="w-full"
                             rows={6}
-                            defaultValue="يمكن استبدال المنتجات خلال 14 يومًا من تاريخ الاستلام في حالة وجود عيوب مصنعية أو عدم مطابقة المنتج للوصف. يجب أن يكون المنتج في حالته الأصلية مع جميع الملحقات والتغليف. لا يمكن استبدال المنتجات المخصصة أو التي تم فتحها إلا في حالة وجود عيوب."
+                            value={returnPolicyText}
+                            onChange={(e) => setReturnPolicyText(e.target.value)}
+                            placeholder="يمكن استبدال المنتجات خلال 14 يومًا من تاريخ الاستلام..."
                           />
                         </div>
                         <div className="flex items-center justify-between">
                           <Label htmlFor="showPolicy" className="text-sm">
                             عرض سياسة الاستبدال في الصفحة
                           </Label>
-                          <Switch id="showPolicy" defaultChecked />
+                          <Switch
+                            id="showPolicy"
+                            checked={showReturnPolicy}
+                            onCheckedChange={setShowReturnPolicy}
+                          />
                         </div>
                       </div>
                     </div>
@@ -843,7 +1039,9 @@ export default function Returns() {
                             id="contactEmail"
                             type="email"
                             className="w-full"
-                            defaultValue="support@yourcompany.com"
+                            value={contactEmail}
+                            onChange={(e) => setContactEmail(e.target.value)}
+                            placeholder="support@yourcompany.com"
                           />
                         </div>
                         <div className="space-y-2">
@@ -853,14 +1051,20 @@ export default function Returns() {
                           <Input
                             id="contactPhone"
                             className="w-full"
-                            defaultValue="+966 55 555 5555"
+                            value={contactPhone}
+                            onChange={(e) => setContactPhone(e.target.value)}
+                            placeholder="+966 55 555 5555"
                           />
                         </div>
                         <div className="flex items-center justify-between">
                           <Label htmlFor="showContact" className="text-sm">
                             عرض معلومات الاتصال في الصفحة
                           </Label>
-                          <Switch id="showContact" defaultChecked />
+                          <Switch
+                            id="showContact"
+                            checked={showContactInPage}
+                            onCheckedChange={setShowContactInPage}
+                          />
                         </div>
                       </div>
                     </div>
@@ -1687,15 +1891,16 @@ export default function Returns() {
                           يمكنك تضمين صفحة الاستبدال في موقعك الإلكتروني باستخدام
                           الكود التالي
                         </p>
+                        {!replacementPageSlug && (
+                          <p className="text-sm text-amber-600 mb-2">
+                            احفظ التخصيص أولاً لإنشاء رابط فريد لصفحة الاستبدال.
+                          </p>
+                        )}
                         <div className="relative">
                           <Textarea
                             readOnly
                             className="w-full h-24 text-xs p-2 bg-slate-50 rounded border font-mono"
-                            value={`<iframe src="${
-                              window.location.origin
-                            }/customer-replacement?token=YOUR_TOKEN&theme=${encodeURIComponent(
-                              primaryColor
-                            )}" width="100%" height="600" frameborder="0"></iframe>`}
+                            value={replacementPageSlug ? `<iframe src="${window.location.origin}/customer-replacement?token=${replacementPageSlug}&theme=${encodeURIComponent(primaryColor)}" width="100%" height="600" frameborder="0"></iframe>` : `<iframe src="${window.location.origin}/customer-replacement?token=SLUG_AFTER_SAVE" width="100%" height="600" frameborder="0"></iframe>`}
                           />
                           <Button
                             variant="ghost"
@@ -1712,7 +1917,7 @@ export default function Returns() {
                             <Input
                               readOnly
                               className="w-80 text-xs"
-                              value={`${window.location.origin}/customer-replacement?token=YOUR_TOKEN`}
+                              value={publicReplacementUrl || `${window.location.origin}/customer-replacement?token=YOUR_TOKEN`}
                             />
                             <Button
                               variant="outline"
@@ -1908,7 +2113,7 @@ export default function Returns() {
                           <div className="flex flex-col items-center">
                             <div className="bg-gradient-to-r from-white/20 to-white/5 backdrop-blur-md p-2.5 rounded-xl shadow-lg border border-white/10 mb-4 transform hover:scale-105 transition-transform duration-300">
                               <Image
-                                src={logoUrl || "/placeholder.svg"}
+                                src={getImageUrl(logoUrl) || "/placeholder.svg"}
                                 alt="شعار الشركة"
                                 width={125}
                                 height={42}
@@ -1984,9 +2189,12 @@ export default function Returns() {
                     <div className="mt-6 flex justify-center">
                       <Button
                         className="bg-gradient-to-r from-[#294D8B] to-[#3a6fc7] hover:from-[#1a3c6f] hover:to-[#294D8B] text-white shadow-md hover:shadow-lg transition-all duration-300 gap-2 px-5 py-2 rounded-lg text-sm"
-                        onClick={() =>
-                          window.open("/customer-replacement?preview=true", "_blank")
-                        }
+                        onClick={() => {
+                          const params = new URLSearchParams();
+                          params.set("preview", "true");
+                          if (replacementPageSlug) params.set("token", replacementPageSlug);
+                          window.open(`/customer-replacement?${params.toString()}`, "_blank");
+                        }}
                       >
                         <Eye className="h-4 w-4" />
                         معاينة بالحجم الكامل

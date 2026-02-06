@@ -9,6 +9,7 @@ interface Shipment {
   type: string;
   requestNote: string;
   createdAt: string;
+  reqstatus?: 'pending' | 'yes' | 'no';
   shipment?: { company?: string };
 }
 
@@ -132,38 +133,52 @@ const ReturnsTable: React.FC<ReturnsTableProps> = ({
                 <td className="px-4 py-3 text-gry font-medium text-lg">{new Date(item.createdAt).toLocaleString('ar-EG')}</td>
                 <td className="px-4 py-3 text-gry font-medium text-lg">{item.shipment?.company || '-'}</td>
                 <td className="px-4 py-3">
-                  <div className="flex flex-row items-center gap-4 justify-end">
-                    <button
-                      className="flex items-center gap-1 text-green-600 font-bold text-lg px-3 py-2 rounded hover:bg-green-50 transition"
-                      disabled={isApproving}
-                      onClick={async () => {
-                        try {
-                          const res = await handleApproval({ returnRequestId: item._id, approve: 'true' }).unwrap();
-                          setApprovalResult({ status: 'success', message: res.message || 'تمت الموافقة بنجاح' });
-                        } catch (err: any) {
-                          setApprovalResult({ status: 'error', message: err?.data?.message || 'حدث خطأ أثناء الموافقة' });
-                        }
-                      }}
-                    >
-                      <CheckCircle className="h-5 w-5 ml-1" />
-                      موافقة
-                    </button>
-                    <button
-                      className="flex items-center gap-1 text-red-600 font-bold text-lg px-3 py-2 rounded hover:bg-red-50 transition"
-                      disabled={isApproving}
-                      onClick={async () => {
-                        try {
-                          const res = await handleApproval({ returnRequestId: item._id, approve: 'false' }).unwrap();
-                          setApprovalResult({ status: 'success', message: res.message || 'تم الرفض بنجاح' });
-                        } catch (err: any) {
-                          setApprovalResult({ status: 'error', message: err?.data?.message || 'حدث خطأ أثناء الرفض' });
-                        }
-                      }}
-                    >
-                      <XCircle className="h-5 w-5 ml-1 text-red-600" />
-                      رفض
-                    </button>
-                  </div>
+                  {item.reqstatus === 'no' && (
+                    <span className="inline-flex items-center gap-1 text-red-600 font-medium text-lg px-3 py-1.5 rounded-lg bg-red-50">
+                      <XCircle className="h-5 w-5" />
+                      مرفوضة
+                    </span>
+                  )}
+                  {item.reqstatus === 'yes' && (
+                    <span className="inline-flex items-center gap-1 text-green-600 font-medium text-lg px-3 py-1.5 rounded-lg bg-green-50">
+                      <CheckCircle className="h-5 w-5" />
+                      تم الموافقة
+                    </span>
+                  )}
+                  {item.reqstatus !== 'no' && item.reqstatus !== 'yes' && (
+                    <div className="flex flex-row items-center gap-4 justify-end">
+                      <button
+                        className="flex items-center gap-1 text-green-600 font-bold text-lg px-3 py-2 rounded hover:bg-green-50 transition"
+                        disabled={isApproving}
+                        onClick={async () => {
+                          try {
+                            const res = await handleApproval({ returnRequestId: item._id, approve: true }).unwrap();
+                            setApprovalResult({ status: 'success', message: res.message || 'تمت الموافقة بنجاح' });
+                          } catch (err: any) {
+                            setApprovalResult({ status: 'error', message: err?.data?.message || 'حدث خطأ أثناء الموافقة' });
+                          }
+                        }}
+                      >
+                        <CheckCircle className="h-5 w-5 ml-1" />
+                        موافقة
+                      </button>
+                      <button
+                        className="flex items-center gap-1 text-red-600 font-bold text-lg px-3 py-2 rounded hover:bg-red-50 transition"
+                        disabled={isApproving}
+                        onClick={async () => {
+                          try {
+                            const res = await handleApproval({ returnRequestId: item._id, approve: false }).unwrap();
+                            setApprovalResult({ status: 'success', message: res.message || 'تم الرفض بنجاح' });
+                          } catch (err: any) {
+                            setApprovalResult({ status: 'error', message: err?.data?.message || 'حدث خطأ أثناء الرفض' });
+                          }
+                        }}
+                      >
+                        <XCircle className="h-5 w-5 ml-1 text-red-600" />
+                        رفض
+                      </button>
+                    </div>
+                  )}
                 </td>
               </tr>
             ))}

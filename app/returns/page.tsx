@@ -52,6 +52,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useGetShipmentsQuery } from '../api/getReturnOrExchangeShipmentsApi';
+import type { ReturnOrExchangeData } from '../api/getReturnOrExchangeShipmentsApi';
 import { useHandleApprovalMutation } from '../api/handleReturnApprovalApi';
 import { useGetCustomerMeQuery, useUpdateReturnPageSettingsMutation, useUpdateCustomerMeMutation } from '@/app/api/customerApi';
 import { getImageUrl } from '@/lib/constants';
@@ -217,12 +218,12 @@ export default function Returns() {
   const [approvalResult, setApprovalResult] = useState<{ status: 'success' | 'error', message: string } | null>(null);
 
 
-  // Calculate stats for cards dynamically from API data
-  const total = shipmentsData?.data?.length ?? 0;
-  // The API data does not include status, so we cannot calculate pending/approved/rejected counts
-  const pending = 0;
-  const approved = 0;
-  const rejected = 0;
+  // Calculate stats for cards dynamically from API data (reqstatus: pending | yes | no)
+  const list: ReturnOrExchangeData[] = shipmentsData?.data ?? [];
+  const total = list.length;
+  const pending = list.filter((r) => r.reqstatus === "pending").length;
+  const approved = list.filter((r) => r.reqstatus === "yes").length;
+  const rejected = list.filter((r) => r.reqstatus === "no").length;
 
   // Función para manejar acciones في مجموعة
   const handleBulkAction = (action: string) => {
@@ -709,7 +710,11 @@ export default function Returns() {
               <div className="flex items-center gap-2">
                 <Button
                   className="v7-neu-button gap-1 text-sm"
-                  onClick={() => window.open("/customer-return?preview=true", "_blank")}
+                  onClick={() => {
+                    const params = new URLSearchParams({ preview: "true" })
+                    if (returnPageSlug) params.set("token", returnPageSlug)
+                    window.open(`/customer-return?${params.toString()}`, "_blank")
+                  }}
                 >
                   <Eye className="h-4 w-4" />
                   <span>معاينة</span>
@@ -1961,7 +1966,11 @@ export default function Returns() {
                     <div className="mt-6 flex justify-center">
                       <Button
                         className="bg-gradient-to-r from-[#294D8B] to-[#3a6fc7] hover:from-[#1a3c6f] hover:to-[#294D8B] text-white shadow-md hover:shadow-lg transition-all duration-300 gap-2 px-5 py-2 rounded-lg text-sm"
-                        onClick={() => window.open("/customer-return?preview=true", "_blank")}
+                        onClick={() => {
+                          const params = new URLSearchParams({ preview: "true" })
+                          if (returnPageSlug) params.set("token", returnPageSlug)
+                          window.open(`/customer-return?${params.toString()}`, "_blank")
+                        }}
                       >
                         <Eye className="h-4 w-4" />
                         معاينة بالحجم الكامل

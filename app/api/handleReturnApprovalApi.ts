@@ -3,7 +3,7 @@ import { baseQueryWithTokenErrorHandling } from './customBaseQuery';
 
 export interface HandleReturnApprovalRequest {
   returnRequestId: string;
-  approve: string;
+  approve: boolean | string;
 }
 
 export interface HandleReturnApprovalResponse {
@@ -15,6 +15,7 @@ export interface HandleReturnApprovalResponse {
 export const handleReturnApprovalApi = createApi({
   reducerPath: 'handleReturnApprovalApi',
   baseQuery: baseQueryWithTokenErrorHandling,
+  tagTypes: ['ReturnShipments'],
   endpoints: (builder) => ({
     handleApproval: builder.mutation<HandleReturnApprovalResponse, HandleReturnApprovalRequest>({
       query: (body) => ({
@@ -23,6 +24,7 @@ export const handleReturnApprovalApi = createApi({
         body,
         credentials: 'include',
       }),
+      invalidatesTags: ['ReturnShipments'],
     }),
   }),
 });
