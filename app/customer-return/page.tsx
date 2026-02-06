@@ -8,13 +8,25 @@ import { getImageUrl } from "@/lib/constants"
 
 const DEFAULT_PRIMARY = "#294D8B"
 
-type PageConfig = {
+export type PageConfig = {
   primaryColor?: string
   logoUrl?: string
   headerText?: string
   subheaderText?: string
   textColor?: string
   secondaryColor?: string
+  buttonText?: string
+  successMessage?: string
+  showReturnFees?: boolean
+  returnFeesAmount?: number
+  returnFeesCurrency?: string
+  returnPolicyText?: string
+  showReturnPolicy?: boolean
+  contactEmail?: string
+  contactPhone?: string
+  showContactInPage?: boolean
+  returnReasons?: string[]
+  returnAddresses?: { id: string; name: string; city?: string; district?: string; address?: string; phone?: string; email?: string }[]
 } | null
 
 export default function CustomerReturn() {
@@ -67,56 +79,69 @@ export default function CustomerReturn() {
             )}
           </div>
 
-          <CustomerReturnForm merchantToken={token} />
+          <CustomerReturnForm merchantToken={token} pageConfig={pageConfig} returnReasons={pageConfig?.returnReasons} returnAddresses={pageConfig?.returnAddresses} />
 
-          <div className="mt-8 v7-neu-card p-4 rounded-xl bg-blue-50/30">
-            <h3 className="font-medium mb-2 flex items-center gap-2">
-              <span className="text-blue-600">
-                <Info className="w-5 h-5" />
-              </span>
-              هل تحتاج للمساعدة؟
-            </h3>
-            <p className="text-sm text-gray-600">
-              إذا كنت تواجه أي مشكلة في عملية الإرجاع، يرجى التواصل مع فريق خدمة العملاء على الرقم
-              <a href="tel:920001234" className="text-blue-600 mx-1 font-medium">
-                920001234
-              </a>
-              أو عبر البريد الإلكتروني
-              <a href="mailto:support@shipline.com" className="text-blue-600 mx-1 font-medium">
-                support@shipline.com
-              </a>
-            </p>
-          </div>
+          {pageConfig?.showContactInPage !== false && (pageConfig?.contactEmail || pageConfig?.contactPhone) && (
+            <div className="mt-8 v7-neu-card p-4 rounded-xl bg-blue-50/30">
+              <h3 className="font-medium mb-2 flex items-center gap-2">
+                <span className="text-blue-600">
+                  <Info className="w-5 h-5" />
+                </span>
+                هل تحتاج للمساعدة؟
+              </h3>
+              <p className="text-sm text-gray-600">
+                إذا كنت تواجه أي مشكلة في عملية الإرجاع، يرجى التواصل مع فريق خدمة العملاء
+                {pageConfig.contactPhone && (
+                  <>
+                    {" على الرقم "}
+                    <a href={`tel:${pageConfig.contactPhone.replace(/\s/g, "")}`} className="text-blue-600 mx-1 font-medium">
+                      {pageConfig.contactPhone}
+                    </a>
+                  </>
+                )}
+                {pageConfig.contactEmail && (
+                  <>
+                    {pageConfig.contactPhone ? " أو عبر البريد الإلكتروني " : " عبر البريد الإلكتروني "}
+                    <a href={`mailto:${pageConfig.contactEmail}`} className="text-blue-600 mx-1 font-medium">
+                      {pageConfig.contactEmail}
+                    </a>
+                  </>
+                )}
+                .
+              </p>
+            </div>
+          )}
 
-          <div className="mt-8 space-y-4">
-            <div className="v7-neu-card p-5 rounded-xl bg-blue-50/30">
+          {pageConfig?.showReturnPolicy !== false && pageConfig?.returnPolicyText && (
+            <div className="mt-8 v7-neu-card p-5 rounded-xl bg-blue-50/30">
               <h3 className="font-medium mb-3 flex items-center gap-2 text-lg">
                 <span className="text-blue-600">
                   <Info className="w-5 h-5" />
                 </span>
-                دليل إرجاع المنتجات
+                سياسة الإرجاع
               </h3>
-              <div className="space-y-3 text-sm text-gray-600">
-                <p className="font-medium text-gray-700">شروط إرجاع المنتجات:</p>
-                <ul className="list-disc list-inside space-y-1 pr-4">
-                  <li>يجب أن يكون المنتج في حالته الأصلية وبدون استخدام</li>
-                  <li>يجب الاحتفاظ بجميع الملصقات والعلامات الأصلية</li>
-                  <li>يجب إرفاق فاتورة الشراء أو إثبات الشراء</li>
-                  <li>يجب تقديم طلب الإرجاع خلال 14 يوم من تاريخ الاستلام</li>
-                  <li>لا يمكن إرجاع المنتجات المخصصة أو المصنوعة حسب الطلب</li>
-                </ul>
-
-                <p className="font-medium text-gray-700 mt-4">خطوات إرجاع المنتج:</p>
-                <ol className="list-decimal list-inside space-y-1 pr-4">
-                  <li>تعبئة نموذج طلب الإرجاع</li>
-                  <li>انتظار الموافقة على طلب الإرجاع</li>
-                  <li>تغليف المنتج بشكل آمن مع إرفاق ملصق الإرجاع</li>
-                  <li>إرسال المنتج عبر إحدى طرق الإرجاع المتاحة</li>
-                  <li>استلام تأكيد استلام المنتج المرتجع</li>
-                  <li>استرداد المبلغ أو استبدال المنتج حسب الاختيار</li>
-                </ol>
-              </div>
+              <div className="text-sm text-gray-600 whitespace-pre-wrap">{pageConfig.returnPolicyText}</div>
             </div>
+          )}
+
+          {pageConfig?.showReturnFees && (pageConfig?.returnFeesAmount ?? 0) > 0 && (
+            <div className="mt-8 v7-neu-card p-4 rounded-xl bg-amber-50/50 border border-amber-200/50">
+              <h3 className="font-medium mb-1 flex items-center gap-2 text-amber-800">
+                <Info className="w-5 h-5" />
+                رسوم الإرجاع
+              </h3>
+              <p className="text-sm text-amber-800">
+                قد تُطبق رسوم إرجاع قدرها{" "}
+                <span className="font-semibold">
+                  {pageConfig.returnFeesAmount}{" "}
+                  {pageConfig.returnFeesCurrency === "SAR" ? "ر.س" : pageConfig.returnFeesCurrency === "USD" ? "$" : pageConfig.returnFeesCurrency === "EUR" ? "€" : pageConfig.returnFeesCurrency || "ر.س"}
+                </span>
+                .
+              </p>
+            </div>
+          )}
+
+          <div className="mt-8 space-y-4">
 
             <div className="v7-neu-card p-5 rounded-xl bg-green-50/30">
               <h3 className="font-medium mb-3 flex items-center gap-2 text-lg">

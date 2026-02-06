@@ -45,10 +45,35 @@ export interface ShipmentOption {
   [key: string]: unknown;
 }
 
+/** حقول المحتوى القادمة من تخصيص صفحة الإرجاع (الباكند) */
+export interface ReturnPageContentConfig {
+  buttonText?: string
+  successMessage?: string
+  showReturnFees?: boolean
+  returnFeesAmount?: number
+  returnFeesCurrency?: string
+}
+
+export interface ReturnAddressOption {
+  id: string
+  name: string
+  city?: string
+  district?: string
+  address?: string
+  phone?: string
+  email?: string
+}
+
 interface CustomerReturnFormProps {
   mode?: "return" | "replacement"
   /** رمز التاجر من الرابط (token) - إن وُجد تُستخدم الـ API العامة */
   merchantToken?: string | null
+  /** إعدادات المحتوى من صفحة التخصيص (صفحة العميل تجلبها من الباكند) */
+  pageConfig?: ReturnPageContentConfig | null
+  /** أسباب الإرجاع المتاحة (من تبويب الحقول) */
+  returnReasons?: string[] | null
+  /** عناوين الإرجاع المتاحة (من تبويب الحقول) */
+  returnAddresses?: ReturnAddressOption[] | null
 }
 
 const RETURN_LABELS = {
@@ -100,10 +125,14 @@ const RETURN_LABELS = {
   },
 }
 
-export function CustomerReturnForm({ mode = "return", merchantToken }: CustomerReturnFormProps) {
+const DEFAULT_REASON_OPTIONS = ["منتج تالف", "غير مطابق للوصف", "الحجم غير مناسب", "اللون غير مناسب", "سبب آخر"]
+
+export function CustomerReturnForm({ mode = "return", merchantToken, pageConfig, returnReasons, returnAddresses }: CustomerReturnFormProps) {
   const router = useRouter()
   const t = RETURN_LABELS[mode]
   const usePublicApi = Boolean(merchantToken?.trim())
+  const successMsg = pageConfig?.successMessage ?? t.successDesc
+  const reasonOptions = returnReasons && returnReasons.length > 0 ? returnReasons : DEFAULT_REASON_OPTIONS
 
   const [returnType, setReturnType] = useState("product")
   const [formStep, setFormStep] = useState(1)
@@ -268,7 +297,7 @@ export function CustomerReturnForm({ mode = "return", merchantToken }: CustomerR
         </div>
         <h2 className="text-2xl font-bold mb-2">{t.successTitle}</h2>
         <p className="text-gray-600 mb-6">
-          {t.successDesc}
+          {successMsg}
         </p>
         <div className="v7-neu-card p-4 rounded-xl mb-6 bg-blue-50/50">
           <p className="font-medium text-lg mb-1">{t.requestNumber}: {successRequestNumber || "#—"}</p>
@@ -695,11 +724,11 @@ export function CustomerReturnForm({ mode = "return", merchantToken }: CustomerR
                       <option value="" disabled>
                         اختر {t.reason}
                       </option>
-                      <option value="damaged">منتج تالف</option>
-                      <option value="wrong_item">منتج خاطئ</option>
-                      <option value="not_as_described">غير مطابق للوصف</option>
-                      <option value="changed_mind">تغيير الرأي</option>
-                      <option value="other">سبب آخر</option>
+                      {reasonOptions.map((opt) => (
+                        <option key={opt} value={opt}>
+                          {opt}
+                        </option>
+                      ))}
                     </select>
                   </div>
 
@@ -817,9 +846,7 @@ export function CustomerReturnForm({ mode = "return", merchantToken }: CustomerR
                 >
                   {loading
                     ? "جاري التقديم..."
-                    : returnType === "product"
-                      ? t.submitProduct
-                      : t.submitWaybill}
+                    : (pageConfig?.buttonText ?? (returnType === "product" ? t.submitProduct : t.submitWaybill))}
                 </button>
               </div>
             </div>

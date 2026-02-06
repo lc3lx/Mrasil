@@ -62,12 +62,35 @@ export interface ReturnOrReplacementPageSettings {
   template?: string;
   showEmailTemplates?: boolean;
   showReturnFees?: boolean;
+  returnFeesAmount?: number;
+  returnFeesCurrency?: string;
+  returnPolicyText?: string;
+  showReturnPolicy?: boolean;
+  contactEmail?: string;
+  contactPhone?: string;
+  showContactInPage?: boolean;
   confirmationEmailSubject?: string;
   confirmationEmailBody?: string;
   approvalEmailSubject?: string;
   approvalEmailBody?: string;
   rejectionEmailSubject?: string;
   rejectionEmailBody?: string;
+  /** حقول النموذج - مطلوب */
+  orderRequired?: boolean;
+  productRequired?: boolean;
+  reasonRequired?: boolean;
+  attachmentsRequired?: boolean;
+  contactInfoRequired?: boolean;
+  returnAddressRequired?: boolean;
+  /** أسباب الإرجاع المتاحة (قائمة قابلة للتخصيص) */
+  returnReasons?: string[];
+  /** عناوين الإرجاع المتاحة */
+  returnAddresses?: { id: string; name: string; city?: string; district?: string; address?: string; phone?: string; email?: string }[];
+  /** الإعدادات المتقدمة */
+  verifyOrderNumber?: boolean;
+  verifyReturnPeriod?: boolean;
+  emailNotifications?: boolean;
+  smsNotifications?: boolean;
 }
 
 export interface Customer {
@@ -102,6 +125,8 @@ export interface Customer {
   trackingSettings?: TrackingSettings;
   returnPageSettings?: ReturnOrReplacementPageSettings;
   replacementPageSettings?: ReturnOrReplacementPageSettings;
+  /** رابط فريد لصفحة الاسترجاع للعملاء غير المسجلين */
+  returnPageSlug?: string | null;
 }
 
 export interface CustomerResponse {

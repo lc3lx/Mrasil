@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import V7Layout from "@/components/v7/v7-layout"
@@ -53,7 +53,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useGetShipmentsQuery } from '../api/getReturnOrExchangeShipmentsApi';
 import { useHandleApprovalMutation } from '../api/handleReturnApprovalApi';
-import { useGetCustomerMeQuery, useUpdateReturnPageSettingsMutation } from '@/app/api/customerApi';
+import { useGetCustomerMeQuery, useUpdateReturnPageSettingsMutation, useUpdateCustomerMeMutation } from '@/app/api/customerApi';
+import { getImageUrl } from '@/lib/constants';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogAction } from '@/components/ui/alert-dialog';
@@ -203,6 +204,8 @@ export default function Returns() {
   const { toast } = useToast();
   const { data: customerData } = useGetCustomerMeQuery();
   const [updateReturnPageSettings, { isLoading: isSavingReturn }] = useUpdateReturnPageSettingsMutation();
+  const [updateCustomerMe, { isLoading: isUploadingLogo }] = useUpdateCustomerMeMutation();
+  const logoFileInputRef = useRef<HTMLInputElement>(null);
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const { data: shipmentsData, isLoading: isShipmentsLoading, error: shipmentsError } = useGetShipmentsQuery({
@@ -213,8 +216,6 @@ export default function Returns() {
   const [handleApproval, { isLoading: isApproving }] = useHandleApprovalMutation();
   const [approvalResult, setApprovalResult] = useState<{ status: 'success' | 'error', message: string } | null>(null);
 
-  // Log API data to verify status field
-  console.log('shipmentsData', shipmentsData?.data);
 
   // Calculate stats for cards dynamically from API data
   const total = shipmentsData?.data?.length ?? 0;
@@ -306,10 +307,40 @@ export default function Returns() {
     "عزيزي العميل،\n\nنأسف لإبلاغك بأنه لم تتم الموافقة على طلب الإرجاع الخاص بك رقم {{return_number}} للسبب التالي:\n\n{{rejection_reason}}\n\nيرجى التواصل مع خدمة العملاء للمزيد من المعلومات.\n\nشكراً لتعاملك معنا،\nفريق خدمة العملاء",
   )
   const [showReturnFees, setShowReturnFees] = useState(true)
+  const [returnFeesAmount, setReturnFeesAmount] = useState<number>(0)
+  const [returnFeesCurrency, setReturnFeesCurrency] = useState("SAR")
+  const [returnPolicyText, setReturnPolicyText] = useState(
+    "يمكن إرجاع المنتجات خلال 14 يومًا من تاريخ الاستلام في حالة وجود عيوب مصنعية أو عدم مطابقة المنتج للوصف. يجب أن يكون المنتج في حالته الأصلية مع جميع الملحقات والتغليف. لا يمكن إرجاع المنتجات المخصصة أو التي تم فتحها إلا في حالة وجود عيوب.",
+  )
+  const [showReturnPolicy, setShowReturnPolicy] = useState(true)
+  const [contactEmail, setContactEmail] = useState("support@yourcompany.com")
+  const [contactPhone, setContactPhone] = useState("+966 55 555 5555")
+  const [showContactInPage, setShowContactInPage] = useState(true)
   const [showEmailPreview, setShowEmailPreview] = useState(false)
   const [previewEmailType, setPreviewEmailType] = useState("confirmation")
 
-  // بيانات عناوين الالتقاط من صفحة إنشاء الشحنة
+  // تبويب الحقول: مطلوب + أسباب الإرجاع + عناوين الإرجاع + إعدادات متقدمة
+  const [orderRequired, setOrderRequired] = useState(true)
+  const [productRequired, setProductRequired] = useState(true)
+  const [reasonRequired, setReasonRequired] = useState(true)
+  const [attachmentsRequired, setAttachmentsRequired] = useState(false)
+  const [contactInfoRequired, setContactInfoRequired] = useState(true)
+  const [returnAddressRequired, setReturnAddressRequired] = useState(true)
+  const [returnReasons, setReturnReasons] = useState<string[]>([
+    "منتج تالف",
+    "غير مطابق للوصف",
+    "الحجم غير مناسب",
+    "اللون غير مناسب",
+  ])
+  const [newReasonInput, setNewReasonInput] = useState("")
+  type ReturnAddressItem = { id: string; name: string; city?: string; district?: string; address?: string; phone?: string; email?: string }
+  const [returnAddresses, setReturnAddresses] = useState<ReturnAddressItem[]>([])
+  const [verifyOrderNumber, setVerifyOrderNumber] = useState(true)
+  const [verifyReturnPeriod, setVerifyReturnPeriod] = useState(true)
+  const [emailNotifications, setEmailNotifications] = useState(true)
+  const [smsNotifications, setSmsNotifications] = useState(false)
+
+  // بيانات عناوين الالتقاط من صفحة إنشاء الشحنة (للاستيراد أو العرض)
   const pickupAddresses = [
     {
       id: 1,
@@ -362,12 +393,43 @@ export default function Returns() {
     if (s.template != null) setTemplate(s.template)
     if (s.showEmailTemplates != null) setShowEmailTemplates(s.showEmailTemplates)
     if (s.showReturnFees != null) setShowReturnFees(s.showReturnFees)
+    if (s.returnFeesAmount != null) setReturnFeesAmount(Number(s.returnFeesAmount))
+    if (s.returnFeesCurrency != null) setReturnFeesCurrency(s.returnFeesCurrency)
+    if (s.returnPolicyText != null) setReturnPolicyText(s.returnPolicyText)
+    if (s.showReturnPolicy != null) setShowReturnPolicy(s.showReturnPolicy)
+    if (s.contactEmail != null) setContactEmail(s.contactEmail)
+    if (s.contactPhone != null) setContactPhone(s.contactPhone)
+    if (s.showContactInPage != null) setShowContactInPage(s.showContactInPage)
     if (s.confirmationEmailSubject != null) setConfirmationEmailSubject(s.confirmationEmailSubject)
     if (s.confirmationEmailBody != null) setConfirmationEmailBody(s.confirmationEmailBody)
     if (s.approvalEmailSubject != null) setApprovalEmailSubject(s.approvalEmailSubject)
     if (s.approvalEmailBody != null) setApprovalEmailBody(s.approvalEmailBody)
     if (s.rejectionEmailSubject != null) setRejectionEmailSubject(s.rejectionEmailSubject)
     if (s.rejectionEmailBody != null) setRejectionEmailBody(s.rejectionEmailBody)
+    if (s.orderRequired != null) setOrderRequired(s.orderRequired)
+    if (s.productRequired != null) setProductRequired(s.productRequired)
+    if (s.reasonRequired != null) setReasonRequired(s.reasonRequired)
+    if (s.attachmentsRequired != null) setAttachmentsRequired(s.attachmentsRequired)
+    if (s.contactInfoRequired != null) setContactInfoRequired(s.contactInfoRequired)
+    if (s.returnAddressRequired != null) setReturnAddressRequired(s.returnAddressRequired)
+    if (Array.isArray(s.returnReasons) && s.returnReasons.length > 0) setReturnReasons(s.returnReasons)
+    if (Array.isArray(s.returnAddresses)) {
+      setReturnAddresses(
+        s.returnAddresses.map((a: ReturnAddressItem & { _id?: string }) => ({
+          id: a.id ?? a._id ?? `addr-${Math.random().toString(36).slice(2, 9)}`,
+          name: a.name ?? "",
+          city: a.city,
+          district: a.district,
+          address: a.address,
+          phone: a.phone,
+          email: a.email,
+        })),
+      )
+    }
+    if (s.verifyOrderNumber != null) setVerifyOrderNumber(s.verifyOrderNumber)
+    if (s.verifyReturnPeriod != null) setVerifyReturnPeriod(s.verifyReturnPeriod)
+    if (s.emailNotifications != null) setEmailNotifications(s.emailNotifications)
+    if (s.smsNotifications != null) setSmsNotifications(s.smsNotifications)
   }, [customerData?.data?.returnPageSettings])
 
   // حفظ التغييرات في الباكند
@@ -392,12 +454,31 @@ export default function Returns() {
         template,
         showEmailTemplates,
         showReturnFees,
+        returnFeesAmount,
+        returnFeesCurrency,
+        returnPolicyText,
+        showReturnPolicy,
+        contactEmail,
+        contactPhone,
+        showContactInPage,
         confirmationEmailSubject,
         confirmationEmailBody,
         approvalEmailSubject,
         approvalEmailBody,
         rejectionEmailSubject,
         rejectionEmailBody,
+        orderRequired,
+        productRequired,
+        reasonRequired,
+        attachmentsRequired,
+        contactInfoRequired,
+        returnAddressRequired,
+        returnReasons,
+        returnAddresses,
+        verifyOrderNumber,
+        verifyReturnPeriod,
+        emailNotifications,
+        smsNotifications,
       }).unwrap()
       setIsSaved(true)
       setTimeout(() => setIsSaved(false), 3000)
@@ -408,12 +489,95 @@ export default function Returns() {
     }
   }
 
-  // نسخ كود التضمين
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "خطأ", description: "يرجى اختيار ملف صورة صالح", variant: "destructive" })
+      return
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "خطأ", description: "حجم الصورة كبير جداً (الحد 5 ميجا)", variant: "destructive" })
+      return
+    }
+    const formData = new FormData()
+    formData.append("returnPageLogo", file)
+    try {
+      const res = await updateCustomerMe(formData).unwrap()
+      if (res?.data?.returnPageSettings?.logoUrl) setLogoUrl(res.data.returnPageSettings.logoUrl)
+      toast({ title: "تم رفع الشعار", description: "تم حفظ شعار صفحة الإرجاع" })
+    } catch {
+      toast({ title: "خطأ", description: "فشل رفع الشعار", variant: "destructive" })
+    }
+    e.target.value = ""
+  }
+
+  const handleRemoveLogo = async () => {
+    setLogoUrl("")
+    try {
+      await updateReturnPageSettings({
+        primaryColor,
+        secondaryColor,
+        textColor,
+        logoUrl: "",
+        headerText,
+        subheaderText,
+        buttonText,
+        successMessage,
+        showOrderNumber,
+        showProductSelection,
+        showReasonField,
+        showAttachments,
+        showContactInfo,
+        showReturnAddress,
+        language,
+        template,
+        showEmailTemplates,
+        showReturnFees,
+        returnFeesAmount,
+        returnFeesCurrency,
+        returnPolicyText,
+        showReturnPolicy,
+        contactEmail,
+        contactPhone,
+        showContactInPage,
+        confirmationEmailSubject,
+        confirmationEmailBody,
+        approvalEmailSubject,
+        approvalEmailBody,
+        rejectionEmailSubject,
+        rejectionEmailBody,
+        orderRequired,
+        productRequired,
+        reasonRequired,
+        attachmentsRequired,
+        contactInfoRequired,
+        returnAddressRequired,
+        returnReasons,
+        returnAddresses,
+        verifyOrderNumber,
+        verifyReturnPeriod,
+        emailNotifications,
+        smsNotifications,
+      }).unwrap()
+      toast({ title: "تم إزالة الشعار", description: "تم حذف شعار صفحة الإرجاع" })
+    } catch {
+      toast({ title: "خطأ", description: "فشل إزالة الشعار", variant: "destructive" })
+    }
+  }
+
+  const returnPageSlug = customerData?.data?.returnPageSlug ?? null
+  const publicReturnUrl = returnPageSlug
+    ? `${typeof window !== "undefined" ? window.location.origin : ""}/customer-return?token=${returnPageSlug}`
+    : ""
+
   const copyEmbedCode = () => {
-    const code = `<iframe src="${window.location.origin}/customer-return?token=YOUR_TOKEN&theme=${encodeURIComponent(
+    const tokenOrSlug = returnPageSlug || "YOUR_TOKEN"
+    const code = `<iframe src="${window.location.origin}/customer-return?token=${tokenOrSlug}&theme=${encodeURIComponent(
       primaryColor,
     )}" width="100%" height="600" frameborder="0"></iframe>`
     navigator.clipboard.writeText(code)
+    toast({ title: "تم النسخ", description: "تم نسخ كود التضمين" })
   }
 
   // نسخ كود API
@@ -641,21 +805,40 @@ export default function Returns() {
                     <div className="v7-neu-card p-6 rounded-xl">
                       <h3 className="text-lg font-medium mb-4">الشعار</h3>
                       <div className="space-y-4">
+                        <input
+                          ref={logoFileInputRef}
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={handleLogoUpload}
+                        />
                         <div className="border rounded-lg p-4 flex items-center justify-center">
                           <Image
-                            src={logoUrl || "/placeholder.svg"}
+                            src={getImageUrl(logoUrl) || "/placeholder.svg"}
                             alt="شعار الشركة"
                             width={200}
                             height={60}
                             className="max-h-16 object-contain"
+                            unoptimized={logoUrl?.startsWith("http") || logoUrl?.startsWith("blob")}
                           />
                         </div>
                         <div className="flex items-center gap-2">
-                          <Button className="v7-neu-button gap-1 text-sm">
+                          <Button
+                            type="button"
+                            className="v7-neu-button gap-1 text-sm"
+                            onClick={() => logoFileInputRef.current?.click()}
+                            disabled={isUploadingLogo}
+                          >
                             <Upload className="h-4 w-4" />
-                            <span>تحميل شعار</span>
+                            <span>{isUploadingLogo ? "جاري الرفع..." : "تحميل شعار"}</span>
                           </Button>
-                          <Button variant="outline" className="v7-neu-button-flat gap-1 text-sm">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="v7-neu-button-flat gap-1 text-sm"
+                            onClick={handleRemoveLogo}
+                            disabled={!logoUrl || isSavingReturn}
+                          >
                             إزالة
                           </Button>
                         </div>
@@ -776,9 +959,10 @@ export default function Returns() {
                                 type="number"
                                 placeholder="0.00"
                                 className="w-full"
-                                defaultValue="0"
+                                value={returnFeesAmount}
+                                onChange={(e) => setReturnFeesAmount(Number(e.target.value) || 0)}
                               />
-                              <Select defaultValue="SAR">
+                              <Select value={returnFeesCurrency} onValueChange={setReturnFeesCurrency}>
                                 <SelectTrigger className="w-24 flex items-center gap-2">
                                   <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -818,14 +1002,15 @@ export default function Returns() {
                             id="returnPolicy"
                             className="w-full"
                             rows={6}
-                            defaultValue="يمكن إرجاع المنتجات خلال 14 يومًا من تاريخ الاستلام في حالة وجود عيوب مصنعية أو عدم مطابقة المنتج للوصف. يجب أن يكون المنتج في حالته الأصلية مع جميع الملحقات والتغليف. لا يمكن إرجاع المنتجات المخصصة أو التي تم فتحها إلا في حالة وجود عيوب."
+                            value={returnPolicyText}
+                            onChange={(e) => setReturnPolicyText(e.target.value)}
                           />
                         </div>
                         <div className="flex items-center justify-between">
                           <Label htmlFor="showPolicy" className="text-sm">
                             عرض سياسة الإرجاع في الصفحة
                           </Label>
-                          <Switch id="showPolicy" defaultChecked />
+                          <Switch id="showPolicy" checked={showReturnPolicy} onCheckedChange={setShowReturnPolicy} />
                         </div>
                       </div>
                     </div>
@@ -841,20 +1026,26 @@ export default function Returns() {
                             id="contactEmail"
                             type="email"
                             className="w-full"
-                            defaultValue="support@yourcompany.com"
+                            value={contactEmail}
+                            onChange={(e) => setContactEmail(e.target.value)}
                           />
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="contactPhone" className="text-sm">
                             رقم هاتف الدعم
                           </Label>
-                          <Input id="contactPhone" className="w-full" defaultValue="+966 55 555 5555" />
+                          <Input
+                            id="contactPhone"
+                            className="w-full"
+                            value={contactPhone}
+                            onChange={(e) => setContactPhone(e.target.value)}
+                          />
                         </div>
                         <div className="flex items-center justify-between">
                           <Label htmlFor="showContact" className="text-sm">
                             عرض معلومات الاتصال في الصفحة
                           </Label>
-                          <Switch id="showContact" defaultChecked />
+                          <Switch id="showContact" checked={showContactInPage} onCheckedChange={setShowContactInPage} />
                         </div>
                       </div>
                     </div>
@@ -1201,7 +1392,7 @@ export default function Returns() {
                             <Label htmlFor="orderRequired" className="text-xs">
                               مطلوب
                             </Label>
-                            <Switch id="orderRequired" defaultChecked />
+                            <Switch id="orderRequired" checked={orderRequired} onCheckedChange={setOrderRequired} />
                             <Label htmlFor="showOrderNumber" className="text-xs">
                               تفعيل
                             </Label>
@@ -1221,7 +1412,7 @@ export default function Returns() {
                             <Label htmlFor="productRequired" className="text-xs">
                               مطلوب
                             </Label>
-                            <Switch id="productRequired" defaultChecked />
+                            <Switch id="productRequired" checked={productRequired} onCheckedChange={setProductRequired} />
                             <Label htmlFor="showProductSelection" className="text-xs">
                               تفعيل
                             </Label>
@@ -1241,7 +1432,7 @@ export default function Returns() {
                             <Label htmlFor="reasonRequired" className="text-xs">
                               مطلوب
                             </Label>
-                            <Switch id="reasonRequired" defaultChecked />
+                            <Switch id="reasonRequired" checked={reasonRequired} onCheckedChange={setReasonRequired} />
                             <Label htmlFor="showReasonField" className="text-xs">
                               تفعيل
                             </Label>
@@ -1261,7 +1452,7 @@ export default function Returns() {
                             <Label htmlFor="attachmentsRequired" className="text-xs">
                               مطلوب
                             </Label>
-                            <Switch id="attachmentsRequired" />
+                            <Switch id="attachmentsRequired" checked={attachmentsRequired} onCheckedChange={setAttachmentsRequired} />
                             <Label htmlFor="showAttachments" className="text-xs">
                               تفعيل
                             </Label>
@@ -1281,7 +1472,7 @@ export default function Returns() {
                             <Label htmlFor="contactInfoRequired" className="text-xs">
                               مطلوب
                             </Label>
-                            <Switch id="contactInfoRequired" defaultChecked />
+                            <Switch id="contactInfoRequired" checked={contactInfoRequired} onCheckedChange={setContactInfoRequired} />
                             <Label htmlFor="showContactInfo" className="text-xs">
                               تفعيل
                             </Label>
@@ -1301,7 +1492,7 @@ export default function Returns() {
                             <Label htmlFor="returnAddressRequired" className="text-xs">
                               مطلوب
                             </Label>
-                            <Switch id="returnAddressRequired" defaultChecked />
+                            <Switch id="returnAddressRequired" checked={returnAddressRequired} onCheckedChange={setReturnAddressRequired} />
                             <Label htmlFor="showReturnAddress" className="text-xs">
                               تفعيل
                             </Label>
@@ -1321,35 +1512,53 @@ export default function Returns() {
                         <div className="space-y-2">
                           <Label className="text-sm">أسباب الإرجاع المتاحة</Label>
                           <div className="border rounded-md p-2 space-y-2">
-                            <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                              <span className="text-sm">منتج تالف</span>
-                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                ×
-                              </Button>
-                            </div>
-                            <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                              <span className="text-sm">غير مطابق للوصف</span>
-                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                ×
-                              </Button>
-                            </div>
-                            <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                              <span className="text-sm">الحجم غير مناسب</span>
-                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                ×
-                              </Button>
-                            </div>
-                            <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                              <span className="text-sm">اللون غير مناسب</span>
-                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                ×
-                              </Button>
-                            </div>
+                            {returnReasons.map((reason, idx) => (
+                              <div key={idx} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                <span className="text-sm">{reason}</span>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-8 w-8 p-0"
+                                  onClick={() => setReturnReasons((prev) => prev.filter((_, i) => i !== idx))}
+                                >
+                                  ×
+                                </Button>
+                              </div>
+                            ))}
+                            {returnReasons.length === 0 && (
+                              <p className="text-sm text-gry p-2">لا توجد أسباب. أضف سبباً أدناه.</p>
+                            )}
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Input placeholder="أضف سبب إرجاع جديد" className="flex-1" />
-                          <Button className="v7-neu-button-flat">إضافة</Button>
+                          <Input
+                            placeholder="أضف سبب إرجاع جديد"
+                            className="flex-1"
+                            value={newReasonInput}
+                            onChange={(e) => setNewReasonInput(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                e.preventDefault()
+                                if (newReasonInput.trim()) {
+                                  setReturnReasons((prev) => [...prev, newReasonInput.trim()])
+                                  setNewReasonInput("")
+                                }
+                              }
+                            }}
+                          />
+                          <Button
+                            type="button"
+                            className="v7-neu-button-flat"
+                            onClick={() => {
+                              if (newReasonInput.trim()) {
+                                setReturnReasons((prev) => [...prev, newReasonInput.trim()])
+                                setNewReasonInput("")
+                              }
+                            }}
+                          >
+                            إضافة
+                          </Button>
                         </div>
                       </div>
                     </div>
@@ -1360,7 +1569,7 @@ export default function Returns() {
                         <div className="space-y-2">
                           <Label className="text-sm">عناوين الإرجاع المتاحة</Label>
                           <div className="border rounded-md p-2 space-y-2">
-                            {pickupAddresses.map((address) => (
+                            {returnAddresses.map((address) => (
                               <div
                                 key={address.id}
                                 className="flex items-center justify-between p-2 bg-gray-50 rounded"
@@ -1368,24 +1577,63 @@ export default function Returns() {
                                 <div className="flex flex-col">
                                   <span className="text-sm font-medium">{address.name}</span>
                                   <span className="text-xs text-gray-500">
-                                    {address.city} - {address.district}
+                                    {[address.city, address.district].filter(Boolean).join(" - ") || "—"}
                                   </span>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                  <Button variant="outline" size="sm" className="h-8 text-xs">
-                                    تعديل
-                                  </Button>
-                                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                    ×
-                                  </Button>
-                                </div>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-8 w-8 p-0"
+                                  onClick={() => setReturnAddresses((prev) => prev.filter((a) => a.id !== address.id))}
+                                >
+                                  ×
+                                </Button>
                               </div>
                             ))}
+                            {returnAddresses.length === 0 && (
+                              <p className="text-sm text-gry p-2">لا توجد عناوين. أضف عنواناً أو استورد من العناوين الحالية.</p>
+                            )}
                           </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Button className="v7-neu-button-flat">إضافة عنوان جديد</Button>
-                          <Button variant="outline" className="v7-neu-button-flat text-xs">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <Button
+                            type="button"
+                            className="v7-neu-button-flat"
+                            onClick={() =>
+                              setReturnAddresses((prev) => [
+                                ...prev,
+                                {
+                                  id: `addr-${Date.now()}`,
+                                  name: "عنوان جديد",
+                                  city: "",
+                                  district: "",
+                                  address: "",
+                                  phone: "",
+                                  email: "",
+                                },
+                              ])
+                            }
+                          >
+                            إضافة عنوان جديد
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="v7-neu-button-flat text-xs"
+                            onClick={() => {
+                              const toAdd = pickupAddresses.map((p) => ({
+                                id: `addr-${p.id}-${Date.now()}`,
+                                name: p.name,
+                                city: p.city,
+                                district: p.district,
+                                address: p.address,
+                                phone: p.phone,
+                                email: p.email,
+                              }))
+                              setReturnAddresses((prev) => [...prev, ...toAdd])
+                            }}
+                          >
                             استيراد من العناوين الحالية
                           </Button>
                         </div>
@@ -1400,7 +1648,7 @@ export default function Returns() {
                             <Label className="text-sm font-medium">التحقق من رقم الطلب</Label>
                             <p className="text-xs text-gry">التحقق من صحة رقم الطلب قبل السماح بالإرجاع</p>
                           </div>
-                          <Switch defaultChecked />
+                          <Switch checked={verifyOrderNumber} onCheckedChange={setVerifyOrderNumber} />
                         </div>
                         <div className="flex items-center justify-between">
                           <div>
@@ -1409,7 +1657,7 @@ export default function Returns() {
                               التحقق من أن المنتج ضمن فترة الإرجاع المسموحة (14 يوم)
                             </p>
                           </div>
-                          <Switch defaultChecked />
+                          <Switch checked={verifyReturnPeriod} onCheckedChange={setVerifyReturnPeriod} />
                         </div>
                         <div className="flex items-center justify-between">
                           <div>
@@ -1418,7 +1666,7 @@ export default function Returns() {
                               إرسال إشعار بالبريد الإلكتروني للعميل عند استلام طلب الإرجاع
                             </p>
                           </div>
-                          <Switch defaultChecked />
+                          <Switch checked={emailNotifications} onCheckedChange={setEmailNotifications} />
                         </div>
                         <div className="flex items-center justify-between">
                           <div>
@@ -1427,7 +1675,7 @@ export default function Returns() {
                               إرسال إشعار برسالة نصية للعميل عند استلام طلب الإرجاع
                             </p>
                           </div>
-                          <Switch />
+                          <Switch checked={smsNotifications} onCheckedChange={setSmsNotifications} />
                         </div>
                       </div>
                     </div>
@@ -1440,13 +1688,16 @@ export default function Returns() {
                         <p className="text-sm text-gry">
                           يمكنك تضمين صفحة الإرجاع في موقعك الإلكتروني باستخدام الكود التالي
                         </p>
+                        {!returnPageSlug && (
+                          <p className="text-sm text-amber-600 mb-2">
+                            احفظ التخصيص أولاً لإنشاء الرابط الفريد الذي تعطيه لعملائك غير المسجلين.
+                          </p>
+                        )}
                         <div className="relative">
                           <Textarea
                             readOnly
                             className="w-full h-24 text-xs p-2 bg-slate-50 rounded border font-mono"
-                            value={`<iframe src="${window.location.origin}/customer-return?token=YOUR_TOKEN&theme=${encodeURIComponent(
-                              primaryColor,
-                            )}" width="100%" height="600" frameborder="0"></iframe>`}
+                            value={returnPageSlug ? `<iframe src="${window.location.origin}/customer-return?token=${returnPageSlug}&theme=${encodeURIComponent(primaryColor)}" width="100%" height="600" frameborder="0"></iframe>` : `<iframe src="${window.location.origin}/customer-return?token=SLUG_AFTER_SAVE" width="100%" height="600" frameborder="0"></iframe>`}
                           />
                           <Button
                             variant="ghost"
@@ -1458,14 +1709,24 @@ export default function Returns() {
                           </Button>
                         </div>
                         <div className="flex items-center justify-between">
-                          <Label className="text-sm">رابط مباشر للصفحة</Label>
+                          <Label className="text-sm">رابط فريد لصفحة الاسترجاع (لعملائك غير المسجلين)</Label>
                           <div className="flex items-center gap-2">
                             <Input
                               readOnly
                               className="w-80 text-xs"
-                              value={`${window.location.origin}/customer-return?token=YOUR_TOKEN`}
+                              value={publicReturnUrl || "احفظ التخصيص أولاً لظهور الرابط"}
                             />
-                            <Button variant="outline" size="sm" className="h-8 w-8 p-0" onClick={copyEmbedCode}>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-8 w-8 p-0"
+                              onClick={() => {
+                                if (publicReturnUrl) {
+                                  navigator.clipboard.writeText(publicReturnUrl)
+                                  toast({ title: "تم النسخ", description: "تم نسخ الرابط الفريد" })
+                                }
+                              }}
+                            >
                               <Copy className="h-4 w-4" />
                             </Button>
                           </div>
