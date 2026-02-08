@@ -1,29 +1,38 @@
+const FALLBACK_LOGIN = "فشل تسجيل الدخول. تحقق من البريد الإلكتروني وكلمة المرور.";
+const FALLBACK_SIGNUP = "فشل إنشاء الحساب. يرجى المحاولة مرة أخرى أو التواصل مع الدعم.";
+const BAD_STRING = "[object Object]";
+
+/** استخراج نص من قيمة قد تكون string أو object (مثلاً { msg: "..." }) */
+function toReadableString(value: unknown): string {
+  if (value == null) return "";
+  if (typeof value === "string") return value.trim();
+  if (typeof value === "object" && value !== null) {
+    const o = value as Record<string, unknown>;
+    if (typeof o.msg === "string") return o.msg.trim();
+    if (typeof o.message === "string") return o.message.trim();
+  }
+  const s = String(value);
+  return s === BAD_STRING ? "" : s;
+}
+
 /**
  * استخراج رسالة خطأ واضحة للمستخدم من استجابة الـ API (تسجيل الدخول / التسجيل).
  * يدعم شكل RTK Query وأشكال الباكند الشائعة.
  */
 export function getAuthErrorMessage(error: unknown, context: "login" | "signup" = "login"): string {
-  const fallbackLogin = "فشل تسجيل الدخول. تحقق من البريد الإلكتروني وكلمة المرور.";
-  const fallbackSignup = "فشل إنشاء الحساب. يرجى المحاولة مرة أخرى أو التواصل مع الدعم.";
-
-  if (error == null) return context === "login" ? fallbackLogin : fallbackSignup;
+  if (error == null) return context === "login" ? FALLBACK_LOGIN : FALLBACK_SIGNUP;
 
   const err = error as {
     status?: number;
     data?: {
-      message?: string;
+      message?: unknown;
       status?: string;
-      errors?: Record<string, string[]>;
+      errors?: Record<string, unknown> | unknown[];
     };
     message?: string;
   };
 
-  const rawMessage =
-    typeof err.data?.message === "string"
-      ? err.data.message.trim()
-      : err.message && typeof err.message === "string"
-        ? err.message.trim()
-        : "";
+  const rawMessage = toReadableString(err.data?.message ?? err.message);
 
   // رسائل الباكند الشائعة → توضيح للمستخدم (الأكثر تحديداً أولاً)
   const friendly: Record<string, string> = {
@@ -53,17 +62,28 @@ export function getAuthErrorMessage(error: unknown, context: "login" | "signup" 
     if (lower.includes(key.toLowerCase())) return msg;
   }
 
-  // أخطاء التحقق (validation) من الباكند
+  // أخطاء التحقق (validation) من الباكند - قد تكون مصفوفة { msg, path }[] أو object بحقول مصفوفات
   const errors = err.data?.errors;
   if (errors && typeof errors === "object") {
-    const list = Object.entries(errors)
-      .flatMap(([, messages]) => (Array.isArray(messages) ? messages : [String(messages)]))
-      .filter(Boolean)
-      .map((m) => String(m).trim());
+    const list: string[] = [];
+    if (Array.isArray(errors)) {
+      for (const item of errors) {
+        const s = toReadableString(item);
+        if (s && s !== BAD_STRING) list.push(s);
+      }
+    } else {
+      for (const [, messages] of Object.entries(errors)) {
+        const arr = Array.isArray(messages) ? messages : [messages];
+        for (const m of arr) {
+          const s = toReadableString(m);
+          if (s && s !== BAD_STRING) list.push(s);
+        }
+      }
+    }
     if (list.length > 0) return list.join(" ");
   }
 
-  if (rawMessage.length > 0) return rawMessage;
+  if (rawMessage.length > 0 && rawMessage !== BAD_STRING) return rawMessage;
 
   // حسب رمز الحالة
   const status = err.status ?? (err.data as { status?: number })?.status;
@@ -74,5 +94,5 @@ export function getAuthErrorMessage(error: unknown, context: "login" | "signup" 
     if (status >= 500) return "حدث خطأ في الخادم. يرجى المحاولة لاحقاً أو التواصل مع الدعم.";
   }
 
-  return context === "login" ? fallbackLogin : fallbackSignup;
+  return context === "login" ? FALLBACK_LOGIN : FALLBACK_SIGNUP;
 }
