@@ -6,7 +6,8 @@ import { useSignupMutation } from "../api/authApi";
 import Link from "next/link";
 import { toast } from "react-hot-toast";
 import ResponseModal from "../components/ResponseModal";
-import { Eye, EyeOff } from "lucide-react";
+import { getAuthErrorMessage } from "@/lib/apiErrors";
+import { Eye, EyeOff, AlertCircle } from "lucide-react";
 import Image from "next/image";
 import {
   Dialog,
@@ -70,6 +71,8 @@ export default function SignupPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setModalMessage("");
+    setModalOpen(false);
 
     if (formData.password !== formData.confirmPassword) {
       setModalMessage("كلمتا المرور غير متطابقتين");
@@ -130,9 +133,10 @@ export default function SignupPage() {
       await signup(formData).unwrap();
       toast.success("تم إنشاء الحساب بنجاح! الرجاء تسجيل الدخول.");
       router.push("/login");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Signup Error:", error);
-      setModalMessage(error.data?.message || "فشل في إنشاء الحساب");
+      const message = getAuthErrorMessage(error, "signup");
+      setModalMessage(message);
       setModalOpen(true);
     }
   };
@@ -152,6 +156,7 @@ export default function SignupPage() {
         onClose={() => setModalOpen(false)}
         status="fail"
         message={modalMessage}
+        title="خطأ في إنشاء الحساب"
       />
       <main className="flex-1 flex items-center justify-center py-8 px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="w-full flex justify-center items-center">
@@ -170,8 +175,18 @@ export default function SignupPage() {
               />
             </Link>
             <h2 className="text-2xl sm:text-3xl font-bold text-white mb-6 tracking-wide text-center drop-shadow-lg">
-              تسجيل دخول جديد
+              تسجيل جديد
             </h2>
+            {/* رسالة الخطأ فوق النموذج */}
+            {modalMessage && (
+              <div
+                className="w-full max-w-md mx-auto mb-4 p-4 rounded-xl bg-red-500/20 border border-red-400/50 text-white flex items-start gap-3 text-right"
+                role="alert"
+              >
+                <AlertCircle className="h-5 w-5 shrink-0 mt-0.5 text-red-300" />
+                <p className="flex-1 text-sm font-medium leading-relaxed">{modalMessage}</p>
+              </div>
+            )}
             {/* Form Section */}
             <form
               onSubmit={handleSubmit}

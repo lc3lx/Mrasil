@@ -7,7 +7,8 @@ import { useAuth } from '../providers/AuthProvider';
 import Link from 'next/link';
 import { toast } from 'react-hot-toast';
 import ResponseModal from '../components/ResponseModal';
-import { Eye, EyeOff } from 'lucide-react';
+import { getAuthErrorMessage } from '@/lib/apiErrors';
+import { Eye, EyeOff, AlertCircle } from 'lucide-react';
 import Image from 'next/image';
 
 export default function LoginPage() {
@@ -37,6 +38,8 @@ export default function LoginPage() {
   };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setModalMessage('');
+    setModalOpen(false);
     try {
       const result = await loginMutation(formData).unwrap();
       console.log('Login - API Result:', result);
@@ -48,16 +51,23 @@ export default function LoginPage() {
       toast.success('تم تسجيل الدخول بنجاح!');
       // الـ AuthProvider سيتولى التوجيه حسب الـ role
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Login Error:', error);
-      setModalMessage(error.data?.message || 'فشل في تسجيل الدخول');
+      const message = getAuthErrorMessage(error, 'login');
+      setModalMessage(message);
       setModalOpen(true);
     }
   };
   return (
     <div className="min-h-screen flex flex-col relative" style={{ backgroundImage: 'url(/login.png)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
       <div className="absolute inset-0 bg-black/40 z-0" />
-      <ResponseModal isOpen={modalOpen} onClose={() => setModalOpen(false)} status="fail" message={modalMessage} />
+      <ResponseModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        status="fail"
+        message={modalMessage}
+        title="خطأ في تسجيل الدخول"
+      />
       <main className="flex-1 flex items-center justify-center py-10 px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="w-full flex justify-center items-center">
           <div className="w-full max-w-md mx-auto bg-white/20 backdrop-blur-xl border border-white/30 rounded-2xl shadow-2xl p-10 flex flex-col items-center">
@@ -66,6 +76,13 @@ export default function LoginPage() {
               <Image src="/logo.png" alt="شعار الشركة" className="h-36 w-auto sm:h-44" width={220} height={220} />
             </Link>
             <h2 className="text-3xl font-bold text-white mb-9 tracking-wide text-center drop-shadow-lg">تسجيل دخول</h2>
+            {/* رسالة الخطأ فوق النموذج - تظهر بعد إغلاق الـ modal أو معه */}
+            {modalMessage && (
+              <div className="w-full mb-4 p-4 rounded-xl bg-red-500/20 border border-red-400/50 text-white flex items-start gap-3 text-right" role="alert">
+                <AlertCircle className="h-5 w-5 shrink-0 mt-0.5 text-red-300" />
+                <p className="flex-1 text-sm font-medium leading-relaxed">{modalMessage}</p>
+              </div>
+            )}
             {/* Form Section */}
             <form onSubmit={handleSubmit} className="w-full flex flex-col gap-5">
               {/* Email Field */}
