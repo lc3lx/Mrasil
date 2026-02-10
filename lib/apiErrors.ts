@@ -17,7 +17,8 @@ function toReadableString(value: unknown): string {
 
 /**
  * استخراج رسالة خطأ واضحة للمستخدم من استجابة الـ API (تسجيل الدخول / التسجيل).
- * يدعم شكل RTK Query وأشكال الباكند الشائعة.
+ * يغطي: أخطاء الشبكة، التحقق (422)، تكرار البريد/الهاتف (409)، بيانات خاطئة (401/400)، حساب موقوف (403)، أخطاء الخادم (5xx).
+ * يدعم شكل RTK Query وأشكال الباكند (message، errors[]).
  */
 export function getAuthErrorMessage(error: unknown, context: "login" | "signup" = "login"): string {
   if (error == null) return context === "login" ? FALLBACK_LOGIN : FALLBACK_SIGNUP;
@@ -30,31 +31,66 @@ export function getAuthErrorMessage(error: unknown, context: "login" | "signup" 
       errors?: Record<string, unknown> | unknown[];
     };
     message?: string;
+    error?: string;
   };
 
   const rawMessage = toReadableString(err.data?.message ?? err.message);
+  const anyMessage = rawMessage || toReadableString(err.message) || toReadableString(err.error) || "";
 
-  // رسائل الباكند الشائعة → توضيح للمستخدم (الأكثر تحديداً أولاً)
+  // ——— 1) أخطاء الشبكة (السبب: انقطاع اتصال، خادم غير متاح، أو انتهاء مهلة الطلب)
+  const networkPatterns = [
+    "failed to fetch",
+    "network error",
+    "network request failed",
+    "econnrefused",
+    "etimedout",
+    "timeout",
+    "load failed",
+    "fetch failed",
+  ];
+  const lowerAny = anyMessage.toLowerCase();
+  if (networkPatterns.some((p) => lowerAny.includes(p))) {
+    return "تعذر الاتصال بالخادم. تحقق من الاتصال بالإنترنت أو جرّب لاحقاً.";
+  }
+  // RTK Query: status قد يكون "FETCH_ERROR" | "PARSING_ERROR" | "TIMEOUT_ERROR"
+  const rtkStatus = (err as { status?: string }).status;
+  if (typeof rtkStatus === "string" && (rtkStatus === "FETCH_ERROR" || rtkStatus === "TIMEOUT_ERROR")) {
+    return "تعذر الاتصال بالخادم. تحقق من الاتصال بالإنترنت أو جرّب لاحقاً.";
+  }
+
+  // ——— 2) رسائل الباكند المحددة → توضيح موحد (السبب مذكور في التعليق)
   const friendly: Record<string, string> = {
-    // رقم الهاتف مستخدم من قبل
-    "phone_1 dup key": "رقم الهاتف مستخدم من قبل. استخدم رقماً آخر أو سجّل الدخول.",
-    "phone_1": "رقم الهاتف مستخدم من قبل. استخدم رقماً آخر أو سجّل الدخول.",
+    // تكرار: البريد أو الهاتف مسجل مسبقاً
+    "phone_1 dup key": "رقم الهاتف مستخدم من قبل. السبب: القيمة مكررة في النظام. استخدم رقماً آخر أو سجّل الدخول.",
     "رقم الهاتف مستخدم": "رقم الهاتف مستخدم من قبل. استخدم رقماً آخر أو سجّل الدخول.",
     "رقم الهاتف مسجل": "رقم الهاتف مستخدم من قبل. استخدم رقماً آخر أو سجّل الدخول.",
     "phone is unique": "رقم الهاتف مستخدم من قبل. استخدم رقماً آخر أو سجّل الدخول.",
     "هذا الرقم مستخدم": "رقم الهاتف مستخدم من قبل. استخدم رقماً آخر أو سجّل الدخول.",
-    // البريد الإلكتروني مكرر
-    "E11000 duplicate key error": "البريد الإلكتروني مسجل مسبقاً. استخدم بريداً آخر أو سجّل الدخول.",
-    "duplicate key error": "البريد الإلكتروني مسجل مسبقاً. استخدم بريداً آخر أو سجّل الدخول.",
-    "invalid email or password": "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+    "E11000 duplicate key error": "البريد الإلكتروني أو رقم الهاتف مسجل مسبقاً. السبب: تكرار في قاعدة البيانات. استخدم قيمة أخرى أو سجّل الدخول.",
+    "duplicate key error": "البريد الإلكتروني أو رقم الهاتف مسجل مسبقاً. استخدم بريداً أو رقماً آخر.",
+    "email is unique": "البريد الإلكتروني مسجل مسبقاً. استخدم بريداً آخر أو سجّل الدخول.",
+    "email addresss is exists": "البريد الإلكتروني مسجل مسبقاً. السبب: البريد مستخدم لحساب آخر. استخدم بريداً آخر أو سجّل الدخول.",
+    "email address is already": "البريد الإلكتروني مسجل مسبقاً. استخدم بريداً آخر أو سجّل الدخول.",
+    "البريد الإلكتروني مسجل مسبقاً": "البريد الإلكتروني مسجل مسبقاً. استخدم بريداً آخر أو سجّل الدخول.",
+    // بيانات دخول خاطئة (401)
+    "invalid email or password": "البريد الإلكتروني أو كلمة المرور غير صحيحة. السبب: عدم تطابق البيانات مع السجلات.",
     "Invalid email or password": "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
     "incorrect email or password": "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
-    "email is unique": "البريد الإلكتروني مسجل مسبقاً. استخدم بريداً آخر.",
     "unauthorized": "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
     "غير مصرح": "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
-    "network": "تعذر الاتصال بالخادم. تحقق من الاتصال بالإنترنت.",
-    "Failed to fetch": "تعذر الاتصال بالخادم. تحقق من الاتصال بالإنترنت.",
-    "Network Error": "تعذر الاتصال بالخادم. تحقق من الاتصال بالإنترنت.",
+    // حساب موقوف (403)
+    "account is not active": "حسابك غير نشط. السبب: تم إيقاف الحساب. يرجى التواصل مع الدعم لتفعيل الحساب.",
+    "Your account is not active": "حسابك غير نشط. يرجى التواصل مع الدعم لتفعيل الحساب.",
+    "حسابك غير نشط": "حسابك غير نشط. يرجى التواصل مع الدعم لتفعيل الحساب.",
+    // تحقق من الحقول (400/422) — نعرض الرسالة كما هي إن كانت عربية
+    "Password Confirmation inncorrect": "تأكيد كلمة المرور غير مطابق. السبب: حقل «تأكيد كلمة المرور» لا يطابق كلمة المرور.",
+    "Password confirmation": "تأكيد كلمة المرور غير مطابق.",
+    "تأكيد كلمة المرور غير مطابق": "تأكيد كلمة المرور غير مطابق. تأكد من مطابقة حقل التأكيد مع كلمة المرور.",
+    "كلمة المرور يجب أن تحتوي": "كلمة المرور لا تستوفي الشروط. يجب أن تحتوي على حرف كبير وحرف صغير ورقم واحد على الأقل و8 أحرف.",
+    "password must be at least": "كلمة المرور يجب أن تحتوي على حرف كبير وحرف صغير ورقم واحد على الأقل و8 أحرف.",
+    "too short": "القيمة المدخلة قصيرة جداً. راجع الشروط المطلوبة.",
+    "required": "يجب تعبئة جميع الحقول المطلوبة.",
+    "البريد الإلكتروني وكلمة المرور مطلوبان": "البريد الإلكتروني وكلمة المرور مطلوبان. السبب: أحد الحقلين أو كليهما فارغ.",
   };
 
   const lower = rawMessage.toLowerCase();
@@ -62,7 +98,7 @@ export function getAuthErrorMessage(error: unknown, context: "login" | "signup" 
     if (lower.includes(key.toLowerCase())) return msg;
   }
 
-  // أخطاء التحقق (validation) من الباكند - قد تكون مصفوفة { msg, path }[] أو object بحقول مصفوفات
+  // ——— 3) أخطاء التحقق (422) من express-validator: مصفوفة { msg, path }[] — نعرض رسائل الحقول مع توضيح السبب
   const errors = err.data?.errors;
   if (errors && typeof errors === "object") {
     const list: string[] = [];
@@ -85,13 +121,16 @@ export function getAuthErrorMessage(error: unknown, context: "login" | "signup" 
 
   if (rawMessage.length > 0 && rawMessage !== BAD_STRING) return rawMessage;
 
-  // حسب رمز الحالة
+  // ——— 4) حسب رمز الحالة HTTP عند عدم وجود رسالة نصية (السبب: ناتج من الباكند حسب الـ status)
   const status = err.status ?? (err.data as { status?: number })?.status;
   if (status != null) {
+    if (status === 400) return "البيانات المدخلة غير صحيحة أو ناقصة. راجع الحقول وحاول مرة أخرى.";
     if (status === 401) return "البريد الإلكتروني أو كلمة المرور غير صحيحة.";
-    if (status === 403) return "ليس لديك صلاحية الدخول.";
-    if (status === 404) return "الخدمة غير متوفرة حالياً.";
-    if (status >= 500) return "حدث خطأ في الخادم. يرجى المحاولة لاحقاً أو التواصل مع الدعم.";
+    if (status === 403) return "ليس لديك صلاحية الدخول. قد يكون الحساب موقوفاً؛ تواصل مع الدعم.";
+    if (status === 404) return "الخدمة غير متوفرة حالياً. جرّب لاحقاً أو تواصل مع الدعم.";
+    if (status === 409) return context === "signup" ? "البريد الإلكتروني أو رقم الهاتف مسجل مسبقاً. استخدم قيمة أخرى أو سجّل الدخول." : "تعارض في البيانات. قد يكون الحساب مسجلاً مسبقاً.";
+    if (status === 422) return "التحقق من البيانات فشل. راجع الحقول المطلوبة والصيغ (البريد، كلمة المرور، الأسماء).";
+    if (status >= 500) return "حدث خطأ في الخادم. السبب: عطل مؤقت. يرجى المحاولة لاحقاً أو التواصل مع الدعم.";
   }
 
   return context === "login" ? FALLBACK_LOGIN : FALLBACK_SIGNUP;

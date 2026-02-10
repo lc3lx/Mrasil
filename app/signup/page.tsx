@@ -28,6 +28,7 @@ export default function SignupPage() {
     confirmPassword: "",
   });
   const [modalOpen, setModalOpen] = useState(false);
+  const [modalStatus, setModalStatus] = useState<"success" | "fail">("fail");
   const [modalMessage, setModalMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -75,6 +76,7 @@ export default function SignupPage() {
     setModalOpen(false);
 
     if (formData.password !== formData.confirmPassword) {
+      setModalStatus("fail");
       setModalMessage("كلمتا المرور غير متطابقتين");
       setModalOpen(true);
       return;
@@ -83,21 +85,25 @@ export default function SignupPage() {
     // Validate password strength
     const { checks } = getPasswordStrength(formData.password);
     if (!checks.length) {
+      setModalStatus("fail");
       setModalMessage("كلمة المرور يجب أن تكون 8 أحرف على الأقل");
       setModalOpen(true);
       return;
     }
     if (!checks.uppercase) {
+      setModalStatus("fail");
       setModalMessage("كلمة المرور يجب أن تحتوي على حرف كبير واحد على الأقل");
       setModalOpen(true);
       return;
     }
     if (!checks.lowercase) {
+      setModalStatus("fail");
       setModalMessage("كلمة المرور يجب أن تحتوي على حرف صغير واحد على الأقل");
       setModalOpen(true);
       return;
     }
     if (!checks.number) {
+      setModalStatus("fail");
       setModalMessage("كلمة المرور يجب أن تحتوي على رقم واحد على الأقل");
       setModalOpen(true);
       return;
@@ -105,12 +111,14 @@ export default function SignupPage() {
 
     // Validate name length
     if (formData.firstName.length < 3) {
+      setModalStatus("fail");
       setModalMessage("الاسم الأول يجب أن يكون 3 أحرف على الأقل");
       setModalOpen(true);
       return;
     }
 
     if (formData.lastName.length < 3) {
+      setModalStatus("fail");
       setModalMessage("الاسم الأخير يجب أن يكون 3 أحرف على الأقل");
       setModalOpen(true);
       return;
@@ -119,6 +127,7 @@ export default function SignupPage() {
     try {
       // Ensure all required fields are present
       if (!formData.confirmPassword) {
+        setModalStatus("fail");
         setModalMessage("يرجى إدخال تأكيد كلمة المرور");
         setModalOpen(true);
         return;
@@ -131,13 +140,22 @@ export default function SignupPage() {
       });
 
       await signup(formData).unwrap();
-      toast.success("تم إنشاء الحساب بنجاح! الرجاء تسجيل الدخول.");
-      router.push("/login");
+      setModalStatus("success");
+      setModalMessage("تم إنشاء الحساب بنجاح. يمكنك تسجيل الدخول الآن.");
+      setModalOpen(true);
     } catch (error: unknown) {
       console.error("Signup Error:", error);
+      setModalStatus("fail");
       const message = getAuthErrorMessage(error, "signup");
       setModalMessage(message);
       setModalOpen(true);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    if (modalStatus === "success") {
+      router.push("/login");
     }
   };
 
@@ -153,10 +171,10 @@ export default function SignupPage() {
       <div className="absolute inset-0 bg-black/40 z-0" />
       <ResponseModal
         isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        status="fail"
+        onClose={handleCloseModal}
+        status={modalStatus}
         message={modalMessage}
-        title="خطأ في إنشاء الحساب"
+        title={modalStatus === "success" ? "تم إنشاء الحساب" : "خطأ في إنشاء الحساب"}
       />
       <main className="flex-1 flex items-center justify-center py-8 px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="w-full flex justify-center items-center">
