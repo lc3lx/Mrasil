@@ -135,7 +135,7 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
 
       if (!userId) {
         throw new Error(
-          "لم يتم العثور على معرف المستخدم. يرجى تسجيل الدخول مرة أخرى."
+          "لم يتم العثور على معرف المستخدم. يرجى تسجيل الدخول مرة أخرى.",
         );
       }
 
@@ -155,7 +155,7 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(
-          `فشل الاتصال بالخادم (${response.status}): ${errorText}`
+          `فشل الاتصال بالخادم (${response.status}): ${errorText}`,
         );
       }
 
@@ -169,7 +169,7 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
         data: data.data,
       };
     },
-    []
+    [],
   );
 
   // تمرير إلى آخر رسالة عند إضافة رسالة جديدة
@@ -235,7 +235,7 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
     try {
       const backendResponse = await requestAIResponse(
         userInput,
-        historyPayload
+        historyPayload,
       );
       const responseText =
         backendResponse?.message ||
@@ -972,7 +972,7 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
           >
             <MessageSquare className="w-5 h-5 text-white" />
           </div>
-          <span className="font-medium text-base">مراسيل بوت</span>
+          <span className="font-medium text-base">marasil.ai </span>
           {unreadCount > 0 && (
             <div className="flex items-center justify-center w-6 h-6 rounded-full bg-red-500 text-white text-xs font-bold">
               {unreadCount}
@@ -1044,7 +1044,7 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
                   isDark ? "text-white" : "text-[#294D8B]"
                 }`}
               >
-                مراسيل بوت
+                marasil.ai
               </h3>
               {/* <span className={`text-sm font-bold ${isDark ? "text-[#3b82f6]" : "text-[#3498db]"}`}>مراسيل</span> */}
             </div>
@@ -1106,8 +1106,8 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
                     ? "bg-[#3b82f6] text-white"
                     : "bg-[#3498db] text-white"
                   : isDark
-                  ? "bg-[#334155] text-gray-100"
-                  : "bg-white text-gray-800 border border-[#e6f7ff]"
+                    ? "bg-[#334155] text-gray-100"
+                    : "bg-white text-gray-800 border border-[#e6f7ff]"
               }`}
               style={{
                 boxShadow:
@@ -1198,7 +1198,7 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
                 <div className="w-6 h-6 rounded-full bg-[#3498db] flex items-center justify-center">
                   <MessageSquare className="w-3 h-3 text-white" />
                 </div>
-                <span className="text-sm font-bold">مراسيل بوت</span>
+                <span className="text-sm font-bold">marasil.ai </span>
               </div>
               <div className="flex items-center gap-2">
                 <Loader2 className="w-5 h-5 animate-spin" />
