@@ -285,6 +285,7 @@ export default function Returns() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [returnTypeFilter, setReturnTypeFilter] = useState("all");
   const [activeTab, setActiveTab] = useState("all");
+  const [customizeTab, setCustomizeTab] = useState<"design" | "content" | "fields" | "integration">("design");
   const [showCustomizeOptions, setShowCustomizeOptions] = useState(false);
   const [selectedReturns, setSelectedReturns] = useState<string[]>([]);
 
@@ -383,6 +384,11 @@ export default function Returns() {
     if (s.rejectionEmailSubject != null) setRejectionEmailSubject(s.rejectionEmailSubject);
     if (s.rejectionEmailBody != null) setRejectionEmailBody(s.rejectionEmailBody);
   }, [customerData?.data?.replacementPageSettings]);
+
+  // عند الدخول لصفحة التخصيص، اعرض تبويب التصميم افتراضياً
+  React.useEffect(() => {
+    if (showCustomizeOptions) setCustomizeTab("design");
+  }, [showCustomizeOptions]);
 
   // بيانات عناوين الالتقاط من صفحة إنشاء الشحنة
   const pickupAddresses = [
@@ -708,11 +714,53 @@ export default function Returns() {
               </div>
             </div>
 
+            {/* رابط صفحة الاستبدال للعملاء - يعطيه العميل لزبائنه */}
+            <div className="v7-neu-card p-4 rounded-xl border-2 border-[#294D8B]/20 bg-[#294D8B]/5">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                <div className="flex-1 min-w-0">
+                  <Label className="text-sm font-medium text-[#294D8B] flex items-center gap-2 mb-2">
+                    <Share2 className="h-4 w-4" />
+                    الرابط الذي تعطيه لعملائك لطلب الاستبدال
+                  </Label>
+                  <p className="text-xs text-gry mb-2">
+                    انسخ هذا الرابط وشاركه مع عملائك عبر الواتساب أو البريد الإلكتروني
+                  </p>
+                  <div className="flex gap-2">
+                    <Input
+                      readOnly
+                      className="flex-1 text-sm font-mono bg-white"
+                      value={publicReplacementUrl || "احفظ التخصيص أولاً لظهور الرابط"}
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="shrink-0 h-9 gap-1"
+                      onClick={() => {
+                        if (publicReplacementUrl) {
+                          navigator.clipboard.writeText(publicReplacementUrl);
+                          toast({ title: "تم النسخ", description: "تم نسخ الرابط بنجاح" });
+                        } else {
+                          toast({
+                            title: "تنبيه",
+                            description: "احفظ التخصيص أولاً لإنشاء الرابط",
+                            variant: "destructive",
+                          });
+                        }
+                      }}
+                    >
+                      <Copy className="h-4 w-4" />
+                      نسخ
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* تبويبات التخصيص */}
             <Tabs
               dir="rtl"
-              value={activeTab}
-              onValueChange={setActiveTab}
+              value={customizeTab}
+              onValueChange={(v) => setCustomizeTab(v as "design" | "content" | "fields" | "integration")}
               className="w-full"
             >
               <TabsList className="v7-neu-tabs mb-6">
@@ -2280,7 +2328,10 @@ export default function Returns() {
               </div>
               <Button
                 className="v7-neu-button gap-1 text-base"
-                onClick={() => setShowCustomizeOptions(true)}
+                onClick={() => {
+                  setCustomizeTab("design");
+                  setShowCustomizeOptions(true);
+                }}
               >
                 <Share2 className="h-5 w-5" />
                 <span className="hidden sm:inline-block">
