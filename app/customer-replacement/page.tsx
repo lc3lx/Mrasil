@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { useSearchParams } from "next/navigation"
 import { CustomerReturnForm } from "@/components/customer-return-form"
 import { Info, CheckCircle } from 'lucide-react'
-import { getImageUrl } from "@/lib/constants"
+import { getImageUrl, API_BASE_URL } from "@/lib/constants"
 
 const DEFAULT_PRIMARY = "#294D8B"
 
@@ -55,9 +55,12 @@ export default function CustomerReplacement() {
       return
     }
     if (!token?.trim()) return
-    fetch(`/api/public/replacements/page-config?token=${encodeURIComponent(token)}`)
+    const url = `${API_BASE_URL.replace(/\/$/, "")}/public/replacements/page-config?token=${encodeURIComponent(token)}`
+    fetch(url)
       .then((r) => r.json())
-      .then((res) => res.success && res.data && setPageConfig(res.data))
+      .then((res) => {
+        if ((res.success || res.status === "success") && res.data) setPageConfig(res.data)
+      })
       .catch(() => {})
   }, [token, isPreview])
 
