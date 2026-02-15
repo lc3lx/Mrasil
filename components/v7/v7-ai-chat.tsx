@@ -972,7 +972,7 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
           >
             <MessageSquare className="w-5 h-5 text-white" />
           </div>
-          <span className="font-medium text-base">marasil.ai </span>
+          <span className="font-medium text-base">Marasil.ai </span>
           {unreadCount > 0 && (
             <div className="flex items-center justify-center w-6 h-6 rounded-full bg-red-500 text-white text-xs font-bold">
               {unreadCount}
@@ -1198,7 +1198,7 @@ export function V7AIChat({ isOpen, onClose }: V7AIChatProps) {
                 <div className="w-6 h-6 rounded-full bg-[#3498db] flex items-center justify-center">
                   <MessageSquare className="w-3 h-3 text-white" />
                 </div>
-                <span className="text-sm font-bold">marasil.ai </span>
+                <span className="text-sm font-bold">Marasil.ai </span>
               </div>
               <div className="flex items-center gap-2">
                 <Loader2 className="w-5 h-5 animate-spin" />
