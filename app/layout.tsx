@@ -96,7 +96,7 @@ export const metadata: Metadata = {
     description:
       "أول منصة شحن في العالم مدعومة بالذكاء الاصطناعي، تتيح لك مقارنة الأسعار، وطباعة البوالص، وتتبع الشحنات بسرعة وذكاء",
     url: "https://www.marasil.sa",
-    siteName: "Marasil ",
+    siteName: "مراسيل | Marasil ",
     images: [
       {
         url: "/logo.png",
