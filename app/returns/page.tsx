@@ -2022,10 +2022,18 @@ export default function Returns() {
                         معاينة بالحجم الكامل
                       </Button>
                     </div>
-                    <div className="mt-3 flex justify-center">
+                    <div className="mt-3 flex justify-center flex-col items-center gap-1">
                       <span className="text-xs text-gray-500 dark:text-gray-400">
                         يمكنك معاينة الصفحة كما ستظهر للعميل
                       </span>
+                      {returnPageSlug && typeof window !== "undefined" && (
+                        <span className="text-xs text-gray-500 dark:text-gray-400 text-center max-w-full break-all px-2">
+                          رابط جلب الشحنات:{" "}
+                          <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded">
+                            {window.location.origin}/api/public/returns/shipments?token={returnPageSlug}&phone=05XXXXXXXX
+                          </code>
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
