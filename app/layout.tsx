@@ -7,6 +7,7 @@ import { Providers } from "./providers/Providers";
 import Loading from "./loading";
 import { LanguageProvider } from "./i18n/LanguageContext";
 import { Cairo } from "@next/font/google";
+import { GoogleTagManager } from "@next/third-parties/google";
 const cairo = Cairo({
   subsets: ["arabic"],
   weight: ["400", "700"], // حسب الحاجة
@@ -146,6 +147,7 @@ export default function RootLayout({
       suppressHydrationWarning
       className={cairo.className}
     >
+      <GoogleTagManager gtmId="GTM-T6LZH3D2" />
       <body suppressHydrationWarning>
         <Providers>
           <LanguageProvider>
