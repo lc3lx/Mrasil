@@ -1468,13 +1468,14 @@ export default function Returns() {
                             <div className="space-y-4">
                               <div className="border rounded-lg p-4">
                                 <div className="flex items-center gap-2 mb-4">
-                                  <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                                  <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden">
                                     <Image
-                                      src="/company-logo.png"
+                                      src={getImageUrl(logoUrl) || logoUrl || "/company-logo.png"}
                                       alt="شعار الشركة"
                                       width={20}
                                       height={20}
                                       className="object-contain"
+                                      unoptimized={typeof logoUrl === "string" && (logoUrl.startsWith("http") || logoUrl.startsWith("blob"))}
                                     />
                                   </div>
                                   <div>
@@ -2161,11 +2162,12 @@ export default function Returns() {
                           <div className="flex flex-col items-center">
                             <div className="bg-gradient-to-r from-white/20 to-white/5 backdrop-blur-md p-2.5 rounded-xl shadow-lg border border-white/10 mb-4 transform hover:scale-105 transition-transform duration-300">
                               <Image
-                                src={getImageUrl(logoUrl) || "/placeholder.svg"}
+                                src={getImageUrl(logoUrl) || logoUrl || "/placeholder.svg"}
                                 alt="شعار الشركة"
                                 width={125}
                                 height={42}
                                 className="h-9 object-contain drop-shadow-md"
+                                unoptimized={typeof logoUrl === "string" && (logoUrl.startsWith("http") || logoUrl.startsWith("blob"))}
                               />
                             </div>
                             <div className="relative">
