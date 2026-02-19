@@ -300,6 +300,7 @@ interface V7ShipmentCardProps {
       success?: boolean;
       pickupId?: string;
       pickupGUID?: string;
+      pickup_guid?: string;
       scheduledDate?: string;
       message?: string;
     };
@@ -930,8 +931,10 @@ export function V7ShipmentCard({
                           shipment.pickupRequest.pickupId ?? "-",
                         ],
                         [
-                          "معرف طلب الاستلام (GUID)",
-                          shipment.pickupRequest.pickupGUID ?? "-",
+                          "GUID",
+                          shipment.pickupRequest.pickupGUID ??
+                            shipment.pickupRequest.pickup_guid ??
+                            "-",
                         ],
                       ]
                     : []),
@@ -1001,10 +1004,21 @@ export function V7ShipmentCard({
                   value !== null ? (
                     <div
                       key={label}
-                      className="flex justify-between items-center text-sm py-1"
+                      className={`flex justify-between items-center text-sm py-1 gap-2 ${
+                        label === "GUID" ? "items-start" : ""
+                      }`}
                     >
-                      <span className="text-gry">{label}:</span>
-                      <span className="font-medium">{value}</span>
+                      <span className="text-gry shrink-0">{label}:</span>
+                      <span
+                        className={`font-medium text-left ${
+                          label === "GUID"
+                            ? "break-all text-xs max-w-[180px]"
+                            : ""
+                        }`}
+                        title={label === "GUID" ? String(value) : undefined}
+                      >
+                        {value}
+                      </span>
                     </div>
                   ) : null
                 )}
