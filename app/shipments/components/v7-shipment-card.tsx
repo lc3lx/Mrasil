@@ -296,6 +296,13 @@ interface V7ShipmentCardProps {
     aramexResponse?: { labelURL?: string; trackingNumber?: string };
     omniclamaResponse?: { label?: string; trackingNumber?: string };
     smsaResponse?: { label?: string; trackingNumber?: string };
+    pickupRequest?: {
+      success?: boolean;
+      pickupId?: string;
+      pickupGUID?: string;
+      scheduledDate?: string;
+      message?: string;
+    };
     pricing?: Record<string, any>;
     trackingNumber?: string;
   };
@@ -914,6 +921,20 @@ export function V7ShipmentCard({
                     `${(shipment.totalprice ?? 0).toLocaleString()} ريال`,
                   ],
                   ["الوزن", `${shipment.weight} كجم`],
+                  // أرامكس: عرض رقم طلب الاستلام ومعرفه في قسم المزيد
+                  ...(shipment?.shapmentCompany?.toLowerCase() === "aramex" &&
+                  shipment?.pickupRequest?.success
+                    ? [
+                        [
+                          "رقم طلب الاستلام",
+                          shipment.pickupRequest.pickupId ?? "-",
+                        ],
+                        [
+                          "معرف طلب الاستلام (GUID)",
+                          shipment.pickupRequest.pickupGUID ?? "-",
+                        ],
+                      ]
+                    : []),
                   [
                     "الأبعاد",
                     (() => {
