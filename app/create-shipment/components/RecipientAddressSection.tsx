@@ -426,6 +426,17 @@ export function RecipientAddressSection({
           clientAddress: editRecipient.clientAddress || "",
         },
       }).unwrap();
+
+      if (selectedRecipient === recipientToEdit._id) {
+        setValue("recipient_full_name", editRecipient.clientName || "");
+        setValue("recipient_mobile", editRecipient.clientPhone || "");
+        setValue("recipient_city", editRecipient.city || "");
+        setValue("recipient_city_en", "");
+        setValue("recipient_address", editRecipient.clientAddress || "");
+        setValue("recipient_email", editRecipient.clientEmail || "");
+        setValue("recipient_nationalAddress", editRecipient.nationalAddress || "");
+      }
+
       setEditRecipientModalOpen(false);
       setRecipientToEdit(null);
     } catch (err) {

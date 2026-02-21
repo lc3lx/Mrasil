@@ -110,7 +110,7 @@ export function SenderAddressSection({
           matrix[i][j] = Math.min(
             matrix[i - 1][j - 1] + 1,
             matrix[i][j - 1] + 1,
-            matrix[i - 1][j] + 1
+            matrix[i - 1][j] + 1,
           );
         }
       }
@@ -122,7 +122,7 @@ export function SenderAddressSection({
   // البحث عن المدينة بالاسم العربي للحصول على الاسم الإنجليزي
   const selectedAddress = selectedSender
     ? rawSenderAddresses.find(
-        (addr) => addr._id === selectedSender || addr.id === selectedSender
+        (addr) => addr._id === selectedSender || addr.id === selectedSender,
       )
     : null;
   const selectedAddressCity = selectedAddress?.city || "";
@@ -149,7 +149,7 @@ export function SenderAddressSection({
       alias: addr.alias,
       city: addr.city,
       city_en: addr.city_en,
-    }))
+    })),
   );
 
   console.log("Search Skip Conditions:", {
@@ -191,7 +191,7 @@ export function SenderAddressSection({
         cityData.results.map((city) => ({
           name_ar: city.name_ar,
           name_en: city.name_en,
-        }))
+        })),
       );
 
       // استخدم selectedAddressCity مباشرة بدلاً من البحث عن العنوان مرة أخرى
@@ -291,7 +291,7 @@ export function SenderAddressSection({
     return 0;
   };
   const sortedSenderAddresses = [...rawSenderAddresses].sort(
-    (a, b) => getTime(b) - getTime(a)
+    (a, b) => getTime(b) - getTime(a),
   );
   const senderCards = sortedSenderAddresses.map(
     (address: any, idx: number) => ({
@@ -304,7 +304,7 @@ export function SenderAddressSection({
       address: address.location || "-",
       email: address.email || customerMeData?.data.email || "-",
       nationalAddress: address.nationalAddress || "",
-    })
+    }),
   );
 
   const normalize = (str: string) =>
@@ -361,7 +361,7 @@ export function SenderAddressSection({
     try {
       console.log(
         "handleAddSenderAddress - data received:",
-        JSON.stringify(data, null, 2)
+        JSON.stringify(data, null, 2),
       );
 
       const addressData = {
@@ -376,7 +376,7 @@ export function SenderAddressSection({
 
       console.log(
         "handleAddSenderAddress - sending to API:",
-        JSON.stringify(addressData, null, 2)
+        JSON.stringify(addressData, null, 2),
       );
 
       await createAddress(addressData).unwrap();
@@ -549,6 +549,19 @@ export function SenderAddressSection({
           isLoading={isUpdating}
           onSubmit={async (data) => {
             await updateAddress({ _id: addressToEdit._id, ...data });
+
+            if (
+              selectedSender === addressToEdit._id ||
+              selectedSender === addressToEdit.id
+            ) {
+              setValue("shipper_full_name", data.alias || "");
+              setValue("shipper_mobile", data.phone || "");
+              setValue("shipper_city", data.city || "");
+              setValue("shipper_city_en", "");
+              setValue("shipper_address", data.location || "");
+              setValue("shipper_nationalAddress", data.nationalAddress || "");
+            }
+
             setEditModalOpen(false);
             setAddressToEdit(null);
             refetch();
