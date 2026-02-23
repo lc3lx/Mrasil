@@ -357,9 +357,14 @@ export function EditSenderAddressForm({
 
             <DialogFooter>
               <Button
-                type="submit"
+                type="button"
                 className="bg-gradient-to-r from-[#3498db] to-[#2980b9] text-white hover:from-[#2980b9] hover:to-[#3498db] sm:text-base text-sm "
                 disabled={isLoading}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleSubmit(handleFormSubmit)(e);
+                }}
               >
                 {isLoading ? "جاري التعديل..." : "حفظ التعديلات"}
               </Button>
